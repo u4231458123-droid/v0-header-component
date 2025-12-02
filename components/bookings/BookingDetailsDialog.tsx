@@ -54,13 +54,13 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
   }
 
   const getPaymentStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; className: string }> = {
-      pending: { label: "Ausstehend", className: "bg-yellow-100 text-yellow-800" },
-      paid: { label: "Bezahlt", className: "bg-green-100 text-green-800" },
-      unpaid: { label: "Unbezahlt", className: "bg-red-100 text-red-800" },
+    const config: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
+      pending: { label: "Ausstehend", variant: "secondary" },
+      paid: { label: "Bezahlt", variant: "default" },
+      unpaid: { label: "Unbezahlt", variant: "destructive" },
     }
     const c = config[status] || config.pending
-    return <Badge className={c.className}>{c.label}</Badge>
+    return <Badge variant={c.variant}>{c.label}</Badge>
   }
 
   const handleEditSuccess = (updatedBooking: any) => {

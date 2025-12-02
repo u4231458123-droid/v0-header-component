@@ -155,39 +155,39 @@ export function DriversPageClient({
   const hasActiveFilters = searchTerm !== "" || statusFilter !== "all"
 
   const getDriverStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; className: string }> = {
+    const config: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
       active: {
         label: "Aktiv",
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        variant: "default",
       },
       available: {
         label: "Verfuegbar",
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        variant: "default",
       },
       busy: {
         label: "Beschaeftigt",
-        className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+        variant: "secondary",
       },
-      offline: { label: "Offline", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
+      offline: { label: "Offline", variant: "outline" },
     }
     const c = config[status] || config.offline
-    return <Badge className={c.className}>{c.label}</Badge>
+    return <Badge variant={c.variant}>{c.label}</Badge>
   }
 
   const getVehicleStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; className: string }> = {
+    const config: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
       available: {
         label: "Verfuegbar",
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        variant: "default",
       },
-      in_use: { label: "Im Einsatz", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+      in_use: { label: "Im Einsatz", variant: "default" },
       maintenance: {
         label: "Wartung",
-        className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+        variant: "secondary",
       },
     }
     const c = config[status] || config.available
-    return <Badge className={c.className}>{c.label}</Badge>
+    return <Badge variant={c.variant}>{c.label}</Badge>
   }
 
   return (
