@@ -137,13 +137,13 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   const getDriverStatusColor = () => {
     switch (driverStatus) {
       case "available":
-        return "bg-green-500"
+        return "bg-emerald-500"
       case "busy":
-        return "bg-yellow-500"
+        return "bg-amber-500"
       case "offline":
-        return "bg-gray-400"
+        return "bg-muted"
       default:
-        return "bg-gray-400"
+        return "bg-muted"
     }
   }
 

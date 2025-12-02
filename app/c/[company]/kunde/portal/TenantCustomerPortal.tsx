@@ -104,11 +104,11 @@ export function TenantCustomerPortal({ company, customer, bookings, invoices }: 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500 hover:bg-green-600">Abgeschlossen</Badge>
+        return <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600">Abgeschlossen</Badge>
       case "in_progress":
-        return <Badge className="bg-blue-500 hover:bg-blue-600">In Fahrt</Badge>
+        return <Badge variant="default" className="bg-primary hover:bg-primary/90">In Fahrt</Badge>
       case "assigned":
-        return <Badge className="bg-amber-500 hover:bg-amber-600">Zugewiesen</Badge>
+        return <Badge variant="default" className="bg-amber-500 hover:bg-amber-600">Zugewiesen</Badge>
       case "pending":
         return <Badge variant="secondary">Ausstehend</Badge>
       case "cancelled":
@@ -121,7 +121,7 @@ export function TenantCustomerPortal({ company, customer, bookings, invoices }: 
   const getInvoiceStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return <Badge className="bg-green-500 hover:bg-green-600">Bezahlt</Badge>
+        return <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600">Bezahlt</Badge>
       case "pending":
         return <Badge variant="secondary">Offen</Badge>
       case "overdue":

@@ -683,13 +683,17 @@ export function FinanzenPageClient({
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "invoices"
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Rechnungen</span>
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary/10 text-primary rounded-md">
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+                activeTab === "invoices"
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-primary/10 text-primary"
+              }`}>
                 {localInvoices.length}
               </span>
             </button>
@@ -700,13 +704,17 @@ export function FinanzenPageClient({
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "quotes"
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Send className="w-4 h-4" />
               <span className="hidden sm:inline">Angebote</span>
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary/10 text-primary rounded-md">
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+                activeTab === "quotes"
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-primary/10 text-primary"
+              }`}>
                 {localQuotes.length}
               </span>
             </button>
@@ -717,7 +725,7 @@ export function FinanzenPageClient({
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "cashbook"
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >

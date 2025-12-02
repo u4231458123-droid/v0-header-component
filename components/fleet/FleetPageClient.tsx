@@ -145,25 +145,33 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
               onClick={() => setActiveTab("drivers")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "drivers"
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Users className="w-4 h-4" />
               <span>Fahrer</span>
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary/10 text-primary rounded-md">{drivers.length}</span>
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+                activeTab === "drivers"
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-primary/10 text-primary"
+              }`}>{drivers.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("vehicles")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "vehicles"
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Car className="w-4 h-4" />
               <span>Fahrzeuge</span>
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary/10 text-primary rounded-md">
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+                activeTab === "vehicles"
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-primary/10 text-primary"
+              }`}>
                 {vehicles.length}
               </span>
             </button>

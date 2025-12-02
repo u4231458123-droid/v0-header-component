@@ -82,21 +82,21 @@ export function InvoicesPageClient({
   const getStatusBadge = (invoice: any) => {
     const isOverdue = invoice.status === "pending" && new Date(invoice.due_date) < new Date()
     if (isOverdue) {
-      return <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Ueberfaellig</Badge>
+      return <Badge variant="destructive">Ueberfaellig</Badge>
     }
-    const config: Record<string, { label: string; className: string }> = {
+    const config: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
       pending: {
         label: "Ausstehend",
-        className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+        variant: "secondary",
       },
       paid: {
         label: "Bezahlt",
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        variant: "default",
       },
-      cancelled: { label: "Storniert", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400" },
+      cancelled: { label: "Storniert", variant: "outline" },
     }
     const c = config[invoice.status] || config.pending
-    return <Badge className={c.className}>{c.label}</Badge>
+    return <Badge variant={c.variant}>{c.label}</Badge>
   }
 
   const handleMarkAsPaid = async (invoiceId: string) => {
