@@ -317,22 +317,22 @@ export default function DriverDocumentsPage() {
                 return (
                   <div
                     key={docType.key}
-                    className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200"
+                    className="flex items-center justify-between p-4 bg-card rounded-xl border border-border"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2.5 rounded-xl ${existingDoc ? "bg-emerald-100" : "bg-slate-200"}`}>
-                        <FileText className={`h-5 w-5 ${existingDoc ? "text-emerald-600" : "text-slate-400"}`} />
+                      <div className={`p-2.5 rounded-xl ${existingDoc ? "bg-emerald-100" : "bg-muted"}`}>
+                        <FileText className={`h-5 w-5 ${existingDoc ? "text-emerald-600" : "text-muted-foreground"}`} />
                       </div>
                       <div>
-                        <p className="font-medium text-slate-900 flex items-center gap-2">
+                        <p className="font-medium text-foreground flex items-center gap-2">
                           {docType.label}
-                          {docType.required && <span className="text-red-500 text-xs">*</span>}
+                          {docType.required && <span className="text-destructive text-xs">*</span>}
                         </p>
                         {existingDoc && (
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
                             {getStatusBadge(existingDoc)}
                             {existingDoc.valid_until && (
-                              <span className="text-xs text-slate-500 flex items-center gap-1">
+                              <span className="text-xs text-muted-foreground flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 Gültig bis: {format(new Date(existingDoc.valid_until), "dd.MM.yyyy", { locale: de })}
                               </span>
