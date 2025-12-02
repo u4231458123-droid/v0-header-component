@@ -47,7 +47,7 @@ export default async function DashboardPage() {
       .from("customers")
       .select("id, company_id, company:companies(company_slug)")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
 
     if (customer) {
       const companySlug = (customer.company as any)?.company_slug
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
     .from("profiles")
     .select("*, company:companies(*), role")
     .eq("id", user.id)
-    .single()
+    .maybeSingle()
 
   if (profile?.role === "driver") {
     redirect("/fahrer-portal")
@@ -74,7 +74,7 @@ export default async function DashboardPage() {
       .from("customers")
       .select("id, company_id, company:companies(company_slug)")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
 
     if (customer) {
       const companySlug = (customer.company as any)?.company_slug
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
       .from("drivers")
       .select("id, company_id, company:companies(company_slug)")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
 
     if (driver) {
       redirect("/fahrer-portal")
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
       .from("customers")
       .select("id, company_id, company:companies(company_slug)")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
 
     if (customer) {
       const companySlug = (customer.company as any)?.company_slug
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
       .from("customer_accounts")
       .select("id, registered_companies")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
 
     if (customerAccount) {
       redirect("/kunden-portal")
