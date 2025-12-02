@@ -160,44 +160,25 @@ export default async function DashboardPage() {
     const thirtyDaysAgo = new Date(today)
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
+    // OPTIMIERUNG: Konsolidierte Abfragen (RPC + Parallel)
+    // 1. Statistiken via RPC (ersetzt 8 einzelne Count/Sum Queries)
+    const { data: rpcStats, error: rpcError } = await supabase.rpc('get_comprehensive_dashboard_stats', {
+      target_company_id: companyId
+    });
+
+    if (rpcError) console.error('Dashboard Stats Error:', rpcError);
+    
+    // Fallback
+    const safeStats = rpcStats || {};
+
+    // 2. Listen-Daten und Chart-Daten parallel laden
     const [
-      bookingsTodayRes,
-      bookingsYesterdayRes,
-      activeBookingsRes,
-      driversAvailableRes,
-      driversTotalRes,
-      customersTotalRes,
       recentBookingsRes,
       upcomingBookingsRes,
-      pendingInvoicesRes,
-      vehiclesRes,
-      revenue30DaysRes,
       customersRes,
       driversRes,
+      revenue30DaysRes // Für Charts benötigt
     ] = await Promise.all([
-      supabase
-        .from("bookings")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .gte("pickup_time", todayStr),
-      supabase
-        .from("bookings")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .gte("pickup_time", yesterdayStr)
-        .lt("pickup_time", todayStr),
-      supabase
-        .from("bookings")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .in("status", ["confirmed", "assigned", "in_progress"]),
-      supabase
-        .from("drivers")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .eq("status", "available"),
-      supabase.from("drivers").select("*", { count: "exact", head: true }).eq("company_id", companyId),
-      supabase.from("customers").select("*", { count: "exact", head: true }).eq("company_id", companyId),
       supabase
         .from("bookings")
         .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
@@ -213,41 +194,32 @@ export default async function DashboardPage() {
         .order("pickup_time", { ascending: true })
         .limit(5),
       supabase
-        .from("invoices")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .eq("status", "pending"),
-      supabase
-        .from("vehicles")
-        .select(
-          `id, license_plate, make, model, status, current_lat, current_lng, location_updated_at, driver:drivers(first_name, last_name)`,
-        )
-        .eq("company_id", companyId),
-      supabase
-        .from("bookings")
-        .select("price, pickup_time, created_at")
-        .eq("company_id", companyId)
-        .eq("status", "completed")
-        .gte("created_at", thirtyDaysAgo.toISOString()),
-      supabase
         .from("customers")
         .select("id, first_name, last_name, salutation, email, phone")
         .eq("company_id", companyId)
         .limit(100),
       supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
-    ])
+      supabase
+        .from("bookings")
+        .select("price, pickup_time, created_at")
+        .eq("company_id", companyId)
+        .eq("status", "completed")
+        .gte("created_at", thirtyDaysAgo.toISOString())
+    ]);
 
-    stats.bookingsToday = bookingsTodayRes.count || 0
-    stats.bookingsYesterday = bookingsYesterdayRes.count || 0
-    stats.activeBookings = activeBookingsRes.count || 0
-    stats.driversAvailable = driversAvailableRes.count || 0
-    stats.driversTotal = driversTotalRes.count || 0
-    stats.customersTotal = customersTotalRes.count || 0
-    stats.pendingInvoices = pendingInvoicesRes.count || 0
-    recentBookings = recentBookingsRes.data || []
-    upcomingBookings = upcomingBookingsRes.data || []
-    customers = customersRes.data || []
-    drivers = driversRes.data || []
+    // Zuweisung der Werte aus RPC
+    stats.bookingsToday = safeStats.bookings_today || 0;
+    stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
+    stats.activeBookings = safeStats.active_bookings || 0;
+    stats.driversAvailable = safeStats.drivers_available || 0;
+    stats.driversTotal = safeStats.drivers_total || 0;
+    stats.customersTotal = safeStats.customers_total || 0;
+    stats.pendingInvoices = safeStats.pending_invoices || 0;
+    
+    recentBookings = recentBookingsRes.data || [];
+    upcomingBookings = upcomingBookingsRes.data || [];
+    customers = customersRes.data || [];
+    drivers = driversRes.data || [];
 
     if (revenue30DaysRes.data) {
       stats.revenue30Days = revenue30DaysRes.data.reduce((sum, b) => sum + (Number(b.price) || 0), 0)
