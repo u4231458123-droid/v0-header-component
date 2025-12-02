@@ -416,76 +416,6 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
         </div>
       </div>
 
-      <div className="grid gap-5 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <StatsCard
-          title="Buchungen"
-          value={formatNumber(data.overview?.totalBookings)}
-          subtitle={`${formatNumber(data.overview?.bookingsThisMonth)} diesen Monat`}
-          icon={<BarChart3 className="h-5 w-5 text-primary" />}
-          trend={{
-            value: safeNumber(data.overview?.bookingsGrowth),
-            isPositive: safeNumber(data.overview?.bookingsGrowth) >= 0,
-          }}
-          sparklineData={sparklineData.bookings}
-        />
-
-        <StatsCard
-          title="Umsatz"
-          value={formatCurrency(data.overview?.totalRevenue)}
-          subtitle={`${formatCurrency(data.overview?.revenueThisMonth)} diesen Monat`}
-          icon={<Euro className="h-5 w-5 text-primary" />}
-          trend={{
-            value: safeNumber(data.overview?.revenueGrowth),
-            isPositive: safeNumber(data.overview?.revenueGrowth) >= 0,
-          }}
-          sparklineData={sparklineData.revenue}
-        />
-
-        <StatsCard
-          title="Kunden"
-          value={formatNumber(data.customers?.total)}
-          subtitle={`${formatNumber(data.customers?.newThisMonth)} neu diesen Monat`}
-          icon={<Users className="h-5 w-5 text-primary" />}
-          trend={{
-            value: safeNumber(data.customers?.growth),
-            isPositive: safeNumber(data.customers?.growth) >= 0,
-          }}
-          sparklineData={sparklineData.customers}
-        />
-
-        <StatsCard
-          title="Fahrer"
-          value={
-            data.drivers?.limit > 0
-              ? `${safeNumber(data.drivers?.total)}/${data.drivers.limit}`
-              : formatNumber(data.drivers?.total)
-          }
-          subtitle={`${safeNumber(data.drivers?.available)} verfuegbar`}
-          icon={<UserCheck className="h-5 w-5 text-primary" />}
-          sparklineData={sparklineData.drivers}
-        />
-
-        <StatsCard
-          title="Fahrzeuge"
-          value={
-            data.vehicles?.limit > 0
-              ? `${safeNumber(data.vehicles?.total)}/${data.vehicles.limit}`
-              : formatNumber(data.vehicles?.total)
-          }
-          subtitle={`${safeNumber(data.vehicles?.available)} verfuegbar`}
-          icon={<Car className="h-5 w-5 text-primary" />}
-          sparklineData={sparklineData.vehicles}
-        />
-
-        <StatsCard
-          title="Partner"
-          value={formatNumber(data.partners?.activeConnections)}
-          subtitle={`${safeNumber(data.partners?.pendingRequests)} ausstehend`}
-          icon={<Building2 className="h-5 w-5 text-primary" />}
-          sparklineData={sparklineData.partners}
-        />
-      </div>
-
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto">
@@ -516,33 +446,47 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
         <TabsContent value="overview" className="space-y-5 mt-4">
           <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
             <StatsCard
+              title="Buchungen"
+              value={formatNumber(data.overview?.totalBookings)}
+              subtitle={`${formatNumber(data.overview?.bookingsThisMonth)} diesen Monat`}
+              icon={<BarChart3 className="h-5 w-5 text-primary" />}
+              trend={{
+                value: safeNumber(data.overview?.bookingsGrowth),
+                isPositive: safeNumber(data.overview?.bookingsGrowth) >= 0,
+              }}
+              sparklineData={sparklineData.bookings}
+            />
+
+            <StatsCard
+              title="Umsatz"
+              value={formatCurrency(data.overview?.totalRevenue)}
+              subtitle={`${formatCurrency(data.overview?.revenueThisMonth)} diesen Monat`}
+              icon={<Euro className="h-5 w-5 text-primary" />}
+              trend={{
+                value: safeNumber(data.overview?.revenueGrowth),
+                isPositive: safeNumber(data.overview?.revenueGrowth) >= 0,
+              }}
+              sparklineData={sparklineData.revenue}
+            />
+
+            <StatsCard
+              title="Kunden"
+              value={formatNumber(data.customers?.total)}
+              subtitle={`${formatNumber(data.customers?.newThisMonth)} neu diesen Monat`}
+              icon={<Users className="h-5 w-5 text-primary" />}
+              trend={{
+                value: safeNumber(data.customers?.growth),
+                isPositive: safeNumber(data.customers?.growth) >= 0,
+              }}
+              sparklineData={sparklineData.customers}
+            />
+
+            <StatsCard
               title="Abschlussrate"
               value={`${safeNumber(completionRate).toFixed(1)}%`}
               subtitle="Erfolgreich abgeschlossen"
               icon={<CheckCircle className="h-5 w-5 text-primary" />}
               variant={completionRate >= 80 ? "success" : "default"}
-            />
-
-            <StatsCard
-              title="Ø Buchungswert"
-              value={formatCurrency(data.overview?.avgBookingValue)}
-              subtitle="Pro Fahrt"
-              icon={<Target className="h-5 w-5 text-primary" />}
-            />
-
-            <StatsCard
-              title="Ø Passagiere"
-              value={safeNumber(data.bookings?.avgPassengers).toFixed(1)}
-              subtitle="Pro Fahrt"
-              icon={<Users className="h-5 w-5 text-primary" />}
-            />
-
-            <StatsCard
-              title="Stornierungsrate"
-              value={`${safeNumber(cancellationRate).toFixed(1)}%`}
-              subtitle="Abgebrochene Buchungen"
-              icon={<XCircle className="h-5 w-5 text-primary" />}
-              variant={cancellationRate <= 10 ? "success" : cancellationRate <= 20 ? "default" : "warning"}
             />
           </div>
 

@@ -261,8 +261,8 @@ export default function DriverDocumentsPage() {
         <div className="grid grid-cols-3 gap-4 mb-6">
           <Card className="bg-white border-slate-200">
             <CardContent className="p-4 text-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
-                <FileText className="h-5 w-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <FileText className="h-5 w-5 text-primary" />
               </div>
               <p className="text-2xl font-bold text-slate-900">{uploadedCount}</p>
               <p className="text-xs text-slate-500">Hochgeladen</p>
@@ -289,13 +289,13 @@ export default function DriverDocumentsPage() {
         </div>
 
         {/* Info Banner */}
-        <Card className="bg-blue-50 border-blue-200 mb-6">
+        <Card className="bg-primary/5 border-primary/20 mb-6">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+              <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="text-blue-900 font-medium">Wichtiger Hinweis</p>
-                <p className="text-blue-700 mt-1">
+                <p className="text-primary font-medium">Wichtiger Hinweis</p>
+                <p className="text-primary/80 mt-1">
                   Alle Dokumente werden von Ihrem Arbeitgeber geprüft. Stellen Sie sicher, dass alle Dokumente gut
                   lesbar und aktuell sind.
                 </p>

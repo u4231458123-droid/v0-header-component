@@ -382,7 +382,7 @@ export default function FahrerPortalPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    window.location.href = "/login"
+    window.location.href = "/auth/login"
   }
 
   const getStatusBadge = (status: string) => {

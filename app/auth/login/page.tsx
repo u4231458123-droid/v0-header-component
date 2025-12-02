@@ -73,27 +73,41 @@ export default function LoginPage() {
       if (data.user) {
         // ROLLEN-BASIERTER REDIRECT
         const userId = data.user.id
+        const userEmail = data.user.email
 
-        // 1. Prüfe ob Master Admin oder Unternehmer
+        // 0. Sonderfall: Bekannte Test-Accounts (explizite Zuweisung)
+        if (userEmail === "courbois83@gmail.com") {
+           // Prüfe ob Kunde und leite direkt weiter
+           const { data: customer } = await supabase
+            .from("customers")
+            .select("company_id")
+            .eq("user_id", userId)
+            .maybeSingle()
+            
+           if (customer) {
+             const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
+             if (company) {
+               window.location.href = `/c/${company.company_slug}/kunde/portal`
+               return
+             }
+             window.location.href = "/kunden-portal"
+             return
+           }
+        }
+
+        // 1. Prüfe ob Master Admin (Höchste Priorität)
         const { data: profile } = await supabase
           .from("profiles")
           .select("role, company_id")
           .eq("id", userId)
           .maybeSingle()
 
-        if (profile) {
-          if (profile.role === "master_admin") {
-            window.location.href = "/admin"
-            return
-          }
-          // Unternehmer -> Dashboard
-          if (profile.company_id) {
-            window.location.href = "/dashboard"
-            return
-          }
+        if (profile && profile.role === "master_admin") {
+          window.location.href = "/admin"
+          return
         }
 
-        // 2. Prüfe ob Fahrer
+        // 2. Prüfe ob Fahrer (Oft sind Fahrer auch normale User, aber Fahrer-Rolle ist spezifisch)
         const { data: driver } = await supabase
           .from("drivers")
           .select("company_id")
@@ -101,23 +115,16 @@ export default function LoginPage() {
           .maybeSingle()
 
         if (driver) {
-          // Hole Company Slug für Tenant-Redirect
-          const { data: company } = await supabase
-            .from("companies")
-            .select("company_slug")
-            .eq("id", driver.company_id)
-            .maybeSingle()
-            
+          const { data: company } = await supabase.from("companies").select("company_slug").eq("id", driver.company_id).maybeSingle()
           if (company) {
             window.location.href = `/c/${company.company_slug}/fahrer/portal`
           } else {
-            // Fallback
             window.location.href = "/fahrer-portal"
           }
           return
         }
 
-        // 3. Prüfe ob Kunde
+        // 3. Prüfe ob Kunde (Vor Unternehmer, falls User beides ist, aber hier als Kunde agieren soll)
         const { data: customer } = await supabase
           .from("customers")
           .select("company_id")
@@ -125,18 +132,18 @@ export default function LoginPage() {
           .maybeSingle()
 
         if (customer) {
-           // Hole Company Slug für Tenant-Redirect
-          const { data: company } = await supabase
-            .from("companies")
-            .select("company_slug")
-            .eq("id", customer.company_id)
-            .maybeSingle()
-
+          const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
           if (company) {
             window.location.href = `/c/${company.company_slug}/kunde/portal`
           } else {
             window.location.href = "/kunden-portal"
           }
+          return
+        }
+
+        // 4. Prüfe ob Unternehmer (Erst jetzt, da dies der Standard-Fallback für Profile ist)
+        if (profile && profile.company_id) {
+          window.location.href = "/dashboard"
           return
         }
 
