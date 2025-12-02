@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
+// HTML-Escape-Funktion für XSS-Schutz
+function escapeHtml(text: string | null | undefined): string {
+  if (!text) return ""
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -87,35 +98,42 @@ function generatePartnerEmail(booking: any, selectedFields: string[]): string {
 
   let content = `<h2>Auftrag weitergeleitet</h2><p>Folgende Daten wurden freigegeben:</p><ul>`
 
-  if (showField("id")) content += `<li><strong>ID:</strong> ${booking.id}</li>`
-  if (showField("date")) content += `<li><strong>Datum:</strong> ${dt.date}</li>`
-  if (showField("time")) content += `<li><strong>Uhrzeit:</strong> ${dt.time} Uhr</li>`
+  if (showField("id")) content += `<li><strong>ID:</strong> ${escapeHtml(booking.id)}</li>`
+  if (showField("date")) content += `<li><strong>Datum:</strong> ${escapeHtml(dt.date)}</li>`
+  if (showField("time")) content += `<li><strong>Uhrzeit:</strong> ${escapeHtml(dt.time)} Uhr</li>`
   if (showField("customer") && booking.customer) {
-    content += `<li><strong>Kunde:</strong> ${[booking.customer.salutation, booking.customer.first_name, booking.customer.last_name].filter(Boolean).join(" ")}</li>`
+    const customerName = [booking.customer.salutation, booking.customer.first_name, booking.customer.last_name]
+      .filter(Boolean)
+      .join(" ")
+    content += `<li><strong>Kunde:</strong> ${escapeHtml(customerName)}</li>`
   }
-  if (showField("pickup")) content += `<li><strong>Abhol-Adresse:</strong> ${booking.pickup_address}</li>`
-  if (showField("dropoff")) content += `<li><strong>Ziel-Adresse:</strong> ${booking.dropoff_address}</li>`
-  if (showField("passengers")) content += `<li><strong>Passagier Anzahl:</strong> ${booking.passengers || 1}</li>`
+  if (showField("pickup")) content += `<li><strong>Abhol-Adresse:</strong> ${escapeHtml(booking.pickup_address)}</li>`
+  if (showField("dropoff"))
+    content += `<li><strong>Ziel-Adresse:</strong> ${escapeHtml(booking.dropoff_address)}</li>`
+  if (showField("passengers"))
+    content += `<li><strong>Passagier Anzahl:</strong> ${escapeHtml(String(booking.passengers || 1))}</li>`
   if (showField("passenger_names") && booking.passenger_name) {
-    content += `<li><strong>Passagier Name/n:</strong> ${booking.passenger_name}</li>`
+    content += `<li><strong>Passagier Name/n:</strong> ${escapeHtml(booking.passenger_name)}</li>`
   }
   if (showField("vehicle_category") && booking.vehicle_category) {
-    content += `<li><strong>Fahrzeug Kategorie:</strong> ${booking.vehicle_category}</li>`
+    content += `<li><strong>Fahrzeug Kategorie:</strong> ${escapeHtml(booking.vehicle_category)}</li>`
   }
   if (showField("flight_train_origin") && booking.flight_train_origin) {
-    content += `<li><strong>Flug / Zug aus:</strong> ${booking.flight_train_origin}</li>`
+    content += `<li><strong>Flug / Zug aus:</strong> ${escapeHtml(booking.flight_train_origin)}</li>`
   }
   if (showField("flight_train_number") && booking.flight_train_number) {
-    content += `<li><strong>Flug / Zug Nummer:</strong> ${booking.flight_train_number}</li>`
+    content += `<li><strong>Flug / Zug Nummer:</strong> ${escapeHtml(booking.flight_train_number)}</li>`
   }
   if (showField("driver") && booking.driver) {
-    content += `<li><strong>Fahrer:</strong> ${booking.driver.first_name} ${booking.driver.last_name}</li>`
+    const driverName = `${booking.driver.first_name} ${booking.driver.last_name}`
+    content += `<li><strong>Fahrer:</strong> ${escapeHtml(driverName)}</li>`
   }
   if (showField("vehicle") && booking.vehicle) {
-    content += `<li><strong>Fahrzeug Kennzeichen:</strong> ${booking.vehicle.license_plate}</li>`
+    content += `<li><strong>Fahrzeug Kennzeichen:</strong> ${escapeHtml(booking.vehicle.license_plate)}</li>`
   }
   if (showField("price") && booking.price) {
-    content += `<li><strong>Fahrpreis:</strong> ${booking.price.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</li>`
+    const priceFormatted = booking.price.toLocaleString("de-DE", { style: "currency", currency: "EUR" })
+    content += `<li><strong>Fahrpreis:</strong> ${escapeHtml(priceFormatted)}</li>`
   }
 
   content += `</ul>`

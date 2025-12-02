@@ -176,7 +176,7 @@ export default function FahrerPortalPage() {
         .in("status", ["active", "break", "scheduled"])
         .order("shift_start", { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle()
 
       if (shiftData) {
         setCurrentShift(shiftData)
