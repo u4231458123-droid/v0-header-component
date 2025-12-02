@@ -329,7 +329,10 @@ class DesignValidator {
 }
 
 // Main
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isMainModule = import.meta.url === `file://${process.argv[1].replace(/\\/g, "/")}` ||
+                     import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"))
+
+if (isMainModule || process.argv[1]?.includes("auto-design-validator")) {
   const validator = new DesignValidator()
   const results = validator.validate()
   const report = validator.generateReport(results)
