@@ -1,0 +1,908 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { format, differenceInMinutes } from "date-fns"
+import { de } from "date-fns/locale"
+import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
+import { safeNumber } from "@/lib/utils/safe-number"
+import Link from "next/link"
+import {
+  Play,
+  Square,
+  Clock,
+  MapPin,
+  Phone,
+  MessageSquare,
+  Car,
+  User,
+  Calendar,
+  Euro,
+  Settings,
+  FileText,
+  Coffee,
+  Navigation,
+  CheckCircle2,
+  XCircle,
+  LogOut,
+  Send,
+} from "lucide-react"
+
+interface DriverShift {
+  id: string
+  shift_start: string
+  shift_end: string | null
+  status: "scheduled" | "active" | "break" | "completed" | "cancelled"
+  breaks: Array<{ start: string; end?: string; duration_minutes?: number }>
+  total_bookings: number
+  total_revenue: number
+}
+
+interface Booking {
+  id: string
+  pickup_address: string
+  dropoff_address: string
+  pickup_time: string
+  status: string
+  passengers: number
+  price: number
+  customer: {
+    first_name: string
+    last_name: string
+    phone: string
+  }
+  notes?: string
+}
+
+interface Message {
+  id: string
+  content: string
+  sender_type: string
+  created_at: string
+  read_at: string | null
+}
+
+interface Driver {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  phone: string
+  avatar_url?: string
+  company_id: string
+  company?: {
+    id: string
+    name: string
+    logo_url?: string
+  }
+}
+
+export default function FahrerPortalPage() {
+  const [supabase] = useState(() => createClient())
+  const [loading, setLoading] = useState(true)
+  const [driver, setDriver] = useState<Driver | null>(null)
+  const [currentShift, setCurrentShift] = useState<DriverShift | null>(null)
+  const [pendingBookings, setPendingBookings] = useState<Booking[]>([])
+  const [activeBooking, setActiveBooking] = useState<Booking | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [newMessage, setNewMessage] = useState("")
+  const [shiftTime, setShiftTime] = useState("00:00:00")
+  const [breakTime, setBreakTime] = useState("00:00:00")
+  const [activeTab, setActiveTab] = useState("fahrten")
+
+  const primaryColor = "#343f60"
+
+  useEffect(() => {
+    loadDriverData()
+  }, [])
+
+  useEffect(() => {
+    if (!currentShift || currentShift.status === "completed") return
+
+    const interval = setInterval(() => {
+      const start = new Date(currentShift.shift_start)
+      const now = new Date()
+      const totalSeconds = Math.floor((now.getTime() - start.getTime()) / 1000)
+
+      // Berechne Pausenzeit
+      let totalBreakSeconds = 0
+      currentShift.breaks.forEach((b) => {
+        if (b.end) {
+          totalBreakSeconds += (b.duration_minutes || 0) * 60
+        } else {
+          // Laufende Pause
+          const breakStart = new Date(b.start)
+          totalBreakSeconds += Math.floor((now.getTime() - breakStart.getTime()) / 1000)
+        }
+      })
+
+      const workSeconds = totalSeconds - totalBreakSeconds
+      setShiftTime(formatTime(workSeconds > 0 ? workSeconds : 0))
+      setBreakTime(formatTime(totalBreakSeconds))
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [currentShift])
+
+  const formatTime = (totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+  }
+
+  const loadDriverData = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = "/login"
+        return
+      }
+
+      // Lade Fahrer-Profil
+      const { data: driverData } = await supabase
+        .from("drivers")
+        .select(
+          `
+          *,
+          company:companies(id, name, logo_url)
+        `,
+        )
+        .eq("user_id", user.id)
+        .single()
+
+      if (!driverData) {
+        setLoading(false)
+        return
+      }
+
+      setDriver(driverData)
+
+      // Lade aktive Schicht
+      const { data: shiftData } = await supabase
+        .from("driver_shifts")
+        .select("*")
+        .eq("driver_id", driverData.id)
+        .in("status", ["active", "break", "scheduled"])
+        .order("shift_start", { ascending: false })
+        .limit(1)
+        .single()
+
+      if (shiftData) {
+        setCurrentShift(shiftData)
+      }
+
+      // Lade anstehende Buchungen
+      const { data: bookingsData } = await supabase
+        .from("bookings")
+        .select(
+          `
+          *,
+          customer:customers(first_name, last_name, phone)
+        `,
+        )
+        .eq("driver_id", driverData.id)
+        .in("status", ["assigned", "pending", "in_progress"])
+        .order("pickup_time", { ascending: true })
+
+      if (bookingsData) {
+        setPendingBookings(bookingsData)
+        const active = bookingsData.find((b) => b.status === "in_progress")
+        if (active) setActiveBooking(active)
+      }
+
+      // Lade Nachrichten
+      const { data: messagesData } = await supabase
+        .from("communication_log")
+        .select("*")
+        .or(`sender_id.eq.${driverData.id},recipient_id.eq.${driverData.id}`)
+        .order("created_at", { ascending: false })
+        .limit(50)
+
+      if (messagesData) {
+        setMessages(messagesData)
+      }
+    } catch (error) {
+      console.error("Error loading driver data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const startShift = async () => {
+    if (!driver) return
+
+    const { data, error } = await supabase
+      .from("driver_shifts")
+      .insert({
+        driver_id: driver.id,
+        company_id: driver.company_id,
+        shift_start: new Date().toISOString(),
+        status: "active",
+        breaks: [],
+        total_bookings: 0,
+        total_revenue: 0,
+      })
+      .select()
+      .single()
+
+    if (data) {
+      setCurrentShift(data)
+    }
+  }
+
+  const startBreak = async () => {
+    if (!currentShift) return
+
+    const newBreaks = [...currentShift.breaks, { start: new Date().toISOString() }]
+
+    const { data, error } = await supabase
+      .from("driver_shifts")
+      .update({
+        status: "break",
+        breaks: newBreaks,
+      })
+      .eq("id", currentShift.id)
+      .select()
+      .single()
+
+    if (data) {
+      setCurrentShift(data)
+    }
+  }
+
+  const endBreak = async () => {
+    if (!currentShift) return
+
+    const newBreaks = currentShift.breaks.map((b, i) => {
+      if (i === currentShift.breaks.length - 1 && !b.end) {
+        const start = new Date(b.start)
+        const end = new Date()
+        return {
+          ...b,
+          end: end.toISOString(),
+          duration_minutes: differenceInMinutes(end, start),
+        }
+      }
+      return b
+    })
+
+    const { data, error } = await supabase
+      .from("driver_shifts")
+      .update({
+        status: "active",
+        breaks: newBreaks,
+      })
+      .eq("id", currentShift.id)
+      .select()
+      .single()
+
+    if (data) {
+      setCurrentShift(data)
+    }
+  }
+
+  const endShift = async () => {
+    if (!currentShift) return
+
+    let finalBreaks = currentShift.breaks
+    if (currentShift.status === "break") {
+      finalBreaks = currentShift.breaks.map((b, i) => {
+        if (i === currentShift.breaks.length - 1 && !b.end) {
+          const start = new Date(b.start)
+          const end = new Date()
+          return {
+            ...b,
+            end: end.toISOString(),
+            duration_minutes: differenceInMinutes(end, start),
+          }
+        }
+        return b
+      })
+    }
+
+    const { data, error } = await supabase
+      .from("driver_shifts")
+      .update({
+        status: "completed",
+        shift_end: new Date().toISOString(),
+        breaks: finalBreaks,
+        total_bookings: pendingBookings.filter((b) => b.status === "completed").length,
+      })
+      .eq("id", currentShift.id)
+      .select()
+      .single()
+
+    if (data) {
+      setCurrentShift(null)
+    }
+  }
+
+  const acceptBooking = async (bookingId: string) => {
+    const { error } = await supabase.from("bookings").update({ status: "in_progress" }).eq("id", bookingId)
+
+    if (!error) {
+      loadDriverData()
+    }
+  }
+
+  const declineBooking = async (bookingId: string) => {
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: "cancelled", driver_id: null })
+      .eq("id", bookingId)
+
+    if (!error) {
+      loadDriverData()
+    }
+  }
+
+  const completeBooking = async (bookingId: string) => {
+    const { error } = await supabase
+      .from("bookings")
+      .update({
+        status: "completed",
+        completed_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+
+    if (!error) {
+      setActiveBooking(null)
+      loadDriverData()
+    }
+  }
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !driver) return
+
+    const { error } = await supabase.from("communication_log").insert({
+      company_id: driver.company_id,
+      sender_type: "driver",
+      sender_id: driver.id,
+      recipient_type: "dispatcher",
+      message_type: "text",
+      content: newMessage,
+    })
+
+    if (!error) {
+      setNewMessage("")
+      loadDriverData()
+    }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    window.location.href = "/login"
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <Badge className="bg-green-500 hover:bg-green-600">Abgeschlossen</Badge>
+      case "in_progress":
+        return <Badge className="bg-blue-500 hover:bg-blue-600">In Fahrt</Badge>
+      case "assigned":
+        return <Badge className="bg-amber-500 hover:bg-amber-600">Zugewiesen</Badge>
+      case "pending":
+        return <Badge variant="secondary">Ausstehend</Badge>
+      case "cancelled":
+        return <Badge variant="destructive">Storniert</Badge>
+      default:
+        return <Badge variant="outline">{status}</Badge>
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-600"></div>
+      </div>
+    )
+  }
+
+  if (!driver) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <CardTitle>Kein Fahrer-Profil gefunden</CardTitle>
+            <CardDescription>
+              Sie sind nicht als Fahrer registriert. Bitte wenden Sie sich an Ihren Administrator.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    )
+  }
+
+  // Statistiken berechnen
+  const completedToday = pendingBookings.filter((b) => b.status === "completed").length
+  const totalRevenue = pendingBookings
+    .filter((b) => b.status === "completed")
+    .reduce((sum, b) => sum + (b.price || 0), 0)
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header - wie Kundenportal */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {driver.company?.logo_url ? (
+                <img
+                  src={driver.company.logo_url || "/placeholder.svg"}
+                  alt={driver.company.name}
+                  className="h-10 w-auto object-contain"
+                />
+              ) : (
+                <div
+                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  {driver.company?.name?.charAt(0) || "F"}
+                </div>
+              )}
+              <div>
+                <p className="font-semibold text-slate-900">
+                  {driver.first_name} {driver.last_name}
+                </p>
+                <p className="text-xs text-slate-500">Fahrer-Portal • {driver.company?.name}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Badge
+                variant={
+                  currentShift?.status === "active"
+                    ? "default"
+                    : currentShift?.status === "break"
+                      ? "secondary"
+                      : "outline"
+                }
+                className={
+                  currentShift?.status === "active"
+                    ? "bg-green-500"
+                    : currentShift?.status === "break"
+                      ? "bg-amber-500"
+                      : ""
+                }
+              >
+                {currentShift?.status === "active"
+                  ? "Im Dienst"
+                  : currentShift?.status === "break"
+                    ? "Pause"
+                    : "Offline"}
+              </Badge>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Einstellungen</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-4">
+                    <Link href="/fahrer-portal/dokumente">
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Meine Dokumente
+                      </Button>
+                    </Link>
+                    <Link href="/fahrer-portal/profil">
+                      <Button variant="outline" className="w-full justify-start bg-transparent">
+                        <User className="mr-2 h-4 w-4" />
+                        Profil bearbeiten
+                      </Button>
+                    </Link>
+                    <Separator />
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-red-600 bg-transparent"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Abmelden
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 py-6">
+        {/* Willkommens-Bereich */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Hallo, {driver.first_name}!</h1>
+          <p className="text-slate-500">Willkommen in Ihrem Fahrer-Portal</p>
+        </div>
+
+        {/* Schicht-Steuerung Card */}
+        <Card className="mb-6">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" style={{ color: primaryColor }} />
+              Schicht-Steuerung
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!currentShift || currentShift.status === "completed" ? (
+              <Button
+                onClick={startShift}
+                className="w-full h-14 text-lg text-white"
+                style={{ backgroundColor: primaryColor }}
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Schicht starten
+              </Button>
+            ) : (
+              <div className="space-y-4">
+                {/* Timer Display */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-100 rounded-xl p-4 text-center">
+                    <p className="text-xs text-slate-500 uppercase tracking-wide">Schichtzeit</p>
+                    <p className="text-3xl font-mono font-bold text-slate-900">{shiftTime}</p>
+                  </div>
+                  <div className="bg-slate-100 rounded-xl p-4 text-center">
+                    <p className="text-xs text-slate-500 uppercase tracking-wide">Pausenzeit</p>
+                    <p className="text-3xl font-mono font-bold text-slate-500">{breakTime}</p>
+                  </div>
+                </div>
+
+                {/* Schicht-Buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  {currentShift.status === "active" ? (
+                    <Button onClick={startBreak} variant="secondary" className="h-12">
+                      <Coffee className="mr-2 h-4 w-4" />
+                      Pause starten
+                    </Button>
+                  ) : (
+                    <Button onClick={endBreak} variant="secondary" className="h-12">
+                      <Play className="mr-2 h-4 w-4" />
+                      Pause beenden
+                    </Button>
+                  )}
+                  <Button onClick={endShift} variant="destructive" className="h-12">
+                    <Square className="mr-2 h-4 w-4" />
+                    Schicht beenden
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Statistik-Karten - wie Kundenportal */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-white"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <Car className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{pendingBookings.length}</p>
+                  <p className="text-sm text-slate-500">Anstehende Fahrten</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-white"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <CheckCircle2 className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{currentShift?.total_bookings || 0}</p>
+                  <p className="text-sm text-slate-500">Heute abgeschlossen</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-white"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <Euro className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{safeNumber(currentShift?.total_revenue).toFixed(2)} EUR</p>
+                  <p className="text-sm text-slate-500">Heutiger Umsatz</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Aktive Fahrt */}
+        {activeBooking && (
+          <Card className="mb-6 border-2 border-blue-500">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Navigation className="h-5 w-5 text-blue-500 animate-pulse" />
+                  Aktive Fahrt
+                </CardTitle>
+                <Badge className="bg-blue-500">In Fahrt</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-500 mt-1.5"></div>
+                  <div>
+                    <p className="text-xs text-slate-500">Abholung</p>
+                    <p className="font-medium">{activeBooking.pickup_address}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-3 h-3 rounded-full bg-red-500 mt-1.5"></div>
+                  <div>
+                    <p className="text-xs text-slate-500">Ziel</p>
+                    <p className="font-medium">{activeBooking.dropoff_address}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-slate-400" />
+                    <span className="text-sm">
+                      {activeBooking.customer?.first_name} {activeBooking.customer?.last_name}
+                    </span>
+                  </div>
+                  {activeBooking.customer?.phone && (
+                    <a href={`tel:${activeBooking.customer.phone}`}>
+                      <Button variant="outline" size="sm">
+                        <Phone className="h-4 w-4 mr-1" />
+                        Anrufen
+                      </Button>
+                    </a>
+                  )}
+                </div>
+                <Button onClick={() => completeBooking(activeBooking.id)} className="bg-green-500 hover:bg-green-600">
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Fahrt abschliessen
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Tabs - wie Kundenportal */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="fahrten">Anstehende Fahrten</TabsTrigger>
+            <TabsTrigger value="zentrale">Zentrale</TabsTrigger>
+            <TabsTrigger value="verlauf">Fahrtenverlauf</TabsTrigger>
+          </TabsList>
+
+          {/* Anstehende Fahrten Tab */}
+          <TabsContent value="fahrten">
+            <Card>
+              <CardHeader>
+                <CardTitle>Anstehende Fahrten</CardTitle>
+                <CardDescription>Ihre zugewiesenen Auftraege</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {pendingBookings.filter((b) => b.status !== "in_progress").length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <Car className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                    <p>Keine anstehenden Fahrten</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingBookings
+                      .filter((b) => b.status !== "in_progress")
+                      .map((booking) => (
+                        <div key={booking.id} className="border rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-slate-400" />
+                              <span className="font-medium">
+                                {format(new Date(booking.pickup_time), "dd. MMMM yyyy", { locale: de })}
+                              </span>
+                              <Clock className="h-4 w-4 text-slate-400 ml-2" />
+                              <span>{format(new Date(booking.pickup_time), "HH:mm", { locale: de })} Uhr</span>
+                            </div>
+                            {getStatusBadge(booking.status)}
+                          </div>
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-start gap-2">
+                              <MapPin className="h-4 w-4 text-green-500 mt-0.5" />
+                              <span className="text-sm">{booking.pickup_address}</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <MapPin className="h-4 w-4 text-red-500 mt-0.5" />
+                              <span className="text-sm">{booking.dropoff_address}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-3 border-t">
+                            <div className="flex items-center gap-4 text-sm text-slate-500">
+                              <div className="flex items-center gap-1">
+                                <User className="h-4 w-4" />
+                                <span>
+                                  {booking.customer?.first_name} {booking.customer?.last_name}
+                                </span>
+                              </div>
+                              {booking.passengers && <span>{booking.passengers} Passagier(e)</span>}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                                onClick={() => declineBooking(booking.id)}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Ablehnen
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="text-white"
+                                style={{ backgroundColor: primaryColor }}
+                                onClick={() => acceptBooking(booking.id)}
+                              >
+                                <CheckCircle2 className="h-4 w-4 mr-1" />
+                                Annehmen
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Zentrale Tab */}
+          <TabsContent value="zentrale">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Zentrale
+                </CardTitle>
+                <CardDescription>Kommunikation mit der Disposition</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[300px] mb-4 border rounded-lg p-4">
+                  {messages.length === 0 ? (
+                    <div className="text-center py-8 text-slate-500">
+                      <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                      <p>Keine Nachrichten</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {messages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.sender_type === "driver" ? "justify-end" : "justify-start"}`}
+                        >
+                          <div
+                            className={`max-w-[80%] rounded-lg p-3 ${
+                              message.sender_type === "driver"
+                                ? "bg-slate-900 text-white"
+                                : "bg-slate-100 text-slate-900"
+                            }`}
+                          >
+                            <p className="text-sm">{message.content}</p>
+                            <p className="text-xs opacity-70 mt-1">
+                              {format(new Date(message.created_at), "HH:mm", { locale: de })}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+                <div className="flex gap-2">
+                  <Textarea
+                    placeholder="Nachricht an die Zentrale..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    className="min-h-[44px] resize-none"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault()
+                        sendMessage()
+                      }
+                    }}
+                  />
+                  <Button onClick={sendMessage} style={{ backgroundColor: primaryColor }} className="text-white">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Verlauf Tab */}
+          <TabsContent value="verlauf">
+            <Card>
+              <CardHeader>
+                <CardTitle>Fahrtenverlauf</CardTitle>
+                <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-slate-500">
+                  <Car className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                  <p>Keine abgeschlossenen Fahrten</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Hilfe-Bereich - wie Kundenportal */}
+        <Card className="mt-6">
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h3 className="font-semibold">Hilfe benoetigt?</h3>
+                <p className="text-sm text-slate-500">Kontaktieren Sie die Zentrale bei Fragen</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab("zentrale")}>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Nachricht senden
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+
+      {/* Footer - wie Kundenportal */}
+      <footer className="border-t border-slate-200 mt-8 py-6">
+        <div className="max-w-5xl mx-auto px-4 text-center text-sm text-slate-500">
+          <p>
+            &copy; {new Date().getFullYear()} {driver.company?.name}. Alle Rechte vorbehalten.
+          </p>
+          <div className="flex items-center justify-center gap-4 mt-2">
+            <Link href="/impressum" className="hover:underline">
+              Impressum
+            </Link>
+            <Link href="/datenschutz" className="hover:underline">
+              Datenschutz
+            </Link>
+          </div>
+        </div>
+      </footer>
+
+      {/* AI Help Bot */}
+      <DriverHelpBot />
+    </div>
+  )
+}

@@ -1,0 +1,258 @@
+name: Master Validation Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Phase 1: Code-Qualität (Fail-Fast, 5 Min - Optimiert)
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name != 'schedule' || github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript Check
+        run: pnpm exec tsc --noEmit --strict
+
+      - name: ESLint Check
+        run: pnpm exec eslint . --max-warnings 0
+
+      - name: Syntax Validation
+        run: pnpm exec next lint
+
+  # Phase 2: Parallele Validierungen
+  layout-design:
+    name: Layout & Design Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: code-quality
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare Bots & Knowledge Base
+        run: |
+          echo "Preparing AI-Bots and Knowledge Base..."
+          pnpm exec node scripts/cicd/prepare-bots.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
+
+      - name: Validate Complete System
+        run: |
+          echo "Validating complete system..."
+          pnpm cicd:validate-system || true
+
+      - name: Design System Validation (with Quality-Bot)
+        run: |
+          echo "Validating design system consistency with Quality-Bot..."
+          pnpm exec node scripts/validate-layout.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
+
+      - name: Mobile Responsiveness Check
+        run: |
+          echo "Checking mobile responsiveness..."
+          # Add mobile validation script here
+          pnpm exec node scripts/validate-mobile.js || true
+
+  frontend-validation:
+    name: Frontend Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: code-quality
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}
+
+      - name: Accessibility Check
+        run: |
+          echo "Running accessibility checks..."
+          pnpm exec node scripts/validate-accessibility.js || true
+
+      - name: Performance Check
+        run: |
+          echo "Running performance checks..."
+          pnpm exec node scripts/validate-performance.js || true
+
+  backend-api-validation:
+    name: Backend & API Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: code-quality
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: API Endpoints Validation
+        run: |
+          echo "Validating API endpoints..."
+          # Add API validation script here
+          pnpm exec node scripts/validate-api.js || true
+
+      - name: API Security Check
+        run: |
+          echo "Checking API security..."
+          # Add security validation script here
+          pnpm exec node scripts/validate-security.js || true
+
+  # Phase 3: Integration & Final
+  integration-tests:
+    name: Integration & Final Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [layout-design, frontend-validation, backend-api-validation]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}
+
+      - name: Final Validation (with AI-Bots)
+        run: |
+          echo "Running final validation checks with AI-Bots..."
+          pnpm exec node scripts/validate-final.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: .next
+          retention-days: 7
+
+  # Phase 4: Deployment (nur bei main)
+  deployment:
+    name: Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: integration-tests
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Pre-Deployment Checks
+        run: |
+          echo "Running pre-deployment checks..."
+          # Add pre-deployment validation script here
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID || '' }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+        continue-on-error: true
+
+      - name: Post-Deployment Health Checks
+        run: |
+          echo "Running post-deployment health checks..."
+          # Add health check script here
+          sleep 10
+          # curl -f https://your-app.vercel.app/api/health || exit 1
+

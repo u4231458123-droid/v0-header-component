@@ -1,0 +1,619 @@
+Vollumfänglicher Systemprüfungs- und Optimierungsprompt
+Hauptanweisung
+Vor jeder Aufgabe: Alle Vorgaben vollständig einlesen, dann systematisch ausführen.
+Systematisches Vorgehen
+1. Vollständige Erfassung (Inventory Phase)
+1.1 Architektur-Mapping
+
+Frontend-Komponenten: Pages, Components, Hooks, Context, State-Management
+Backend-Komponenten: APIs, Services, Controller, Models, Middleware
+Datenbank: Schema, Migrationen, Indizes, Constraints, Trigger
+Infrastruktur: Server, CDN, Caching, Load Balancer, Message Queues
+Externe Abhängigkeiten: APIs, Libraries, Frameworks, Services
+Deployment: CI/CD-Pipeline, Container, Orchestrierung, Environment-Configs
+Dokumentation: README, API-Docs, Architektur-Diagramme, Runbooks
+
+1.2 Datenfluss-Analyse
+
+Request-Flow: Client → Frontend → Backend → Datenbank → Response
+State-Propagierung: Wo werden Daten gespeichert, transformiert, weitergegeben?
+Event-Handling: Asynchrone Prozesse, WebSockets, Message Queues
+Authentifizierung/Autorisierung: Token-Flow, Session-Management, Permissions
+
+2. Granulare Prüfung (Multi-Layer Testing)
+2.1 Frontend-Tests
+Funktionalität
+
+ Alle UI-Komponenten rendern korrekt
+ User-Interaktionen lösen erwartete Aktionen aus (Click, Input, Scroll)
+ Formulare validieren Input (Client-seitig)
+ Error-States werden angezeigt (Fehlermeldungen, Fallbacks)
+ Loading-States funktionieren (Spinner, Skeleton-Screens)
+ Navigation funktioniert (Routing, Browser Back/Forward)
+
+Link-Tests
+
+ Alle internen Links führen zu existierenden Seiten (keine 404)
+ Externe Links sind erreichbar und aktuell
+ Deep-Links funktionieren (mit Parametern, Fragments)
+ Download-Links liefern korrekte Dateien
+ Email/Tel-Links haben korrektes Format
+ Redirects funktionieren wie vorgesehen
+
+Cross-Browser-Kompatibilität
+
+ Chrome/Edge (Chromium)
+ Firefox
+ Safari (macOS, iOS)
+ Mobile Browser (Android, iOS)
+ Browser-spezifische Bugs identifiziert
+
+Responsive Design
+
+ Mobile (320px - 767px)
+ Tablet (768px - 1023px)
+ Desktop (1024px+)
+ Touch-Gesten funktionieren auf mobilen Geräten
+ Orientierungswechsel (Portrait/Landscape)
+
+Performance
+
+ Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
+ Bundle-Size optimiert (Code-Splitting, Lazy Loading)
+ Bilder optimiert (Format, Größe, Lazy Loading)
+ Font-Loading optimiert (FOUT vermeiden)
+ JavaScript-Execution-Time akzeptabel
+
+Accessibility (A11y)
+
+ WCAG 2.1 Level AA konform
+ Keyboard-Navigation vollständig
+ Screen-Reader-kompatibel (ARIA-Labels, Roles)
+ Farbkontraste ausreichend (4.5:1 für Text)
+ Fokus-Indikatoren sichtbar
+
+SEO
+
+ Meta-Tags korrekt (Title, Description, OG-Tags)
+ Semantisches HTML (h1-h6 Hierarchie)
+ Sitemap.xml vorhanden und aktuell
+ Robots.txt konfiguriert
+ Strukturierte Daten (JSON-LD Schema.org)
+
+2.2 Backend-Tests
+API-Funktionalität
+
+ Alle Endpoints erreichbar (korrekte HTTP-Methoden)
+ Request-Validierung funktioniert (Body, Query, Params)
+ Response-Format korrekt (JSON-Schema, Content-Type)
+ Status-Codes semantisch korrekt (200, 201, 400, 401, 404, 500)
+ Pagination funktioniert (Limit, Offset/Cursor)
+ Filtering/Sorting funktioniert
+ Rate-Limiting implementiert
+
+Datenbank-Integrität
+
+ CRUD-Operationen funktionieren
+ Constraints werden erzwungen (Foreign Keys, Unique, Not Null)
+ Transaktionen atomar (ACID-Eigenschaften)
+ Indizes optimiert (Query-Performance)
+ Migrations sind idempotent
+ Backups konfiguriert und getestet
+
+Authentifizierung/Autorisierung
+
+ Login/Logout funktioniert
+ Token-Refresh funktioniert
+ Session-Management sicher (HttpOnly, Secure, SameSite)
+ Permissions korrekt durchgesetzt (RBAC/ABAC)
+ Password-Hashing sicher (bcrypt, Argon2)
+ 2FA implementiert (falls erforderlich)
+
+Security
+
+ SQL-Injection verhindert (Prepared Statements)
+ XSS verhindert (Input-Sanitization, CSP-Header)
+ CSRF verhindert (CSRF-Tokens)
+ Sensitive Daten verschlüsselt (at rest, in transit)
+ Secrets nicht im Code (Environment-Variables)
+ HTTPS erzwungen (HSTS-Header)
+ Dependency-Vulnerabilities geprüft (npm audit, Snyk)
+
+Performance
+
+ Response-Times akzeptabel (< 200ms für API-Calls)
+ N+1-Queries vermieden
+ Caching implementiert (Redis, CDN)
+ Connection-Pooling konfiguriert
+ Query-Optimization durchgeführt
+
+Error-Handling
+
+ Alle Exceptions gecatcht
+ Error-Logging strukturiert (ELK, Sentry)
+ User-facing Errors nicht zu detailliert (Info-Leakage vermeiden)
+ Retry-Logic für externe Services
+ Circuit-Breaker bei kritischen Abhängigkeiten
+
+2.3 Integration-Tests
+Frontend ↔ Backend
+
+ API-Calls aus Frontend erfolgreich
+ Error-Handling bei API-Fehlern
+ Token-Refresh im Frontend
+ CORS korrekt konfiguriert
+ WebSocket-Verbindungen stabil
+
+Backend ↔ Datenbank
+
+ Connection-Handling robust (Reconnect bei Verlust)
+ Query-Timeouts konfiguriert
+ Transaction-Handling korrekt
+
+Backend ↔ Externe Services
+
+ API-Calls zu Drittanbietern funktionieren
+ Timeouts konfiguriert
+ Fallback bei Service-Ausfall
+ Webhook-Verarbeitung funktioniert
+
+2.4 End-to-End-Tests (E2E)
+Kritische User-Journeys
+
+ Registration → Login → Hauptfunktion → Logout
+ Checkout-Prozess (bei E-Commerce)
+ Content-Erstellung → Publikation → Ansicht
+ Payment-Flow (bei Transaktionen)
+
+Edge-Cases
+
+ Gleichzeitige Requests (Concurrency)
+ Offline-Verhalten (PWA)
+ Session-Timeout während Nutzung
+ Datenbank-Rollback bei Fehler
+
+2.5 Load/Stress-Tests
+
+ Normale Last (Expected Traffic)
+ Spitzenlast (2-3x Traffic)
+ Stress-Test (bis Systemgrenze)
+ Soak-Test (Langzeitstabilität über Stunden)
+ Spike-Test (plötzlicher Traffic-Anstieg)
+
+3. Root-Cause-Analyse (Mehrstufig)
+Für jeden gefundenen Fehler:
+[FEHLER-ID: XXX]
+├── Symptom: [Was manifestiert sich?]
+├── Lokation: [Wo tritt es auf? Datei, Zeile, Komponente]
+├── Reproduktion: [Schritte zum Nachstellen]
+│
+├── PRIMÄRE URSACHE
+│   └── [Direkter Auslöser: fehlender null-check, falsche Logik, etc.]
+│
+├── SEKUNDÄRE URSACHEN
+│   ├── [Was hat die primäre Ursache ermöglicht?]
+│   ├── [Fehlende Tests?]
+│   ├── [Unklare Spezifikation?]
+│   └── [Technische Schuld?]
+│
+├── SYSTEMISCHE URSACHEN
+│   ├── [Architektur-Schwächen]
+│   ├── [Fehlende Prozesse (Code-Review, Testing)]
+│   ├── [Unzureichende Dokumentation]
+│   └── [Fehlende Monitoring/Alerting]
+│
+├── KASKADENEFFEKTE
+│   ├── [Welche anderen Komponenten sind betroffen?]
+│   ├── [Welche User-Journeys brechen?]
+│   ├── [Daten-Inkonsistenzen?]
+│   └── [Security-Implikationen?]
+│
+└── RISIKO-BEWERTUNG
+    ├── Impact: [Kritisch/Hoch/Mittel/Niedrig]
+    ├── Wahrscheinlichkeit: [Häufig/Gelegentlich/Selten]
+    └── Priorität: [P0/P1/P2/P3]
+4. Vollständige Fehlerbeseitigung
+4.1 Priorisierung
+P0 (Kritisch - Sofort):
+- System down / nicht erreichbar
+- Datenverlust
+- Security-Breach
+- Payment-Fehler
+
+P1 (Hoch - < 24h):
+- Kernfunktionalität beeinträchtigt
+- Signifikante User-Impact
+- Performance-Degradation
+
+P2 (Mittel - < 1 Woche):
+- Kleinere Features defekt
+- UX-Probleme
+- Code-Qualität
+
+P3 (Niedrig - Backlog):
+- Nice-to-have Features
+- Kosmetische Fixes
+- Refactoring-Opportunities
+4.2 Fix-Strategie
+Für jeden Fehler:
+
+Immediate Mitigation: Workaround/Hotfix wenn nötig
+Root-Cause-Fix: Eigentliche Ursache beheben
+Prevention: Wie verhindern wir das künftig?
+
+Tests hinzufügen
+Linting-Rules erweitern
+Dokumentation verbessern
+Architecture-Change
+
+
+Validation:
+
+Unit-Tests für Fix schreiben
+Integration-Tests aktualisieren
+E2E-Tests erweitern
+Manuelle Verifikation
+
+
+
+4.3 Regression-Prevention
+
+ Alle Fixes mit Tests abgesichert
+ CI/CD-Pipeline läuft erfolgreich
+ Code-Review durchgeführt
+ Staging-Deployment getestet
+ Rollback-Plan vorhanden
+
+5. Lücken schließen (Proaktiv)
+5.1 Code-Lücken
+
+ Fehlende Implementierungen: TODO-Kommentare, Stub-Functions
+ Fehlende Validierungen: Input-Checks, Edge-Cases
+ Fehlende Error-Handling: Try-Catch, Null-Checks, Type-Guards
+ Fehlende Logging: Debug-Info, Error-Tracking
+ Code-Duplication: DRY-Violations identifizieren und abstrahieren
+ Dead Code: Ungenutzte Funktionen/Imports entfernen
+ Magic Numbers: Hardcoded Values in Constants auslagern
+
+5.2 Test-Lücken
+
+ Unit-Tests: Alle Funktionen/Methoden getestet (Target: 80%+ Coverage)
+ Integration-Tests: Alle API-Endpoints getestet
+ E2E-Tests: Alle kritischen User-Journeys abgedeckt
+ Edge-Case-Tests: Boundary-Conditions, Error-Paths
+ Performance-Tests: Load-Tests für kritische Endpunkte
+ Security-Tests: Penetration-Tests, OWASP Top 10
+
+5.3 Dokumentations-Lücken
+
+ README: Installation, Setup, Development-Guide
+ API-Dokumentation: OpenAPI/Swagger-Specs aktuell
+ Code-Kommentare: Komplexe Logik erklärt (nicht was, sondern warum)
+ Architektur-Docs: System-Design, Datenfluss-Diagramme
+ Runbooks: Deployment-Prozess, Troubleshooting-Guides
+ Changelog: Versions-Historie dokumentiert
+ Contributing-Guide: Für neue Entwickler
+
+5.4 Infrastructure-Lücken
+
+ Environment-Configs: Dev/Staging/Prod getrennt
+ Secrets-Management: Vault, AWS Secrets Manager, etc.
+ Monitoring: Metriken (CPU, Memory, Response-Times)
+ Logging: Centralized Logging (ELK, CloudWatch)
+ Alerting: Critical Errors → PagerDuty/Slack
+ Backups: Automatisiert, regelmäßig getestet
+ Disaster-Recovery: RTO/RPO definiert, Plan getestet
+
+5.5 Security-Lücken
+
+ Dependency-Updates: Regelmäßig (Dependabot, Renovate)
+ Security-Headers: CSP, HSTS, X-Frame-Options
+ Input-Sanitization: Alle User-Inputs validiert
+ Output-Encoding: XSS-Prevention
+ Audit-Logging: Sensitive Actions geloggt
+ Least-Privilege: Minimale Permissions für Services/User
+
+5.6 Performance-Lücken
+
+ Caching-Strategy: Browser-Cache, CDN, Application-Cache
+ Database-Optimization: Query-Profiling, Index-Optimization
+ Asset-Optimization: Minification, Compression, Image-Optimization
+ Code-Splitting: Lazy-Loading, Dynamic Imports
+ Connection-Pooling: Datenbank, HTTP-Clients
+
+5.7 UX-Lücken
+
+ Loading-Indicators: Für alle asynchronen Operationen
+ Error-Messages: User-friendly, actionable
+ Empty-States: Guidance wenn keine Daten vorhanden
+ Confirmation-Dialogs: Für destruktive Aktionen
+ Keyboard-Shortcuts: Für Power-User
+ Onboarding: Für neue User
+
+6. Iterative Vollständigkeitsprüfung
+ITERATION 1:
+├── Inventory durchführen
+├── Tests ausführen (Frontend + Backend + Integration + E2E)
+├── Fehler identifizieren und dokumentieren
+└── Fixes implementieren
+
+ITERATION 2:
+├── Regression-Tests ausführen (alle vorherigen Tests)
+├── Neue Tests für Fixes ausführen
+├── Verbleibende Fehler identifizieren
+└── Weitere Fixes implementieren
+
+ITERATION N:
+├── Vollständige Test-Suite ausführen
+├── Keine kritischen/hohen Fehler mehr
+├── Alle Test-Lücken geschlossen
+├── Dokumentation vollständig
+└── ✅ SYSTEM PRODUKTIONSREIF
+Stopp-Kriterien (Definition of Done):
+
+✅ Alle P0/P1-Fehler behoben
+✅ Test-Coverage ≥ 80% (Backend), ≥ 70% (Frontend)
+✅ Alle E2E-Tests erfolgreich
+✅ Performance-Benchmarks erfüllt
+✅ Security-Scan ohne High/Critical Findings
+✅ Code-Review abgeschlossen
+✅ Dokumentation aktualisiert
+✅ Staging-Deployment erfolgreich
+✅ Rollback-Plan getestet
+
+Output-Format
+════════════════════════════════════════════════════════════
+ SYSTEMANALYSE-REPORT
+════════════════════════════════════════════════════════════
+
+[1] INVENTORY
+────────────────────────────────────────────────────────────
+Frontend:
+  ├── Pages: 23
+  ├── Components: 145
+  ├── Hooks: 18
+  └── State: Redux (12 Slices)
+
+Backend:
+  ├── Endpoints: 47 (REST) + 3 (GraphQL)
+  ├── Services: 15
+  ├── Models: 12
+  └── Middleware: 8
+
+Database:
+  ├── Tables: 18
+  ├── Indizes: 34
+  └── Migrations: 87
+
+Infrastructure:
+  ├── Environments: 3 (Dev, Staging, Prod)
+  ├── Services: 12 (API, Worker, Scheduler, etc.)
+  └── External Dependencies: 7
+
+────────────────────────────────────────────────────────────
+[2] TEST-ERGEBNISSE
+────────────────────────────────────────────────────────────
+
+Frontend-Tests:
+  ├── ✅ Funktionalität: 142/145 passed (3 failures)
+  ├── ⚠️  Links: 234/240 valid (6 broken)
+  ├── ✅ Responsive: Alle Breakpoints OK
+  ├── ⚠️  Performance: LCP 2.8s (Target: <2.5s)
+  ├── ❌ A11y: 12 WCAG-Violations
+  └── ✅ SEO: 95/100 Score
+
+Backend-Tests:
+  ├── ✅ Unit: 823/830 passed (7 failures)
+  ├── ✅ Integration: 145/147 passed (2 failures)
+  ├── ❌ Security: 3 High-Vulnerabilities
+  ├── ⚠️  Performance: 3 Endpoints >500ms
+  └── ✅ Database: Alle Constraints OK
+
+E2E-Tests:
+  ├── ✅ Registration-Flow: Passed
+  ├── ❌ Checkout-Flow: Failed (Payment-Error)
+  ├── ✅ Content-Management: Passed
+  └── ⚠️  Admin-Panel: Flaky (2/5 runs failed)
+
+Coverage:
+  ├── Backend: 84% (✅ Target erreicht)
+  └── Frontend: 67% (⚠️  Target: 70%)
+
+────────────────────────────────────────────────────────────
+[3] GEFUNDENE FEHLER (Priorisiert)
+────────────────────────────────────────────────────────────
+
+P0 - KRITISCH (2):
+  ├── [#001] Payment-Processing schlägt fehl bei Stripe-API
+  └── [#002] SQL-Injection in User-Search-Endpoint
+
+P1 - HOCH (5):
+  ├── [#003] Session-Timeout führt zu Datenverlust
+  ├── [#004] Image-Upload bricht bei >5MB ab
+  ├── [#005] Password-Reset sendet Token im Klartext
+  ├── [#006] N+1-Query in Dashboard (>3s Load-Time)
+  └── [#007] CSRF-Token fehlt in Delete-Requests
+
+P2 - MITTEL (12):
+  └── [Siehe Detailreport...]
+
+P3 - NIEDRIG (28):
+  └── [Siehe Detailreport...]
+
+────────────────────────────────────────────────────────────
+[4] ROOT-CAUSE-ANALYSE (Beispiel #001)
+────────────────────────────────────────────────────────────
+
+FEHLER: Payment-Processing schlägt fehl
+LOKATION: /api/payments/process (Zeile 47-52)
+REPRODUKTION: Checkout mit Kreditkarte → 500 Error
+
+ROOT-CAUSE-KETTE:
+├── PRIMÄR: Stripe-API-Key aus Environment fehlt in Prod
+│   └── Deployment-Script lädt .env.production nicht
+│
+├── SEKUNDÄR:
+│   ├── Keine Validierung ob API-Key vorhanden vor API-Call
+│   ├── Error-Handling fehlt (unhandled Promise rejection)
+│   └── Keine Integration-Tests für Payment-Flow
+│
+├── SYSTEMISCH:
+│   ├── Secrets-Management nicht zentralisiert
+│   ├── Environment-Validation im Startup fehlt
+│   └── CI/CD-Pipeline prüft nicht auf fehlende Secrets
+│
+└── KASKADENEFFEKTE:
+    ├── Alle Payments seit Deployment (3h) schlagen fehl
+    ├── 47 User betroffen (Revenue-Loss ~€3.200)
+    ├── Reputation-Damage (Support-Tickets ↑)
+    └── Stripe könnte Account sperren bei zu vielen Errors
+
+IMPACT: Kritisch | WAHRSCHEINLICHKEIT: Häufig | PRIORITÄT: P0
+
+────────────────────────────────────────────────────────────
+[5] LÖSUNGEN & MASSNAHMEN
+────────────────────────────────────────────────────────────
+
+#001 - Payment-Processing:
+  
+  ✓ IMMEDIATE (Hotfix - deployed in 15min):
+    └── Environment-Variable manuell in Prod gesetzt
+
+  ✓ ROOT-CAUSE-FIX (deployed in 2h):
+    ├── Secrets in AWS Secrets Manager migriert
+    ├── Deployment-Script updated
+    └── Startup-Validation für kritische Secrets hinzugefügt
+
+  ✓ PREVENTION (in Progress):
+    ├── Integration-Tests für Payment-Flow geschrieben
+    ├── CI/CD prüft nun auf fehlende Secrets
+    ├── Monitoring/Alerting für Payment-Errors aktiviert
+    └── Runbook für Payment-Issues erstellt
+
+  ✓ VALIDATION:
+    ├── 150 Test-Payments erfolgreich
+    ├── Production-Traffic überwacht (1h) - keine Errors
+    └── Rollback-Plan dokumentiert
+
+#002 - SQL-Injection:
+  [Detaillierte Lösung...]
+
+[...weitere Fehler...]
+
+────────────────────────────────────────────────────────────
+[6] GESCHLOSSENE LÜCKEN
+────────────────────────────────────────────────────────────
+
+Code:
+  ✅ 47 TODO-Kommentare implementiert
+  ✅ 23 fehlende Input-Validationen hinzugefügt
+  ✅ 156 fehlende Error-Handler implementiert
+  ✅ 89 Code-Duplications refactored
+
+Tests:
+  ✅ Unit-Test-Coverage: 67% → 84%
+  ✅ 15 fehlende Integration-Tests hinzugefügt
+  ✅ 8 E2E-Tests für kritische Flows
+  ✅ Security-Tests in CI/CD integriert
+
+Dokumentation:
+  ✅ API-Dokumentation vervollständigt (OpenAPI)
+  ✅ README mit Setup-Anleitung
+  ✅ 5 Runbooks für kritische Systeme
+  ✅ Architecture-Decision-Records gestartet
+
+Infrastructure:
+  ✅ Secrets-Management zentralisiert
+  ✅ Monitoring-Dashboards erstellt
+  ✅ Alerting für kritische Metriken
+  ✅ Backup-Strategie implementiert & getestet
+
+Security:
+  ✅ Alle High/Critical Vulnerabilities gefixt
+  ✅ Security-Headers konfiguriert
+  ✅ Dependency-Updates automatisiert
+  ✅ Audit-Logging für sensitive Operations
+
+────────────────────────────────────────────────────────────
+[7] SYSTEM-STATUS
+────────────────────────────────────────────────────────────
+
+✅ PRODUKTIONSREIF
+
+Checkliste:
+  ✅ Keine P0/P1-Fehler mehr offen
+  ✅ Test-Coverage-Ziele erreicht
+  ✅ Performance-Benchmarks erfüllt
+  ✅ Security-Scan clean
+  ✅ Dokumentation vollständig
+  ✅ Staging-Tests erfolgreich
+  ✅ Rollback-Plan vorhanden
+
+Verbleibende Items:
+  ⚠️  12 P2-Fehler (für nächsten Sprint)
+  ⚠️  28 P3-Fehler (Backlog)
+  📊 Frontend-Coverage auf 70% erhöhen (von 67%)
+
+────────────────────────────────────────────────────────────
+[8] NÄCHSTE SCHRITTE
+────────────────────────────────────────────────────────────
+
+Sofort (heute):
+  1. Production-Deployment durchführen (Deployment-Window: 22:00)
+  2. Monitoring der ersten 2h intensiv
+  3. Post-Deployment-Validation durchführen
+
+Kurzfristig (diese Woche):
+  4. Verbleibende P2-Fehler beheben
+  5. Frontend-Test-Coverage auf 70% erhöhen
+  6. Load-Tests für Black-Friday-Traffic
+
+Mittelfristig (dieser Monat):
+  7. Performance-Optimierung (LCP <2.5s)
+  8. A11y-Violations beheben
+  9. Dokumentation für neue Features
+
+Langfristig (Quartal):
+  10. Architektur-Review für Skalierbarkeit
+  11. Microservices-Migration evaluieren
+  12. Chaos-Engineering einführen
+
+════════════════════════════════════════════════════════════
+Qualitätskriterien
+Vollständigkeit
+
+✅ Jede Komponente identifiziert und erfasst
+✅ Jede Interaktion zwischen Komponenten getestet
+✅ Jede Fehlerquelle bis zur Wurzel analysiert
+✅ Jede Lücke identifiziert und geschlossen
+
+Tiefe
+
+✅ Nicht nur Symptome, sondern Ursachen behoben
+✅ Nicht nur technische, sondern auch prozessuale Probleme adressiert
+✅ Nicht nur aktuelle, sondern auch potenzielle künftige Probleme berücksichtigt
+
+Systematik
+
+✅ Strukturiertes, nachvollziehbares Vorgehen
+✅ Dokumentierter Prozess für spätere Audits
+✅ Wiederholbar und skalierbar
+
+Effizienz
+
+✅ Priorisierung nach Impact und Dringlichkeit
+✅ Parallele Bearbeitung wo möglich
+✅ Keine Doppelarbeit durch klare Ownership
+
+Nachhaltigkeit
+
+✅ Fixes mit Tests abgesichert (Regression-Prevention)
+✅ Prozesse etabliert zur Fehlervermeidung
+✅ Dokumentation für Wissenstransfer
+✅ Monitoring zur frühzeitigen Problemerkennung
+
+
+Meta-Anweisung
+Dieser Prompt ist selbst-referenziell: Wende alle hier beschriebenen Prinzipien auch auf diesen Prompt selbst an. Wenn du Lücken, Unklarheiten oder Verbesserungspotenzial in diesem Prompt findest, weise aktiv darauf hin und schlage Optimierungen vor.
+Adaptation: Passe den Detailgrad der Prüfung an die Komplexität des Systems an. Für ein simples Script reicht eine vereinfachte Version, für eine Enterprise-Anwendung ist die volle Tiefe erforderlich.
+Continuous Improvement: Nach jedem Durchlauf: Lessons Learned dokumentieren und Prompt für nächste Iteration verbessern.

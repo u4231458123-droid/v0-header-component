@@ -1,0 +1,70 @@
+🏗️ CI/CD Pipeline Blueprint - Wiederverwendbare Vorlage
+Übersicht
+Blueprint für eine optimierte CI/CD-Pipeline mit KI-gestützter Code-Analyse, automatischen Bug-Fixes und vollständiger Validierung. Neutral und für jedes Projekt nutzbar.
+
+[... Inhalt gekürzt für Übersichtlichkeit ...]
+
+---
+
+API-Keys und Zugangsdaten:
+⚠️ WICHTIG: Alle API-Keys müssen in GitHub Secrets gespeichert werden!
+⚠️ Diese Datei enthält KEINE echten Secrets mehr - bitte GitHub Secrets verwenden!
+
+Claude (Anthropic): 
+[ANTHROPIC_API_KEY] - Bitte in GitHub Secrets speichern als ANTHROPIC_API_KEY
+
+Hugging face (Zur Nutzung von KI-Modellen wie DeepSeek v3 usw., sowie Frameworks etc.): 
+[HUGGINGFACE_API_KEY] - Bitte in GitHub Secrets speichern als HUGGINGFACE_API_KEY
+
+OpenAI: 
+[OPENAI_API_KEY] - Bitte in GitHub Secrets speichern als OPENAI_API_KEY
+
+Supabase:
+Projekt URL: [SUPABASE_URL]
+Projekt-ID: [SUPABASE_PROJECT_ID]
+
+Publishable key
+This key is safe to use in a browser if you have enabled Row Level Security (RLS) for your tables and configured policies.
+Key: [SUPABASE_PUBLISHABLE_KEY] - Bitte in GitHub Secrets speichern
+
+Secret keys
+These API keys allow privileged access to your project's APIs. Use in servers, functions, workers or other backend components of your application.
+Key: [SUPABASE_SECRET_KEY] - Bitte in GitHub Secrets speichern
+
+anon
+public: [SUPABASE_ANON_KEY] - Bitte in GitHub Secrets speichern als NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+service_role
+secret: [SUPABASE_SERVICE_ROLE_KEY] - Bitte in GitHub Secrets speichern
+
+postgresql://postgres:
+[SUPABASE_DB_PASSWORD]@db.ykfufejycdgwonrlbhzn.supabase.co:5432/postgres
+
+
+NEXT_PUBLIC_SUPABASE_URL=[SUPABASE_URL] - Bitte in GitHub Secrets speichern
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=[SUPABASE_PUBLISHABLE_KEY] - Bitte in GitHub Secrets speichern
+
+
+VITE_SUPABASE_URL=[SUPABASE_URL] - Bitte in GitHub Secrets speichern
+VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=[SUPABASE_PUBLISHABLE_KEY] - Bitte in GitHub Secrets speichern
+
+MCP-Server:
+[MCP_SERVER_URL]
+
+GitHub:
+[GITHUB_REPO_URL]
+Token (Classic): [GITHUB_PAT] - Bitte in GitHub Secrets speichern als GITHUB_PAT
+
+Vercel:
+Projekt-ID: [VERCEL_PROJECT_ID]
+Projektname: [VERCEL_PROJECT_NAME]
+Token: [VERCEL_TOKEN] - Bitte in GitHub Secrets speichern als VERCEL_TOKEN
+
+---
+
+ACHTUNG!! WICHTIG!!! UNBEDIGNT BEACHTEN:
+[USER_EMAIL_1] ist zwar ein Master-Account, aber führt nach dem Login einfach nur ins /dashboard.
+[USER_EMAIL_2] ist ein einfacher Kunden-Account.
+
+circleci.com
+Token: [CIRCLECI_TOKEN] - Bitte in GitHub Secrets speichern als CIRCLECI_TOKEN

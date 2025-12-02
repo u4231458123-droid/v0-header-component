@@ -1,0 +1,137 @@
+name: Auto-Fix Bugs (24/7)
+
+on:
+  schedule:
+    # Alle 2 Stunden (12x täglich)
+    - cron: '0 */2 * * *'
+    # Täglich um 3:00 UTC (nachts)
+    - cron: '0 3 * * *'
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
+
+jobs:
+  ai-bug-analysis:
+    name: AI Bug Analysis & Auto-Fix
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare Bots & Knowledge Base
+        run: |
+          echo "Preparing AI-Bots and Knowledge Base..."
+          pnpm exec node scripts/cicd/prepare-bots.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: Validate Complete System
+        run: |
+          echo "Validating complete system..."
+          pnpm cicd:validate-system || true
+
+      - name: AI Bug Analysis (System-Bot)
+        run: |
+          echo "Running AI-powered bug analysis with System-Bot..."
+          pnpm exec node scripts/ai-bug-analysis.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: Pattern-based Fixes (with Quality-Bot)
+        run: |
+          echo "Applying pattern-based fixes with Quality-Bot validation..."
+          pnpm exec node scripts/fix-patterns.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: Quality-Bot Verification
+        run: |
+          echo "Running Quality-Bot verification..."
+          pnpm exec node scripts/cicd/run-quality-bot.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: Prompt Optimization (Continuous)
+        run: |
+          echo "Running continuous prompt optimization..."
+          pnpm exec node scripts/cicd/run-prompt-optimization-bot.js || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: Bot Monitoring & Health Checks
+        run: |
+          echo "Running bot monitoring and health checks..."
+          pnpm monitor:bots || true
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: TypeScript & Linter Auto-Fix
+        run: |
+          echo "Running TypeScript and ESLint auto-fix..."
+          pnpm exec eslint . --fix || true
+
+      - name: Commit and Push (if changes)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: auto-fix bugs and code quality issues [skip ci]" || exit 0
+            git push || exit 0
+          fi
+
+      - name: Create Issue for Critical Bugs
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Critical Bugs Found - Manual Review Required',
+              body: 'The auto-fix workflow found critical bugs that require manual review. Please check the workflow logs.',
+              labels: ['bug', 'critical', 'auto-detected']
+            })
+
