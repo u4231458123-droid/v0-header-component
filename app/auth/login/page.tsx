@@ -79,7 +79,7 @@ export default function LoginPage() {
           .from("profiles")
           .select("role, company_id")
           .eq("id", userId)
-          .single()
+          .maybeSingle()
 
         if (profile) {
           if (profile.role === "master_admin") {
@@ -98,7 +98,7 @@ export default function LoginPage() {
           .from("drivers")
           .select("company_id")
           .eq("user_id", userId)
-          .single()
+          .maybeSingle()
 
         if (driver) {
           // Hole Company Slug für Tenant-Redirect
@@ -106,7 +106,7 @@ export default function LoginPage() {
             .from("companies")
             .select("company_slug")
             .eq("id", driver.company_id)
-            .single()
+            .maybeSingle()
             
           if (company) {
             window.location.href = `/c/${company.company_slug}/fahrer/portal`
@@ -122,7 +122,7 @@ export default function LoginPage() {
           .from("customers")
           .select("company_id")
           .eq("user_id", userId)
-          .single()
+          .maybeSingle()
 
         if (customer) {
            // Hole Company Slug für Tenant-Redirect
@@ -130,7 +130,7 @@ export default function LoginPage() {
             .from("companies")
             .select("company_slug")
             .eq("id", customer.company_id)
-            .single()
+            .maybeSingle()
 
           if (company) {
             window.location.href = `/c/${company.company_slug}/kunde/portal`
