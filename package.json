@@ -35,6 +35,7 @@
     "test:bots": "node scripts/cicd/test-all-bots.mjs",
     "monitor:bots": "node scripts/cicd/monitor-bots.mjs",
     "fix:design": "node scripts/cicd/fix-design-violations.mjs",
+    "validate:design": "node scripts/cicd/auto-design-validator.mjs",
     "optimize:performance": "node scripts/cicd/optimize-performance.mjs",
     "optimize:all": "node scripts/cicd/fix-design-violations.mjs && node scripts/cicd/optimize-performance.mjs"
   },
