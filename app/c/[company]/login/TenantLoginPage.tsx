@@ -126,7 +126,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         .from("profiles")
         .select("role, company_id")
         .eq("id", currentUserId)
-        .single()
+        .maybeSingle()
 
       if (profile && profile.company_id === company.id) {
         window.location.href = "/dashboard"
@@ -144,7 +144,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         .select("id, company_id, status, must_change_password")
         .eq("user_id", currentUserId)
         .eq("company_id", company.id)
-        .single()
+        .maybeSingle()
 
       if (driver) {
         if (driver.must_change_password) {
@@ -169,7 +169,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         .select("id, company_id, user_id")
         .eq("user_id", currentUserId)
         .eq("company_id", company.id)
-        .single()
+        .maybeSingle()
 
       if (customer) {
         window.location.href = `/c/${company.company_slug}/kunde/portal`
@@ -180,7 +180,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         .from("customer_accounts")
         .select("id, registered_companies")
         .eq("user_id", currentUserId)
-        .single()
+        .maybeSingle()
 
       if (customerAccount) {
         const registeredCompanies = customerAccount.registered_companies || []

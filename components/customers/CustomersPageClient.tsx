@@ -135,16 +135,16 @@ export function CustomersPageClient({
   const hasActiveFilters = searchTerm !== "" || statusFilter !== "all"
 
   const getStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; className: string }> = {
+    const config: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
       active: {
         label: "Aktiv",
-        className: "bg-primary/10 text-primary",
+        variant: "default",
       },
-      inactive: { label: "Inaktiv", className: "bg-muted text-muted-foreground" },
-      blocked: { label: "Gesperrt", className: "bg-destructive/10 text-destructive" },
+      inactive: { label: "Inaktiv", variant: "outline" },
+      blocked: { label: "Gesperrt", variant: "destructive" },
     }
     const c = config[status] || config.active
-    return <Badge className={c.className}>{c.label}</Badge>
+    return <Badge variant={c.variant}>{c.label}</Badge>
   }
 
   const handleCreateCustomer = async () => {
