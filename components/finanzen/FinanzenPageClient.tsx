@@ -232,11 +232,11 @@ export function FinanzenPageClient({
     }
   }
 
-  const renderStats = () => {
+  const renderStats = useMemo(() => {
     switch (activeTab) {
       case "invoices":
         return (
-          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4" key="invoices-stats">
             <StatsCard
               title="Gesamtumsatz"
               value={`${safeNumber(invoiceStats.totalRevenue).toFixed(2)} €`}
@@ -271,7 +271,7 @@ export function FinanzenPageClient({
         )
       case "quotes":
         return (
-          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4" key="quotes-stats">
             <StatsCard
               title="Angebote Gesamt"
               value={quoteStats.totalQuotes}
@@ -306,7 +306,7 @@ export function FinanzenPageClient({
         )
       case "cashbook":
         return (
-          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4" key="cashbook-stats">
             <StatsCard
               title="Kassenbestand"
               value={`${safeNumber(cashBookStats.balance).toFixed(2)} €`}
@@ -340,8 +340,10 @@ export function FinanzenPageClient({
             />
           </div>
         )
+      default:
+        return null
     }
-  }
+  }, [activeTab, invoiceStats, quoteStats, cashBookStats, localInvoices.length, localCashBookEntries])
 
   const renderContent = () => {
     switch (activeTab) {
@@ -740,7 +742,7 @@ export function FinanzenPageClient({
       </div>
 
       {/* Stats Cards */}
-      {renderStats()}
+      {renderStats}
 
       {/* Overdue Warning for Invoices - Using design system colors */}
       {activeTab === "invoices" && invoiceStats.overdueCount > 0 && (
