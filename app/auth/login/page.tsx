@@ -71,6 +71,76 @@ export default function LoginPage() {
       }
 
       if (data.user) {
+        // ROLLEN-BASIERTER REDIRECT
+        const userId = data.user.id
+
+        // 1. Prüfe ob Master Admin oder Unternehmer
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role, company_id")
+          .eq("id", userId)
+          .single()
+
+        if (profile) {
+          if (profile.role === "master_admin") {
+            window.location.href = "/admin"
+            return
+          }
+          // Unternehmer -> Dashboard
+          if (profile.company_id) {
+            window.location.href = "/dashboard"
+            return
+          }
+        }
+
+        // 2. Prüfe ob Fahrer
+        const { data: driver } = await supabase
+          .from("drivers")
+          .select("company_id")
+          .eq("user_id", userId)
+          .single()
+
+        if (driver) {
+          // Hole Company Slug für Tenant-Redirect
+          const { data: company } = await supabase
+            .from("companies")
+            .select("company_slug")
+            .eq("id", driver.company_id)
+            .single()
+            
+          if (company) {
+            window.location.href = `/c/${company.company_slug}/fahrer/portal`
+          } else {
+            // Fallback
+            window.location.href = "/fahrer-portal"
+          }
+          return
+        }
+
+        // 3. Prüfe ob Kunde
+        const { data: customer } = await supabase
+          .from("customers")
+          .select("company_id")
+          .eq("user_id", userId)
+          .single()
+
+        if (customer) {
+           // Hole Company Slug für Tenant-Redirect
+          const { data: company } = await supabase
+            .from("companies")
+            .select("company_slug")
+            .eq("id", customer.company_id)
+            .single()
+
+          if (company) {
+            window.location.href = `/c/${company.company_slug}/kunde/portal`
+          } else {
+            window.location.href = "/kunden-portal"
+          }
+          return
+        }
+
+        // Fallback für undefinierte User
         window.location.href = "/dashboard"
       }
     } catch (err: unknown) {
