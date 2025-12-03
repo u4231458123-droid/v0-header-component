@@ -1395,62 +1395,6 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
           </Card>
         </TabsContent>
 
-        {/* Finances Tab */}
-        <TabsContent value="finances" className="space-y-6">
-          <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
-            <StatsCard
-              title="Rechnungen Gesamt"
-              value={formatNumber(data.finances?.invoices?.total)}
-              icon={<Receipt className="h-5 w-5 text-primary" />}
-            />
-
-            <StatsCard
-              title="Bezahlt"
-              value={formatCurrency(data.finances?.invoices?.totalPaid)}
-              subtitle={`${formatNumber(data.finances?.invoices?.paid)} Rechnungen`}
-              icon={<CheckCircle className="h-5 w-5 text-primary" />}
-              variant="success"
-            />
-
-            <StatsCard
-              title="Offen"
-              value={formatCurrency(data.finances?.invoices?.totalOutstanding)}
-              subtitle={`${formatNumber(data.finances?.invoices?.pending)} ausstehend`}
-              icon={<Clock className="h-5 w-5 text-primary" />}
-            />
-
-            <StatsCard
-              title="Ueberfaellig"
-              value={formatNumber(data.finances?.invoices?.overdue)}
-              subtitle="Rechnungen ueberfaellig"
-              icon={<AlertTriangle className="h-5 w-5 text-primary" />}
-              variant={safeNumber(data.finances?.invoices?.overdue) > 0 ? "warning" : "success"}
-            />
-          </div>
-
-          {/* Kassenbuch */}
-          <div className="grid gap-5 grid-cols-1 lg:grid-cols-3">
-            <StatsCard
-              title="Kasseneinnahmen"
-              value={formatCurrency(data.finances?.cashbook?.income)}
-              icon={<TrendingUp className="h-5 w-5 text-primary" />}
-              variant="success"
-            />
-
-            <StatsCard
-              title="Kassenausgaben"
-              value={formatCurrency(data.finances?.cashbook?.expense)}
-              icon={<TrendingUp className="h-5 w-5 text-primary" style={{ transform: "rotate(180deg)" }} />}
-            />
-
-            <StatsCard
-              title="Kassenbestand"
-              value={formatCurrency(data.finances?.cashbook?.balance)}
-              icon={<Euro className="h-5 w-5 text-primary" />}
-              variant={safeNumber(data.finances?.cashbook?.balance) >= 0 ? "success" : "warning"}
-            />
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   )
