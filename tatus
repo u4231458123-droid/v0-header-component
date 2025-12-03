@@ -159,4 +159,15 @@ warning: in the working copy of 'components/settings/SettingsPageClient.tsx', LF
 [32m+[m
 [32m+[m[32m      console.log("[Settings] Update successful:", data)[m
  [m
-       toast.su
+       toast.success("Einstellungen erfolgreich gespeichert")[m
+       router.refresh()[m
+[31m-    } catch (error) {[m
+[31m-      console.error("Error saving settings:", error)[m
+[31m-      toast.error("Fehler beim Speichern der Einstellungen")[m
+[32m+[m[32m    } catch (error: any) {[m
+[32m+[m[32m      console.error("[Settings] Error saving settings:", error)[m
+[32m+[m[32m      const errorMessage = error?.message || error?.details || "Unbekannter Fehler"[m
+[32m+[m[32m      toast.error(`Fehler beim Speichern: ${errorMessage}`)[m
+     } finally {[m
+       setLoading(false)[m
+     }[m

@@ -21,6 +21,56 @@ import {
 // Force dynamic rendering - Version 0.2.0
 export const dynamic = "force-dynamic"
 
+// Fallback-Funktion für Dashboard-Stats wenn RPC nicht verfügbar
+async function getDashboardStatsFallback(
+  supabase: any,
+  companyId: string,
+  todayStr: string,
+  yesterdayStr: string,
+  thirtyDaysAgo: Date
+) {
+  try {
+    const [
+      { count: bookingsToday },
+      { count: bookingsYesterday },
+      { count: activeBookings },
+      { count: driversAvailable },
+      { count: driversTotal },
+      { count: customersTotal },
+      { count: pendingInvoices },
+    ] = await Promise.all([
+      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).gte("created_at", todayStr).lt("created_at", new Date(new Date(todayStr).getTime() + 86400000).toISOString()),
+      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).gte("created_at", yesterdayStr).lt("created_at", todayStr),
+      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["pending", "confirmed", "assigned", "in_progress"]),
+      supabase.from("drivers").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "available"),
+      supabase.from("drivers").select("id", { count: "exact", head: true }).eq("company_id", companyId),
+      supabase.from("customers").select("id", { count: "exact", head: true }).eq("company_id", companyId),
+      supabase.from("invoices").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "pending"),
+    ])
+
+    return {
+      bookings_today: bookingsToday || 0,
+      bookings_yesterday: bookingsYesterday || 0,
+      active_bookings: activeBookings || 0,
+      drivers_available: driversAvailable || 0,
+      drivers_total: driversTotal || 0,
+      customers_total: customersTotal || 0,
+      pending_invoices: pendingInvoices || 0,
+    }
+  } catch (error) {
+    console.error("Fallback stats error:", error)
+    return {
+      bookings_today: 0,
+      bookings_yesterday: 0,
+      active_bookings: 0,
+      drivers_available: 0,
+      drivers_total: 0,
+      customers_total: 0,
+      pending_invoices: 0,
+    }
+  }
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
 
@@ -147,7 +197,13 @@ export default async function DashboardPage() {
     }
   }
 
-  const companyId = profile?.company_id
+  // Master-Account sollte auch ohne Company funktionieren
+  let companyId = profile?.company_id || null
+  
+  // Wenn Master-Account und kein Company, erlaube trotzdem Dashboard-Zugriff
+  if (isMasterAccount && !companyId) {
+    companyId = null // Explizit null für Master ohne Company
+  }
 
   const stats = {
     bookingsToday: 0,
@@ -170,7 +226,9 @@ export default async function DashboardPage() {
   let customers: any[] = []
   let drivers: any[] = []
 
-  if (companyId) {
+  // Master-Account ohne Company: Zeige leeres Dashboard
+  // Andere Accounts: Nur wenn companyId vorhanden
+  if (companyId || isMasterAccount) {
     const today = new Date()
     const todayStr = today.toISOString().split("T")[0]
     const yesterday = new Date(today)
@@ -181,68 +239,87 @@ export default async function DashboardPage() {
 
     // OPTIMIERUNG: Konsolidierte Abfragen (RPC + Parallel)
     // 1. Statistiken via RPC (ersetzt 8 einzelne Count/Sum Queries)
-    const { data: rpcStats, error: rpcError } = await supabase.rpc('get_comprehensive_dashboard_stats', {
-      target_company_id: companyId
-    });
-
-    if (rpcError) console.error('Dashboard Stats Error:', rpcError);
+    // Fallback auf einzelne Queries wenn RPC nicht verfügbar
+    // WICHTIG: Nur wenn companyId vorhanden ist (nicht null)
+    let safeStats: any = {};
     
-    // Fallback
-    const safeStats = rpcStats || {};
+    if (companyId) {
+      try {
+        const { data: rpcStats, error: rpcError } = await supabase.rpc('get_comprehensive_dashboard_stats', {
+          target_company_id: companyId
+        });
 
-    // 2. Listen-Daten und Chart-Daten parallel laden
-    const [
-      recentBookingsRes,
-      upcomingBookingsRes,
-      customersRes,
-      driversRes,
-      vehiclesRes,
-      revenue30DaysRes // Für Charts benötigt
-    ] = await Promise.all([
-      supabase
-        .from("bookings")
-        .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
-        .eq("company_id", companyId)
-        .order("created_at", { ascending: false })
-        .limit(5),
-      supabase
-        .from("bookings")
-        .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
-        .eq("company_id", companyId)
-        .gte("pickup_time", today.toISOString())
-        .in("status", ["pending", "confirmed", "assigned"])
-        .order("pickup_time", { ascending: true })
-        .limit(5),
-      supabase
-        .from("customers")
-        .select("id, first_name, last_name, salutation, email, phone")
-        .eq("company_id", companyId)
-        .limit(100),
-      supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
-      supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
-      supabase
-        .from("bookings")
-        .select("price, pickup_time, created_at")
-        .eq("company_id", companyId)
-        .eq("status", "completed")
-        .gte("created_at", thirtyDaysAgo.toISOString())
-    ]);
+        if (rpcError) {
+          console.warn('Dashboard Stats RPC Error (using fallback):', rpcError);
+          // Fallback auf einzelne Queries
+          safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo);
+        } else {
+          safeStats = rpcStats || {};
+        }
+      } catch (error) {
+        console.warn('Dashboard Stats RPC failed (using fallback):', error);
+        // Fallback auf einzelne Queries
+        safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo);
+      }
+      
+      // Sicherstellen dass alle Stats-Werte vorhanden sind
+      if (!safeStats || typeof safeStats !== 'object') {
+        safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo);
+      }
 
-    // Zuweisung der Werte aus RPC
-    stats.bookingsToday = safeStats.bookings_today || 0;
-    stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
-    stats.activeBookings = safeStats.active_bookings || 0;
-    stats.driversAvailable = safeStats.drivers_available || 0;
-    stats.driversTotal = safeStats.drivers_total || 0;
-    stats.customersTotal = safeStats.customers_total || 0;
-    stats.pendingInvoices = safeStats.pending_invoices || 0;
-    
-    recentBookings = recentBookingsRes.data || [];
-    upcomingBookings = upcomingBookingsRes.data || [];
-    customers = customersRes.data || [];
-    drivers = driversRes.data || [];
+      // 2. Listen-Daten und Chart-Daten parallel laden (nur wenn companyId vorhanden)
+      const [
+        recentBookingsRes,
+        upcomingBookingsRes,
+        customersRes,
+        driversRes,
+        vehiclesRes,
+        revenue30DaysRes // Für Charts benötigt
+      ] = await Promise.all([
+        supabase
+          .from("bookings")
+          .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
+          .eq("company_id", companyId)
+          .order("created_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("bookings")
+          .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
+          .eq("company_id", companyId)
+          .gte("pickup_time", today.toISOString())
+          .in("status", ["pending", "confirmed", "assigned"])
+          .order("pickup_time", { ascending: true })
+          .limit(5),
+        supabase
+          .from("customers")
+          .select("id, first_name, last_name, salutation, email, phone")
+          .eq("company_id", companyId)
+          .limit(100),
+        supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
+        supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
+        supabase
+          .from("bookings")
+          .select("price, pickup_time, created_at")
+          .eq("company_id", companyId)
+          .eq("status", "completed")
+          .gte("created_at", thirtyDaysAgo.toISOString())
+      ]);
 
-    if (revenue30DaysRes.data) {
+      // Zuweisung der Werte aus RPC
+      stats.bookingsToday = safeStats.bookings_today || 0;
+      stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
+      stats.activeBookings = safeStats.active_bookings || 0;
+      stats.driversAvailable = safeStats.drivers_available || 0;
+      stats.driversTotal = safeStats.drivers_total || 0;
+      stats.customersTotal = safeStats.customers_total || 0;
+      stats.pendingInvoices = safeStats.pending_invoices || 0;
+      
+      recentBookings = recentBookingsRes.data || [];
+      upcomingBookings = upcomingBookingsRes.data || [];
+      customers = customersRes.data || [];
+      drivers = driversRes.data || [];
+
+      if (revenue30DaysRes.data) {
       stats.revenue30Days = revenue30DaysRes.data.reduce((sum, b) => sum + (Number(b.price) || 0), 0)
       const revenueByDay: Record<string, number> = {}
       for (let i = 29; i >= 0; i--) {
@@ -264,19 +341,21 @@ export default async function DashboardPage() {
       }))
     }
 
-    if (!vehiclesRes.error && vehiclesRes.data) {
-      stats.vehiclesTotal = vehiclesRes.data.length
-      vehicles = vehiclesRes.data.map((v: any) => ({
-        id: v.id,
-        licensePlate: v.license_plate,
-        make: v.make,
-        model: v.model,
-        status: v.status || "offline",
-        location: v.current_lat && v.current_lng ? { lat: v.current_lat, lng: v.current_lng } : undefined,
-        driverName: v.driver ? `${v.driver.first_name} ${v.driver.last_name}` : undefined,
-        lastUpdate: v.location_updated_at,
-      }))
+      if (!vehiclesRes.error && vehiclesRes.data) {
+        stats.vehiclesTotal = vehiclesRes.data.length
+        vehicles = vehiclesRes.data.map((v: any) => ({
+          id: v.id,
+          licensePlate: v.license_plate,
+          make: v.make,
+          model: v.model,
+          status: v.status || "offline",
+          location: v.current_lat && v.current_lng ? { lat: v.current_lat, lng: v.current_lng } : undefined,
+          driverName: v.driver ? `${v.driver.first_name} ${v.driver.last_name}` : undefined,
+          lastUpdate: v.location_updated_at,
+        }))
+      }
     }
+    // Master-Account ohne Company: Zeige leeres Dashboard (stats bleiben bei 0, Listen leer)
   }
 
   const getStatusColor = (status: string) => {

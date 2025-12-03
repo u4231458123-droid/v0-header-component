@@ -1,0 +1,92 @@
+================================================================================
+  GITHUB SSH EINRICHTUNG - MYDISPATCH
+  Direkte Anleitung zum Ausführen in PowerShell
+================================================================================
+
+⚠️ WICHTIG: Diese SSH-Verbindung ist als Standard für alle GitHub-Arbeiten konfiguriert!
+
+SSH-Schlüssel-Informationen:
+- Name auf GitHub: "MyDispatch"
+- Typ: Ed25519
+- Fingerprint: SHA256:2xXUT7LoNP+tMvldKUkEEBRNP3rF8Om8KjemBe0ZcOk
+- Hinzugefügt am: 3. Dezember 2025
+- Status: Never used — Read/write
+- Privater Schlüssel: C:\Users\pcour\.ssh\id_ed25519_github
+- Öffentlicher Schlüssel: C:\Users\pcour\.ssh\id_ed25519_github.pub
+- Email: courbois1981@gmail.com
+
+Diese Verbindung wird automatisch für alle GitHub-Operationen verwendet!
+
+✅ VERBINDUNG ERFOLGREICH EINGERICHTET UND GETESTET!
+- SSH-Config erstellt: C:\Users\pcour\.ssh\config
+- Authentifizierung erfolgreich getestet
+- GitHub-Account: u4231458123-droid
+- Status: Bereit für alle Git-Operationen
+
+================================================================================
+
+SCHRITT 1: Öffne PowerShell (als Administrator nicht nötig)
+
+SCHRITT 2: Führe diese Befehle AUS (einzeln kopieren und ausführen):
+
+# 1. Prüfe ob .ssh Verzeichnis existiert, sonst erstellen
+if (-not (Test-Path "$env:USERPROFILE\.ssh")) {
+    New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" -Force
+}
+
+# 2. Generiere SSH-Key-Pair
+ssh-keygen -t ed25519 -C "courbois1981@gmail.com" -f "$env:USERPROFILE\.ssh\id_ed25519_github" -N '""'
+
+# 3. Zeige den öffentlichen Schlüssel an (KOPIERE DIESEN!)
+Get-Content "$env:USERPROFILE\.ssh\id_ed25519_github.pub"
+
+# 4. Erstelle SSH-Config
+@"
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile $env:USERPROFILE\.ssh\id_ed25519_github
+    IdentitiesOnly yes
+"@ | Out-File -FilePath "$env:USERPROFILE\.ssh\config" -Encoding UTF8 -NoNewline
+
+================================================================================
+SCHRITT 3: Öffentlichen Schlüssel zu GitHub hinzufügen
+================================================================================
+
+1. Gehe zu: https://github.com/settings/keys
+2. Klicke auf "New SSH key"
+3. Title: "MyDispatch Cursor"
+4. Key type: "Authentication Key"
+5. Key: FÜGE DEN KOPIERTEN ÖFFENTLICHEN SCHLÜSSEL EIN (aus Schritt 2, Befehl 3)
+6. Klicke "Add SSH key"
+
+================================================================================
+SCHRITT 4: Git Remote auf SSH umstellen
+================================================================================
+
+Führe in PowerShell aus (im Projektverzeichnis):
+
+cd "C:\Users\pcour\Downloads\v0-header-component-main\v0-header-component-main"
+git remote set-url origin git@github.com:u4231458123-droid/v0-header-component.git
+
+================================================================================
+SCHRITT 5: Verbindung testen
+================================================================================
+
+ssh -T git@github.com
+
+Erwartete Ausgabe:
+"Hi u4231458123-droid! You've successfully authenticated, but GitHub does not provide shell access."
+
+================================================================================
+SCHRITT 6: Änderungen committen und pushen
+================================================================================
+
+git add -A
+git commit -m "feat: SSH-Verbindung eingerichtet und Dashboard-Fixes"
+git push origin main
+
+================================================================================
+FERTIG!
+================================================================================
+

@@ -253,12 +253,10 @@ export function PWAInstallButton({
     )
   }
 
-  // Already installed: Hide button
-  if (isInstalled) {
-    return null
-  }
+  // WICHTIG: Button wird IMMER angezeigt, auch wenn bereits installiert
+  // Der Benutzer kann die App jederzeit neu installieren oder die Anleitung sehen
 
-  // Render button
+  // Render button - IMMER anzeigen
   return (
     <>
       <button
@@ -266,6 +264,7 @@ export function PWAInstallButton({
         onClick={handleInstallClick}
         disabled={isInstalling}
         className={className}
+        title={isInstalled ? "App bereits installiert - Anleitung anzeigen" : "App installieren"}
       >
         {isInstalling ? (
           <>
@@ -274,7 +273,7 @@ export function PWAInstallButton({
           </>
         ) : (
           <>
-            {children || "App installieren"}
+            {children || (isInstalled ? "Installationsanleitung" : "App installieren")}
             {showIcon && <DownloadIcon />}
           </>
         )}
