@@ -10,6 +10,17 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 import { format, differenceInMinutes } from "date-fns"
 import { de } from "date-fns/locale"
 import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
@@ -97,6 +108,10 @@ export default function FahrerPortalPage() {
   const [shiftTime, setShiftTime] = useState("00:00:00")
   const [breakTime, setBreakTime] = useState("00:00:00")
   const [activeTab, setActiveTab] = useState("fahrten")
+  const [showStartShiftDialog, setShowStartShiftDialog] = useState(false)
+  const [showStartBreakDialog, setShowStartBreakDialog] = useState(false)
+  const [showEndBreakDialog, setShowEndBreakDialog] = useState(false)
+  const [showEndShiftDialog, setShowEndShiftDialog] = useState(false)
 
   const primaryColor = "#343f60"
 
@@ -222,82 +237,70 @@ export default function FahrerPortalPage() {
   const startShift = async () => {
     if (!driver) return
 
-    const { data, error } = await supabase
-      .from("driver_shifts")
-      .insert({
-        driver_id: driver.id,
-        company_id: driver.company_id,
-        shift_start: new Date().toISOString(),
-        status: "active",
-        breaks: [],
-        total_bookings: 0,
-        total_revenue: 0,
-      })
-      .select()
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from("driver_shifts")
+        .insert({
+          driver_id: driver.id,
+          company_id: driver.company_id,
+          shift_start: new Date().toISOString(),
+          status: "active",
+          breaks: [],
+          total_bookings: 0,
+          total_revenue: 0,
+        })
+        .select()
+        .single()
 
-    if (data) {
-      setCurrentShift(data)
+      if (error) throw error
+
+      if (data) {
+        setCurrentShift(data)
+        toast.success("Schicht erfolgreich gestartet")
+      }
+    } catch (error: any) {
+      console.error("Error starting shift:", error)
+      toast.error("Fehler beim Starten der Schicht")
+    } finally {
+      setShowStartShiftDialog(false)
     }
   }
 
   const startBreak = async () => {
     if (!currentShift) return
 
-    const newBreaks = [...currentShift.breaks, { start: new Date().toISOString() }]
+    try {
+      const newBreaks = [...currentShift.breaks, { start: new Date().toISOString() }]
 
-    const { data, error } = await supabase
-      .from("driver_shifts")
-      .update({
-        status: "break",
-        breaks: newBreaks,
-      })
-      .eq("id", currentShift.id)
-      .select()
-      .single()
+      const { data, error } = await supabase
+        .from("driver_shifts")
+        .update({
+          status: "break",
+          breaks: newBreaks,
+        })
+        .eq("id", currentShift.id)
+        .select()
+        .single()
 
-    if (data) {
-      setCurrentShift(data)
+      if (error) throw error
+
+      if (data) {
+        setCurrentShift(data)
+        toast.success("Pause gestartet")
+      }
+    } catch (error: any) {
+      console.error("Error starting break:", error)
+      toast.error("Fehler beim Starten der Pause")
+    } finally {
+      setShowStartBreakDialog(false)
     }
   }
 
   const endBreak = async () => {
     if (!currentShift) return
 
-    const newBreaks = currentShift.breaks.map((b, i) => {
-      if (i === currentShift.breaks.length - 1 && !b.end) {
-        const start = new Date(b.start)
-        const end = new Date()
-        return {
-          ...b,
-          end: end.toISOString(),
-          duration_minutes: differenceInMinutes(end, start),
-        }
-      }
-      return b
-    })
-
-    const { data, error } = await supabase
-      .from("driver_shifts")
-      .update({
-        status: "active",
-        breaks: newBreaks,
-      })
-      .eq("id", currentShift.id)
-      .select()
-      .single()
-
-    if (data) {
-      setCurrentShift(data)
-    }
-  }
-
-  const endShift = async () => {
-    if (!currentShift) return
-
-    let finalBreaks = currentShift.breaks
-    if (currentShift.status === "break") {
-      finalBreaks = currentShift.breaks.map((b, i) => {
+    try {
+      const newBreaks = currentShift.breaks.map((b, i) => {
         if (i === currentShift.breaks.length - 1 && !b.end) {
           const start = new Date(b.start)
           const end = new Date()
@@ -309,22 +312,74 @@ export default function FahrerPortalPage() {
         }
         return b
       })
+
+      const { data, error } = await supabase
+        .from("driver_shifts")
+        .update({
+          status: "active",
+          breaks: newBreaks,
+        })
+        .eq("id", currentShift.id)
+        .select()
+        .single()
+
+      if (error) throw error
+
+      if (data) {
+        setCurrentShift(data)
+        toast.success("Pause beendet")
+      }
+    } catch (error: any) {
+      console.error("Error ending break:", error)
+      toast.error("Fehler beim Beenden der Pause")
+    } finally {
+      setShowEndBreakDialog(false)
     }
+  }
 
-    const { data, error } = await supabase
-      .from("driver_shifts")
-      .update({
-        status: "completed",
-        shift_end: new Date().toISOString(),
-        breaks: finalBreaks,
-        total_bookings: pendingBookings.filter((b) => b.status === "completed").length,
-      })
-      .eq("id", currentShift.id)
-      .select()
-      .single()
+  const endShift = async () => {
+    if (!currentShift) return
 
-    if (data) {
-      setCurrentShift(null)
+    try {
+      let finalBreaks = currentShift.breaks
+      if (currentShift.status === "break") {
+        finalBreaks = currentShift.breaks.map((b, i) => {
+          if (i === currentShift.breaks.length - 1 && !b.end) {
+            const start = new Date(b.start)
+            const end = new Date()
+            return {
+              ...b,
+              end: end.toISOString(),
+              duration_minutes: differenceInMinutes(end, start),
+            }
+          }
+          return b
+        })
+      }
+
+      const { data, error } = await supabase
+        .from("driver_shifts")
+        .update({
+          status: "completed",
+          shift_end: new Date().toISOString(),
+          breaks: finalBreaks,
+          total_bookings: pendingBookings.filter((b) => b.status === "completed").length,
+        })
+        .eq("id", currentShift.id)
+        .select()
+        .single()
+
+      if (error) throw error
+
+      if (data) {
+        setCurrentShift(null)
+        toast.success("Schicht erfolgreich beendet")
+      }
+    } catch (error: any) {
+      console.error("Error ending shift:", error)
+      toast.error("Fehler beim Beenden der Schicht")
+    } finally {
+      setShowEndShiftDialog(false)
     }
   }
 
@@ -540,14 +595,32 @@ export default function FahrerPortalPage() {
           </CardHeader>
           <CardContent>
             {!currentShift || currentShift.status === "completed" ? (
-              <Button
-                onClick={startShift}
-                className="w-full h-14 text-lg text-white"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <Play className="mr-2 h-5 w-5" />
-                Schicht starten
-              </Button>
+              <>
+                <Button
+                  onClick={() => setShowStartShiftDialog(true)}
+                  className="w-full h-14 text-lg text-white"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <Play className="mr-2 h-5 w-5" />
+                  Schicht starten
+                </Button>
+                <AlertDialog open={showStartShiftDialog} onOpenChange={setShowStartShiftDialog}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Schicht starten?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Möchten Sie wirklich Ihre Schicht jetzt starten? Die Schichtzeit wird ab sofort gezählt.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                      <AlertDialogAction onClick={startShift} style={{ backgroundColor: primaryColor }}>
+                        Schicht starten
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
             ) : (
               <div className="space-y-4">
                 {/* Timer Display */}
@@ -565,20 +638,71 @@ export default function FahrerPortalPage() {
                 {/* Schicht-Buttons */}
                 <div className="grid grid-cols-2 gap-3">
                   {currentShift.status === "active" ? (
-                    <Button onClick={startBreak} variant="secondary" className="h-12">
-                      <Coffee className="mr-2 h-4 w-4" />
-                      Pause starten
-                    </Button>
+                    <>
+                      <Button onClick={() => setShowStartBreakDialog(true)} variant="secondary" className="h-12">
+                        <Coffee className="mr-2 h-4 w-4" />
+                        Pause starten
+                      </Button>
+                      <AlertDialog open={showStartBreakDialog} onOpenChange={setShowStartBreakDialog}>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Pause starten?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Möchten Sie wirklich eine Pause starten? Die Pausenzeit wird ab sofort gezählt.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                            <AlertDialogAction onClick={startBreak}>Pause starten</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
                   ) : (
-                    <Button onClick={endBreak} variant="secondary" className="h-12">
-                      <Play className="mr-2 h-4 w-4" />
-                      Pause beenden
-                    </Button>
+                    <>
+                      <Button onClick={() => setShowEndBreakDialog(true)} variant="secondary" className="h-12">
+                        <Play className="mr-2 h-4 w-4" />
+                        Pause beenden
+                      </Button>
+                      <AlertDialog open={showEndBreakDialog} onOpenChange={setShowEndBreakDialog}>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Pause beenden?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Möchten Sie die Pause jetzt beenden und mit der Schicht fortfahren?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                            <AlertDialogAction onClick={endBreak}>Pause beenden</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
                   )}
-                  <Button onClick={endShift} variant="destructive" className="h-12">
-                    <Square className="mr-2 h-4 w-4" />
-                    Schicht beenden
-                  </Button>
+                  <>
+                    <Button onClick={() => setShowEndShiftDialog(true)} variant="destructive" className="h-12">
+                      <Square className="mr-2 h-4 w-4" />
+                      Schicht beenden
+                    </Button>
+                    <AlertDialog open={showEndShiftDialog} onOpenChange={setShowEndShiftDialog}>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Schicht beenden?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Möchten Sie wirklich Ihre Schicht jetzt beenden? Diese Aktion kann nicht rückgängig gemacht
+                            werden. Die Schicht wird als abgeschlossen markiert.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                          <AlertDialogAction onClick={endShift} className="bg-destructive hover:bg-destructive/90">
+                            Schicht beenden
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
                 </div>
               </div>
             )}
