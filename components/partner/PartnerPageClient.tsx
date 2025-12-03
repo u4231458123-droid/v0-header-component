@@ -627,6 +627,38 @@ export function PartnerPageClient({
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          {/* Eigene Partnernummer - Prominent angezeigt */}
+          {company?.mydispatch_id && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  Ihre MyDispatch-Partnernummer
+                </CardTitle>
+                <CardDescription>
+                  Diese Nummer können Sie anderen Unternehmen mitteilen, um Partnerschaftsanfragen zu erhalten
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between p-4 bg-background rounded-lg border-2 border-primary/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">MyDispatch-ID</p>
+                      <p className="text-2xl font-bold text-primary font-mono">{company.mydispatch_id}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" onClick={copyMdId}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Kopieren
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Partner suchen */}
           <Card>
             <CardHeader>
