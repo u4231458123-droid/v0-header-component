@@ -12,8 +12,8 @@ Die folgenden Secrets müssen in GitHub Repository Settings → Secrets and vari
 - `VERCEL_PROJECT_ID`: (Optional - wird automatisch aus Projekt-Name ermittelt)
 
 ### Supabase
-- `NEXT_PUBLIC_SUPABASE_URL`: `<Ihre-Supabase-URL>`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: `<Ihr-Supabase-Anon-Key>`
+- `NEXT_PUBLIC_SUPABASE_URL`: `https://ygpwuiygivxoqtyoigtg.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHd1aXlnaXZ4b3F0eW9pZ3RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NDQzNDIsImV4cCI6MjA3NjAyMDM0Mn0.1ZJtuko179K8j7bm6K3FwtpS5POY6RVu3Ixeh1ye3KE`
 
 ### AI/ML APIs
 - `HUGGINGFACE_API_KEY`: `<Ihr-HuggingFace-API-Key>`
@@ -22,7 +22,7 @@ Die folgenden Secrets müssen in GitHub Repository Settings → Secrets and vari
 - `GEMINI_API_KEY`: `<Ihr-Gemini-API-Key>` (New standard)
 
 ### Supabase Service Role (für Backend-Operationen)
-- `SUPABASE_SERVICE_ROLE_KEY`: `<Ihr-Supabase-Service-Role-Key>`
+- `SUPABASE_SERVICE_ROLE_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHd1aXlnaXZ4b3F0eW9pZ3RnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQ0NDM0MywiZXhwIjoyMDc2MDIwMzQzfQ.W_rbOUxa57VffJiUX9TClCAFB6m11qS2GVxpEzWQ56Q`
 
 ### Vercel Webhook (für Deployment-Events)
 - `VERCEL_WEBHOOK_SECRET`: `mbDmy0nOH2HjaK53lHX2gvLM` (KRITISCH - für Webhook-Signatur-Verifizierung)
@@ -45,8 +45,9 @@ Die folgenden Secrets müssen in GitHub Repository Settings → Secrets and vari
 Erstelle eine `.env.local` Datei im Projekt-Root:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=<Ihre-Supabase-URL>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<Ihr-Supabase-Anon-Key>
+NEXT_PUBLIC_SUPABASE_URL=https://ygpwuiygivxoqtyoigtg.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHd1aXlnaXZ4b3F0eW9pZ3RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NDQzNDIsImV4cCI6MjA3NjAyMDM0Mn0.1ZJtuko179K8j7bm6K3FwtpS5POY6RVu3Ixeh1ye3KE
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHd1aXlnaXZ4b3F0eW9pZ3RnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQ0NDM0MywiZXhwIjoyMDc2MDIwMzQzfQ.W_rbOUxa57VffJiUX9TClCAFB6m11qS2GVxpEzWQ56Q
 HUGGINGFACE_API_KEY=<Ihr-HuggingFace-API-Key>
 ANTHROPIC_API_KEY=<Ihr-Anthropic-API-Key>
 GEMINI_API_KEY=<Ihr-Gemini-API-Key>
