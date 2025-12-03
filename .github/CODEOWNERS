@@ -1,0 +1,44 @@
+# MyDispatch Code Owners
+# ======================
+# Diese Datei definiert, wer für welche Bereiche des Codes verantwortlich ist
+# Code-Owner müssen Pull Requests für ihre Bereiche approven
+
+# Core AI System & Bots
+/lib/ai/bots/ @mydispatch-team
+/lib/ai/ @mydispatch-team
+/lib/cicd/ @mydispatch-team
+
+# CI/CD Pipeline
+/.github/workflows/ @mydispatch-team
+/.github/ @mydispatch-team
+
+# Database & Migrations
+/scripts/migrations/ @mydispatch-team
+/types/supabase.ts @mydispatch-team
+/lib/supabase/ @mydispatch-team
+
+# Critical Configuration
+/vercel.json @mydispatch-team
+/package.json @mydispatch-team
+/next.config.mjs @mydispatch-team
+/tsconfig.json @mydispatch-team
+
+# Authentication & Security
+/app/auth/ @mydispatch-team
+/middleware.ts @mydispatch-team
+/lib/tier-guard.tsx @mydispatch-team
+
+# API Routes
+/app/api/ @mydispatch-team
+
+# Core Components
+/components/layout/ @mydispatch-team
+/components/ui/ @mydispatch-team
+
+# Knowledge Base & Documentation
+/lib/knowledge-base/ @mydispatch-team
+/docs/ @mydispatch-team
+
+# All other files
+* @mydispatch-team
+
