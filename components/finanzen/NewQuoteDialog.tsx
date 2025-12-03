@@ -281,6 +281,12 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
         return
       }
 
+      if (!validUntil) {
+        toast.error("Bitte geben Sie ein Gültigkeitsdatum an")
+        setLoading(false)
+        return
+      }
+
       if (items.some((item) => !item.description || item.unitPrice <= 0)) {
         toast.error("Bitte füllen Sie alle Positionen aus")
         setLoading(false)
@@ -577,8 +583,8 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
 
             {/* Gültig bis */}
             <div className="grid gap-2">
-              <Label>Angebot gültig bis</Label>
-              <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
+              <Label>Angebot gültig bis *</Label>
+              <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} required />
             </div>
 
             {/* Datum und Uhrzeit */}

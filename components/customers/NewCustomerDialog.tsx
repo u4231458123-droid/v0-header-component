@@ -80,8 +80,13 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!firstName.trim() || !lastName.trim() || !phone.trim()) {
-      toast.error("Bitte fuellen Sie alle Pflichtfelder aus")
+    if (!salutation || !firstName.trim() || !lastName.trim() || !phone.trim()) {
+      toast.error("Bitte fuellen Sie alle Pflichtfelder aus (Anrede, Vorname, Nachname, Telefon)")
+      return
+    }
+
+    if (addressType === "business" && !companyName.trim()) {
+      toast.error("Bitte geben Sie einen Firmenname ein")
       return
     }
 
@@ -179,12 +184,13 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
             {/* Firmenname bei Geschaeftskunden */}
             {addressType === "business" && (
               <div className="grid gap-2">
-                <Label htmlFor="company_name">Firmenname</Label>
+                <Label htmlFor="company_name">Firmenname *</Label>
                 <Input
                   id="company_name"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Musterfirma GmbH"
+                  required
                 />
               </div>
             )}
@@ -192,8 +198,8 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
             {/* Anrede, Vorname, Nachname */}
             <div className="grid grid-cols-3 gap-4">
               <div className="grid gap-2">
-                <Label>Anrede</Label>
-                <Select value={salutation} onValueChange={setSalutation}>
+                <Label>Anrede *</Label>
+                <Select value={salutation} onValueChange={setSalutation} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Wählen" />
                   </SelectTrigger>

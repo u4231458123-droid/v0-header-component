@@ -229,6 +229,8 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
     if (!formData.first_name) newErrors.first_name = "Vorname ist erforderlich"
     if (!formData.last_name) newErrors.last_name = "Nachname ist erforderlich"
     if (!formData.phone) newErrors.phone = "Telefonnummer ist erforderlich"
+    if (!formData.license_number) newErrors.license_number = "Fuehrerscheinnummer ist erforderlich"
+    if (!formData.license_expiry) newErrors.license_expiry = "Fuehrerschein-Ablaufdatum ist erforderlich"
 
     if (createCredentials) {
       if (!formData.email) newErrors.email = "E-Mail ist erforderlich fuer Zugangsdaten"
@@ -252,6 +254,16 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
 
     if (!formData.first_name || !formData.last_name) {
       toast.error("Bitte Vor- und Nachnamen eingeben")
+      return
+    }
+
+    if (!formData.license_number) {
+      toast.error("Bitte geben Sie die Fuehrerscheinnummer ein")
+      return
+    }
+
+    if (!formData.license_expiry) {
+      toast.error("Bitte geben Sie das Fuehrerschein-Ablaufdatum ein")
       return
     }
 
@@ -646,14 +658,16 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="license_expiry">Gueltig bis</Label>
+                  <Label htmlFor="license_expiry">Gueltig bis *</Label>
                   <Input
                     id="license_expiry"
                     type="date"
                     value={formData.license_expiry}
                     onChange={(e) => updateField("license_expiry", e.target.value)}
-                    className="rounded-xl"
+                    className={`rounded-xl ${errors.license_expiry ? "border-destructive" : ""}`}
+                    required
                   />
+                  {errors.license_expiry && <p className="text-xs text-destructive">{errors.license_expiry}</p>}
                 </div>
               </div>
 
