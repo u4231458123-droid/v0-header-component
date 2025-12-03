@@ -51,12 +51,22 @@ export function PWAInstallButton({
       window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true
     setIsInstalled(isInStandaloneMode)
 
-    // Check for existing prompt
-    if (window.deferredPWAPrompt) {
-      setDeferredPrompt(window.deferredPWAPrompt)
+    // Check for existing prompt (from ServiceWorkerRegistration)
+    const checkForPrompt = () => {
+      if (window.deferredPWAPrompt) {
+        setDeferredPrompt(window.deferredPWAPrompt)
+      }
+    }
+    
+    // Check immediately
+    checkForPrompt()
+    
+    // Also listen for custom event from ServiceWorkerRegistration
+    const handlePWAAvailable = () => {
+      checkForPrompt()
     }
 
-    // Listen for beforeinstallprompt
+    // Listen for beforeinstallprompt (fallback if ServiceWorkerRegistration doesn't catch it)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       const promptEvent = e as BeforeInstallPromptEvent
@@ -73,10 +83,12 @@ export function PWAInstallButton({
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     window.addEventListener("appinstalled", handleAppInstalled)
+    window.addEventListener("pwa-install-available", handlePWAAvailable)
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
       window.removeEventListener("appinstalled", handleAppInstalled)
+      window.removeEventListener("pwa-install-available", handlePWAAvailable)
     }
   }, [])
 
@@ -89,22 +101,38 @@ export function PWAInstallButton({
       return
     }
 
-    // Get prompt from window or state
-    const prompt = window.deferredPWAPrompt || deferredPrompt
+    // Get prompt from window (most reliable) or state
+    // Always check window first, as ServiceWorkerRegistration might have set it
+    let prompt = window.deferredPWAPrompt || deferredPrompt
+    
+    // If no prompt in state but exists in window, sync it
+    if (!deferredPrompt && window.deferredPWAPrompt) {
+      setDeferredPrompt(window.deferredPWAPrompt)
+      prompt = window.deferredPWAPrompt
+    }
 
     // If prompt available, trigger it immediately
     if (prompt) {
       setIsInstalling(true)
       try {
+        // Trigger the native browser prompt
         await prompt.prompt()
         const { outcome } = await prompt.userChoice
+        
         if (outcome === "accepted") {
           setDeferredPrompt(null)
           window.deferredPWAPrompt = null
           setIsInstalled(true)
+        } else {
+          // User dismissed - keep prompt for next time
+          console.log("[PWA] User dismissed install prompt")
         }
       } catch (error) {
         console.error("[PWA] Install error:", error)
+        // If prompt fails, it might be invalid - clear it
+        setDeferredPrompt(null)
+        window.deferredPWAPrompt = null
+        setShowModal(true)
       } finally {
         setIsInstalling(false)
       }
@@ -112,6 +140,7 @@ export function PWAInstallButton({
     }
 
     // No prompt available - show modal
+    console.warn("[PWA] No install prompt available")
     setShowModal(true)
   }, [deferredPrompt, isIOS])
 
