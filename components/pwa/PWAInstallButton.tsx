@@ -2,21 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
-
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[]
-  readonly userChoice: Promise<{
-    outcome: "accepted" | "dismissed"
-    platform: string
-  }>
-  prompt(): Promise<void>
-}
-
-declare global {
-  interface Window {
-    deferredPWAPrompt: BeforeInstallPromptEvent | null
-  }
-}
+import { getPWAManager } from "@/lib/pwa/pwa-manager"
 
 interface PWAInstallButtonProps {
   className?: string
@@ -29,7 +15,7 @@ export function PWAInstallButton({
   children,
   showIcon = true,
 }: PWAInstallButtonProps) {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [hasPrompt, setHasPrompt] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -41,97 +27,42 @@ export function PWAInstallButton({
 
     if (typeof window === "undefined") return
 
-    // iOS Detection
-    const userAgent = navigator.userAgent.toLowerCase()
-    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent) && !(window as any).MSStream
-    setIsIOS(isIOSDevice)
-
-    // Check if already installed
-    const isInStandaloneMode =
-      window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true
-    setIsInstalled(isInStandaloneMode)
-
-    // Check for existing prompt (from ServiceWorkerRegistration)
-    const checkForPrompt = () => {
-      if (window.deferredPWAPrompt) {
-        setDeferredPrompt(window.deferredPWAPrompt)
-      }
-    }
+    const manager = getPWAManager()
     
-    // Check immediately
-    checkForPrompt()
-    
-    // Also listen for custom event from ServiceWorkerRegistration
-    const handlePWAAvailable = () => {
-      checkForPrompt()
-    }
+    setIsIOS(manager.isIOS())
+    setIsInstalled(manager.isInstalled())
 
-    // Listen for beforeinstallprompt (fallback if ServiceWorkerRegistration doesn't catch it)
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      const promptEvent = e as BeforeInstallPromptEvent
-      window.deferredPWAPrompt = promptEvent
-      setDeferredPrompt(promptEvent)
-    }
+    // Subscribe to prompt changes
+    const unsubscribe = manager.subscribe((prompt) => {
+      setHasPrompt(!!prompt)
+    })
 
-    // Listen for app installed
-    const handleAppInstalled = () => {
-      setIsInstalled(true)
-      setDeferredPrompt(null)
-      window.deferredPWAPrompt = null
-    }
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-    window.addEventListener("appinstalled", handleAppInstalled)
-    window.addEventListener("pwa-install-available", handlePWAAvailable)
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-      window.removeEventListener("appinstalled", handleAppInstalled)
-      window.removeEventListener("pwa-install-available", handlePWAAvailable)
-    }
+    return unsubscribe
   }, [])
 
   const handleInstallClick = useCallback(async () => {
     if (typeof window === "undefined") return
 
+    const manager = getPWAManager()
+
     // iOS: Show modal with instructions
-    if (isIOS) {
+    if (manager.isIOS()) {
       setShowModal(true)
       return
     }
 
-    // Get prompt from window (most reliable) or state
-    // Always check window first, as ServiceWorkerRegistration might have set it
-    let prompt = window.deferredPWAPrompt || deferredPrompt
+    // Check if prompt is available
+    const prompt = manager.getPrompt()
     
-    // If no prompt in state but exists in window, sync it
-    if (!deferredPrompt && window.deferredPWAPrompt) {
-      setDeferredPrompt(window.deferredPWAPrompt)
-      prompt = window.deferredPWAPrompt
-    }
-
-    // If prompt available, trigger it immediately
     if (prompt) {
       setIsInstalling(true)
       try {
-        // Trigger the native browser prompt
-        await prompt.prompt()
-        const { outcome } = await prompt.userChoice
-        
-        if (outcome === "accepted") {
-          setDeferredPrompt(null)
-          window.deferredPWAPrompt = null
+        const result = await manager.triggerPrompt()
+        if (result?.outcome === "accepted") {
           setIsInstalled(true)
-        } else {
-          // User dismissed - keep prompt for next time
-          console.log("[PWA] User dismissed install prompt")
         }
       } catch (error) {
         console.error("[PWA] Install error:", error)
-        // If prompt fails, it might be invalid - clear it
-        setDeferredPrompt(null)
-        window.deferredPWAPrompt = null
         setShowModal(true)
       } finally {
         setIsInstalling(false)
@@ -140,9 +71,8 @@ export function PWAInstallButton({
     }
 
     // No prompt available - show modal
-    console.warn("[PWA] No install prompt available")
     setShowModal(true)
-  }, [deferredPrompt, isIOS])
+  }, [])
 
   // Icons
   const DownloadIcon = () => (
@@ -266,6 +196,7 @@ export function PWAInstallButton({
         onClick={handleInstallClick}
         disabled={isInstalling}
         className={className}
+        title={hasPrompt ? "App installieren" : "Installationsanleitung anzeigen"}
       >
         {isInstalling ? (
           <>
