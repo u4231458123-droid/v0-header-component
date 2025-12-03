@@ -250,7 +250,7 @@ export default function DriverDocumentsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/fahrer-portal">
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
@@ -261,16 +261,21 @@ export default function DriverDocumentsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Link href="/fahrer-portal">
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
                   <Home className="h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/fahrer-portal/profil">
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="ghost" size="icon" className="rounded-full" onClick={handleLogout}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-slate-700 hover:text-slate-900"
+                onClick={handleLogout}
+              >
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>
