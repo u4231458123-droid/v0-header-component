@@ -8,15 +8,21 @@
 ## 🚨 KRITISCH: Dashboard 404-Fehler
 
 **Problem:** Dashboard zeigt 404-Fehler nach Login  
-**Status:** 🔄 In Bearbeitung  
-**Priorität:** P0 - KRITISCH
+**Status:** ✅ BEHOBEN  
+**Priorität:** P0 - KRITISCH  
+**Lösung:** 
+- Try-Catch Block um gesamte Dashboard-Page
+- Detailliertes Error-Logging hinzugefügt
+- Error-Boundary (`app/dashboard/error.tsx`) erstellt
+- Fallback-Werte für alle Daten
+- **useEffect Import-Fehler behoben** in `CreateBookingDialog.tsx`
 
 ---
 
 ## 📝 Aufgabenliste (26 Aufgaben)
 
 ### 1. Home Seite: Ober Slider - "Preise - FAQ - Kontakt" Entfernen
-**Status:** ⏳ Offen  
+**Status:** ✅ BEHOBEN  
 **Priorität:** P1 - Hoch  
 **Datei:** `app/page.tsx` oder Header-Komponente  
 **Beschreibung:** Entferne "Preise - FAQ - Kontakt" aus dem oberen Slider/Navigation
@@ -40,7 +46,7 @@
 ---
 
 ### 4. Home Seite: Jahrespreise anpassen
-**Status:** ⏳ Offen  
+**Status:** ✅ BEHOBEN (31,20€ / 79,20€)  
 **Priorität:** P1 - Hoch  
 **Datei:** Pricing-Komponente  
 **Beschreibung:** Jahrespreise auf der Homepage anpassen

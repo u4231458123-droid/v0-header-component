@@ -347,7 +347,7 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="rounded-xl">
           <PlusIcon className="mr-2 h-4 w-4" />
           Neues Fahrzeug
         </Button>

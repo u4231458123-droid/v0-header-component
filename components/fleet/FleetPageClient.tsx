@@ -140,7 +140,7 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
 
         <div className="flex items-center gap-3">
           {/* Tab-Switcher im Header */}
-          <div className="flex items-center bg-muted rounded-xl p-1">
+          <div className="flex items-center bg-muted rounded-xl p-1 gap-1">
             <button
               onClick={() => setActiveTab("drivers")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -177,7 +177,7 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
             </button>
           </div>
 
-          {/* Action Button */}
+          {/* Action Button - einheitlich mit Tab-Buttons */}
           {activeTab === "drivers" ? (
             <NewDriverDialog
               companyId={companyId}

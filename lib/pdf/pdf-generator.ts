@@ -43,7 +43,7 @@ export function generatePDFHTML(data: PDFData): string {
   const hasLetterhead = !!data.company.briefpapier_url
   const letterheadUrl = data.company.briefpapier_url
 
-  // Standard DIN-Norm Format (A4: 210mm x 297mm)
+  // Standard DIN-Norm Format (A4: 210mm x 297mm) - Optimiert für professionelle Darstellung
   const baseStyles = `
     * { margin: 0; padding: 0; box-sizing: border-box; }
     @page {
@@ -53,7 +53,7 @@ export function generatePDFHTML(data: PDFData): string {
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       font-size: 11pt;
-      line-height: 1.5;
+      line-height: 1.6;
       color: #1a1a1a;
       width: 210mm;
       min-height: 297mm;
@@ -98,9 +98,11 @@ export function generatePDFHTML(data: PDFData): string {
       margin-bottom: 8px;
     }
     .document-title {
-      font-size: 24pt;
-      font-weight: bold;
-      margin-bottom: 24px;
+      font-size: 28pt;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
     }
     .meta-grid {
       display: grid;
@@ -110,13 +112,17 @@ export function generatePDFHTML(data: PDFData): string {
     }
     .label {
       font-size: 9pt;
-      color: #666;
+      color: #4a5568;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+      font-weight: 600;
     }
     .value {
       font-weight: 500;
+      font-size: 11pt;
+      color: #1a1a1a;
+      line-height: 1.5;
     }
     .address-block {
       margin-bottom: 24px;
@@ -128,16 +134,22 @@ export function generatePDFHTML(data: PDFData): string {
     }
     .table th {
       text-align: left;
-      padding: 12px 8px;
+      padding: 14px 12px;
       border-bottom: 2px solid #1a1a1a;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 9pt;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      background-color: #f8f9fa;
+      color: #1a1a1a;
     }
     .table td {
-      padding: 12px 8px;
+      padding: 14px 12px;
       border-bottom: 1px solid #e5e5e5;
+      font-size: 10.5pt;
+    }
+    .table tr:hover {
+      background-color: #f8f9fa;
     }
     .table .text-right {
       text-align: right;
@@ -160,12 +172,16 @@ export function generatePDFHTML(data: PDFData): string {
       margin-top: 8px;
     }
     .footer {
-      margin-top: 48px;
-      padding-top: 24px;
-      border-top: 1px solid #e5e5e5;
+      margin-top: 60px;
+      padding-top: 32px;
+      border-top: 2px solid #e5e5e5;
       font-size: 9pt;
-      color: #666;
+      color: #4a5568;
       text-align: center;
+      line-height: 1.8;
+    }
+    .footer p {
+      margin: 4px 0;
     }
     @media print {
       body {
