@@ -96,25 +96,49 @@ export default function LoginPage() {
           return
         }
 
-        // 1. Kunden-Account (courbois83@gmail.com)
-        if (userEmail === "courbois83@gmail.com") {
-           // Prüfe ob Kunde und leite direkt weiter
+        // 1. Kunden-Account (courbois83@gmail.com) - Case-insensitive
+        const normalizedEmail = userEmail?.toLowerCase().trim()
+        if (normalizedEmail === "courbois83@gmail.com") {
+           // Prüfe ob Kunde in customers Tabelle
            const { data: customer } = await supabase
             .from("customers")
-            .select("company_id")
+            .select("company_id, company:companies(company_slug)")
             .eq("user_id", userId)
             .maybeSingle()
             
            if (customer) {
-             const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
-             if (company) {
-               window.location.href = `/c/${company.company_slug}/kunde/portal`
+             const companySlug = (customer.company as any)?.company_slug
+             if (companySlug) {
+               window.location.href = `/c/${companySlug}/kunde/portal`
                return
              }
              window.location.href = "/kunden-portal"
              return
            }
-           // Fallback: Kunden-Portal
+           
+           // Prüfe customer_accounts als Fallback
+           const { data: customerAccount } = await supabase
+            .from("customer_accounts")
+            .select("registered_companies")
+            .eq("user_id", userId)
+            .maybeSingle()
+            
+           if (customerAccount && customerAccount.registered_companies && customerAccount.registered_companies.length > 0) {
+             // Nimm die erste registrierte Firma
+             const { data: company } = await supabase
+              .from("companies")
+              .select("company_slug")
+              .eq("id", customerAccount.registered_companies[0])
+              .maybeSingle()
+             
+             if (company) {
+               window.location.href = `/c/${company.company_slug}/kunde/portal`
+               return
+             }
+           }
+           
+           // Fallback: Kunden-Portal (auch wenn keine Verknüpfung existiert)
+           console.log("[Login] Kunden-Account erkannt, Weiterleitung zu /kunden-portal")
            window.location.href = "/kunden-portal"
            return
         }

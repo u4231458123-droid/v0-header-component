@@ -288,12 +288,43 @@ export default function CustomerPortalPage() {
       } = await supabase.auth.getUser()
       if (!user) return
 
-      // Lade Kundenaccount
-      const { data: customerData } = await supabase
-        .from("customer_accounts")
+      // Lade Kundenaccount - prüfe zuerst customers Tabelle, dann customer_accounts
+      let customerData = null
+      
+      // 1. Prüfe customers Tabelle (für direkt verknüpfte Kunden)
+      const { data: customerFromTable } = await supabase
+        .from("customers")
         .select("*")
         .eq("user_id", user.id)
-        .single()
+        .maybeSingle()
+      
+      if (customerFromTable) {
+        // Konvertiere customer zu customer_account Format
+        customerData = {
+          id: customerFromTable.id,
+          first_name: customerFromTable.first_name || "",
+          last_name: customerFromTable.last_name || "",
+          email: user.email || "",
+          phone: customerFromTable.phone || "",
+          street: customerFromTable.address_data?.street || "",
+          house_number: customerFromTable.address_data?.house_number || "",
+          postal_code: customerFromTable.address_data?.postal_code || "",
+          city: customerFromTable.address_data?.city || "",
+          preferred_payment_method: customerFromTable.preferred_payment_method || "cash",
+          registered_companies: customerFromTable.company_id ? [customerFromTable.company_id] : [],
+        }
+      } else {
+        // 2. Fallback: Prüfe customer_accounts Tabelle
+        const { data: customerAccountData } = await supabase
+          .from("customer_accounts")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle()
+        
+        if (customerAccountData) {
+          customerData = customerAccountData
+        }
+      }
 
       if (customerData) {
         setCustomer(customerData)
@@ -309,7 +340,7 @@ export default function CustomerPortalPage() {
           .eq("customer_id", customerData.id)
           .order("pickup_time", { ascending: false })
           .limit(50)
-
+        
         if (bookingsData) {
           setBookings(bookingsData)
         }
@@ -325,6 +356,9 @@ export default function CustomerPortalPage() {
         if (invoicesData) {
           setInvoices(invoicesData)
         }
+      } else {
+        // Kein Kundenaccount gefunden - zeige Fehlermeldung oder leite zur Registrierung
+        console.warn("Kein Kundenaccount gefunden für User:", user.id)
       }
     } catch (error) {
       console.error("Error loading customer data:", error)
