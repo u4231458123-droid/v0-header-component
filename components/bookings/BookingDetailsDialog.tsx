@@ -20,7 +20,10 @@ import {
   UsersIcon,
   ReceiptIcon,
   Edit,
+  Printer,
 } from "lucide-react"
+import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { createClient } from "@/lib/supabase/client"
 
 interface BookingDetailsDialogProps {
   booking: any
@@ -32,6 +35,8 @@ interface BookingDetailsDialogProps {
 export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: BookingDetailsDialogProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [currentBooking, setCurrentBooking] = useState(booking)
+  const [printing, setPrinting] = useState(false)
+  const supabase = createClient()
 
   if (!currentBooking) return null
 
@@ -68,6 +73,65 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
     setEditDialogOpen(false)
     if (onUpdate) {
       onUpdate(updatedBooking)
+    }
+  }
+
+  const handlePrintPDF = async () => {
+    setPrinting(true)
+    try {
+      // Lade Company-Daten
+      const { data: company } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("id", currentBooking.company_id)
+        .single()
+
+      if (!company) {
+        throw new Error("Unternehmen nicht gefunden")
+      }
+
+      // Lade vollständige Booking-Daten mit Relations
+      const { data: fullBooking } = await supabase
+        .from("bookings")
+        .select(
+          `
+          *,
+          customer:customers(*),
+          driver:drivers(*),
+          vehicle:vehicles(*)
+        `,
+        )
+        .eq("id", currentBooking.id)
+        .single()
+
+      if (!fullBooking) {
+        throw new Error("Auftrag nicht gefunden")
+      }
+
+      // Generiere PDF
+      downloadPDF({
+        type: "booking",
+        company: {
+          id: company.id,
+          name: company.name,
+          address: company.address || undefined,
+          email: company.email || undefined,
+          phone: company.phone || undefined,
+          tax_id: (company.legal_info as any)?.tax_id || undefined,
+          vat_id: (company.legal_info as any)?.vat_id || undefined,
+          logo_url: company.logo_url || undefined,
+          briefpapier_url: (company as any).briefpapier_url || undefined,
+          bank_info: (company.bank_info as any) || undefined,
+          is_small_business: company.is_small_business || false,
+          small_business_note: company.small_business_note || undefined,
+        },
+        content: fullBooking,
+      })
+    } catch (error) {
+      console.error("Error printing PDF:", error)
+      alert("Fehler beim Erstellen des PDFs")
+    } finally {
+      setPrinting(false)
     }
   }
 
@@ -311,6 +375,15 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
           <DialogFooter className="mt-6 pt-4 border-t border-border">
             <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl">
               Schliessen
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handlePrintPDF}
+              disabled={printing}
+              className="gap-2 rounded-xl"
+            >
+              <Printer className="h-4 w-4" />
+              {printing ? "Wird erstellt..." : "PDF Drucken"}
             </Button>
             <Button onClick={() => setEditDialogOpen(true)} className="gap-2 rounded-xl">
               <Edit className="h-4 w-4" />

@@ -172,8 +172,10 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         return
       }
 
-      // ... existing customer check code ...
+      // Prüfe ob Kunde (courbois83@gmail.com oder andere Kunden)
+      const isCustomerAccount = userEmail === "courbois83@gmail.com"
 
+      // Prüfe customers Tabelle
       const { data: customer } = await supabase
         .from("customers")
         .select("id, company_id, user_id")
@@ -186,6 +188,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         return
       }
 
+      // Prüfe customer_accounts Tabelle (für courbois83@gmail.com oder andere)
       const { data: customerAccount } = await supabase
         .from("customer_accounts")
         .select("id, registered_companies")

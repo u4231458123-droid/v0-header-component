@@ -264,7 +264,10 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
 
         const { error: insuranceError } = await supabase.from("vehicle_insurance").insert(insuranceData)
 
-        // Insurance error - vehicle was already created
+        if (insuranceError) {
+          console.error("Insurance insert error (non-critical):", insuranceError)
+          // Vehicle was already created, so we continue
+        }
       }
 
       toast.success("Fahrzeug erfolgreich hinzugefuegt")

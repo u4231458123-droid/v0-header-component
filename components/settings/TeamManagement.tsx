@@ -193,6 +193,24 @@ export function TeamManagement({
 
       if (error) throw error
 
+      // Sende E-Mail-Einladung
+      const emailResponse = await fetch("/api/team/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: inviteForm.email.toLowerCase(),
+          role: inviteForm.role,
+          companyId,
+          token,
+        }),
+      })
+
+      if (!emailResponse.ok) {
+        console.error("Failed to send invitation email")
+        // Einladung wurde erstellt, aber E-Mail konnte nicht gesendet werden
+        // Das ist nicht kritisch, da der Link auch manuell geteilt werden kann
+      }
+
       // Log activity
       await supabase.from("activity_log").insert({
         company_id: companyId,

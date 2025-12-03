@@ -40,9 +40,25 @@ export function generateEmailHTML(
   companyData?: CompanyEmailData,
   isMyDispatch: boolean = false
 ): string {
-  const logoUrl = isMyDispatch
-    ? "/images/mydispatch-3d-logo.png"
-    : companyData?.logo_url || "/images/mydispatch-3d-logo.png"
+  // Basis-URL für absolute Logo-URLs in E-Mails
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || "https://www.my-dispatch.de"
+  
+  // Logo-URL: Wenn companyData.logo_url bereits eine absolute URL ist (z.B. Supabase Storage), verwende diese
+  // Sonst generiere absolute URL für das Standard-Logo
+  let logoUrl: string
+  if (isMyDispatch) {
+    logoUrl = `${baseUrl}/images/mydispatch-3d-logo.png`
+  } else if (companyData?.logo_url) {
+    // Prüfe ob logo_url bereits eine absolute URL ist (beginnt mit http:// oder https://)
+    if (companyData.logo_url.startsWith("http://") || companyData.logo_url.startsWith("https://")) {
+      logoUrl = companyData.logo_url
+    } else {
+      // Relativer Pfad - mache absolut
+      logoUrl = `${baseUrl}${companyData.logo_url.startsWith("/") ? "" : "/"}${companyData.logo_url}`
+    }
+  } else {
+    logoUrl = `${baseUrl}/images/mydispatch-3d-logo.png`
+  }
 
   const companyName = isMyDispatch ? "MyDispatch" : companyData?.name || "MyDispatch"
   const companyEmail = isMyDispatch ? "info@my-dispatch.de" : companyData?.email || "info@my-dispatch.de"

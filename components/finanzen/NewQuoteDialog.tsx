@@ -145,10 +145,14 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
     { id: "1", description: "Personenbeförderung", quantity: 1, unit: "Fahrt", unitPrice: 0 },
   ])
 
-  const taxRate = 7
+  // MwSt. Einstellungen
+  const [taxRate, setTaxRate] = useState<number>(19) // Standard: 19%
+  const [taxIncluded, setTaxIncluded] = useState<boolean>(false) // false = exkl., true = inkl.
+
+  // Berechnung: Wenn inkl., dann subtotal = total / (1 + taxRate/100), sonst subtotal = sum(items)
   const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
-  const taxAmount = subtotal * (taxRate / 100)
-  const totalAmount = subtotal + taxAmount
+  const taxAmount = taxIncluded ? subtotal - subtotal / (1 + taxRate / 100) : subtotal * (taxRate / 100)
+  const totalAmount = taxIncluded ? subtotal : subtotal + taxAmount
 
   // Gefilterte Kunden
   const filteredCustomers = customers.filter((c) => {
@@ -227,6 +231,8 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
     setNotes("")
     setPaymentTerms("Zahlbar innerhalb von 14 Tagen nach Auftragserteilung.")
     setItems([{ id: "1", description: "Personenbeförderung", quantity: 1, unit: "Fahrt", unitPrice: 0 }])
+    setTaxRate(19)
+    setTaxIncluded(false)
   }
 
   const setDefaultValidUntil = () => {
@@ -310,7 +316,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
           quote_number: quoteNumber,
           status: "draft",
           valid_until: validUntil || null,
-          subtotal,
+          subtotal: taxIncluded ? subtotal / (1 + taxRate / 100) : subtotal,
           tax_rate: taxRate,
           tax_amount: taxAmount,
           total_amount: totalAmount,
@@ -860,8 +866,12 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                     type="number"
                     step="0.01"
                     min="0"
-                    value={item.unitPrice}
-                    onChange={(e) => updateItem(item.id, "unitPrice", Number.parseFloat(e.target.value) || 0)}
+                    value={item.unitPrice || ""}
+                    onChange={(e) => {
+                      const val = e.target.value === "" ? 0 : Number.parseFloat(e.target.value) || 0
+                      updateItem(item.id, "unitPrice", val)
+                    }}
+                    placeholder="0.00"
                   />
                 </div>
                 <div className="col-span-1 flex justify-center">
@@ -878,18 +888,49 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
               </div>
             ))}
 
+            {/* MwSt. Einstellungen */}
+            <div className="grid grid-cols-2 gap-4 pt-3 border-t">
+              <div className="grid gap-2">
+                <Label>MwSt. Satz</Label>
+                <Select value={String(taxRate)} onValueChange={(v) => setTaxRate(Number.parseFloat(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0% MwSt.</SelectItem>
+                    <SelectItem value="7">7% MwSt.</SelectItem>
+                    <SelectItem value="19">19% MwSt.</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>MwSt. Art</Label>
+                <Select value={taxIncluded ? "inkl" : "exkl"} onValueChange={(v) => setTaxIncluded(v === "inkl")}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="exkl">MwSt. exklusive</SelectItem>
+                    <SelectItem value="inkl">MwSt. inclusive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             {/* Summen */}
             <div className="flex flex-col items-end gap-1 pt-3 border-t text-sm">
               <div className="flex justify-between w-40">
-                <span className="text-muted-foreground">Netto:</span>
+                <span className="text-muted-foreground">{taxIncluded ? "Brutto (inkl. MwSt.):" : "Netto:"}</span>
                 <span>{safeNumber(subtotal).toFixed(2)} €</span>
               </div>
-              <div className="flex justify-between w-40">
-                <span className="text-muted-foreground">MwSt. ({taxRate}%):</span>
-                <span>{safeNumber(taxAmount).toFixed(2)} €</span>
-              </div>
+              {taxRate > 0 && (
+                <div className="flex justify-between w-40">
+                  <span className="text-muted-foreground">MwSt. ({taxRate}%):</span>
+                  <span>{safeNumber(taxAmount).toFixed(2)} €</span>
+                </div>
+              )}
               <div className="flex justify-between w-40 font-semibold">
-                <span>Gesamt:</span>
+                <span>{taxIncluded ? "Gesamt (inkl. MwSt.):" : "Gesamt (inkl. MwSt.):"}</span>
                 <span>{safeNumber(totalAmount).toFixed(2)} €</span>
               </div>
             </div>

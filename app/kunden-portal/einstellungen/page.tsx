@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Settings, User, Bell, Shield, Loader2, Save } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -26,6 +27,8 @@ export default function KundenPortalEinstellungenPage() {
   
   // Form State
   const [formData, setFormData] = useState({
+    salutation: "",
+    title: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -63,7 +66,16 @@ export default function KundenPortalEinstellungenPage() {
 
       if (customerData) {
         setCustomer(customerData)
+        // Prüfe ob customer_accounts existiert
+        const { data: customerAccount } = await supabase
+          .from("customer_accounts")
+          .select("salutation, title")
+          .eq("user_id", user.id)
+          .maybeSingle()
+
         setFormData({
+          salutation: customerAccount?.salutation || customerData.salutation || "",
+          title: customerAccount?.title || customerData.title || "",
           firstName: customerData.first_name || "",
           lastName: customerData.last_name || "",
           email: customerData.email || user.email || "",
@@ -87,7 +99,7 @@ export default function KundenPortalEinstellungenPage() {
     try {
       const supabase = getSupabaseClient()
       
-      // Update oder Insert
+      // Update customers Tabelle
       const customerData = {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -95,6 +107,13 @@ export default function KundenPortalEinstellungenPage() {
         phone: formData.phone,
         updated_at: new Date().toISOString(),
       }
+
+      // Update customer_accounts Tabelle (für Anrede/Titel)
+      const { data: customerAccount } = await supabase
+        .from("customer_accounts")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle()
 
       let error
       
@@ -104,6 +123,17 @@ export default function KundenPortalEinstellungenPage() {
           .update(customerData)
           .eq("id", customer.id)
         error = updateError
+
+        // Update customer_accounts wenn vorhanden
+        if (customerAccount && !error) {
+          await supabase
+            .from("customer_accounts")
+            .update({
+              salutation: formData.salutation || null,
+              title: formData.title || null,
+            })
+            .eq("id", customerAccount.id)
+        }
       } else {
         // Sollte eigentlich nicht passieren, da Kunde beim Login erstellt wird, aber sicherheitshalber:
         // Hier müsste man company_id wissen, was schwierig ist im globalen Kontext ohne Zuordnung.
@@ -170,6 +200,41 @@ export default function KundenPortalEinstellungenPage() {
               <CardDescription>Aktualisieren Sie Ihre persönlichen Informationen</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="salutation">Anrede</Label>
+                  <Select
+                    value={formData.salutation}
+                    onValueChange={(v) => setFormData({ ...formData, salutation: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Bitte wählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Herr">Herr</SelectItem>
+                      <SelectItem value="Frau">Frau</SelectItem>
+                      <SelectItem value="Divers">Divers</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="title">Titel</Label>
+                  <Select
+                    value={formData.title}
+                    onValueChange={(v) => setFormData({ ...formData, title: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Optional" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Kein Titel</SelectItem>
+                      <SelectItem value="Dr.">Dr.</SelectItem>
+                      <SelectItem value="Prof.">Prof.</SelectItem>
+                      <SelectItem value="Prof. Dr.">Prof. Dr.</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Vorname</Label>

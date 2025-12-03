@@ -6,6 +6,7 @@ import { useState } from "react"
 import { LeadChatWidget } from "@/components/ai/LeadChatWidget"
 import { PWAInstallButton } from "@/components/pwa/PWAInstallButton"
 import { GERMAN_CITIES_SORTED } from "@/lib/german-cities"
+import { HomePricingSection } from "@/components/home/HomePricingSection"
 
 // =============================================================================
 // INLINE SVG ICONS - No external dependencies
@@ -225,18 +226,7 @@ function Header() {
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link href="/preise" className="text-muted-foreground hover:text-primary font-medium transition-colors">
-            Preise
-          </Link>
-          <Link href="/fragen" className="text-muted-foreground hover:text-primary font-medium transition-colors">
-            FAQ
-          </Link>
-          <Link href="/kontakt" className="text-muted-foreground hover:text-primary font-medium transition-colors">
-            Kontakt
-          </Link>
-        </nav>
+        {/* Desktop Navigation - Entfernt: Preise, FAQ, Kontakt */}
 
         <div className="hidden md:flex items-center gap-4">
           <Link href="/auth/login" className="text-muted-foreground hover:text-primary font-medium transition-colors">
@@ -244,8 +234,6 @@ function Header() {
           </Link>
           <PWAInstallButton
             className="px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-colors shadow-sm inline-flex items-center gap-2"
-            fallbackHref="/auth/sign-up"
-            fallbackText="Jetzt starten"
           >
             App installieren
           </PWAInstallButton>
@@ -264,27 +252,7 @@ function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-border px-4 py-6 animate-fade-in">
           <nav className="flex flex-col gap-2">
-            <Link
-              href="/preise"
-              className="text-foreground hover:text-primary font-medium py-3 px-4 rounded-lg hover:bg-muted transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Preise
-            </Link>
-            <Link
-              href="/fragen"
-              className="text-foreground hover:text-primary font-medium py-3 px-4 rounded-lg hover:bg-muted transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              FAQ
-            </Link>
-            <Link
-              href="/kontakt"
-              className="text-foreground hover:text-primary font-medium py-3 px-4 rounded-lg hover:bg-muted transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Kontakt
-            </Link>
+            {/* Entfernt: Preise, FAQ, Kontakt */}
             <hr className="border-border my-2" />
             <Link
               href="/auth/login"
@@ -295,8 +263,6 @@ function Header() {
             </Link>
             <PWAInstallButton
               className="mt-2 px-5 py-3 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-colors text-center inline-flex items-center justify-center gap-2"
-              fallbackHref="/auth/sign-up"
-              fallbackText="Jetzt starten"
             >
               App installieren
             </PWAInstallButton>
@@ -678,106 +644,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Preview */}
-      <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Transparente Preise ohne versteckte Kosten
-            </h2>
-            <p className="text-lg text-muted-foreground">Wählen Sie das passende Paket für Ihr Unternehmen.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
-            {/* Starter */}
-            <div className="bg-card rounded-2xl border border-border p-6 lg:p-8 hover:border-primary/30 transition-colors">
-              <h3 className="text-2xl font-bold text-foreground mb-2">Starter</h3>
-              <p className="text-muted-foreground mb-6">Für Einzelunternehmer</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-foreground">39€</span>
-                <span className="text-muted-foreground">/Monat</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {["Bis zu 3 Fahrer", "Bis zu 3 Fahrzeuge", "Unbegrenzte Buchungen", "E-Mail Support"].map((f) => (
-                  <li key={f} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <CheckIcon className="w-3 h-3 text-primary" />
-                    </div>
-                    <span className="text-muted-foreground">{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/auth/sign-up?plan=starter"
-                className="block w-full py-3 text-center bg-muted text-foreground font-semibold rounded-xl hover:bg-muted/80 transition-colors"
-              >
-                Jetzt starten
-              </Link>
-            </div>
-
-            {/* Business - Highlighted */}
-            <div className="bg-card rounded-2xl border-2 border-primary p-6 lg:p-8 relative shadow-xl">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium">
-                Beliebt
-              </div>
-              <h3 className="text-2xl font-bold text-foreground mb-2">Business</h3>
-              <p className="text-muted-foreground mb-6">Für wachsende Flotten</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-foreground">99€</span>
-                <span className="text-muted-foreground">/Monat</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {["Unbegrenzte Fahrer", "Unbegrenzte Fahrzeuge", "Fahrer-App inklusive", "Priority Support"].map(
-                  (f) => (
-                    <li key={f} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <CheckIcon className="w-3 h-3 text-primary" />
-                      </div>
-                      <span className="text-muted-foreground">{f}</span>
-                    </li>
-                  ),
-                )}
-              </ul>
-              <Link
-                href="/auth/sign-up?plan=business"
-                className="block w-full py-3 text-center bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors"
-              >
-                Business wählen
-              </Link>
-            </div>
-
-            {/* Enterprise */}
-            <div className="bg-card rounded-2xl border border-border p-6 lg:p-8 hover:border-primary/30 transition-colors">
-              <h3 className="text-2xl font-bold text-foreground mb-2">Enterprise</h3>
-              <p className="text-muted-foreground mb-6">Für große Zentralen</p>
-              <div className="mb-6">
-                <span className="text-3xl font-bold text-foreground">Individuell</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {[
-                  "Unbegrenzte Fahrer",
-                  "Unbegrenzte Fahrzeuge",
-                  "Dedizierter Account Manager",
-                  "24/7 Premium Support",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <CheckIcon className="w-3 h-3 text-primary" />
-                    </div>
-                    <span className="text-muted-foreground">{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/kontakt"
-                className="block w-full py-3 text-center bg-muted text-foreground font-semibold rounded-xl hover:bg-muted/80 transition-colors"
-              >
-                Kontakt aufnehmen
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Pricing Preview - Verwendet HomePricingSection mit Jahrespreisen */}
+      <HomePricingSection />
 
       {/* Cities Section */}
       <CitiesSection />

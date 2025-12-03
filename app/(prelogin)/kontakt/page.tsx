@@ -32,6 +32,9 @@ export default function KontaktPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein"
     }
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Bitte geben Sie Ihre Telefonnummer ein"
+    }
     if (!formData.subject.trim()) newErrors.subject = "Bitte geben Sie einen Betreff ein"
     if (!formData.message.trim()) {
       newErrors.message = "Bitte geben Sie eine Nachricht ein"
@@ -244,15 +247,17 @@ export default function KontaktPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Telefon</Label>
+                        <Label htmlFor="phone">Telefon *</Label>
                         <Input
                           id="phone"
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="rounded-xl"
-                          placeholder="+49 123 456789 (optional)"
+                          className={`rounded-xl ${errors.phone ? "border-red-500" : ""}`}
+                          placeholder="+49 123 456789"
+                          required
                         />
+                        {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
                       </div>
                     </div>
 

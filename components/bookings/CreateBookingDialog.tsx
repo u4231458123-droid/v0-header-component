@@ -98,6 +98,7 @@ export function CreateBookingDialog({
   onSuccess,
 }: CreateBookingDialogProps) {
   const [loading, setLoading] = useState(false)
+  const [vehicleCategories, setVehicleCategories] = useState<Array<{ id: string; name: string; max_passengers: number }>>([])
   const [customerMode, setCustomerMode] = useState<"existing" | "new">("existing")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("")
@@ -111,6 +112,20 @@ export function CreateBookingDialog({
 
   const router = useRouter()
   const supabase = createClient()
+
+  // Lade Fahrzeugkategorien aus DB
+  useEffect(() => {
+    if (open && companyId) {
+      supabase
+        .from("vehicle_categories")
+        .select("id, name, max_passengers")
+        .eq("company_id", companyId)
+        .order("name")
+        .then(({ data }) => {
+          if (data) setVehicleCategories(data)
+        })
+    }
+  }, [open, companyId, supabase])
 
   // Gefilterte Kunden basierend auf Suche
   const filteredCustomers = customers.filter((c) => {
@@ -484,11 +499,19 @@ export function CreateBookingDialog({
                     <SelectValue placeholder="Kategorie wählen" />
                   </SelectTrigger>
                   <SelectContent>
-                    {VEHICLE_CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
+                    {vehicleCategories.length > 0 ? (
+                      vehicleCategories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name} (max. {cat.max_passengers} Pers.)
+                        </SelectItem>
+                      ))
+                    ) : (
+                      VEHICLE_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>

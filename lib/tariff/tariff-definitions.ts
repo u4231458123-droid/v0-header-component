@@ -4,7 +4,7 @@ export const ALL_TARIFFS = [
     name: "Starter",
     description: "Perfekt für kleine Flotten",
     priceMonthlyFormatted: "39€",
-    priceYearlyFormatted: "374€",
+    priceYearlyFormatted: "31,20€",
     ctaText: "Jetzt starten",
     highlighted: false,
     features: [
@@ -20,7 +20,7 @@ export const ALL_TARIFFS = [
     name: "Business",
     description: "Für wachsende Unternehmen",
     priceMonthlyFormatted: "99€",
-    priceYearlyFormatted: "950€",
+    priceYearlyFormatted: "79,20€",
     badge: "Beliebt",
     ctaText: "Jetzt starten",
     highlighted: true,

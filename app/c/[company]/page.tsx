@@ -81,10 +81,8 @@ export default async function CompanyLandingPage({ params }: Props) {
     notFound()
   }
 
-  // Allow active and trialing subscriptions
-  const isActive = company.subscription_status === "active" || company.subscription_status === "trialing"
-
-  if (!isActive) {
+  // Prüfe ob Landingpage aktiviert ist
+  if (!company.landingpage_enabled) {
     notFound()
   }
 

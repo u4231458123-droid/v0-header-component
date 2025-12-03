@@ -1,0 +1,162 @@
+warning: in the working copy of 'components/settings/SettingsPageClient.tsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/components/settings/SettingsPageClient.tsx b/components/settings/SettingsPageClient.tsx[m
+[1mindex fa3625d..6d0de80 100644[m
+[1m--- a/components/settings/SettingsPageClient.tsx[m
+[1m+++ b/components/settings/SettingsPageClient.tsx[m
+[36m@@ -279,7 +279,7 @@[m [mexport function SettingsPageClient({[m
+     phone: company?.phone || "",[m
+     mobile: company?.mobile || "",[m
+     address: company?.address || "",[m
+[31m-    zip: company?.zip || "",[m
+[32m+[m[32m    zip: company?.postal_code || company?.zip || "", // Unterstützt beide Spaltennamen[m
+     city: company?.city || "",[m
+     // Owner info[m
+     owner_salutation: company?.owner_salutation || "",[m
+[36m@@ -332,73 +332,100 @@[m [mexport function SettingsPageClient({[m
+   })[m
+ [m
+   const handleSave = async () => {[m
+[31m-    if (!company) return[m
+[32m+[m[32m    if (!company || !company.id) {[m
+[32m+[m[32m      toast.error("Kein Unternehmen gefunden")[m
+[32m+[m[32m      return[m
+[32m+[m[32m    }[m
+[32m+[m
+     setLoading(true)[m
+ [m
+     try {[m
+[31m-      const updateData = {[m
+[31m-        name: formData.name,[m
+[31m-        email: formData.email,[m
+[31m-        phone: formData.phone,[m
+[31m-        mobile: formData.mobile,[m
+[31m-        address: formData.address,[m
+[31m-        zip: formData.zip,[m
+[31m-        city: formData.city,[m
+[31m-        owner_salutation: formData.owner_salutation,[m
+[31m-        owner_first_name: formData.owner_first_name,[m
+[31m-        owner_last_name: formData.owner_last_name,[m
+[31m-        company_slug: formData.company_slug,[m
+[31m-        landingpage_enabled: formData.landingpage_enabled,[m
+[31m-        widget_enabled: formData.widget_enabled,[m
+[31m-        landingpage_title: formData.landingpage_title,[m
+[31m-        landingpage_description: formData.landingpage_description,[m
+[31m-        landingpage_hero_text: formData.landingpage_hero_text,[m
+[31m-        widget_button_text: formData.widget_button_text,[m
+[31m-        branding: {[m
+[31m-          primary_color: formData.primary_color,[m
+[31m-          secondary_color: formData.secondary_color,[m
+[31m-          accent_color: formData.accent_color,[m
+[31m-        },[m
+[31m-        contact_info: {[m
+[31m-          support_email: formData.support_email,[m
+[31m-          support_phone: formData.support_phone,[m
+[31m-          whatsapp: formData.whatsapp,[m
+[31m-        },[m
+[31m-        bank_info: {[m
+[31m-          iban: formData.iban,[m
+[31m-          bic: formData.bic,[m
+[31m-          bank_name: formData.bank_name,[m
+[31m-        },[m
+[31m-        legal_info: {[m
+[31m-          company_registration: formData.company_registration,[m
+[31m-          tax_id: formData.tax_id,[m
+[31m-          vat_id: formData.vat_id,[m
+[31m-        },[m
+[31m-        is_small_business: formData.is_small_business,[m
+[31m-        small_business_note: formData.small_business_note,[m
+[31m-        opening_hours: {[m
+[31m-          monday: formData.monday,[m
+[31m-          tuesday: formData.tuesday,[m
+[31m-          wednesday: formData.wednesday,[m
+[31m-          thursday: formData.thursday,[m
+[31m-          friday: formData.friday,[m
+[31m-          saturday: formData.saturday,[m
+[31m-          sunday: formData.sunday,[m
+[31m-        },[m
+[31m-        minimum_lead_time: formData.minimum_lead_time,[m
+[31m-        accepted_payment_methods: formData.accepted_payment_methods,[m
+[31m-        // </CHANGE>[m
+[32m+[m[32m      // Prüfe ob User authentifiziert ist[m
+[32m+[m[32m      const {[m
+[32m+[m[32m        data: { user },[m
+[32m+[m[32m        error: userError,[m
+[32m+[m[32m      } = await supabase.auth.getUser()[m
+[32m+[m
+[32m+[m[32m      if (userError || !user) {[m
+[32m+[m[32m        toast.error("Sie sind nicht angemeldet. Bitte melden Sie sich erneut an.")[m
+[32m+[m[32m        router.push("/auth/login")[m
+[32m+[m[32m        return[m
+       }[m
+ [m
+[31m-      const { error } = await supabase.from("companies").update(updateData).eq("id", company.id)[m
+[32m+[m[32m      const updateData: any = {[m
+[32m+[m[32m        name: formData.name || null,[m
+[32m+[m[32m        email: formData.email || null,[m
+[32m+[m[32m        phone: formData.phone || null,[m
+[32m+[m[32m        mobile: formData.mobile || null,[m
+[32m+[m[32m        address: formData.address || null,[m
+[32m+[m[32m        postal_code: formData.zip || null, // Korrigiert: zip -> postal_code[m
+[32m+[m[32m        city: formData.city || null,[m
+[32m+[m[32m        owner_salutation: formData.owner_salutation || null,[m
+[32m+[m[32m        owner_first_name: formData.owner_first_name || null,[m
+[32m+[m[32m        owner_last_name: formData.owner_last_name || null,[m
+[32m+[m[32m        company_slug: formData.company_slug || null,[m
+[32m+[m[32m        landingpage_enabled: formData.landingpage_enabled || false,[m
+[32m+[m[32m        widget_enabled: formData.widget_enabled || false,[m
+[32m+[m[32m        landingpage_title: formData.landingpage_title || null,[m
+[32m+[m[32m        landingpage_description: formData.landingpage_description || null,[m
+[32m+[m[32m        landingpage_hero_text: formData.landingpage_hero_text || null,[m
+[32m+[m[32m        widget_button_text: formData.widget_button_text || null,[m
+[32m+[m[32m        branding: {[m
+[32m+[m[32m          primary_color: formData.primary_color || null,[m
+[32m+[m[32m          secondary_color: formData.secondary_color || null,[m
+[32m+[m[32m          accent_color: formData.accent_color || null,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        contact_info: {[m
+[32m+[m[32m          support_email: formData.support_email || null,[m
+[32m+[m[32m          support_phone: formData.support_phone || null,[m
+[32m+[m[32m          whatsapp: formData.whatsapp || null,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        bank_info: {[m
+[32m+[m[32m          iban: formData.iban || null,[m
+[32m+[m[32m          bic: formData.bic || null,[m
+[32m+[m[32m          bank_name: formData.bank_name || null,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        legal_info: {[m
+[32m+[m[32m          company_registration: formData.company_registration || null,[m
+[32m+[m[32m          tax_id: formData.tax_id || null,[m
+[32m+[m[32m          vat_id: formData.vat_id || null,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        is_small_business: formData.is_small_business || false,[m
+[32m+[m[32m        small_business_note: formData.small_business_note || null,[m
+[32m+[m[32m        opening_hours: {[m
+[32m+[m[32m          monday: formData.monday || null,[m
+[32m+[m[32m          tuesday: formData.tuesday || null,[m
+[32m+[m[32m          wednesday: formData.wednesday || null,[m
+[32m+[m[32m          thursday: formData.thursday || null,[m
+[32m+[m[32m          friday: formData.friday || null,[m
+[32m+[m[32m          saturday: formData.saturday || null,[m
+[32m+[m[32m          sunday: formData.sunday || null,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        minimum_lead_time: formData.minimum_lead_time || 30,[m
+[32m+[m[32m        accepted_payment_methods: formData.accepted_payment_methods || [],[m
+[32m+[m[32m      }[m
+ [m
+[31m-      if (error) throw error[m
+[32m+[m[32m      console.log("[Settings] Updating company:", company.id, updateData)[m
+[32m+[m
+[32m+[m[32m      const { data, error } = await supabase[m
+[32m+[m[32m        .from("companies")[m
+[32m+[m[32m        .update(updateData)[m
+[32m+[m[32m        .eq("id", company.id)[m
+[32m+[m[32m        .select()[m
+[32m+[m
+[32m+[m[32m      if (error) {[m
+[32m+[m[32m        console.error("[Settings] Update error:", error)[m
+[32m+[m[32m        throw error[m
+[32m+[m[32m      }[m
+[32m+[m
+[32m+[m[32m      console.log("[Settings] Update successful:", data)[m
+ [m
+       toast.su

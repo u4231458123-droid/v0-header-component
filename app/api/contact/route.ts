@@ -8,9 +8,9 @@ export async function POST(request: Request) {
     const { name, email, subject, message, company, phone, type } = body
 
     // Validate required fields
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !subject || !message || !phone) {
       return NextResponse.json(
-        { success: false, error: "Alle Pflichtfelder muessen ausgefuellt werden" },
+        { success: false, error: "Alle Pflichtfelder muessen ausgefuellt werden (inkl. Telefon)" },
         { status: 400 },
       )
     }
@@ -35,7 +35,40 @@ export async function POST(request: Request) {
     })
 
     if (dbError) {
+      console.error("Database error:", dbError)
+      return NextResponse.json(
+        { success: false, error: "Fehler beim Speichern der Nachricht" },
+        { status: 500 },
+      )
     }
+
+    // TODO: E-Mail-Versand implementieren (z.B. mit Resend, SendGrid, etc.)
+    // Beispiel:
+    // await resend.emails.send({
+    //   from: 'noreply@my-dispatch.de',
+    //   to: 'info@my-dispatch.de',
+    //   subject: `Kontaktanfrage: ${subject}`,
+    //   html: `
+    //     <h2>Neue Kontaktanfrage</h2>
+    //     <p><strong>Name:</strong> ${name}</p>
+    //     <p><strong>E-Mail:</strong> ${email}</p>
+    //     <p><strong>Telefon:</strong> ${phone}</p>
+    //     ${company ? `<p><strong>Unternehmen:</strong> ${company}</p>` : ''}
+    //     <p><strong>Betreff:</strong> ${subject}</p>
+    //     <p><strong>Nachricht:</strong></p>
+    //     <p>${message.replace(/\n/g, '<br>')}</p>
+    //   `
+    // })
+
+    console.log("Contact form submission:", {
+      name,
+      email,
+      phone,
+      company,
+      subject,
+      type,
+      messageLength: message.length,
+    })
 
     return NextResponse.json({
       success: true,

@@ -241,7 +241,7 @@ interface SettingsPageClientProps {
 
 const TIER_LIMITS = {
   starter: { drivers: 3, vehicles: 3, bookings: 100 },
-  business: { drivers: 20, vehicles: 20, bookings: 1000 },
+  business: { drivers: -1, vehicles: -1, bookings: -1 }, // Business: Unbegrenzt
   enterprise: { drivers: -1, vehicles: -1, bookings: -1 },
 }
 
@@ -267,7 +267,7 @@ export function SettingsPageClient({
   const gewerbeanmeldungInputRef = useRef<HTMLInputElement>(null)
   const briefpapierInputRef = useRef<HTMLInputElement>(null)
 
-  const tier = (company?.subscription_tier as keyof typeof TIER_LIMITS) || "starter"
+  const tier = (company?.subscription_plan as keyof typeof TIER_LIMITS) || "starter"
   const limits = TIER_LIMITS[tier]
   const tierInfo = TIER_INFO[tier]
 
@@ -277,9 +277,9 @@ export function SettingsPageClient({
     name: company?.name || "",
     email: company?.email || "",
     phone: company?.phone || "",
-    mobile: company?.mobile || "",
+    mobile: (company as any)?.mobile || "",
     address: company?.address || "",
-    zip: company?.zip || "",
+    zip: company?.postal_code || (company as any)?.zip || "", // Unterstützt beide Spaltennamen
     city: company?.city || "",
     // Owner info
     owner_salutation: company?.owner_salutation || "",
@@ -293,6 +293,7 @@ export function SettingsPageClient({
     landingpage_description: company?.landingpage_description || "",
     landingpage_hero_text: company?.landingpage_hero_text || "",
     widget_button_text: company?.widget_button_text || "Jetzt buchen",
+    widget_size: (company as any)?.widget_size || "medium",
     // Branding
     primary_color: company?.branding?.primary_color || "#323D5E",
     secondary_color: company?.branding?.secondary_color || "#f5f5f5",
@@ -332,73 +333,101 @@ export function SettingsPageClient({
   })
 
   const handleSave = async () => {
-    if (!company) return
+    if (!company || !company.id) {
+      toast.error("Kein Unternehmen gefunden")
+      return
+    }
+
     setLoading(true)
 
     try {
-      const updateData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        mobile: formData.mobile,
-        address: formData.address,
-        zip: formData.zip,
-        city: formData.city,
-        owner_salutation: formData.owner_salutation,
-        owner_first_name: formData.owner_first_name,
-        owner_last_name: formData.owner_last_name,
-        company_slug: formData.company_slug,
-        landingpage_enabled: formData.landingpage_enabled,
-        widget_enabled: formData.widget_enabled,
-        landingpage_title: formData.landingpage_title,
-        landingpage_description: formData.landingpage_description,
-        landingpage_hero_text: formData.landingpage_hero_text,
-        widget_button_text: formData.widget_button_text,
-        branding: {
-          primary_color: formData.primary_color,
-          secondary_color: formData.secondary_color,
-          accent_color: formData.accent_color,
-        },
-        contact_info: {
-          support_email: formData.support_email,
-          support_phone: formData.support_phone,
-          whatsapp: formData.whatsapp,
-        },
-        bank_info: {
-          iban: formData.iban,
-          bic: formData.bic,
-          bank_name: formData.bank_name,
-        },
-        legal_info: {
-          company_registration: formData.company_registration,
-          tax_id: formData.tax_id,
-          vat_id: formData.vat_id,
-        },
-        is_small_business: formData.is_small_business,
-        small_business_note: formData.small_business_note,
-        opening_hours: {
-          monday: formData.monday,
-          tuesday: formData.tuesday,
-          wednesday: formData.wednesday,
-          thursday: formData.thursday,
-          friday: formData.friday,
-          saturday: formData.saturday,
-          sunday: formData.sunday,
-        },
-        minimum_lead_time: formData.minimum_lead_time,
-        accepted_payment_methods: formData.accepted_payment_methods,
-        // </CHANGE>
+      // Prüfe ob User authentifiziert ist
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser()
+
+      if (userError || !user) {
+        toast.error("Sie sind nicht angemeldet. Bitte melden Sie sich erneut an.")
+        router.push("/auth/login")
+        return
       }
 
-      const { error } = await supabase.from("companies").update(updateData).eq("id", company.id)
+      const updateData: any = {
+        name: formData.name || null,
+        email: formData.email || null,
+        phone: formData.phone || null,
+        mobile: formData.mobile || null,
+        address: formData.address || null,
+        postal_code: formData.zip || null, // Korrigiert: zip -> postal_code
+        city: formData.city || null,
+        owner_salutation: formData.owner_salutation || null,
+        owner_first_name: formData.owner_first_name || null,
+        owner_last_name: formData.owner_last_name || null,
+        company_slug: formData.company_slug || null,
+        landingpage_enabled: formData.landingpage_enabled || false,
+        widget_enabled: formData.widget_enabled || false,
+        landingpage_title: formData.landingpage_title || null,
+        landingpage_description: formData.landingpage_description || null,
+        landingpage_hero_text: formData.landingpage_hero_text || null,
+        widget_button_text: formData.widget_button_text || null,
+        widget_size: formData.widget_size || "medium",
+        branding: {
+          primary_color: formData.primary_color || null,
+          secondary_color: formData.secondary_color || null,
+          accent_color: formData.accent_color || null,
+        },
+        contact_info: {
+          support_email: formData.support_email || null,
+          support_phone: formData.support_phone || null,
+          whatsapp: formData.whatsapp || null,
+        },
+        bank_info: {
+          iban: formData.iban || null,
+          bic: formData.bic || null,
+          bank_name: formData.bank_name || null,
+        },
+        legal_info: {
+          company_registration: formData.company_registration || null,
+          tax_id: formData.tax_id || null,
+          vat_id: formData.vat_id || null,
+        },
+        is_small_business: formData.is_small_business || false,
+        small_business_note: formData.small_business_note || null,
+        opening_hours: {
+          monday: formData.monday || null,
+          tuesday: formData.tuesday || null,
+          wednesday: formData.wednesday || null,
+          thursday: formData.thursday || null,
+          friday: formData.friday || null,
+          saturday: formData.saturday || null,
+          sunday: formData.sunday || null,
+        },
+        minimum_lead_time: formData.minimum_lead_time || 30,
+        accepted_payment_methods: formData.accepted_payment_methods || [],
+      }
 
-      if (error) throw error
+      console.log("[Settings] Updating company:", company.id, updateData)
+
+      const { data, error } = await supabase
+        .from("companies")
+        .update(updateData)
+        .eq("id", company.id)
+        .select()
+
+      if (error) {
+        console.error("[Settings] Update error:", error)
+        throw error
+      }
+
+      console.log("[Settings] Update successful:", data)
 
       toast.success("Einstellungen erfolgreich gespeichert")
       router.refresh()
-    } catch (error) {
-      console.error("Error saving settings:", error)
-      toast.error("Fehler beim Speichern der Einstellungen")
+    } catch (error: any) {
+      console.error("[Settings] Error saving settings:", error)
+      const errorMessage = error?.message || error?.details || "Unbekannter Fehler"
+      toast.error(`Fehler beim Speichern: ${errorMessage}`)
     } finally {
       setLoading(false)
     }
@@ -535,9 +564,9 @@ export function SettingsPageClient({
       {/* Header */}
       <PageHeader title="Einstellungen" description="Verwalten Sie Ihr Unternehmen, Ihre Landingpage und Präferenzen">
         <div className="flex items-center gap-3">
-          {company?.subscription_tier && (
+          {company?.subscription_plan && (
             <Badge variant="outline" className="capitalize">
-              {company.subscription_tier} Plan
+              {company.subscription_plan} Plan
             </Badge>
           )}
           <Button onClick={handleSave} disabled={loading} className="gap-2 rounded-xl">
@@ -1023,14 +1052,90 @@ export function SettingsPageClient({
                     </div>
 
                     {formData.widget_enabled && tier !== "starter" && (
-                      <div className="mt-4 space-y-2">
-                        <Label htmlFor="widget_button_text">Button-Text</Label>
-                        <Input
-                          id="widget_button_text"
-                          value={formData.widget_button_text}
-                          onChange={(e) => setFormData({ ...formData, widget_button_text: e.target.value })}
-                          placeholder="Jetzt buchen"
-                        />
+                      <div className="mt-4 space-y-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="widget_button_text">Button-Text</Label>
+                          <Input
+                            id="widget_button_text"
+                            value={formData.widget_button_text}
+                            onChange={(e) => setFormData({ ...formData, widget_button_text: e.target.value })}
+                            placeholder="Jetzt buchen"
+                          />
+                        </div>
+
+                        {/* Widget-Einbettungscode */}
+                        <div className="border-t border-border pt-6">
+                          <h3 className="font-semibold mb-4">Widget in externe Webseite einbinden</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Kopieren Sie den folgenden Code und fügen Sie ihn in Ihre Webseite ein.
+                          </p>
+
+                          {/* Größen-Auswahl */}
+                          <div className="mb-4">
+                            <Label>Widget-Größe</Label>
+                            <div className="grid grid-cols-3 gap-2 mt-2">
+                              {[
+                                { value: "small", label: "Klein", size: "400x600" },
+                                { value: "medium", label: "Mittel", size: "500x700" },
+                                { value: "large", label: "Groß", size: "600x800" },
+                              ].map((size) => (
+                                <Button
+                                  key={size.value}
+                                  variant={formData.widget_size === size.value ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setFormData({ ...formData, widget_size: size.value })}
+                                  className="rounded-xl"
+                                >
+                                  {size.label}
+                                  <span className="text-xs ml-1 opacity-70">({size.size})</span>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Einbettungscode */}
+                          <div className="space-y-2">
+                            <Label>Einbettungscode</Label>
+                            <div className="relative">
+                              <Textarea
+                                readOnly
+                                value={`<iframe src="${typeof window !== "undefined" ? window.location.origin : "https://my-dispatch.de"}/widget/${formData.company_slug || "ihr-slug"}?size=${formData.widget_size || "medium"}" width="${formData.widget_size === "small" ? "400" : formData.widget_size === "large" ? "600" : "500"}" height="${formData.widget_size === "small" ? "600" : formData.widget_size === "large" ? "800" : "700"}" frameborder="0" style="border: none; border-radius: 8px;"></iframe>`}
+                                className="font-mono text-xs"
+                                rows={3}
+                                onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+                              />
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="absolute top-2 right-2"
+                                onClick={() => {
+                                  const code = `<iframe src="${typeof window !== "undefined" ? window.location.origin : "https://my-dispatch.de"}/widget/${formData.company_slug || "ihr-slug"}?size=${formData.widget_size || "medium"}" width="${formData.widget_size === "small" ? "400" : formData.widget_size === "large" ? "600" : "500"}" height="${formData.widget_size === "small" ? "600" : formData.widget_size === "large" ? "800" : "700"}" frameborder="0" style="border: none; border-radius: 8px;"></iframe>`
+                                  navigator.clipboard.writeText(code)
+                                  toast.success("Code in Zwischenablage kopiert")
+                                }}
+                              >
+                                <FileText className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Fügen Sie diesen Code in den HTML-Bereich Ihrer Webseite ein, wo das Widget angezeigt werden soll.
+                            </p>
+                          </div>
+
+                          {/* Vorschau */}
+                          <div className="mt-4 p-4 bg-muted rounded-xl">
+                            <Label className="mb-2 block">Vorschau</Label>
+                            <div className="border-2 border-dashed border-border rounded-lg p-4 bg-background">
+                              <div className="text-center text-muted-foreground text-sm">
+                                Widget-Vorschau ({formData.widget_size || "medium"})
+                                <br />
+                                <span className="text-xs">
+                                  {formData.widget_size === "small" ? "400 × 600 px" : formData.widget_size === "large" ? "600 × 800 px" : "500 × 700 px"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1441,13 +1546,24 @@ export function SettingsPageClient({
             companyId={company?.id || ""}
             currentUserId={profile?.id || ""}
             currentUserRole={profile?.role || "user"}
-            teamMembers={currentTeamMembers} // Use the local state
+            teamMembers={currentTeamMembers as any} // Use the local state (type compatibility)
             onRefresh={async () => {
               // Reload team members
-              const { data } = await supabase.from("profiles").select("*").eq("company_id", company?.id)
+              const { data } = await supabase
+                .from("profiles")
+                .select("id, email, full_name, avatar_url, role, created_at")
+                .eq("company_id", company?.id)
               if (data) {
-                // Assuming teamMembers should be updated with profiles data, adjust accordingly if 'profiles' table structure differs from 'TeamMember' interface
-                setCurrentTeamMembers(data as TeamMember[]) // Update the local state
+                // Map profiles to TeamMember format (compatible with TeamManagement component)
+                const mappedMembers = data.map((p: any) => ({
+                  id: p.id,
+                  email: p.email || "",
+                  full_name: p.full_name || null,
+                  avatar_url: p.avatar_url || null,
+                  role: p.role || "user",
+                  created_at: p.created_at || new Date().toISOString(),
+                }))
+                setCurrentTeamMembers(mappedMembers as any)
               }
             }}
           />

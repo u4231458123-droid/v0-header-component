@@ -18,6 +18,7 @@ import { VEHICLE_CATEGORIES, PASSENGER_COUNT_OPTIONS, PAYMENT_METHODS } from "@/
 
 interface Booking {
   id: string
+  company_id: string
   pickup_address: string
   dropoff_address: string
   pickup_time: string
@@ -25,6 +26,8 @@ interface Booking {
   passengers: number
   notes?: string
   customer_id: string
+  driver_id?: string
+  vehicle_id?: string
   vehicle_category?: string
   payment_method?: string
   flight_train_number?: string
@@ -50,9 +53,37 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
   const [paymentMethod, setPaymentMethod] = useState(booking.payment_method || "cash")
   const [flightTrainNumber, setFlightTrainNumber] = useState(booking.flight_train_number || "")
   const [flightTrainOrigin, setFlightTrainOrigin] = useState(booking.flight_train_origin || "")
+  const [selectedDriverId, setSelectedDriverId] = useState(booking.driver_id || "")
+  const [selectedVehicleId, setSelectedVehicleId] = useState(booking.vehicle_id || "")
+  const [drivers, setDrivers] = useState<Array<{ id: string; first_name: string; last_name: string; status?: string }>>([])
+  const [vehicles, setVehicles] = useState<Array<{ id: string; license_plate: string; make?: string; model?: string; status?: string }>>([])
 
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    if (open && booking.company_id) {
+      loadDriversAndVehicles()
+    }
+  }, [open, booking.company_id])
+
+  const loadDriversAndVehicles = async () => {
+    if (!booking.company_id) return
+    const [driversResult, vehiclesResult] = await Promise.all([
+      supabase
+        .from("drivers")
+        .select("id, first_name, last_name, status")
+        .eq("company_id", booking.company_id)
+        .order("last_name"),
+      supabase
+        .from("vehicles")
+        .select("id, license_plate, make, model, status")
+        .eq("company_id", booking.company_id)
+        .order("license_plate"),
+    ])
+    if (driversResult.data) setDrivers(driversResult.data)
+    if (vehiclesResult.data) setVehicles(vehiclesResult.data)
+  }
 
   useEffect(() => {
     setStatus(booking.status)
@@ -91,6 +122,8 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
         status: status,
         vehicle_category: vehicleCategory,
         payment_method: paymentMethod,
+        driver_id: selectedDriverId || null,
+        vehicle_id: selectedVehicleId || null,
         flight_train_number: flightTrainNumber || null,
         flight_train_origin: flightTrainOrigin || null,
       }
@@ -214,6 +247,45 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
                     {PAYMENT_METHODS.map((method) => (
                       <SelectItem key={method.value} value={method.value}>
                         {method.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Fahrer- und Fahrzeugauswahl */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Fahrer (optional)</Label>
+                <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fahrer auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Kein Fahrer zugewiesen</SelectItem>
+                    {drivers.map((driver) => (
+                      <SelectItem key={driver.id} value={driver.id}>
+                        {driver.first_name} {driver.last_name}
+                        {driver.status && ` (${driver.status})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Fahrzeug (optional)</Label>
+                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fahrzeug auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Kein Fahrzeug zugewiesen</SelectItem>
+                    {vehicles.map((vehicle) => (
+                      <SelectItem key={vehicle.id} value={vehicle.id}>
+                        {vehicle.license_plate}
+                        {vehicle.make && vehicle.model ? ` - ${vehicle.make} ${vehicle.model}` : ""}
+                        {vehicle.status && ` (${vehicle.status})`}
                       </SelectItem>
                     ))}
                   </SelectContent>
