@@ -174,21 +174,24 @@ export default function LoginPage() {
           }
         }
 
-        // 3. Prüfe ob Kunde (Vor Unternehmer, falls User beides ist, aber hier als Kunde agieren soll)
-        const { data: customer } = await supabase
-          .from("customers")
-          .select("company_id")
-          .eq("user_id", userId)
-          .maybeSingle()
+        // 3. Prüfe ob Kunde (NUR wenn NICHT Master-Account)
+        // WICHTIG: Master-Account (courbois1981@gmail.com) wird NIEMALS als Kunde behandelt!
+        if (normalizedEmail !== "courbois1981@gmail.com" && normalizedEmail !== "info@my-dispatch.de") {
+          const { data: customer } = await supabase
+            .from("customers")
+            .select("company_id")
+            .eq("user_id", userId)
+            .maybeSingle()
 
-        if (customer) {
-          const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
-          if (company) {
-            window.location.href = `/c/${company.company_slug}/kunde/portal`
-          } else {
-            window.location.href = "/kunden-portal"
+          if (customer) {
+            const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
+            if (company) {
+              window.location.href = `/c/${company.company_slug}/kunde/portal`
+            } else {
+              window.location.href = "/kunden-portal"
+            }
+            return
           }
-          return
         }
 
         // 4. Prüfe ob Unternehmer (Erst jetzt, da dies der Standard-Fallback für Profile ist)
