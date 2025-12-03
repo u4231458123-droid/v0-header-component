@@ -72,16 +72,17 @@ async function getDashboardStatsFallback(
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
 
-  if (userError || !user) {
-    redirect("/auth/login")
-  }
+    if (userError || !user) {
+      redirect("/auth/login")
+    }
 
   // Spezielle Routing-Logik für Master-Account (courbois1981@gmail.com)
   // Master-Account hat direkten Zugang ins Dashboard ohne weitere Checks
@@ -268,91 +269,96 @@ export default async function DashboardPage() {
       }
 
       // 2. Listen-Daten und Chart-Daten parallel laden (nur wenn companyId vorhanden)
-      const [
-        recentBookingsRes,
-        upcomingBookingsRes,
-        customersRes,
-        driversRes,
-        vehiclesRes,
-        revenue30DaysRes // Für Charts benötigt
-      ] = await Promise.all([
-        supabase
-          .from("bookings")
-          .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
-          .eq("company_id", companyId)
-          .order("created_at", { ascending: false })
-          .limit(5),
-        supabase
-          .from("bookings")
-          .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
-          .eq("company_id", companyId)
-          .gte("pickup_time", today.toISOString())
-          .in("status", ["pending", "confirmed", "assigned"])
-          .order("pickup_time", { ascending: true })
-          .limit(5),
-        supabase
-          .from("customers")
-          .select("id, first_name, last_name, salutation, email, phone")
-          .eq("company_id", companyId)
-          .limit(100),
-        supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
-        supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
-        supabase
-          .from("bookings")
-          .select("price, pickup_time, created_at")
-          .eq("company_id", companyId)
-          .eq("status", "completed")
-          .gte("created_at", thirtyDaysAgo.toISOString())
-      ]);
+      try {
+        const [
+          recentBookingsRes,
+          upcomingBookingsRes,
+          customersRes,
+          driversRes,
+          vehiclesRes,
+          revenue30DaysRes // Für Charts benötigt
+        ] = await Promise.all([
+          supabase
+            .from("bookings")
+            .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
+            .eq("company_id", companyId)
+            .order("created_at", { ascending: false })
+            .limit(5),
+          supabase
+            .from("bookings")
+            .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
+            .eq("company_id", companyId)
+            .gte("pickup_time", today.toISOString())
+            .in("status", ["pending", "confirmed", "assigned"])
+            .order("pickup_time", { ascending: true })
+            .limit(5),
+          supabase
+            .from("customers")
+            .select("id, first_name, last_name, salutation, email, phone")
+            .eq("company_id", companyId)
+            .limit(100),
+          supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
+          supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
+          supabase
+            .from("bookings")
+            .select("price, pickup_time, created_at")
+            .eq("company_id", companyId)
+            .eq("status", "completed")
+            .gte("created_at", thirtyDaysAgo.toISOString())
+        ]);
 
-      // Zuweisung der Werte aus RPC
-      stats.bookingsToday = safeStats.bookings_today || 0;
-      stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
-      stats.activeBookings = safeStats.active_bookings || 0;
-      stats.driversAvailable = safeStats.drivers_available || 0;
-      stats.driversTotal = safeStats.drivers_total || 0;
-      stats.customersTotal = safeStats.customers_total || 0;
-      stats.pendingInvoices = safeStats.pending_invoices || 0;
-      
-      recentBookings = recentBookingsRes.data || [];
-      upcomingBookings = upcomingBookingsRes.data || [];
-      customers = customersRes.data || [];
-      drivers = driversRes.data || [];
+        // Zuweisung der Werte aus RPC
+        stats.bookingsToday = safeStats.bookings_today || 0;
+        stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
+        stats.activeBookings = safeStats.active_bookings || 0;
+        stats.driversAvailable = safeStats.drivers_available || 0;
+        stats.driversTotal = safeStats.drivers_total || 0;
+        stats.customersTotal = safeStats.customers_total || 0;
+        stats.pendingInvoices = safeStats.pending_invoices || 0;
+        
+        recentBookings = recentBookingsRes.data || [];
+        upcomingBookings = upcomingBookingsRes.data || [];
+        customers = customersRes.data || [];
+        drivers = driversRes.data || [];
 
-      if (revenue30DaysRes.data) {
-      stats.revenue30Days = revenue30DaysRes.data.reduce((sum, b) => sum + (Number(b.price) || 0), 0)
-      const revenueByDay: Record<string, number> = {}
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today)
-        date.setDate(date.getDate() - i)
-        const dateStr = date.toISOString().split("T")[0]
-        revenueByDay[dateStr] = 0
-      }
-      revenue30DaysRes.data.forEach((booking) => {
-        const dateStr = new Date(booking.created_at).toISOString().split("T")[0]
-        if (revenueByDay[dateStr] !== undefined) {
-          revenueByDay[dateStr] += Number(booking.price) || 0
+        if (revenue30DaysRes.data) {
+          stats.revenue30Days = revenue30DaysRes.data.reduce((sum, b) => sum + (Number(b.price) || 0), 0)
+          const revenueByDay: Record<string, number> = {}
+          for (let i = 29; i >= 0; i--) {
+            const date = new Date(today)
+            date.setDate(date.getDate() - i)
+            const dateStr = date.toISOString().split("T")[0]
+            revenueByDay[dateStr] = 0
+          }
+          revenue30DaysRes.data.forEach((booking) => {
+            const dateStr = new Date(booking.created_at).toISOString().split("T")[0]
+            if (revenueByDay[dateStr] !== undefined) {
+              revenueByDay[dateStr] += Number(booking.price) || 0
+            }
+          })
+          revenueData = Object.entries(revenueByDay).map(([date, amount]) => ({
+            date,
+            amount,
+            label: new Date(date).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" }),
+          }))
         }
-      })
-      revenueData = Object.entries(revenueByDay).map(([date, amount]) => ({
-        date,
-        amount,
-        label: new Date(date).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" }),
-      }))
-    }
 
-      if (!vehiclesRes.error && vehiclesRes.data) {
-        stats.vehiclesTotal = vehiclesRes.data.length
-        vehicles = vehiclesRes.data.map((v: any) => ({
-          id: v.id,
-          licensePlate: v.license_plate,
-          make: v.make,
-          model: v.model,
-          status: v.status || "offline",
-          location: v.current_lat && v.current_lng ? { lat: v.current_lat, lng: v.current_lng } : undefined,
-          driverName: v.driver ? `${v.driver.first_name} ${v.driver.last_name}` : undefined,
-          lastUpdate: v.location_updated_at,
-        }))
+        if (!vehiclesRes.error && vehiclesRes.data) {
+          stats.vehiclesTotal = vehiclesRes.data.length
+          vehicles = vehiclesRes.data.map((v: any) => ({
+            id: v.id,
+            licensePlate: v.license_plate,
+            make: v.make,
+            model: v.model,
+            status: v.status || "offline",
+            location: v.current_lat && v.current_lng ? { lat: v.current_lat, lng: v.current_lng } : undefined,
+            driverName: v.driver ? `${v.driver.first_name} ${v.driver.last_name}` : undefined,
+            lastUpdate: v.location_updated_at,
+          }))
+        }
+      } catch (queryError) {
+        console.error("[Dashboard] Query error:", queryError)
+        // Bei Query-Fehler: Weiter mit leeren Daten statt 404
       }
     }
     // Master-Account ohne Company: Zeige leeres Dashboard (stats bleiben bei 0, Listen leer)
@@ -746,4 +752,9 @@ export default async function DashboardPage() {
       </div>
     </MainLayout>
   )
+  } catch (error) {
+    console.error("[Dashboard] Error:", error)
+    // Bei Fehler: Weiterleitung zum Login statt 404
+    redirect("/auth/login?error=dashboard_error")
+  }
 }
