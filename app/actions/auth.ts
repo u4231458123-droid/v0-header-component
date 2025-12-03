@@ -4,9 +4,20 @@ import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
 
 async function createSupabaseServerClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!url || !key) {
+    console.error("[Auth] Missing Supabase env vars:", {
+      hasUrl: !!url,
+      hasKey: !!key,
+    })
+    throw new Error("Supabase-Konfiguration fehlt. Bitte prüfen Sie die Environment Variables.")
+  }
+
   const cookieStore = await cookies()
 
-  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  return createServerClient(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
@@ -23,8 +34,19 @@ async function createSupabaseServerClient() {
 }
 
 async function createSupabaseAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !key) {
+    console.error("[Auth] Missing Supabase admin env vars:", {
+      hasUrl: !!url,
+      hasKey: !!key,
+    })
+    throw new Error("Supabase Service Role Key fehlt. Bitte prüfen Sie die Environment Variables.")
+  }
+
   const { createClient } = await import("@supabase/supabase-js")
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+  return createClient(url, key, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

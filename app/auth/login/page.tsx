@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { createBrowserClient } from "@supabase/ssr"
+import { createClient } from "@/lib/supabase/client"
 
 // =============================================================================
 // DESIGN-GUIDELINES: Harmonisiert mit Sign-Up Seite
@@ -15,14 +15,13 @@ import { createBrowserClient } from "@supabase/ssr"
 // =============================================================================
 
 function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error("Supabase Umgebungsvariablen fehlen")
+  try {
+    return createClient()
+  } catch (error) {
+    console.error("[Login] Supabase Client Error:", error)
+    // Zeige benutzerfreundliche Fehlermeldung
+    throw new Error("Supabase-Verbindung konnte nicht hergestellt werden. Bitte versuchen Sie es später erneut.")
   }
-
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
 }
 
 function CheckIcon({ className }: { className?: string }) {
@@ -50,6 +49,18 @@ export default function LoginPage() {
     setResendSuccess(false)
 
     try {
+      // Prüfe Umgebungsvariablen vor Client-Erstellung
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      
+      if (!supabaseUrl || !supabaseAnonKey) {
+        console.error("[Login] Missing env vars:", {
+          hasUrl: !!supabaseUrl,
+          hasKey: !!supabaseAnonKey,
+        })
+        throw new Error("Supabase-Konfiguration fehlt. Bitte kontaktieren Sie den Support.")
+      }
+
       const supabase = getSupabaseClient()
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,

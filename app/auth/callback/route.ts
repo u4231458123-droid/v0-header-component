@@ -19,10 +19,18 @@ export async function GET(request: NextRequest) {
 
   console.log("[v0] Auth callback:", { type, hasCode: !!code, next })
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("[v0] Auth callback: Missing Supabase env vars")
+    return NextResponse.redirect(`${origin}/auth/error?error=${encodeURIComponent("Supabase-Konfiguration fehlt")}`)
+  }
+
   if (code) {
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {
@@ -39,8 +47,8 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.redirect(`${origin}${next}`)
 
     const supabaseWithCookies = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {
@@ -80,8 +88,8 @@ export async function GET(request: NextRequest) {
   if (token_hash) {
     // OTP-Verifizierung
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {

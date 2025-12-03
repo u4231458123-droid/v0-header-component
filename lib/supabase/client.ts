@@ -23,11 +23,14 @@ export function createClient() {
 
   // During build time on server, return dummy client
   if (typeof window === "undefined" && (!url || !key)) {
+    console.warn("[Supabase Client] Build-time: Returning dummy client (env vars not available)")
     return createDummyClient()
   }
 
   if (!url || !key) {
-    throw new Error("Supabase environment variables are not set")
+    const errorMsg = `Supabase environment variables are not set. URL: ${url ? "✅" : "❌"}, Key: ${key ? "✅" : "❌"}`
+    console.error("[Supabase Client]", errorMsg)
+    throw new Error(errorMsg)
   }
 
   return createSupabaseBrowserClient(url, key)
