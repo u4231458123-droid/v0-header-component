@@ -60,10 +60,12 @@ export function PWAInstallButton({
 
     // Listen for beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log("[PWA] beforeinstallprompt event received!")
       e.preventDefault()
       const promptEvent = e as BeforeInstallPromptEvent
       window.deferredPWAPrompt = promptEvent
       setDeferredPrompt(promptEvent)
+      console.log("[PWA] Prompt stored in window.deferredPWAPrompt and state")
     }
 
     // Listen for app installed
@@ -94,8 +96,14 @@ export function PWAInstallButton({
   const handleInstallClick = useCallback(async () => {
     if (typeof window === "undefined") return
 
+    console.log("[PWA] Install button clicked")
+    console.log("[PWA] isIOS:", isIOS)
+    console.log("[PWA] deferredPrompt (state):", deferredPrompt)
+    console.log("[PWA] window.deferredPWAPrompt:", window.deferredPWAPrompt)
+
     // iOS: Show modal with instructions (iOS hat keinen beforeinstallprompt)
     if (isIOS) {
+      console.log("[PWA] iOS detected - showing modal")
       setShowModal(true)
       return
     }
@@ -104,18 +112,22 @@ export function PWAInstallButton({
     // Prüfe zuerst window.deferredPWAPrompt (global), dann lokalen State
     let prompt = window.deferredPWAPrompt || deferredPrompt
     
+    console.log("[PWA] Resolved prompt:", prompt)
+    
     // Wenn kein Prompt im State, aber Event wurde gefangen, hole es vom Window
     if (!prompt && window.deferredPWAPrompt) {
+      console.log("[PWA] Found prompt in window, syncing to state")
       prompt = window.deferredPWAPrompt
       setDeferredPrompt(prompt)
     }
     
     // Wenn Prompt verfügbar, SOFORT triggern (KEIN Modal!)
     if (prompt) {
+      console.log("[PWA] Prompt available - triggering native install prompt")
       setIsInstalling(true)
       try {
-        console.log("[PWA] Triggering native install prompt")
         await prompt.prompt()
+        console.log("[PWA] Prompt shown, waiting for user choice")
         const { outcome } = await prompt.userChoice
         console.log("[PWA] User choice:", outcome)
         if (outcome === "accepted") {
@@ -125,17 +137,23 @@ export function PWAInstallButton({
         }
       } catch (error) {
         console.error("[PWA] Install error:", error)
-        // Bei Fehler: Versuche es nochmal oder zeige Modal nur wenn wirklich nötig
-        // Meistens ist der Fehler temporär, daher nicht sofort Modal zeigen
+        // Bei Fehler: Prompt ist möglicherweise nicht mehr gültig
+        // Setze Prompt zurück und zeige Modal
+        setDeferredPrompt(null)
+        window.deferredPWAPrompt = null
+        setShowModal(true)
       } finally {
         setIsInstalling(false)
       }
-      return // WICHTIG: Verlasse die Funktion, zeige KEIN Modal
+      return // WICHTIG: Verlasse die Funktion, zeige KEIN Modal (außer bei Fehler)
     }
     
     // NUR wenn wirklich kein Prompt verfügbar ist, Modal zeigen
-    // Das sollte eigentlich nie passieren, wenn PWA korrekt konfiguriert ist
     console.warn("[PWA] No install prompt available - showing fallback modal")
+    console.warn("[PWA] This usually means:")
+    console.warn("[PWA] 1. PWA already installed")
+    console.warn("[PWA] 2. Browser doesn't support PWA")
+    console.warn("[PWA] 3. beforeinstallprompt event not fired (needs HTTPS + valid manifest + service worker)")
     setShowModal(true)
   }, [deferredPrompt, isIOS])
 
