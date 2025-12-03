@@ -7,8 +7,9 @@ Diese Dokumentation beschreibt die vollständige Integration des Model Context P
 ## Aktuelle Projekt-Konfiguration
 
 ### Supabase-Projekt
-- **URL**: `https://pwddkkpltcqonqwfmhhs.supabase.co`
-- **Projekt-ID**: `pwddkkpltcqonqwfmhhs` (aus URL extrahiert)
+- **URL**: `https://ykfufejycdgwonrlbhzn.supabase.co`
+- **Projekt-ID**: `ykfufejycdgwonrlbhzn` (aus URL extrahiert)
+- **MCP URL**: `https://mcp.supabase.com/mcp?project_ref=ykfufejycdgwonrlbhzn&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage`
 
 ### Wichtige Erkenntnisse
 ⚠️ **KRITISCH**: Bei jeder Deployment-Änderung wurde ein neues Vercel-Projekt erstellt, was zu Fehlern führte, da die falsche Projekt-ID verwendet wurde.
@@ -112,7 +113,7 @@ const security = await mcp_supabase_get_advisors({ type: "security" })
 ## Umsetzungsplan
 
 ### Phase 1: Validierung & Analyse
-1. ✅ Projekt-URL bestätigt: `https://pwddkkpltcqonqwfmhhs.supabase.co`
+1. ✅ Projekt-URL bestätigt: `https://ykfufejycdgwonrlbhzn.supabase.co`
 2. ⏳ Tabellen-Struktur prüfen
 3. ⏳ Migrationen auflisten
 4. ⏳ Edge Functions prüfen

@@ -13,7 +13,7 @@
 async validateSchema() {
   // 1. Projekt-URL
   const url = await mcp_supabase_get_project_url()
-  if (url !== "https://pwddkkpltcqonqwfmhhs.supabase.co") {
+  if (url !== "https://ykfufejycdgwonrlbhzn.supabase.co") {
     throw new Error("FALSCHES PROJEKT!")
   }
   
@@ -141,7 +141,7 @@ class MasterBot {
     
     // 1. Projekt-URL
     const url = await mcp_supabase_get_project_url()
-    if (url !== "https://pwddkkpltcqonqwfmhhs.supabase.co") {
+    if (url !== "https://ykfufejycdgwonrlbhzn.supabase.co") {
       errors.push("Falsche Projekt-URL")
     }
     

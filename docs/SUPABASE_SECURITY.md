@@ -70,7 +70,7 @@ CREATE POLICY "Users can view their own company" ON companies
 
 #### ✅ SICHER (Browser-exponiert)
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://ygpwuiygivxoqtyoigtg.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://ykfufejycdgwonrlbhzn.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 

@@ -20,7 +20,7 @@
 // IMMER zuerst Projekt-URL abrufen
 const projectUrl = await mcp_supabase_get_project_url()
 // Validieren: Ist es das richtige Projekt?
-if (projectUrl !== "https://pwddkkpltcqonqwfmhhs.supabase.co") {
+if (projectUrl !== "https://ykfufejycdgwonrlbhzn.supabase.co") {
   throw new Error("Falsches Supabase-Projekt!")
 }
 ```

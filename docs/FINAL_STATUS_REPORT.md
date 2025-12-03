@@ -5,7 +5,7 @@
 **Vercel Deployment:** v0-header-component-dz18azlf5-mydispatchs-projects.vercel.app  
 **Domain:** www.my-dispatch.de  
 **Team-ID:** team_jO6cawqC6mFroPHujn47acpU  
-**Supabase:** https://pwddkkpltcqonqwfmhhs.supabase.co  
+**Supabase:** https://ykfufejycdgwonrlbhzn.supabase.co  
 
 ## ✅ Vollständig abgeschlossen
 

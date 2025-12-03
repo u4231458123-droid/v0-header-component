@@ -3,8 +3,9 @@
 ## ✅ Durchgeführte Schritte
 
 ### 1. Projekt-Validierung
-- ✅ Supabase-Projekt-URL bestätigt: `https://pwddkkpltcqonqwfmhhs.supabase.co`
-- ✅ Projekt-ID extrahiert: `pwddkkpltcqonqwfmhhs`
+- ✅ Supabase-Projekt-URL bestätigt: `https://ykfufejycdgwonrlbhzn.supabase.co`
+- ✅ Projekt-ID extrahiert: `ykfufejycdgwonrlbhzn`
+- ✅ MCP URL: `https://mcp.supabase.com/mcp?project_ref=ykfufejycdgwonrlbhzn&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage`
 
 ### 2. Schema-Analyse
 - ✅ Tabellen-Struktur geprüft

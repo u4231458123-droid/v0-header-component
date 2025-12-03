@@ -103,8 +103,9 @@
 - **Projekt-URL**: `https://vercel.com/mydispatchs-projects/v0-header-component`
 
 ### Supabase
-- **Projekt-URL**: `https://pwddkkpltcqonqwfmhhs.supabase.co`
-- **Projekt-ID**: `pwddkkpltcqonqwfmhhs`
+- **Projekt-URL**: `https://ykfufejycdgwonrlbhzn.supabase.co`
+- **Projekt-ID**: `ykfufejycdgwonrlbhzn`
+- **MCP URL**: `https://mcp.supabase.com/mcp?project_ref=ykfufejycdgwonrlbhzn&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage`
 
 ## ⚠️ Nächste Schritte (für Deployment)
 
