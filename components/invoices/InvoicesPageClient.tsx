@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { NewInvoiceDialog } from "@/components/invoices/NewInvoiceDialog"
+import { InvoiceDetailsDialog } from "@/components/invoices/InvoiceDetailsDialog"
 import { Euro, CheckCircle, Clock, AlertTriangle, Eye } from "lucide-react"
 import { safeNumber } from "@/lib/utils/safe-number"
 
@@ -32,6 +33,7 @@ export function InvoicesPageClient({
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [localInvoices, setLocalInvoices] = useState(invoices || [])
+  const [detailsInvoice, setDetailsInvoice] = useState<any>(null)
 
   const supabase = createClient()
 
@@ -250,9 +252,7 @@ export function InvoicesPageClient({
                           variant="ghost"
                           size="sm"
                           className="h-8 w-8 p-0"
-                          onClick={() => {
-                            /* TODO: Implement invoice details */
-                          }}
+                          onClick={() => setDetailsInvoice(invoice)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -265,6 +265,18 @@ export function InvoicesPageClient({
           </div>
         </CardContent>
       </Card>
+
+      {detailsInvoice && (
+        <InvoiceDetailsDialog
+          invoice={detailsInvoice}
+          open={!!detailsInvoice}
+          onOpenChange={(open) => !open && setDetailsInvoice(null)}
+          onUpdate={(updated) => {
+            setLocalInvoices((prev) => prev.map((inv) => (inv.id === updated.id ? updated : inv)))
+            setDetailsInvoice(updated)
+          }}
+        />
+      )}
     </div>
   )
 }
