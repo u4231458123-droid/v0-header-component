@@ -86,7 +86,17 @@ export default function LoginPage() {
         const userId = data.user.id
         const userEmail = data.user.email
 
-        // 0. Sonderfall: Bekannte Test-Accounts (explizite Zuweisung)
+        // 0. KRITISCH: Master-Account hat HÖCHSTE Priorität (VOR allen anderen Checks)
+        // Case-insensitive Vergleich für E-Mail
+        const normalizedEmail = userEmail?.toLowerCase().trim()
+        if (normalizedEmail === "courbois1981@gmail.com" || normalizedEmail === "info@my-dispatch.de") {
+          // Master-Account: Direkt ins Dashboard, OHNE weitere Checks
+          console.log("[Login] Master-Account erkannt, Weiterleitung zu /dashboard")
+          window.location.href = "/dashboard"
+          return
+        }
+
+        // 1. Kunden-Account (courbois83@gmail.com)
         if (userEmail === "courbois83@gmail.com") {
            // Prüfe ob Kunde und leite direkt weiter
            const { data: customer } = await supabase
@@ -104,17 +114,20 @@ export default function LoginPage() {
              window.location.href = "/kunden-portal"
              return
            }
+           // Fallback: Kunden-Portal
+           window.location.href = "/kunden-portal"
+           return
         }
 
-        // 1. Prüfe ob Master Admin (Höchste Priorität)
+        // 2. Prüfe ob Master Admin (via Profile-Rolle)
         const { data: profile } = await supabase
           .from("profiles")
           .select("role, company_id")
           .eq("id", userId)
           .maybeSingle()
 
-        if (profile && profile.role === "master_admin") {
-          window.location.href = "/admin"
+        if (profile && (profile.role === "master_admin" || profile.role === "master")) {
+          window.location.href = "/dashboard"
           return
         }
 

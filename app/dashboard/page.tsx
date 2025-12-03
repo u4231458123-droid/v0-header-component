@@ -37,11 +37,16 @@ export default async function DashboardPage() {
   // Master-Account hat direkten Zugang ins Dashboard ohne weitere Checks
   const MASTER_ACCOUNT_EMAIL = "courbois1981@gmail.com"
   const CUSTOMER_ACCOUNT_EMAIL = "courbois83@gmail.com"
+  
+  // Case-insensitive E-Mail-Vergleich
+  const userEmailNormalized = user.email?.toLowerCase().trim()
+  const isMasterAccount = userEmailNormalized === MASTER_ACCOUNT_EMAIL || userEmailNormalized === "info@my-dispatch.de"
+  const isCustomerAccount = userEmailNormalized === CUSTOMER_ACCOUNT_EMAIL
 
-  if (user.email === MASTER_ACCOUNT_EMAIL) {
+  if (isMasterAccount) {
     // Master-Account: Direkter Zugang, keine weiteren Checks nötig
-    // Weiter mit normalem Dashboard-Flow
-  } else if (user.email === CUSTOMER_ACCOUNT_EMAIL) {
+    // Weiter mit normalem Dashboard-Flow - KEINE Weiterleitung
+  } else if (isCustomerAccount) {
     // Kunden-Account: Weiterleitung ins Kunden-Portal
     const { data: customer } = await supabase
       .from("customers")
@@ -70,7 +75,7 @@ export default async function DashboardPage() {
   }
 
   // WICHTIG: Master-Account wird NICHT als Kunde behandelt
-  if (profile?.role === "customer" && user.email !== MASTER_ACCOUNT_EMAIL && user.email !== "info@my-dispatch.de") {
+  if (profile?.role === "customer" && !isMasterAccount) {
     const { data: customer } = await supabase
       .from("customers")
       .select("id, company_id, company:companies(company_slug)")
@@ -88,8 +93,9 @@ export default async function DashboardPage() {
 
   if (profileError || !profile) {
     // Master-Account hat möglicherweise kein Profil, aber sollte trotzdem ins Dashboard
-    if (user.email === MASTER_ACCOUNT_EMAIL || user.email === "info@my-dispatch.de") {
+    if (isMasterAccount) {
       // Master-Account: Weiter mit Dashboard (keine Weiterleitung)
+      // Kein return - Code läuft weiter zum Dashboard-Rendering
     } else {
       // Pruefe ob Fahrer
       const { data: driver } = await supabase
