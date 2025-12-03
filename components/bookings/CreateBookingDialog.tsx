@@ -504,32 +504,26 @@ export function CreateBookingDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>Fahrzeug Klasse *</Label>
-                {vehicles.length === 0 ? (
-                  <div className="text-sm text-muted-foreground p-2 border border-warning/30 rounded-lg bg-warning/5">
-                    ⚠️ Keine Fahrzeuge im Fleet vorhanden. Bitte zuerst Fahrzeuge anlegen.
-                  </div>
-                ) : (
-                  <Select name="vehicle_class" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Kategorie wählen" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {vehicleCategories.length > 0 ? (
-                        vehicleCategories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>
-                            {cat.name} (max. {cat.max_passengers} Pers.)
-                          </SelectItem>
-                        ))
-                      ) : (
-                        VEHICLE_CATEGORIES.map((cat) => (
-                          <SelectItem key={cat.value} value={cat.value}>
-                            {cat.label}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                )}
+                <Select name="vehicle_class" required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Kategorie wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleCategories.length > 0 ? (
+                      vehicleCategories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name} (max. {cat.max_passengers} Pers.)
+                        </SelectItem>
+                      ))
+                    ) : (
+                      VEHICLE_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Fahrgast Anzahl *</Label>

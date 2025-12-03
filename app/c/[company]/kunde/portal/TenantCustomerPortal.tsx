@@ -99,6 +99,7 @@ export function TenantCustomerPortal({ company, customer, bookings, invoices }: 
     await supabase.auth.signOut()
     // Redirect zurück zur Unternehmens-Landingpage
     window.location.href = `/c/${company.company_slug}`
+    window.location.href = `/c/${company.company_slug}`
   }
 
   const getStatusBadge = (status: string) => {

@@ -172,10 +172,8 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         return
       }
 
-      // Prüfe ob Kunde (courbois83@gmail.com oder andere Kunden)
-      const isCustomerAccount = userEmail === "courbois83@gmail.com"
-
-      // Prüfe customers Tabelle
+      // Prüfe ob Kunde dieses Unternehmens
+      // 1. Prüfe customers Tabelle (direkte Zuordnung)
       const { data: customer } = await supabase
         .from("customers")
         .select("id, company_id, user_id")
@@ -188,7 +186,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         return
       }
 
-      // Prüfe customer_accounts Tabelle (für courbois83@gmail.com oder andere)
+      // 2. Prüfe customer_accounts Tabelle (für registrierte Kunden)
       const { data: customerAccount } = await supabase
         .from("customer_accounts")
         .select("id, registered_companies")
@@ -203,7 +201,21 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         }
       }
 
-      throw new Error("Sie haben keinen Zugang zu diesem Unternehmen. Bitte registrieren Sie sich zuerst.")
+      // 3. Prüfe ob User ein Profil hat (Unternehmer)
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id, company_id, role")
+        .eq("id", currentUserId)
+        .maybeSingle()
+
+      if (profile && profile.company_id === company.id) {
+        // Unternehmer dieses Unternehmens - zum Dashboard
+        window.location.href = "/dashboard"
+        return
+      }
+
+      // Kein Zugang zu diesem Unternehmen
+      throw new Error("Sie haben keinen Zugang zu diesem Unternehmen. Bitte registrieren Sie sich zuerst oder wenden Sie sich an das Unternehmen.")
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message)
