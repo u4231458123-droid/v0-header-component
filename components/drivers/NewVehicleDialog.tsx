@@ -271,6 +271,7 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
       }
 
       toast.success("Fahrzeug erfolgreich hinzugefuegt")
+      onSuccess?.(vehicle)
       setOpen(false)
       resetForm()
       router.refresh()
