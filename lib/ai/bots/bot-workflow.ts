@@ -71,7 +71,7 @@ export class BotWorkflowManager {
           required: true,
           order: 1,
           validator: async (context) => {
-            const knowledge = loadKnowledgeForTaskWithCICD("system-maintenance", context.knowledgeCategories || [])
+            const knowledge = loadKnowledgeForTask("system-maintenance", context.knowledgeCategories || [])
             return {
               valid: knowledge.length > 0,
               errors: knowledge.length === 0 ? ["Knowledge-Base konnte nicht geladen werden"] : [],
@@ -287,7 +287,8 @@ export class BotWorkflowManager {
     }
 
     // 1. Lade Knowledge-Base
-    const knowledge = loadKnowledgeForTaskWithCICD(botId, workflow.knowledgeCategories)
+    const { loadKnowledgeForTask } = await import("@/lib/knowledge-base/structure")
+    const knowledge = loadKnowledgeForTask(botId, workflow.knowledgeCategories)
     context.knowledgeBase = knowledge
 
     const completedSteps: string[] = []

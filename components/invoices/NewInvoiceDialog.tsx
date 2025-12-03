@@ -121,6 +121,12 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
   const [flightTrainNumber, setFlightTrainNumber] = useState("")
   const [departureLocation, setDepartureLocation] = useState("")
 
+  // Fahrer und Fahrzeuge
+  const [drivers, setDrivers] = useState<Array<{ id: string; first_name: string; last_name: string; status?: string }>>([])
+  const [vehicles, setVehicles] = useState<Array<{ id: string; license_plate: string; make?: string; model?: string; status?: string }>>([])
+  const [selectedDriverId, setSelectedDriverId] = useState("")
+  const [selectedVehicleId, setSelectedVehicleId] = useState("")
+
   // Rechnungsdaten
   const [netAmount, setNetAmount] = useState<number>(0)
   const [taxRate, setTaxRate] = useState<number>(7)
@@ -128,8 +134,29 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
   useEffect(() => {
     if (open && companyId) {
       loadCustomers()
+      loadDriversAndVehicles()
     }
   }, [open, companyId])
+
+  async function loadDriversAndVehicles() {
+    if (!companyId) return
+
+    const [driversResult, vehiclesResult] = await Promise.all([
+      supabase
+        .from("drivers")
+        .select("id, first_name, last_name, status")
+        .eq("company_id", companyId)
+        .order("last_name"),
+      supabase
+        .from("vehicles")
+        .select("id, license_plate, make, model, status")
+        .eq("company_id", companyId)
+        .order("license_plate"),
+    ])
+
+    if (driversResult.data) setDrivers(driversResult.data)
+    if (vehiclesResult.data) setVehicles(vehiclesResult.data)
+  }
 
   useEffect(() => {
     if (selectedCustomerId) {
@@ -205,6 +232,8 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
     setPickupType("airport")
     setFlightTrainNumber("")
     setDepartureLocation("")
+    setSelectedDriverId("")
+    setSelectedVehicleId("")
     setNetAmount(0)
     setTaxRate(7)
   }
@@ -263,6 +292,8 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
         company_id: companyId,
         customer_id: customerId,
         booking_id: selectedBookingId || null,
+        driver_id: selectedDriverId || null,
+        vehicle_id: selectedVehicleId || null,
         invoice_number: invoiceNumber,
         issue_date: formData.get("issue_date") as string,
         due_date: formData.get("due_date") as string,
@@ -439,7 +470,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
                     <Label>Anrede *</Label>
                     <Select name="customer_salutation" required={customerMode === "new"}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Waehlen" />
+                        <SelectValue placeholder="Wählen" />
                       </SelectTrigger>
                       <SelectContent>
                         {SALUTATION_OPTIONS.map((opt) => (
@@ -577,6 +608,45 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
                   placeholder="Zieladresse"
                   required
                 />
+              </div>
+            </div>
+
+            {/* Fahrer- und Fahrzeugauswahl */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Fahrer (optional)</Label>
+                <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fahrer auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Kein Fahrer zugewiesen</SelectItem>
+                    {drivers.map((driver) => (
+                      <SelectItem key={driver.id} value={driver.id}>
+                        {driver.first_name} {driver.last_name}
+                        {driver.status && ` (${driver.status})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Fahrzeug (optional)</Label>
+                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fahrzeug auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Kein Fahrzeug zugewiesen</SelectItem>
+                    {vehicles.map((vehicle) => (
+                      <SelectItem key={vehicle.id} value={vehicle.id}>
+                        {vehicle.license_plate}
+                        {vehicle.make && vehicle.model ? ` - ${vehicle.make} ${vehicle.model}` : ""}
+                        {vehicle.status && ` (${vehicle.status})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

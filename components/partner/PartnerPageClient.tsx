@@ -1152,7 +1152,7 @@ export function PartnerPageClient({
                 onValueChange={(value) => setBookingForm((prev) => ({ ...prev, partner_id: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Partner auswaehlen" />
+                  <SelectValue placeholder="Partner auswählen" />
                 </SelectTrigger>
                 <SelectContent>
                   {activePartners.map((connection) => {
@@ -1341,7 +1341,7 @@ export function PartnerPageClient({
                           disabled={!selectedFields[field.key]}
                         >
                           <SelectTrigger className="mt-1 h-8 text-sm">
-                            <SelectValue placeholder="Fahrer waehlen" />
+                            <SelectValue placeholder="Fahrer wählen" />
                           </SelectTrigger>
                           <SelectContent>
                             {allAvailableDrivers.length === 0 ? (
@@ -1393,7 +1393,7 @@ export function PartnerPageClient({
                           disabled={!selectedFields[field.key]}
                         >
                           <SelectTrigger className="mt-1 h-8 text-sm">
-                            <SelectValue placeholder="Fahrzeug waehlen" />
+                            <SelectValue placeholder="Fahrzeug wählen" />
                           </SelectTrigger>
                           <SelectContent>
                             {allAvailableVehicles.length === 0 ? (

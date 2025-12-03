@@ -334,7 +334,7 @@ export function CreateBookingDialog({
                     <Label>Anrede *</Label>
                     <Select name="customer_salutation" required={customerMode === "new"}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Waehlen" />
+                        <SelectValue placeholder="Wählen" />
                       </SelectTrigger>
                       <SelectContent>
                         {SALUTATION_OPTIONS.map((opt) => (
@@ -481,7 +481,7 @@ export function CreateBookingDialog({
                 <Label>Fahrzeug Klasse *</Label>
                 <Select name="vehicle_class" required>
                   <SelectTrigger>
-                    <SelectValue placeholder="Kategorie waehlen" />
+                    <SelectValue placeholder="Kategorie wählen" />
                   </SelectTrigger>
                   <SelectContent>
                     {VEHICLE_CATEGORIES.map((cat) => (
@@ -515,7 +515,7 @@ export function CreateBookingDialog({
                 <Label>Fahrer (optional)</Label>
                 <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Fahrer auswaehlen" />
+                    <SelectValue placeholder="Fahrer auswählen" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Kein Fahrer zugewiesen</SelectItem>
@@ -532,7 +532,7 @@ export function CreateBookingDialog({
                 <Label>Fahrzeug (optional)</Label>
                 <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Fahrzeug auswaehlen" />
+                    <SelectValue placeholder="Fahrzeug auswählen" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Kein Fahrzeug zugewiesen</SelectItem>

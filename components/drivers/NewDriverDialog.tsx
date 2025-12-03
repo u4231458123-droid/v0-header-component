@@ -458,7 +458,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                   <Label htmlFor="salutation">Anrede *</Label>
                   <Select value={formData.salutation} onValueChange={(value) => updateField("salutation", value)}>
                     <SelectTrigger className={`rounded-xl ${errors.salutation ? "border-destructive" : ""}`}>
-                      <SelectValue placeholder="Waehlen" />
+                      <SelectValue placeholder="Wählen" />
                     </SelectTrigger>
                     <SelectContent>
                       {SALUTATION_OPTIONS.map((option) => (

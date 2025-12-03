@@ -345,7 +345,7 @@ export function CustomersPageClient({
                     onValueChange={(v) => setNewCustomer({ ...newCustomer, salutation: v })}
                   >
                     <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder="Bitte waehlen" />
+                      <SelectValue placeholder="Bitte wählen" />
                     </SelectTrigger>
                     <SelectContent>
                       {SALUTATION_OPTIONS.map((opt) => (

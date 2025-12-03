@@ -333,7 +333,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                   <Label htmlFor="salutation">Anrede</Label>
                   <Select value={salutation} onValueChange={setSalutation}>
                     <SelectTrigger className="rounded-xl">
-                      <SelectValue placeholder="Waehlen" />
+                      <SelectValue placeholder="Wählen" />
                     </SelectTrigger>
                     <SelectContent>
                       {SALUTATION_OPTIONS.map((option) => (

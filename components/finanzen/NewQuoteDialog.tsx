@@ -3,7 +3,7 @@
 import type React from "react"
 import { AddressAutocomplete } from "@/components/maps/AddressAutocomplete"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import {
@@ -134,6 +134,12 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
   const [notes, setNotes] = useState("")
   const [paymentTerms, setPaymentTerms] = useState("Zahlbar innerhalb von 14 Tagen nach Auftragserteilung.")
 
+  // Fahrer und Fahrzeuge
+  const [drivers, setDrivers] = useState<Array<{ id: string; first_name: string; last_name: string; status?: string }>>([])
+  const [vehicles, setVehicles] = useState<Array<{ id: string; license_plate: string; make?: string; model?: string; status?: string }>>([])
+  const [selectedDriverId, setSelectedDriverId] = useState("")
+  const [selectedVehicleId, setSelectedVehicleId] = useState("")
+
   // Positionen
   const [items, setItems] = useState<QuoteItem[]>([
     { id: "1", description: "Personenbeförderung", quantity: 1, unit: "Fahrt", unitPrice: 0 },
@@ -156,6 +162,31 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
   })
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId)
+
+  // Lade Fahrer und Fahrzeuge
+  useEffect(() => {
+    if (!companyId) return
+
+    const loadDriversAndVehicles = async () => {
+      const [driversResult, vehiclesResult] = await Promise.all([
+        supabase
+          .from("drivers")
+          .select("id, first_name, last_name, status")
+          .eq("company_id", companyId)
+          .order("last_name"),
+        supabase
+          .from("vehicles")
+          .select("id, license_plate, make, model, status")
+          .eq("company_id", companyId)
+          .order("license_plate"),
+      ])
+
+      if (driversResult.data) setDrivers(driversResult.data)
+      if (vehiclesResult.data) setVehicles(vehiclesResult.data)
+    }
+
+    loadDriversAndVehicles()
+  }, [companyId, supabase])
 
   const addItem = () => {
     setItems([...items, { id: Date.now().toString(), description: "", quantity: 1, unit: "Stück", unitPrice: 0 }])
@@ -191,6 +222,8 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
     setPickupType("airport")
     setFlightTrainNumber("")
     setDepartureLocation("")
+    setSelectedDriverId("")
+    setSelectedVehicleId("")
     setNotes("")
     setPaymentTerms("Zahlbar innerhalb von 14 Tagen nach Auftragserteilung.")
     setItems([{ id: "1", description: "Personenbeförderung", quantity: 1, unit: "Fahrt", unitPrice: 0 }])
@@ -281,6 +314,8 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
           pickup_time: pickupTime || null,
           passengers: Number.parseInt(passengerCount) || 1,
           vehicle_type: vehicleClass || null,
+          driver_id: selectedDriverId || null,
+          vehicle_id: selectedVehicleId || null,
           notes: notes || null,
           payment_terms: paymentTerms || null,
         })
@@ -433,7 +468,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                     <Label>Anrede *</Label>
                     <Select name="customer_salutation" required={customerMode === "new"}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Waehlen" />
+                        <SelectValue placeholder="Wählen" />
                       </SelectTrigger>
                       <SelectContent>
                         {SALUTATION_OPTIONS.map((opt) => (
@@ -586,7 +621,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                 <Label>Fahrzeug Klasse *</Label>
                 <Select value={vehicleClass} onValueChange={setVehicleClass} required>
                   <SelectTrigger>
-                    <SelectValue placeholder="Kategorie waehlen" />
+                    <SelectValue placeholder="Kategorie wählen" />
                   </SelectTrigger>
                   <SelectContent>
                     {VEHICLE_CATEGORIES.map((cat) => (
@@ -614,13 +649,52 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
               </div>
             </div>
 
+            {/* Fahrer- und Fahrzeugauswahl */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Fahrer (optional)</Label>
+                <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fahrer auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Kein Fahrer zugewiesen</SelectItem>
+                    {drivers.map((driver) => (
+                      <SelectItem key={driver.id} value={driver.id}>
+                        {driver.first_name} {driver.last_name}
+                        {driver.status && ` (${driver.status})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Fahrzeug (optional)</Label>
+                <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Fahrzeug auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Kein Fahrzeug zugewiesen</SelectItem>
+                    {vehicles.map((vehicle) => (
+                      <SelectItem key={vehicle.id} value={vehicle.id}>
+                        {vehicle.license_plate}
+                        {vehicle.make && vehicle.model ? ` - ${vehicle.make} ${vehicle.model}` : ""}
+                        {vehicle.status && ` (${vehicle.status})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             {/* Fahrgast Namen */}
             <div className="grid gap-2">
               <Label>Fahrgast Name/n</Label>
               <Input
                 value={passengerNames}
                 onChange={(e) => setPassengerNames(e.target.value)}
-                placeholder="Namen der Fahrgaeste (kommagetrennt)"
+                placeholder="Namen der Fahrgäste (kommagetrennt)"
               />
             </div>
 

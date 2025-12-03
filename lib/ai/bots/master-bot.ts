@@ -9,9 +9,10 @@
  * - DAUERHAFTE ÜBERWACHUNG ALLER AGENTEN
  */
 
-import { loadKnowledgeForTaskWithCICD, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
+import { loadKnowledgeForTask, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { logError } from "@/lib/cicd/error-logger"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
+import { validateSupabaseProject, validateSchemaTables, checkSecurityAdvisors } from "./mcp-integration"
 import { promises as fs } from "fs"
 import path from "path"
 
@@ -113,15 +114,14 @@ export class MasterBot {
     ]
     
     // Lade zusätzlich detaillierte UI-Konsistenz-Regeln
-    const detailedConsistency = loadKnowledgeForTaskWithCICD("master-review", ["ui-consistency"])
-    this.knowledgeBase = [...this.knowledgeBase, ...detailedConsistency.filter((e: any) => 
+    const detailedConsistency = loadKnowledgeForTask("master-review", ["ui-consistency"])
+    this.knowledgeBase = [...loadKnowledgeForTask("master-review", categories), ...detailedConsistency.filter((e: any) => 
       e.id === "ui-consistency-detailed-001" || 
       e.id === "visual-logical-validation-001" || 
       e.id === "quality-thinking-detailed-001" ||
       e.id === "agent-responsibility-001" ||
       e.id === "master-bot-oversight-001"
     )]
-    this.knowledgeBase = loadKnowledgeForTaskWithCICD("master-review", categories)
   }
 
   /**

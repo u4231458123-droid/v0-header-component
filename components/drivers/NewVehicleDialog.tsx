@@ -501,7 +501,7 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
                       <Label htmlFor="category">Fahrzeugkategorie *</Label>
                       <Select name="category" defaultValue="business">
                         <SelectTrigger>
-                          <SelectValue placeholder="Kategorie waehlen" />
+                          <SelectValue placeholder="Kategorie wählen" />
                         </SelectTrigger>
                         <SelectContent>
                           {VEHICLE_CATEGORIES.map((cat) => (
@@ -516,7 +516,7 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
                       <Label htmlFor="seats">Sitzplaetze *</Label>
                       <Select name="seats" defaultValue="4">
                         <SelectTrigger>
-                          <SelectValue placeholder="Sitze waehlen" />
+                          <SelectValue placeholder="Sitze wählen" />
                         </SelectTrigger>
                         <SelectContent>
                           {[2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
@@ -611,7 +611,7 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
                       <Label htmlFor="sf_class_liability">SF-Klasse Haftpflicht</Label>
                       <Select name="sf_class_liability">
                         <SelectTrigger>
-                          <SelectValue placeholder="SF-Klasse waehlen" />
+                          <SelectValue placeholder="SF-Klasse wählen" />
                         </SelectTrigger>
                         <SelectContent>
                           {SF_CLASSES.map((sf) => (
@@ -626,7 +626,7 @@ export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
                       <Label htmlFor="sf_class_kasko">SF-Klasse Kasko</Label>
                       <Select name="sf_class_kasko">
                         <SelectTrigger>
-                          <SelectValue placeholder="SF-Klasse waehlen" />
+                          <SelectValue placeholder="SF-Klasse wählen" />
                         </SelectTrigger>
                         <SelectContent>
                           {SF_CLASSES.map((sf) => (

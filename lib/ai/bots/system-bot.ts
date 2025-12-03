@@ -6,10 +6,8 @@
  */
 
 import { loadKnowledgeForTask, generatePromptWithKnowledge, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
-import { loadKnowledgeForTaskWithCICD } from "@/lib/knowledge-base/load-with-cicd"
-import { getHuggingFaceClient } from "@/lib/ai/huggingface"
 import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
-import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
+import { validateSupabaseProject, validateSchemaTables, applyMigrationWithValidation } from "./mcp-integration"
 import { generateCodeAnalysisPrompt, generateBugAnalysisPrompt, generateCodeOptimizationPrompt, generateAutoFixPrompt } from "@/lib/cicd/prompts"
 import { logError } from "@/lib/cicd/error-logger"
 import { analyzeCodebase, formatPatternsForPrompt } from "@/lib/cicd/codebase-analyzer"
@@ -67,15 +65,15 @@ export class SystemBot {
       "mydispatch-core",
     ]
     
+    this.knowledgeBase = loadKnowledgeForTask("system-maintenance", categories)
+    
     // Lade zusätzlich detaillierte UI-Konsistenz-Regeln
-    const detailedConsistency = loadKnowledgeForTaskWithCICD("system-maintenance", ["ui-consistency"])
+    const detailedConsistency = loadKnowledgeForTask("system-maintenance", ["ui-consistency"])
     this.knowledgeBase = [...this.knowledgeBase, ...detailedConsistency.filter((e: any) => 
       e.id === "ui-consistency-detailed-001" || 
       e.id === "visual-logical-validation-001" || 
       e.id === "quality-thinking-detailed-001"
     )]
-    
-    this.knowledgeBase = loadKnowledgeForTaskWithCICD("system-maintenance", categories)
   }
 
   /**

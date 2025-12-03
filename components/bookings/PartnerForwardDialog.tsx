@@ -205,7 +205,7 @@ export function PartnerForwardDialog({
               <Label>Partner auswaehlen *</Label>
               <Select value={selectedPartnerId} onValueChange={setSelectedPartnerId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Partner auswaehlen" />
+                  <SelectValue placeholder="Partner auswählen" />
                 </SelectTrigger>
                 <SelectContent>
                   {partners.map((partner) => (

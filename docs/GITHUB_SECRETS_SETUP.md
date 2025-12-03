@@ -6,8 +6,10 @@ Die folgenden Secrets müssen in GitHub Repository Settings → Secrets and vari
 
 ### Vercel Deployment
 - `VERCEL_TOKEN`: `<Ihr-Vercel-Token>`
+- `VERCEL_TEAM_ID`: `team_jO6cawqC6mFroPHujn47acpU` (KRITISCH - muss exakt sein!)
+- `VERCEL_PROJECT_NAME`: `v0-header-component` (KRITISCH - muss exakt sein!)
 - `VERCEL_ORG_ID`: (Optional - wird automatisch aus Token ermittelt)
-- `VERCEL_PROJECT_ID`: `<Ihre-Vercel-Projekt-ID>`
+- `VERCEL_PROJECT_ID`: (Optional - wird automatisch aus Projekt-Name ermittelt)
 
 ### Supabase
 - `NEXT_PUBLIC_SUPABASE_URL`: `<Ihre-Supabase-URL>`

@@ -5,7 +5,7 @@
  */
 
 import { documentWork, validateWork, signWork, type WorkDocumentation } from "@/lib/cicd/work-documentation"
-import { loadKnowledgeForTaskWithCICD } from "@/lib/knowledge-base/load-with-cicd"
+import { loadKnowledgeForTask } from "@/lib/knowledge-base/structure"
 import type { KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { botCommunicationManager, type BotAnswer } from "./bot-communication"
 import { errorRecoverySystem } from "@/lib/cicd/error-recovery"
@@ -73,7 +73,7 @@ export abstract class BaseBot {
     const cacheKey = `${this.area}-${(categories || defaultCategories).join("-")}`
     
     this.knowledgeBase = await getCached(cacheKey, async () => {
-      return loadKnowledgeForTaskWithCICD(
+      return loadKnowledgeForTask(
         this.area,
         categories || defaultCategories
       )

@@ -164,7 +164,7 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
               <Label>Kundentyp</Label>
               <Select value={addressType} onValueChange={setAddressType}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Waehlen" />
+                  <SelectValue placeholder="Wählen" />
                 </SelectTrigger>
                 <SelectContent>
                   {ADDRESS_TYPE_OPTIONS.map((opt) => (
@@ -195,7 +195,7 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
                 <Label>Anrede</Label>
                 <Select value={salutation} onValueChange={setSalutation}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Waehlen" />
+                    <SelectValue placeholder="Wählen" />
                   </SelectTrigger>
                   <SelectContent>
                     {SALUTATION_OPTIONS.map((opt) => (

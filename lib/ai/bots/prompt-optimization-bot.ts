@@ -9,7 +9,7 @@
  */
 
 import { loadKnowledgeForTask, generatePromptWithKnowledge, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
-import { loadKnowledgeForTaskWithCICD } from "@/lib/knowledge-base/load-with-cicd"
+import { loadKnowledgeForTask } from "@/lib/knowledge-base/structure"
 import { getHuggingFaceClient } from "@/lib/ai/huggingface"
 import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
 import { logError } from "@/lib/cicd/error-logger"
@@ -50,7 +50,7 @@ export class PromptOptimizationBot {
       "ci-cd",
     ]
     
-    this.knowledgeBase = loadKnowledgeForTaskWithCICD("prompt-optimization", categories)
+    this.knowledgeBase = loadKnowledgeForTask("prompt-optimization", categories)
   }
 
   /**

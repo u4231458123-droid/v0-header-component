@@ -6,10 +6,10 @@
  */
 
 import { loadKnowledgeForTask, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
-import { loadKnowledgeForTaskWithCICD } from "@/lib/knowledge-base/load-with-cicd"
 import type { BotTask, BotResponse } from "./system-bot"
 import { logError } from "@/lib/cicd/error-logger"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
+import { validateSupabaseProject, validateSchemaTables } from "./mcp-integration"
 
 export class QualityBot {
   private knowledgeBase: any
@@ -38,21 +38,22 @@ export class QualityBot {
       "mydispatch-core",
     ]
     
+    this.knowledgeBase = loadKnowledgeForTask("quality-check", categories)
+    
     // Lade zusätzlich detaillierte UI-Konsistenz-Regeln
-    const detailedConsistency = loadKnowledgeForTaskWithCICD("quality-check", ["ui-consistency"])
+    const detailedConsistency = loadKnowledgeForTask("quality-check", ["ui-consistency"])
     this.knowledgeBase = [...this.knowledgeBase, ...detailedConsistency.filter((e: any) => 
       e.id === "ui-consistency-detailed-001" || 
       e.id === "visual-logical-validation-001" || 
       e.id === "quality-thinking-detailed-001"
     )]
-    
-    this.knowledgeBase = loadKnowledgeForTaskWithCICD("quality-check", categories)
   }
 
   /**
    * Prüfe Code gegen Dokumentation und Knowledge-Base
    * SYSTEMWEITE PRÜFUNG: UI-Konsistenz, Text-Qualität, SEO, MyDispatch-Konzept
    * DYNAMISCHE PRÜFUNG: Alle Knowledge-Base-Regeln werden automatisch geprüft
+   * MCP-VALIDIERUNG: Schema wird vor Prüfung validiert
    */
   async checkCodeAgainstDocumentation(
     code: string,
@@ -68,6 +69,21 @@ export class QualityBot {
     }>
     passed: boolean
   }> {
+    // 1. MCP-Validierung: Prüfe Projekt und Schema
+    const projectValidation = await validateSupabaseProject()
+    if (!projectValidation.valid) {
+      return {
+        violations: [{
+          type: "other",
+          severity: "critical",
+          message: `Projekt-Validierung fehlgeschlagen: ${projectValidation.errors.join(", ")}`,
+          suggestion: "Bitte Projekt-Konfiguration prüfen",
+        }],
+        passed: false,
+      }
+    }
+    
+    // 2. Lade Knowledge-Base
     await this.loadKnowledgeBase()
     const violations: any[] = []
     const lines = code.split("\n")
