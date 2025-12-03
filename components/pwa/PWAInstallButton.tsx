@@ -334,6 +334,14 @@ export function PWAInstallButton({
 
   // SSR: Render button placeholder
   if (!isMounted) {
+    if (fallbackHref) {
+      return (
+        <a href={fallbackHref} className={className}>
+          {fallbackText || children || "App installieren"}
+          {showIcon && <DownloadIcon />}
+        </a>
+      )
+    }
     return (
       <button type="button" className={className} disabled>
         {children || "App installieren"}
