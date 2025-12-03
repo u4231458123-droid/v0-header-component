@@ -2,7 +2,21 @@
 
 import type React from "react"
 import { useState, useEffect, useCallback } from "react"
-import { getPWAManager } from "@/lib/pwa/pwa-manager"
+
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[]
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed"
+    platform: string
+  }>
+  prompt(): Promise<void>
+}
+
+declare global {
+  interface Window {
+    deferredPWAPrompt: BeforeInstallPromptEvent | null
+  }
+}
 
 interface PWAInstallButtonProps {
   className?: string
@@ -15,7 +29,7 @@ export function PWAInstallButton({
   children,
   showIcon = true,
 }: PWAInstallButtonProps) {
-  const [hasPrompt, setHasPrompt] = useState(false)
+  const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalled, setIsInstalled] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -27,42 +41,92 @@ export function PWAInstallButton({
 
     if (typeof window === "undefined") return
 
-    const manager = getPWAManager()
-    
-    setIsIOS(manager.isIOS())
-    setIsInstalled(manager.isInstalled())
+    // iOS Detection
+    const userAgent = navigator.userAgent.toLowerCase()
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent) && !(window as any).MSStream
+    setIsIOS(isIOSDevice)
 
-    // Subscribe to prompt changes
-    const unsubscribe = manager.subscribe((prompt) => {
-      setHasPrompt(!!prompt)
-    })
+    // Check if already installed
+    const isInStandaloneMode =
+      window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true
+    setIsInstalled(isInStandaloneMode)
 
-    return unsubscribe
+    // Check for existing prompt
+    if (window.deferredPWAPrompt) {
+      setPrompt(window.deferredPWAPrompt)
+    }
+
+    // Listen for beforeinstallprompt - WICHTIG: preventDefault() verhindert automatischen Prompt
+    const handleBeforeInstallPrompt = (e: Event) => {
+      console.log("[PWA] beforeinstallprompt event received!")
+      e.preventDefault() // Verhindert automatischen Browser-Prompt
+      const promptEvent = e as BeforeInstallPromptEvent
+      window.deferredPWAPrompt = promptEvent
+      setPrompt(promptEvent)
+      console.log("[PWA] Prompt stored and ready to use")
+    }
+
+    // Listen for app installed
+    const handleAppInstalled = () => {
+      console.log("[PWA] App installed")
+      setIsInstalled(true)
+      setPrompt(null)
+      window.deferredPWAPrompt = null
+    }
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+    window.addEventListener("appinstalled", handleAppInstalled)
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+      window.removeEventListener("appinstalled", handleAppInstalled)
+    }
   }, [])
 
   const handleInstallClick = useCallback(async () => {
+    console.log("[PWA] Button clicked")
+    
     if (typeof window === "undefined") return
 
-    const manager = getPWAManager()
-
     // iOS: Show modal with instructions
-    if (manager.isIOS()) {
+    if (isIOS) {
+      console.log("[PWA] iOS detected - showing modal")
       setShowModal(true)
       return
     }
 
-    // Check if prompt is available
-    const prompt = manager.getPrompt()
+    // Get prompt - prüfe zuerst window, dann state
+    const currentPrompt = window.deferredPWAPrompt || prompt
     
-    if (prompt) {
+    console.log("[PWA] Current prompt:", currentPrompt)
+    console.log("[PWA] window.deferredPWAPrompt:", window.deferredPWAPrompt)
+    console.log("[PWA] state prompt:", prompt)
+
+    // If prompt available, trigger it immediately
+    if (currentPrompt) {
+      console.log("[PWA] Triggering prompt...")
       setIsInstalling(true)
       try {
-        const result = await manager.triggerPrompt()
-        if (result?.outcome === "accepted") {
+        // WICHTIG: prompt() muss aufgerufen werden, um den Browser-Dialog zu öffnen
+        await currentPrompt.prompt()
+        console.log("[PWA] Prompt shown, waiting for user choice...")
+        
+        const { outcome } = await currentPrompt.userChoice
+        console.log("[PWA] User choice:", outcome)
+        
+        if (outcome === "accepted") {
+          console.log("[PWA] Installation accepted")
+          setPrompt(null)
+          window.deferredPWAPrompt = null
           setIsInstalled(true)
+        } else {
+          console.log("[PWA] Installation dismissed")
         }
       } catch (error) {
-        console.error("[PWA] Install error:", error)
+        console.error("[PWA] Error triggering prompt:", error)
+        // Prompt might be invalid - clear it
+        setPrompt(null)
+        window.deferredPWAPrompt = null
         setShowModal(true)
       } finally {
         setIsInstalling(false)
@@ -71,8 +135,14 @@ export function PWAInstallButton({
     }
 
     // No prompt available - show modal
+    console.warn("[PWA] No prompt available - showing modal")
+    console.warn("[PWA] Possible reasons:")
+    console.warn("[PWA] 1. PWA already installed")
+    console.warn("[PWA] 2. Browser doesn't support PWA")
+    console.warn("[PWA] 3. beforeinstallprompt event not fired (needs HTTPS + valid manifest + service worker)")
+    console.warn("[PWA] 4. Running in preview/development environment")
     setShowModal(true)
-  }, [])
+  }, [prompt, isIOS])
 
   // Icons
   const DownloadIcon = () => (
@@ -196,7 +266,6 @@ export function PWAInstallButton({
         onClick={handleInstallClick}
         disabled={isInstalling}
         className={className}
-        title={hasPrompt ? "App installieren" : "Installationsanleitung anzeigen"}
       >
         {isInstalling ? (
           <>
