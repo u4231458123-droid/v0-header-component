@@ -754,6 +754,13 @@ export default async function DashboardPage() {
   )
   } catch (error: any) {
     console.error("[Dashboard] Error:", error)
+    // Detailliertes Error-Logging
+    if (error?.message) {
+      console.error("[Dashboard] Error message:", error.message)
+    }
+    if (error?.stack) {
+      console.error("[Dashboard] Error stack:", error.stack)
+    }
     // Bei Fehler: Loggen und Error-Boundary verwenden (nicht redirect, damit Error.tsx greift)
     // Error-Boundary wird den Fehler abfangen und anzeigen
     throw error
