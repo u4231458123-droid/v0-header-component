@@ -13,11 +13,10 @@ interface PreLoginHeaderProps {
 export function PreLoginHeader({ activePage }: PreLoginHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Navigation: Preise, FAQ, Kontakt entfernt (nur Startseite und Anmelden)
   const navLinks = [
     { href: "/", label: "Startseite", id: "home" },
-    { href: "/preise", label: "Preise", id: "preise" },
-    { href: "/fragen", label: "FAQ", id: "fragen" },
-    { href: "/kontakt", label: "Kontakt", id: "kontakt" },
+    // Entfernt: Preise, FAQ, Kontakt aus Header-Navigation
   ]
 
   return (

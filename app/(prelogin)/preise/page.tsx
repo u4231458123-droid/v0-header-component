@@ -18,7 +18,7 @@ export default function PreisePage() {
       id: "starter",
       name: "Starter",
       monthlyPrice: "39",
-      yearlyPrice: "31",
+      yearlyPrice: "31,20",
       description: "Perfekt für Einzelunternehmer und kleine Flotten",
       features: [
         "Bis zu 3 Fahrer",
@@ -37,7 +37,7 @@ export default function PreisePage() {
       id: "business",
       name: "Business",
       monthlyPrice: "99",
-      yearlyPrice: "79",
+      yearlyPrice: "79,20",
       description: "Für wachsende Taxibetriebe mit Anspruch",
       features: [
         "Unbegrenzte Fahrer",
