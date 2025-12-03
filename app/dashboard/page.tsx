@@ -752,9 +752,10 @@ export default async function DashboardPage() {
       </div>
     </MainLayout>
   )
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Dashboard] Error:", error)
-    // Bei Fehler: Weiterleitung zum Login statt 404
-    redirect("/auth/login?error=dashboard_error")
+    // Bei Fehler: Loggen und Error-Boundary verwenden (nicht redirect, damit Error.tsx greift)
+    // Error-Boundary wird den Fehler abfangen und anzeigen
+    throw error
   }
 }
