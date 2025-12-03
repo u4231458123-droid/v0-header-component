@@ -335,7 +335,10 @@ export function PWAInstallButton({
   }
 
   // Prüfe ob Prompt verfügbar ist (für bessere UX)
+  // WICHTIG: Prüfe sowohl State als auch Window-Objekt
   const hasPrompt = deferredPrompt || (typeof window !== "undefined" && window.deferredPWAPrompt)
+  
+  console.log("[PWA] Render - hasPrompt:", hasPrompt, "showModal:", showModal, "deferredPrompt:", deferredPrompt)
 
   // Install Button anzeigen
   return (
@@ -361,7 +364,10 @@ export function PWAInstallButton({
       </button>
 
       {/* Modal NUR anzeigen wenn wirklich kein Prompt verfügbar ist */}
-      {showModal && !hasPrompt && <InstallModal />}
+      {/* WICHTIG: Wenn ein Prompt verfügbar ist, zeige NIEMALS das Modal, auch wenn showModal true ist */}
+      {showModal && !hasPrompt && (
+        <InstallModal />
+      )}
     </>
   )
 }
