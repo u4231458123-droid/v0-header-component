@@ -631,18 +631,24 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>Fahrzeug Klasse *</Label>
-                <Select value={vehicleClass} onValueChange={setVehicleClass} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Kategorie wählen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {VEHICLE_CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {vehicles.length === 0 ? (
+                  <div className="text-sm text-muted-foreground p-2 border border-warning/30 rounded-lg bg-warning/5">
+                    ⚠️ Keine Fahrzeuge im Fleet vorhanden. Bitte zuerst Fahrzeuge anlegen.
+                  </div>
+                ) : (
+                  <Select value={vehicleClass} onValueChange={setVehicleClass} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Kategorie wählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {VEHICLE_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label>Fahrgast Anzahl *</Label>
@@ -866,7 +872,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                     type="number"
                     step="0.01"
                     min="0"
-                    value={item.unitPrice || ""}
+                    value={item.unitPrice > 0 ? item.unitPrice : ""}
                     onChange={(e) => {
                       const val = e.target.value === "" ? 0 : Number.parseFloat(e.target.value) || 0
                       updateItem(item.id, "unitPrice", val)
