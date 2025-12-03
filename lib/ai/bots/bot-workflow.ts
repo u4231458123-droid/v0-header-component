@@ -7,7 +7,8 @@
  * SYSTEMWEITE ÄNDERUNGEN - NIEMALS NUR EIN BEREICH
  */
 
-import { loadKnowledgeForTaskWithCICD, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
+import { type KnowledgeCategory } from "@/lib/knowledge-base/structure"
+import { loadKnowledgeForTaskWithCICD } from "@/lib/knowledge-base/load-with-cicd"
 import { MasterBot, type ChangeRequest } from "./master-bot"
 import { logError } from "@/lib/cicd/error-logger"
 

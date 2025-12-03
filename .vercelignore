@@ -1,0 +1,6 @@
+# Ignoriere alle Branches außer main
+# Vercel sollte nur den main Branch als Production Branch deployen
+
+# Dependabot Branches werden ignoriert (werden separat gebaut, aber nicht deployed)
+dependabot/
+
