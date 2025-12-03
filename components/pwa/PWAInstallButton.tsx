@@ -23,6 +23,8 @@ interface PWAInstallButtonProps {
   children?: React.ReactNode
   showIcon?: boolean
   forceShowInstall?: boolean
+  fallbackHref?: string
+  fallbackText?: string
 }
 
 export function PWAInstallButton({
@@ -30,6 +32,8 @@ export function PWAInstallButton({
   children,
   showIcon = true,
   forceShowInstall = false,
+  fallbackHref,
+  fallbackText,
 }: PWAInstallButtonProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalled, setIsInstalled] = useState(false)
@@ -148,14 +152,23 @@ export function PWAInstallButton({
       return // WICHTIG: Verlasse die Funktion, zeige KEIN Modal (außer bei Fehler)
     }
     
-    // NUR wenn wirklich kein Prompt verfügbar ist, Modal zeigen
-    console.warn("[PWA] No install prompt available - showing fallback modal")
+    // NUR wenn wirklich kein Prompt verfügbar ist
+    console.warn("[PWA] No install prompt available")
     console.warn("[PWA] This usually means:")
     console.warn("[PWA] 1. PWA already installed")
     console.warn("[PWA] 2. Browser doesn't support PWA")
     console.warn("[PWA] 3. beforeinstallprompt event not fired (needs HTTPS + valid manifest + service worker)")
+    
+    // Wenn fallbackHref vorhanden, weiterleiten statt Modal
+    if (fallbackHref) {
+      console.log("[PWA] Redirecting to fallback:", fallbackHref)
+      window.location.href = fallbackHref
+      return
+    }
+    
+    // Sonst Modal zeigen
     setShowModal(true)
-  }, [deferredPrompt, isIOS])
+  }, [deferredPrompt, isIOS, fallbackHref])
 
   // Icons
   const DownloadIcon = () => (
