@@ -1,0 +1,199 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { format } from "date-fns"
+import { de } from "date-fns/locale"
+import { safeNumber } from "@/lib/utils/safe-number"
+import { CalendarIcon, ClockIcon, UserIcon, CreditCardIcon, FileTextIcon, Printer } from "lucide-react"
+import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { createClient } from "@/lib/supabase/client"
+
+interface InvoiceDetailsDialogProps {
+  invoice: any
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onUpdate?: (updatedInvoice: any) => void
+}
+
+export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: InvoiceDetailsDialogProps) {
+  const [currentInvoice, setCurrentInvoice] = useState(invoice)
+  const [printing, setPrinting] = useState(false)
+  const supabase = createClient()
+
+  useEffect(() => {
+    setCurrentInvoice(invoice)
+  }, [invoice])
+
+  if (!currentInvoice) return null
+
+  const createdAt = currentInvoice.created_at ? new Date(currentInvoice.created_at) : null
+  const dueDate = currentInvoice.due_date ? new Date(currentInvoice.due_date) : null
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+      pending: { label: "Ausstehend", variant: "secondary" },
+      paid: { label: "Bezahlt", variant: "default" },
+      overdue: { label: "Überfällig", variant: "destructive" },
+      cancelled: { label: "Storniert", variant: "outline" },
+    }
+    const config = statusConfig[status] || { label: status, variant: "secondary" }
+    return <Badge variant={config.variant}>{config.label}</Badge>
+  }
+
+  const handlePrintPDF = async () => {
+    setPrinting(true)
+    try {
+      const { data: company } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("id", currentInvoice.company_id)
+        .single()
+
+      if (!company) {
+        throw new Error("Unternehmen nicht gefunden")
+      }
+
+      const { data: fullInvoice } = await supabase
+        .from("invoices")
+        .select(
+          `
+          *,
+          customer:customers(*),
+          booking:bookings(*)
+        `
+        )
+        .eq("id", currentInvoice.id)
+        .single()
+
+      if (!fullInvoice) {
+        throw new Error("Rechnung nicht gefunden")
+      }
+
+      await downloadPDF({
+        type: "invoice",
+        data: {
+          invoice: fullInvoice,
+          company: company,
+          customer: fullInvoice.customer,
+          booking: fullInvoice.booking,
+        },
+      })
+
+      setPrinting(false)
+    } catch (error: any) {
+      console.error("Fehler beim PDF-Druck:", error)
+      setPrinting(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-3 pr-8">
+            <span>Rechnungsdetails</span>
+            {getStatusBadge(currentInvoice.status)}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Rechnungsnummer und Datum */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Rechnungsnummer</p>
+              <p className="font-mono text-sm font-medium">{currentInvoice.invoice_number || "-"}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Erstellt am</p>
+              <div className="flex items-center gap-2 text-sm">
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                {createdAt ? format(createdAt, "dd.MM.yyyy", { locale: de }) : "-"}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Kunde */}
+          <div className="space-y-2">
+            <h4 className="font-medium flex items-center gap-2">
+              <UserIcon className="h-4 w-4" />
+              Kunde
+            </h4>
+            <div className="pl-6 space-y-1">
+              <p className="text-sm font-medium">
+                {currentInvoice.customer?.first_name} {currentInvoice.customer?.last_name}
+              </p>
+              {currentInvoice.customer?.email && (
+                <p className="text-sm text-muted-foreground">{currentInvoice.customer.email}</p>
+              )}
+              {currentInvoice.customer?.phone && (
+                <p className="text-sm text-muted-foreground">{currentInvoice.customer.phone}</p>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Rechnungsdetails */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Fälligkeitsdatum</p>
+                <p className="text-sm font-medium">
+                  {dueDate ? format(dueDate, "dd.MM.yyyy", { locale: de }) : "-"}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground flex items-center gap-1">
+                  <CreditCardIcon className="h-3 w-3" />
+                  Betrag
+                </p>
+                <p className="text-lg font-bold">
+                  {currentInvoice.total_amount ? `${safeNumber(currentInvoice.total_amount).toFixed(2)} EUR` : "-"}
+                </p>
+              </div>
+            </div>
+
+            {currentInvoice.subtotal && (
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Zwischensumme</p>
+                <p className="text-sm font-medium">{safeNumber(currentInvoice.subtotal).toFixed(2)} EUR</p>
+              </div>
+            )}
+
+            {currentInvoice.tax_amount && (
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">MwSt.</p>
+                <p className="text-sm font-medium">{safeNumber(currentInvoice.tax_amount).toFixed(2)} EUR</p>
+              </div>
+            )}
+          </div>
+
+          {currentInvoice.notes && (
+            <>
+              <Separator />
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Notizen</p>
+                <p className="text-sm">{currentInvoice.notes}</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        <DialogFooter className="flex items-center justify-between">
+          <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+            <Printer className="h-4 w-4 mr-2" />
+            {printing ? "Wird erstellt..." : "PDF drucken"}
+          </Button>
+          <Button onClick={() => onOpenChange(false)}>Schließen</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+

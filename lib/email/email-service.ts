@@ -5,8 +5,10 @@
  * Verwendet das einheitliche MyDispatch-Template
  */
 
-import { createClient } from "@/lib/supabase/server"
+import { Resend } from "resend"
 import { generateUnifiedEmailHTML, EmailContent } from "./unified-template"
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export interface SendEmailOptions {
   to: string
@@ -24,7 +26,7 @@ export interface SendEmailOptions {
  */
 export async function sendEmail(options: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    const { to, subject, content, from = "noreply@my-dispatch.de" } = options
+    const { to, subject, content, from = "info@my-dispatch.de" } = options
 
     // Validiere E-Mail-Adresse
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -35,28 +37,27 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
     // Generiere HTML mit Template
     const html = generateUnifiedEmailHTML(content)
 
-    // Versende E-Mail über Supabase Edge Function oder direkt Resend
-    // Da Resend bereits in Supabase integriert ist, verwenden wir eine Edge Function
-    const supabase = await createClient()
-    
-    // Rufe Edge Function auf (falls vorhanden) oder verwende direkten Resend-Aufruf
-    // Für jetzt: Verwende API-Route, die Resend direkt nutzt
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "https://www.my-dispatch.de"}/api/email/send`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to,
-        subject,
-        html,
-        from,
-      }),
+    // Development: Logge E-Mail
+    if (process.env.NODE_ENV === "development" || !process.env.RESEND_API_KEY) {
+      console.log("--- DEVELOPMENT EMAIL PREVIEW ---")
+      console.log(`To: ${to}`)
+      console.log(`Subject: ${subject}`)
+      console.log("HTML Content (logged to console)")
+      console.log("---------------------------------")
+      return { success: true }
+    }
+
+    // Versende E-Mail über Resend
+    const { data, error } = await resend.emails.send({
+      from: `MyDispatch <${from}>`,
+      to: [to],
+      subject: subject,
+      html: html,
     })
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Unbekannter Fehler" }))
-      return { success: false, error: error.error || "Fehler beim Versenden der E-Mail" }
+    if (error) {
+      console.error("[EmailService] Resend error:", error)
+      return { success: false, error: error.message || "Fehler beim Versenden der E-Mail" }
     }
 
     return { success: true }
