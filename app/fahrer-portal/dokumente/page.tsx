@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { format, differenceInDays } from "date-fns"
 import { de } from "date-fns/locale"
 import Link from "next/link"
+import { toast } from "sonner"
 import {
   ArrowLeft,
   Upload,
@@ -119,32 +120,54 @@ export default function DriverDocumentsPage() {
       const supabase = getSupabase()
       if (!supabase) return
 
+      // Dateigröße prüfen (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("Datei ist zu groß. Maximale Größe: 10MB")
+        setUploading(null)
+        return
+      }
+
       const fileName = `${driver.id}/${type}/${Date.now()}_${file.name}`
-      const { data: uploadData, error: uploadError } = await supabase.storage.from("documents").upload(fileName, file)
+      const { data: uploadData, error: uploadError } = await supabase.storage.from("documents").upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+      })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error("Upload error:", uploadError)
+        toast.error(`Fehler beim Hochladen: ${uploadError.message}`)
+        setUploading(null)
+        return
+      }
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("documents").getPublicUrl(fileName)
-
+      // Für private Buckets: Speichere den Pfad, nicht die URL
+      // Die URL wird beim Laden dynamisch generiert
       const { error: insertError } = await supabase.from("documents").insert({
         driver_id: driver.id,
         company_id: driver.company_id,
         owner_type: "driver",
         document_type: type,
         file_name: file.name,
-        file_url: publicUrl,
+        file_url: fileName, // Speichere den Pfad, nicht die URL
         file_size: file.size,
         mime_type: file.type,
         status: "pending",
       })
 
-      if (insertError) throw insertError
+      if (insertError) {
+        console.error("Insert error:", insertError)
+        toast.error(`Fehler beim Speichern: ${insertError.message}`)
+        // Lösche hochgeladene Datei bei Fehler
+        await supabase.storage.from("documents").remove([fileName])
+        setUploading(null)
+        return
+      }
 
+      toast.success("Dokument erfolgreich hochgeladen")
       loadDocuments()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading document:", error)
+      toast.error(`Fehler: ${error?.message || "Unbekannter Fehler"}`)
     } finally {
       setUploading(null)
     }
@@ -344,10 +367,32 @@ export default function DriverDocumentsPage() {
 
                     <div className="flex items-center gap-2">
                       {existingDoc && (
-                        <Button variant="ghost" size="sm" className="rounded-full" asChild>
-                          <a href={existingDoc.file_url} target="_blank" rel="noopener noreferrer">
-                            <Eye className="h-4 w-4" />
-                          </a>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={async () => {
+                            try {
+                              const supabase = getSupabase()
+                              if (!supabase) return
+
+                              // Erstelle signed URL für Download
+                              const { data, error } = await supabase.storage
+                                .from("documents")
+                                .createSignedUrl(existingDoc.file_url, 3600)
+
+                              if (error) throw error
+
+                              if (data?.signedUrl) {
+                                window.open(data.signedUrl, "_blank")
+                              }
+                            } catch (error: any) {
+                              console.error("Error downloading document:", error)
+                              toast.error("Fehler beim Öffnen des Dokuments")
+                            }
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
                         </Button>
                       )}
                       <Label htmlFor={`upload-${docType.key}`} className="cursor-pointer">

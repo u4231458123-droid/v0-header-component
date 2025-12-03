@@ -125,6 +125,13 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <PhoneIcon className="h-3 w-3" />
+                    Mobil
+                  </p>
+                  <p className="text-sm font-medium">{localDriver.mobile || "-"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
                     <CalendarIcon className="h-3 w-3" />
                     Geburtsdatum
                   </p>
@@ -149,10 +156,15 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                 Anschrift
               </h4>
               <div className="pl-6 space-y-1">
-                <p className="text-sm font-medium">{addressData.street || "-"}</p>
+                <p className="text-sm font-medium">
+                  {addressData.street || "-"} {addressData.house_number || ""}
+                </p>
                 <p className="text-sm font-medium">
                   {addressData.postal_code || ""} {addressData.city || ""}
                 </p>
+                {addressData.country && (
+                  <p className="text-sm font-medium">{addressData.country}</p>
+                )}
               </div>
             </div>
 
@@ -241,8 +253,14 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                   </p>
                   <p className="text-sm font-medium">{formatDate(pbefData.expiry_date)}</p>
                 </div>
+                {pbefData.issuing_authority && (
+                  <div className="space-y-1 col-span-2">
+                    <p className="text-sm text-muted-foreground">Ausstellungsbehoerde</p>
+                    <p className="text-sm font-medium">{pbefData.issuing_authority}</p>
+                  </div>
+                )}
                 {pbefData.document_url && (
-                  <div className="space-y-1">
+                  <div className="space-y-1 col-span-2">
                     <p className="text-sm text-muted-foreground">Dokument</p>
                     <Button variant="outline" size="sm" asChild>
                       <a href={pbefData.document_url} target="_blank" rel="noopener noreferrer">
@@ -292,10 +310,7 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Schliessen
             </Button>
-            <Button onClick={() => setShowEditDialog(true)}>
-              <PencilIcon className="mr-2 h-4 w-4" />
-              Bearbeiten
-            </Button>
+            {/* Bearbeiten-Button entfernt - Daten sind nur lesend */}
           </DialogFooter>
         </DialogContent>
       </Dialog>
