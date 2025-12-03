@@ -334,19 +334,36 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
         .select()
         .single()
 
-      if (quoteError) throw quoteError
+      if (quoteError) {
+        console.error("[NewQuoteDialog] Quote insert error:", quoteError)
+        throw quoteError
+      }
 
-      const itemsToInsert = items.map((item, index) => ({
-        quote_id: quote.id,
-        position: index + 1,
-        description: item.description,
-        quantity: item.quantity,
-        unit: item.unit,
-        unit_price: item.unitPrice,
-        total_price: item.quantity * item.unitPrice,
-      }))
+      if (!quote || !quote.id) {
+        throw new Error("Angebot wurde erstellt, aber keine ID zurückgegeben")
+      }
 
-      await supabase.from("quote_items").insert(itemsToInsert)
+      // Quote Items einfügen
+      if (items && items.length > 0) {
+        const itemsToInsert = items.map((item, index) => ({
+          quote_id: quote.id,
+          position: index + 1,
+          description: item.description || "",
+          quantity: item.quantity || 1,
+          unit: item.unit || "Stk",
+          unit_price: item.unitPrice || 0,
+          total_price: (item.quantity || 1) * (item.unitPrice || 0),
+        }))
+
+        const { error: itemsError } = await supabase.from("quote_items").insert(itemsToInsert)
+
+        if (itemsError) {
+          console.error("[NewQuoteDialog] Quote items insert error:", itemsError)
+          // Lösche das Angebot wenn Items nicht eingefügt werden konnten
+          await supabase.from("quotes").delete().eq("id", quote.id)
+          throw new Error(`Fehler beim Speichern der Angebotspositionen: ${itemsError.message}`)
+        }
+      }
 
       toast.success("Angebot erfolgreich erstellt")
       onSuccess?.(quote)
@@ -636,18 +653,18 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                     ⚠️ Keine Fahrzeuge im Fleet vorhanden. Bitte zuerst Fahrzeuge anlegen.
                   </div>
                 ) : (
-                  <Select value={vehicleClass} onValueChange={setVehicleClass} required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Kategorie wählen" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {VEHICLE_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <Select value={vehicleClass} onValueChange={setVehicleClass} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Kategorie wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VEHICLE_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 )}
               </div>
               <div className="grid gap-2">

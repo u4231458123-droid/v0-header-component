@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { TenantLandingPage } from "./TenantLandingPage"
 
 export const dynamic = "force-dynamic"
+export const revalidate = 0 // Kein Caching - Landingpage-Status muss sofort aktualisiert werden
 
 interface Props {
   params: Promise<{ company: string }>

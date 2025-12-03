@@ -86,17 +86,8 @@ export default function LoginPage() {
         const userId = data.user.id
         const userEmail = data.user.email
 
-        // 0. KRITISCH: Master-Account hat HÖCHSTE Priorität (VOR allen anderen Checks)
-        // Case-insensitive Vergleich für E-Mail
+        // Kunden-Account (courbois83@gmail.com) - Case-insensitive
         const normalizedEmail = userEmail?.toLowerCase().trim()
-        if (normalizedEmail === "courbois1981@gmail.com" || normalizedEmail === "info@my-dispatch.de") {
-          // Master-Account: Direkt ins Dashboard, OHNE weitere Checks
-          console.log("[Login] Master-Account erkannt, Weiterleitung zu /dashboard")
-          window.location.href = "/dashboard"
-          return
-        }
-
-        // 1. Kunden-Account (courbois83@gmail.com) - Case-insensitive
         if (normalizedEmail === "courbois83@gmail.com") {
            // Prüfe ob Kunde in customers Tabelle
            const { data: customer } = await supabase

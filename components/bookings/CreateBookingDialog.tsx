@@ -199,8 +199,8 @@ export function CreateBookingDialog({
         cost_center: (formData.get("cost_center") as string)?.trim() || null,
         notes: (formData.get("special_requests") as string)?.trim() || null,
         payment_method: (formData.get("payment_method") as string) || "bar",
-        driver_id: selectedDriverId || null,
-        vehicle_id: selectedVehicleId || null,
+        driver_id: selectedDriverId && selectedDriverId.trim() !== "" ? selectedDriverId : null,
+        vehicle_id: selectedVehicleId && selectedVehicleId.trim() !== "" ? selectedVehicleId : null,
         status: "pending",
       }
 
@@ -474,8 +474,13 @@ export function CreateBookingDialog({
                 <Label>Adresse VON *</Label>
                 <AddressAutocomplete
                   value={pickupAddress}
-                  onChange={setPickupAddress}
-                  placeholder="Abholadresse"
+                  onChange={(value) => {
+                    setPickupAddress(value)
+                  }}
+                  onSelect={(result) => {
+                    setPickupAddress(result.formattedAddress)
+                  }}
+                  placeholder="Abholadresse eingeben..."
                   required
                 />
               </div>
@@ -483,8 +488,13 @@ export function CreateBookingDialog({
                 <Label>Adresse NACH *</Label>
                 <AddressAutocomplete
                   value={dropoffAddress}
-                  onChange={setDropoffAddress}
-                  placeholder="Zieladresse"
+                  onChange={(value) => {
+                    setDropoffAddress(value)
+                  }}
+                  onSelect={(result) => {
+                    setDropoffAddress(result.formattedAddress)
+                  }}
+                  placeholder="Zieladresse eingeben..."
                   required
                 />
               </div>
@@ -494,26 +504,32 @@ export function CreateBookingDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>Fahrzeug Klasse *</Label>
-                <Select name="vehicle_class" required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Kategorie wählen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vehicleCategories.length > 0 ? (
-                      vehicleCategories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name} (max. {cat.max_passengers} Pers.)
-                        </SelectItem>
-                      ))
-                    ) : (
-                      VEHICLE_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
+                {vehicles.length === 0 ? (
+                  <div className="text-sm text-muted-foreground p-2 border border-warning/30 rounded-lg bg-warning/5">
+                    ⚠️ Keine Fahrzeuge im Fleet vorhanden. Bitte zuerst Fahrzeuge anlegen.
+                  </div>
+                ) : (
+                  <Select name="vehicle_class" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Kategorie wählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vehicleCategories.length > 0 ? (
+                        vehicleCategories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name} (max. {cat.max_passengers} Pers.)
+                          </SelectItem>
+                        ))
+                      ) : (
+                        VEHICLE_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            {cat.label}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label>Fahrgast Anzahl *</Label>
@@ -536,18 +552,25 @@ export function CreateBookingDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>Fahrer (optional)</Label>
-                <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+                <Select 
+                  value={selectedDriverId || ""} 
+                  onValueChange={(value) => setSelectedDriverId(value || "")}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Fahrer auswählen" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Kein Fahrer zugewiesen</SelectItem>
-                    {drivers.map((driver) => (
-                      <SelectItem key={driver.id} value={driver.id}>
-                        {driver.first_name} {driver.last_name}
-                        {driver.status && ` (${driver.status})`}
-                      </SelectItem>
-                    ))}
+                    {drivers && drivers.length > 0 ? (
+                      drivers.map((driver) => (
+                        <SelectItem key={driver.id} value={driver.id}>
+                          {driver.first_name} {driver.last_name}
+                          {driver.status && ` (${driver.status})`}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="" disabled>Keine Fahrer verfügbar</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>

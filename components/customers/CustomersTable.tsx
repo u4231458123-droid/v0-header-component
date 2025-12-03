@@ -269,6 +269,10 @@ export function CustomersTable({ customers }: CustomersTableProps) {
           customer={editCustomer}
           open={!!editCustomer}
           onOpenChange={(open) => !open && setEditCustomer(null)}
+          onSuccess={(updatedCustomer) => {
+            setEditCustomer(null)
+            router.refresh()
+          }}
         />
       )}
 

@@ -1,0 +1,9 @@
+{
+  "setup": {
+    "commands": [
+      "npm install"
+    ],
+    "description": "Worktrees setup commands"
+  }
+}
+

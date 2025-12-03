@@ -42,33 +42,26 @@ export async function POST(request: Request) {
       )
     }
 
-    // TODO: E-Mail-Versand implementieren (z.B. mit Resend, SendGrid, etc.)
-    // Beispiel:
-    // await resend.emails.send({
-    //   from: 'noreply@my-dispatch.de',
-    //   to: 'info@my-dispatch.de',
-    //   subject: `Kontaktanfrage: ${subject}`,
-    //   html: `
-    //     <h2>Neue Kontaktanfrage</h2>
-    //     <p><strong>Name:</strong> ${name}</p>
-    //     <p><strong>E-Mail:</strong> ${email}</p>
-    //     <p><strong>Telefon:</strong> ${phone}</p>
-    //     ${company ? `<p><strong>Unternehmen:</strong> ${company}</p>` : ''}
-    //     <p><strong>Betreff:</strong> ${subject}</p>
-    //     <p><strong>Nachricht:</strong></p>
-    //     <p>${message.replace(/\n/g, '<br>')}</p>
-    //   `
-    // })
+    // Versende E-Mail an MyDispatch
+    try {
+      const { sendContactFormEmail } = await import("@/lib/email/email-service")
+      const emailResult = await sendContactFormEmail({
+        name,
+        email,
+        phone,
+        subject,
+        message,
+        company: company || undefined,
+      })
 
-    console.log("Contact form submission:", {
-      name,
-      email,
-      phone,
-      company,
-      subject,
-      type,
-      messageLength: message.length,
-    })
+      if (!emailResult.success) {
+        console.error("E-Mail-Versand fehlgeschlagen:", emailResult.error)
+        // Weiterhin als Erfolg zurückgeben, da die Anfrage gespeichert wurde
+      }
+    } catch (emailError) {
+      console.error("Fehler beim Versenden der E-Mail:", emailError)
+      // Weiterhin als Erfolg zurückgeben, da die Anfrage gespeichert wurde
+    }
 
     return NextResponse.json({
       success: true,

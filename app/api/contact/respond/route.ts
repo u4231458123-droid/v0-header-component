@@ -1,32 +1,31 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { sendContactResponseEmail } from "@/lib/email/email-service"
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { requestId, to, subject, message } = body
+    const { requestId, to, subject, message, originalSubject } = body
 
     if (!to || !subject || !message) {
       return NextResponse.json({ success: false, error: "Fehlende Parameter" }, { status: 400 })
     }
 
-    // In production, you would send an actual email here
-    // For now, we just log it and return success
-    console.log("Email Response:", {
+    // Versende E-Mail-Antwort
+    const emailResult = await sendContactResponseEmail({
       to,
       subject,
       message,
-      requestId,
+      originalSubject,
     })
 
-    // TODO: Integrate with email service (e.g., Resend, SendGrid, etc.)
-    // Example:
-    // await resend.emails.send({
-    //   from: 'support@my-dispatch.de',
-    //   to: to,
-    //   subject: subject,
-    //   html: `<p>${message.replace(/\n/g, '<br>')}</p>`
-    // })
+    if (!emailResult.success) {
+      console.error("E-Mail-Versand fehlgeschlagen:", emailResult.error)
+      return NextResponse.json(
+        { success: false, error: emailResult.error || "Fehler beim Senden der E-Mail" },
+        { status: 500 },
+      )
+    }
 
     return NextResponse.json({
       success: true,
@@ -40,4 +39,3 @@ export async function POST(request: Request) {
     )
   }
 }
-

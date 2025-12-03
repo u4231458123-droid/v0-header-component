@@ -30,14 +30,6 @@ export const MASTER_ACCOUNT = {
   description: "Master-Admin Account für Systemverwaltung",
 } as const
 
-// Alternative Master-Account E-Mail (für Entwicklung)
-export const DEVELOPER_MASTER_ACCOUNT = {
-  email: "courbois1981@gmail.com",
-  role: "master_admin",
-  name: "Developer Master",
-  description: "Entwickler Master-Admin Account",
-} as const
-
 /**
  * Prüft ob eine E-Mail ein Demo-Account ist
  */
@@ -47,9 +39,11 @@ export function isDemoAccount(email: string): boolean {
 
 /**
  * Prüft ob eine E-Mail ein Master-Account ist
+ * HINWEIS: Master-Admin-Status wird primär über Role-Check ermittelt (profile.role === "master_admin")
+ * Diese Funktion dient nur als Fallback für Legacy-Code
  */
 export function isMasterAccount(email: string): boolean {
-  return email === MASTER_ACCOUNT.email || email === DEVELOPER_MASTER_ACCOUNT.email
+  return email === MASTER_ACCOUNT.email
 }
 
 /**

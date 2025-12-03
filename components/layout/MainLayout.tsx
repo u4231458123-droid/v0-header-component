@@ -35,8 +35,8 @@ export function MainLayout({ children, background = "canvas" }: MainLayoutProps)
       <main
         className={cn("flex-1 relative", bgClass)}
         style={{
-          paddingTop: "88px",
-          paddingBottom: "72px",
+          paddingTop: "88px", // Header height + spacing
+          paddingBottom: "72px", // Footer height + spacing
         }}
       >
         {/* Floating Orbs (nur bei orbs-light) */}

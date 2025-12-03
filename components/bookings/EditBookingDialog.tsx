@@ -94,6 +94,8 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
     setPaymentMethod(booking.payment_method || "cash")
     setFlightTrainNumber(booking.flight_train_number || "")
     setFlightTrainOrigin(booking.flight_train_origin || "")
+    setSelectedDriverId(booking.driver_id || "")
+    setSelectedVehicleId(booking.vehicle_id || "")
   }, [booking])
 
   const handlePickupSelect = (result: GeocodingResult) => {
@@ -135,11 +137,17 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
         updateData.dropoff_location = `POINT(${dropoffLocation.lng} ${dropoffLocation.lat})`
       }
 
-      const { error } = await supabase.from("bookings").update(updateData).eq("id", booking.id)
+      const { data: updatedBooking, error } = await supabase
+        .from("bookings")
+        .update(updateData)
+        .eq("id", booking.id)
+        .select()
+        .single()
 
       if (error) throw error
 
       toast.success("Auftrag erfolgreich aktualisiert")
+      onSuccess?.(updatedBooking as Booking)
       onOpenChange(false)
       router.refresh()
     } catch (error) {

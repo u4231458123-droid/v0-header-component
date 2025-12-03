@@ -113,15 +113,14 @@ const navigationItems = [
   { href: "/einstellungen", label: "Einstellungen", icon: SettingsIcon },
 ]
 
-const MASTER_ACCOUNT_EMAILS = ["courbois1981@gmail.com", "info@my-dispatch.de"]
-
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { user, profile, logout } = useAuth()
 
-  const isMasterAccount = user?.email && MASTER_ACCOUNT_EMAILS.includes(user.email)
+  // Master-Admin wird über Role-Check ermittelt
+  const isMasterAccount = profile?.role === "master_admin" || profile?.role === "master"
 
   useEffect(() => {
     setMenuOpen(false)

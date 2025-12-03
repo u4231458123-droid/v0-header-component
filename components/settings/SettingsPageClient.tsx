@@ -422,6 +422,15 @@ export function SettingsPageClient({
 
       console.log("[Settings] Update successful:", data)
 
+      // Revalidate Landing Page Route wenn landingpage_enabled geändert wurde
+      if (updateData.landingpage_enabled !== undefined && company.company_slug) {
+        try {
+          await fetch(`/api/revalidate?path=/c/${company.company_slug}`, { method: "POST" })
+        } catch (revalidateError) {
+          console.warn("[Settings] Revalidation failed:", revalidateError)
+        }
+      }
+
       toast.success("Einstellungen erfolgreich gespeichert")
       router.refresh()
     } catch (error: any) {
@@ -636,15 +645,15 @@ export function SettingsPageClient({
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5" />
-                  Unternehmensdaten
-                </CardTitle>
-                <CardDescription>Grundlegende Informationen zu Ihrem Unternehmen</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="w-5 h-5" />
+                Unternehmensdaten
+              </CardTitle>
+              <CardDescription>Grundlegende Informationen zu Ihrem Unternehmen</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               {/* Firmenname */}
               <div className="space-y-2">
                 <Label htmlFor="name">Firmenname *</Label>
@@ -929,8 +938,8 @@ export function SettingsPageClient({
                   </div>
                 </div>
               </div>
-              </CardContent>
-            </Card>
+            </CardContent>
+          </Card>
           )}
         </TabsContent>
 
@@ -1254,7 +1263,7 @@ export function SettingsPageClient({
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-border">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Palette className="w-5 h-5" />
@@ -1455,15 +1464,15 @@ export function SettingsPageClient({
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Ihr Abonnement
-                </CardTitle>
-                <CardDescription>Verwalten Sie Ihren Plan und Ihre Zahlungen</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
+                Ihr Abonnement
+              </CardTitle>
+              <CardDescription>Verwalten Sie Ihren Plan und Ihre Zahlungen</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               {/* Current Plan */}
               <div className="p-6 rounded-xl border-2 border-primary bg-primary/5">
                 <div className="flex items-start justify-between">
@@ -1581,7 +1590,7 @@ export function SettingsPageClient({
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-border">
+          <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="w-5 h-5" />
@@ -1634,7 +1643,7 @@ export function SettingsPageClient({
               </CardContent>
             </Card>
           ) : (
-            <TeamManagement
+          <TeamManagement
               companyId={company.id}
             currentUserId={profile?.id || ""}
             currentUserRole={profile?.role || "user"}
