@@ -9,7 +9,6 @@
  */
 
 import { loadKnowledgeForTask, generatePromptWithKnowledge, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
-import { loadKnowledgeForTask } from "@/lib/knowledge-base/structure"
 import { getHuggingFaceClient } from "@/lib/ai/huggingface"
 import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
 import { logError } from "@/lib/cicd/error-logger"
