@@ -33,13 +33,7 @@
 
 ### Farben
 - **Primary**: Blau (wie definiert in Tailwind-Config)
-- **Footer Systemweit**: **ALLE Footer** müssen blauen Hintergrund (`bg-primary`) mit weißer Schrift (`text-primary-foreground`) haben
-  - Homepage Footer
-  - Dashboard Footer
-  - Pre-Login Footer
-  - Auth Footer
-  - Portal Footer (auch niedrige Footer)
-  - **NIEMALS abweichen** - Systemweite Konsistenz erforderlich
+- **Footer Homepage**: Blauer Hintergrund (`bg-primary`) mit weißer Schrift (`text-primary-foreground`)
 
 ### Abstände & Spacing
 - **Einheitliche Abstände**: Alle ähnlichen Elemente müssen einheitliche Abstände haben

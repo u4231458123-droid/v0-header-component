@@ -514,8 +514,8 @@ export default function FahrerProfilPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4">
-        <div className="max-w-5xl mx-auto px-4 text-center text-xs text-slate-500">
+      <footer className="bg-primary text-primary-foreground py-4">
+        <div className="max-w-5xl mx-auto px-4 text-center text-xs text-primary-foreground/70">
           <p>
             © {new Date().getFullYear()} {driver.companies?.name || "MyDispatch"}
           </p>

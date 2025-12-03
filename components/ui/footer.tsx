@@ -19,14 +19,14 @@ export function Footer({ className, variant = "default" }: FooterProps) {
   return (
     <footer
       className={cn(
-        "bg-primary text-primary-foreground",
+        "border-t bg-background",
         className
       )}
     >
       <div className="container py-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <Logo />
-          <div className="text-sm text-primary-foreground/70">
+          <div className="text-sm text-muted-foreground">
             <p>MyDispatch - Professionelle Fahrdienst-Software</p>
             <p>Einfach. Übersichtlich. Vollständig. Günstig.</p>
           </div>
