@@ -2,6 +2,8 @@
 
 ## ⚠️ KRITISCH: Diese Variablen MÜSSEN in Vercel gesetzt werden!
 
+**Schnell-Setup:** Siehe auch `docs/VERCEL_ENV_VARS_QUICK_SETUP.md` für Schritt-für-Schritt-Anleitung
+
 ### Supabase (ERFORDERLICH für Login und Datenbank)
 
 1. Gehe zu: **Vercel Dashboard → Project Settings → Environment Variables**
