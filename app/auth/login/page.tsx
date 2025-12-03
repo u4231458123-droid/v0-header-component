@@ -154,21 +154,24 @@ export default function LoginPage() {
           return
         }
 
-        // 2. Prüfe ob Fahrer (Oft sind Fahrer auch normale User, aber Fahrer-Rolle ist spezifisch)
-        const { data: driver } = await supabase
-          .from("drivers")
-          .select("company_id")
-          .eq("user_id", userId)
-          .maybeSingle()
+        // 2. Prüfe ob Fahrer (NUR wenn NICHT Master-Account)
+        // WICHTIG: courbois1981@gmail.com ist NUR Unternehmer, NIEMALS Fahrer!
+        if (normalizedEmail !== "courbois1981@gmail.com" && normalizedEmail !== "info@my-dispatch.de") {
+          const { data: driver } = await supabase
+            .from("drivers")
+            .select("company_id")
+            .eq("user_id", userId)
+            .maybeSingle()
 
-        if (driver) {
-          const { data: company } = await supabase.from("companies").select("company_slug").eq("id", driver.company_id).maybeSingle()
-          if (company) {
-            window.location.href = `/c/${company.company_slug}/fahrer/portal`
-          } else {
-            window.location.href = "/fahrer-portal"
+          if (driver) {
+            const { data: company } = await supabase.from("companies").select("company_slug").eq("id", driver.company_id).maybeSingle()
+            if (company) {
+              window.location.href = `/c/${company.company_slug}/fahrer/portal`
+            } else {
+              window.location.href = "/fahrer-portal"
+            }
+            return
           }
-          return
         }
 
         // 3. Prüfe ob Kunde (Vor Unternehmer, falls User beides ist, aber hier als Kunde agieren soll)

@@ -120,6 +120,10 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
 
       // 2. Nutzertyp ermitteln
       const currentUserId = authData.user.id
+      const userEmail = authData.user.email?.toLowerCase().trim()
+      
+      // WICHTIG: Master-Account (courbois1981@gmail.com) ist NUR Unternehmer, NIEMALS Fahrer!
+      const isMasterAccount = userEmail === "courbois1981@gmail.com" || userEmail === "info@my-dispatch.de"
 
       // Pruefe ob Unternehmer/Admin (profiles mit company_id)
       const { data: profile } = await supabase
@@ -138,7 +142,13 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         return
       }
 
-      // Pruefe ob Fahrer dieses Unternehmens
+      // Master-Account: Immer ins Dashboard, niemals als Fahrer behandeln
+      if (isMasterAccount) {
+        window.location.href = "/dashboard"
+        return
+      }
+
+      // Pruefe ob Fahrer dieses Unternehmens (NUR wenn NICHT Master-Account)
       const { data: driver } = await supabase
         .from("drivers")
         .select("id, company_id, status, must_change_password")

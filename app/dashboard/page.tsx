@@ -70,7 +70,8 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .maybeSingle()
 
-  if (profile?.role === "driver") {
+  // WICHTIG: Master-Account (courbois1981@gmail.com) ist NUR Unternehmer, NIEMALS Fahrer!
+  if (profile?.role === "driver" && !isMasterAccount) {
     redirect("/fahrer-portal")
   }
 
@@ -97,15 +98,18 @@ export default async function DashboardPage() {
       // Master-Account: Weiter mit Dashboard (keine Weiterleitung)
       // Kein return - Code läuft weiter zum Dashboard-Rendering
     } else {
-      // Pruefe ob Fahrer
-      const { data: driver } = await supabase
-        .from("drivers")
-        .select("id, company_id, company:companies(company_slug)")
-        .eq("user_id", user.id)
-        .maybeSingle()
+      // Pruefe ob Fahrer (NUR wenn NICHT Master-Account)
+      // WICHTIG: courbois1981@gmail.com ist NUR Unternehmer, NIEMALS Fahrer!
+      if (!isMasterAccount) {
+        const { data: driver } = await supabase
+          .from("drivers")
+          .select("id, company_id, company:companies(company_slug)")
+          .eq("user_id", user.id)
+          .maybeSingle()
 
-      if (driver) {
-        redirect("/fahrer-portal")
+        if (driver) {
+          redirect("/fahrer-portal")
+        }
       }
 
       // Pruefe ob Kunde (NUR wenn NICHT Master)
