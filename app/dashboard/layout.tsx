@@ -10,6 +10,18 @@ const MASTER_ACCOUNT_EMAIL = "courbois1981@gmail.com"
 // Kunden-Account Email - sollte ins Kunden-Portal
 const CUSTOMER_ACCOUNT_EMAIL = "courbois83@gmail.com"
 
+// Helper function für case-insensitive E-Mail-Vergleich
+function isMasterAccount(email: string | undefined | null): boolean {
+  if (!email) return false
+  const normalized = email.toLowerCase().trim()
+  return normalized === MASTER_ACCOUNT_EMAIL || normalized === "info@my-dispatch.de"
+}
+
+function isCustomerAccount(email: string | undefined | null): boolean {
+  if (!email) return false
+  return email.toLowerCase().trim() === CUSTOMER_ACCOUNT_EMAIL
+}
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -28,13 +40,13 @@ export default async function DashboardLayout({
     }
 
     // Spezielle Routing-Logik für Master-Account
-    if (user.email === MASTER_ACCOUNT_EMAIL) {
+    if (isMasterAccount(user.email)) {
       // Master-Account hat direkten Zugang ohne Subscription-Check
       return <>{children}</>
     }
 
     // Spezielle Routing-Logik für Kunden-Account
-    if (user.email === CUSTOMER_ACCOUNT_EMAIL) {
+    if (isCustomerAccount(user.email)) {
       // Prüfe ob Kunde in customers Tabelle existiert
       const { data: customer } = await supabase
         .from("customers")
