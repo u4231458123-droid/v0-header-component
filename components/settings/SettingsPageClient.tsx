@@ -621,15 +621,30 @@ export function SettingsPageClient({
 
         {/* Company Tab */}
         <TabsContent value="company" className="space-y-6">
-          <Card className="border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="w-5 h-5" />
-                Unternehmensdaten
-              </CardTitle>
-              <CardDescription>Grundlegende Informationen zu Ihrem Unternehmen</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          {!company ? (
+            <Card className="border-amber-500/50 bg-amber-500/10">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Sie haben noch kein Unternehmen registriert. Bitte schließen Sie zuerst die Registrierung ab.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5" />
+                  Unternehmensdaten
+                </CardTitle>
+                <CardDescription>Grundlegende Informationen zu Ihrem Unternehmen</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
               {/* Firmenname */}
               <div className="space-y-2">
                 <Label htmlFor="name">Firmenname *</Label>
@@ -914,12 +929,28 @@ export function SettingsPageClient({
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Landingpage Tab - ERWEITERTER EDITOR */}
         <TabsContent value="landingpage" className="space-y-6">
+          {!company ? (
+            <Card className="border-amber-500/50 bg-amber-500/10">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Sie müssen zuerst ein Unternehmen erstellen, um eine Landingpage zu konfigurieren.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
           <Card className="border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -1208,7 +1239,22 @@ export function SettingsPageClient({
 
         {/* Branding Tab */}
         <TabsContent value="branding" className="space-y-6">
-          <Card className="border-border">
+          {!company ? (
+            <Card className="border-amber-500/50 bg-amber-500/10">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Sie müssen zuerst ein Unternehmen erstellen, um Branding-Einstellungen zu konfigurieren.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Palette className="w-5 h-5" />
@@ -1542,8 +1588,23 @@ export function SettingsPageClient({
 
         {/* Team Tab */}
         <TabsContent value="team" className="space-y-6">
-          <TeamManagement
-            companyId={company?.id || ""}
+          {!company || !company.id ? (
+            <Card className="border-amber-500/50 bg-amber-500/10">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Sie müssen zuerst ein Unternehmen erstellen, um Team-Mitglieder zu verwalten.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <TeamManagement
+              companyId={company.id}
             currentUserId={profile?.id || ""}
             currentUserRole={profile?.role || "user"}
             teamMembers={currentTeamMembers as any} // Use the local state (type compatibility)
