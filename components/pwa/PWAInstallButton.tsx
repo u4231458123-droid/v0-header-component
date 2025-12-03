@@ -316,10 +316,19 @@ export function PWAInstallButton({
     return null
   }
 
+  // Prüfe ob Prompt verfügbar ist (für bessere UX)
+  const hasPrompt = deferredPrompt || (typeof window !== "undefined" && window.deferredPWAPrompt)
+
   // Install Button anzeigen
   return (
     <>
-      <button type="button" onClick={handleInstallClick} disabled={isInstalling} className={className}>
+      <button 
+        type="button" 
+        onClick={handleInstallClick} 
+        disabled={isInstalling} 
+        className={className}
+        title={hasPrompt ? "App installieren" : "Installationsanleitung anzeigen"}
+      >
         {isInstalling ? (
           <>
             <SpinnerIcon />
@@ -333,7 +342,8 @@ export function PWAInstallButton({
         )}
       </button>
 
-      {showModal && <InstallModal />}
+      {/* Modal NUR anzeigen wenn wirklich kein Prompt verfügbar ist */}
+      {showModal && !hasPrompt && <InstallModal />}
     </>
   )
 }
