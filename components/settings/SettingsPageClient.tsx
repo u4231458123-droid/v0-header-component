@@ -435,7 +435,7 @@ export function SettingsPageClient({
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file || !company) return
+    if (!file || !company || !company.id) return
 
     setUploading(true)
 

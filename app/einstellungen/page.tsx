@@ -120,7 +120,13 @@ export default async function SettingsPage() {
     )
   }
 
-  return renderSettingsPage(supabase, profile, user)
+  try {
+    return await renderSettingsPage(supabase, profile, user)
+  } catch (error: any) {
+    console.error("[Settings] Page error:", error)
+    // Error-Boundary wird den Fehler abfangen
+    throw error
+  }
 }
 
 async function renderSettingsPage(supabase: SupabaseClient, profile: Profile, user: User) {
