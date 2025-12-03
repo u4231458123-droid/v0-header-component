@@ -97,10 +97,8 @@ Antworte als Master-Bot: gewissenhaft, durchdacht, systemweit denkend.
           requesterBot: "user-chat",
           type: "best-practice-suggestion",
           title: `Chat-Vorschlag: ${userMessage.substring(0, 50)}...`,
-          description: `Vorschlag aus Master-Bot Chat`,
-          proposedChange: suggestion,
+          description: `Vorschlag aus Master-Bot Chat: ${suggestion}`,
           justification: `Vorschlag aus Chat-Diskussion: ${userMessage}`,
-          evidence: [responseText],
           priority: "medium",
         })
 

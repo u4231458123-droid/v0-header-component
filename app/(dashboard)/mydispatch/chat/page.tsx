@@ -7,8 +7,7 @@
 
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { useChat } from "@ai-sdk/react"
+import { useState, useRef, useEffect, FormEvent, ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,13 +15,64 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send, Bot, User, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+interface ChatMessage {
+  id: string
+  role: "user" | "assistant"
+  content: string
+}
+
 export default function MasterBotChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat/master-bot",
-    onError: (error) => {
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value)
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: input,
+    }
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/chat/master-bot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMessage.content,
+        }),
+      })
+
+      if (!response.ok) throw new Error("API Error")
+
+      const data = await response.json()
+      const assistantMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: data.message || data.response || "Keine Antwort erhalten.",
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
       console.error("Chat-Fehler:", error)
-    },
-  })
+      const errorMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
@@ -81,7 +131,9 @@ export default function MasterBotChatPage() {
                         : "bg-muted"
                     )}
                   >
-                    <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                    <div className="text-sm whitespace-pre-wrap">
+                      {typeof message.content === "string" ? message.content : JSON.stringify(message.content)}
+                    </div>
                   </div>
                   {message.role === "user" && (
                     <div className="flex-shrink-0">

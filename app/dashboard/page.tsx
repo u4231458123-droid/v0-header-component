@@ -177,6 +177,7 @@ export default async function DashboardPage() {
       upcomingBookingsRes,
       customersRes,
       driversRes,
+      vehiclesRes,
       revenue30DaysRes // Für Charts benötigt
     ] = await Promise.all([
       supabase
@@ -199,6 +200,7 @@ export default async function DashboardPage() {
         .eq("company_id", companyId)
         .limit(100),
       supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
+      supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
       supabase
         .from("bookings")
         .select("price, pickup_time, created_at")
