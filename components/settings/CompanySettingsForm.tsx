@@ -51,23 +51,31 @@ interface CompanySettingsFormProps {
 }
 
 export function CompanySettingsForm({ company }: CompanySettingsFormProps) {
+  if (!company) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-muted-foreground">Kein Unternehmen gefunden. Bitte erstellen Sie zuerst ein Unternehmen.</p>
+      </div>
+    )
+  }
+
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
   const [formData, setFormData] = useState({
-    name: company.name || "",
-    email: company.email || "",
-    phone: company.phone || "",
-    address: company.address || "",
-    company_slug: company.company_slug || "",
-    landingpage_enabled: company.landingpage_enabled || false,
-    widget_enabled: company.widget_enabled || false,
-    landingpage_title: company.landingpage_title || "",
-    landingpage_description: company.landingpage_description || "",
-    landingpage_hero_text: company.landingpage_hero_text || "",
-    widget_button_text: company.widget_button_text || "Jetzt buchen",
+    name: company?.name || "",
+    email: company?.email || "",
+    phone: company?.phone || "",
+    address: company?.address || "",
+    company_slug: company?.company_slug || "",
+    landingpage_enabled: company?.landingpage_enabled || false,
+    widget_enabled: company?.widget_enabled || false,
+    landingpage_title: company?.landingpage_title || "",
+    landingpage_description: company?.landingpage_description || "",
+    landingpage_hero_text: company?.landingpage_hero_text || "",
+    widget_button_text: company?.widget_button_text || "Jetzt buchen",
   })
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -40,13 +40,14 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Pr
 }
 
 export default async function SettingsPage() {
-  let supabase: SupabaseClient
   try {
-    supabase = await createClient()
-  } catch (error) {
-    console.error("[v0] Supabase client creation failed:", error)
-    redirect("/auth/login")
-  }
+    let supabase: SupabaseClient
+    try {
+      supabase = await createClient()
+    } catch (error) {
+      console.error("[v0] Supabase client creation failed:", error)
+      redirect("/auth/login")
+    }
 
   let user: User | undefined
   try {
@@ -123,65 +124,94 @@ export default async function SettingsPage() {
 }
 
 async function renderSettingsPage(supabase: SupabaseClient, profile: Profile, user: User) {
-  let company = null
-  let teamMembers: any[] = []
-  let driversCount = 0
-  let vehiclesCount = 0
-  let bookingsCount = 0
+  try {
+    let company = null
+    let teamMembers: any[] = []
+    let driversCount = 0
+    let vehiclesCount = 0
+    let bookingsCount = 0
 
-  if (profile.company_id) {
-    const { data: companyData } = await supabase
-      .from("companies")
-      .select("*")
-      .eq("id", profile.company_id)
-      .maybeSingle()
+    if (profile.company_id) {
+      try {
+        const { data: companyData, error: companyError } = await supabase
+          .from("companies")
+          .select("*")
+          .eq("id", profile.company_id)
+          .maybeSingle()
 
-    company = companyData
+        if (companyError) {
+          console.error("[Settings] Company fetch error:", companyError)
+        }
 
-    if (company) {
-      // Fetch team members
-      const { data: teamData } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, role, avatar_url, created_at")
-        .eq("company_id", profile.company_id)
-        .order("created_at", { ascending: true })
+        company = companyData
 
-      teamMembers = teamData || []
+        if (company) {
+          // Fetch team members
+          try {
+            const { data: teamData, error: teamError } = await supabase
+              .from("profiles")
+              .select("id, full_name, email, role, avatar_url, created_at")
+              .eq("company_id", profile.company_id)
+              .order("created_at", { ascending: true })
 
-      // Fetch usage stats
-      const { count: dCount } = await supabase
-        .from("drivers")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", profile.company_id)
+            if (teamError) {
+              console.error("[Settings] Team members fetch error:", teamError)
+            }
 
-      const { count: vCount } = await supabase
-        .from("vehicles")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", profile.company_id)
+            teamMembers = teamData || []
+          } catch (error) {
+            console.error("[Settings] Team members fetch failed:", error)
+            teamMembers = []
+          }
 
-      const { count: bCount } = await supabase
-        .from("bookings")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", profile.company_id)
+          // Fetch usage stats
+          try {
+            const [driversResult, vehiclesResult, bookingsResult] = await Promise.all([
+              supabase
+                .from("drivers")
+                .select("*", { count: "exact", head: true })
+                .eq("company_id", profile.company_id),
+              supabase
+                .from("vehicles")
+                .select("*", { count: "exact", head: true })
+                .eq("company_id", profile.company_id),
+              supabase
+                .from("bookings")
+                .select("*", { count: "exact", head: true })
+                .eq("company_id", profile.company_id),
+            ])
 
-      driversCount = dCount || 0
-      vehiclesCount = vCount || 0
-      bookingsCount = bCount || 0
+            driversCount = driversResult.count || 0
+            vehiclesCount = vehiclesResult.count || 0
+            bookingsCount = bookingsResult.count || 0
+          } catch (error) {
+            console.error("[Settings] Usage stats fetch failed:", error)
+            // Fallback: counts bleiben 0
+          }
+        }
+      } catch (error) {
+        console.error("[Settings] Company data fetch failed:", error)
+        // company bleibt null
+      }
     }
-  }
 
-  return (
-    <MainLayout>
-      <SettingsPageClient
-        company={company}
-        profile={profile}
-        teamMembers={teamMembers}
-        usage={{
-          drivers: driversCount,
-          vehicles: vehiclesCount,
-          bookings: bookingsCount,
-        }}
-      />
-    </MainLayout>
-  )
+    return (
+      <MainLayout>
+        <SettingsPageClient
+          company={company}
+          profile={profile}
+          teamMembers={teamMembers}
+          usage={{
+            drivers: driversCount,
+            vehicles: vehiclesCount,
+            bookings: bookingsCount,
+          }}
+        />
+      </MainLayout>
+    )
+  } catch (error: any) {
+    console.error("[Settings] Render error:", error)
+    // Error-Boundary wird den Fehler abfangen
+    throw error
+  }
 }
