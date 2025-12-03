@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "hf-mcp-server": {
+      "url": "https://huggingface.co/mcp",
+      "auth": {
+        "type": "oauth",
+        "loginUrl": "https://huggingface.co/mcp?login"
+      },
+      "headers": {
+        "Authorization": "Bearer ${HUGGINGFACE_READ_TOKEN}"
+      }
+    }
+  }
+}
+

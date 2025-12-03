@@ -5,6 +5,7 @@
  */
 
 import { getAllModelsForBot, getPrimaryModelForBot, type ModelConfig } from "./models-optimized"
+import { getHuggingFaceMCPClient } from "./bots/huggingface-mcp"
 
 export interface HuggingFaceResponse {
   text: string
@@ -41,6 +42,7 @@ export class OptimizedHuggingFaceClient {
 
   /**
    * Generiere mit Bot-spezifischen Modellen (mit Fallback)
+   * Versucht zuerst MCP, dann normale API
    */
   async generateForBot(
     botName: string,
@@ -49,7 +51,42 @@ export class OptimizedHuggingFaceClient {
   ): Promise<HuggingFaceResponse> {
     const models = getAllModelsForBot(botName)
     
-    // Versuche mit jedem Modell (in Prioritäts-Reihenfolge)
+    // Versuche zuerst MCP (wenn verfügbar)
+    try {
+      const mcpClient = getHuggingFaceMCPClient()
+      if (mcpClient.hasAuth()) {
+        const serverCheck = await mcpClient.checkMCPServer()
+        if (serverCheck.available) {
+          // Versuche mit primärem Modell über MCP
+          const primaryModel = models[0]
+          if (primaryModel && primaryModel.provider !== "google") {
+            console.log(`🔌 Versuche MCP mit Modell: ${primaryModel.name}`)
+            const mcpResponse = await mcpClient.generate(
+              primaryModel.modelId,
+              prompt,
+              {
+                max_new_tokens: primaryModel.maxTokens,
+                temperature: primaryModel.temperature,
+                return_full_text: false,
+              }
+            )
+            
+            if (mcpResponse.generated_text && !mcpResponse.error) {
+              console.log(`✅ Erfolg mit MCP: ${primaryModel.name}`)
+              return {
+                text: mcpResponse.generated_text,
+                model: primaryModel.modelId,
+                tokens: mcpResponse.generated_text.length / 4,
+              }
+            }
+          }
+        }
+      }
+    } catch (error: any) {
+      console.warn(`⚠️ MCP fehlgeschlagen, Fallback zu normaler API: ${error.message}`)
+    }
+    
+    // Fallback: Versuche mit jedem Modell über normale API (in Prioritäts-Reihenfolge)
     for (const model of models) {
       try {
         console.log(`🤖 Versuche Modell: ${model.name} (${model.modelId})`)

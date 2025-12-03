@@ -388,11 +388,11 @@ export default function FahrerPortalPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500 hover:bg-green-600">Abgeschlossen</Badge>
+        return <Badge variant="default" className="bg-green-600 hover:bg-green-700">Abgeschlossen</Badge>
       case "in_progress":
-        return <Badge className="bg-blue-500 hover:bg-blue-600">In Fahrt</Badge>
+        return <Badge variant="default" className="bg-primary hover:bg-primary/90">In Fahrt</Badge>
       case "assigned":
-        return <Badge className="bg-amber-500 hover:bg-amber-600">Zugewiesen</Badge>
+        return <Badge variant="secondary">Zugewiesen</Badge>
       case "pending":
         return <Badge variant="secondary">Ausstehend</Badge>
       case "cancelled":
@@ -404,15 +404,15 @@ export default function FahrerPortalPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-600"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     )
   }
 
   if (!driver) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader>
             <CardTitle>Kein Fahrer-Profil gefunden</CardTitle>
@@ -432,9 +432,9 @@ export default function FahrerPortalPage() {
     .reduce((sum, b) => sum + (b.price || 0), 0)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header - wie Kundenportal */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -453,10 +453,10 @@ export default function FahrerPortalPage() {
                 </div>
               )}
               <div>
-                <p className="font-semibold text-slate-900">
+                <p className="font-semibold text-foreground">
                   {driver.first_name} {driver.last_name}
                 </p>
-                <p className="text-xs text-slate-500">Fahrer-Portal • {driver.company?.name}</p>
+                <p className="text-xs text-muted-foreground">Fahrer-Portal • {driver.company?.name}</p>
               </div>
             </div>
 
@@ -471,9 +471,9 @@ export default function FahrerPortalPage() {
                 }
                 className={
                   currentShift?.status === "active"
-                    ? "bg-green-500"
+                    ? "bg-green-600"
                     : currentShift?.status === "break"
-                      ? "bg-amber-500"
+                      ? "bg-amber-600"
                       : ""
                 }
               >
@@ -526,8 +526,8 @@ export default function FahrerPortalPage() {
       <main className="max-w-5xl mx-auto px-4 py-6">
         {/* Willkommens-Bereich */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Hallo, {driver.first_name}!</h1>
-          <p className="text-slate-500">Willkommen in Ihrem Fahrer-Portal</p>
+          <h1 className="text-2xl font-bold text-foreground">Hallo, {driver.first_name}!</h1>
+          <p className="text-muted-foreground">Willkommen in Ihrem Fahrer-Portal</p>
         </div>
 
         {/* Schicht-Steuerung Card */}
@@ -552,13 +552,13 @@ export default function FahrerPortalPage() {
               <div className="space-y-4">
                 {/* Timer Display */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-100 rounded-xl p-4 text-center">
-                    <p className="text-xs text-slate-500 uppercase tracking-wide">Schichtzeit</p>
-                    <p className="text-3xl font-mono font-bold text-slate-900">{shiftTime}</p>
+                  <div className="bg-muted rounded-xl p-4 text-center">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Schichtzeit</p>
+                    <p className="text-3xl font-mono font-bold text-foreground">{shiftTime}</p>
                   </div>
-                  <div className="bg-slate-100 rounded-xl p-4 text-center">
-                    <p className="text-xs text-slate-500 uppercase tracking-wide">Pausenzeit</p>
-                    <p className="text-3xl font-mono font-bold text-slate-500">{breakTime}</p>
+                  <div className="bg-muted rounded-xl p-4 text-center">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Pausenzeit</p>
+                    <p className="text-3xl font-mono font-bold text-muted-foreground">{breakTime}</p>
                   </div>
                 </div>
 
@@ -598,7 +598,7 @@ export default function FahrerPortalPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{pendingBookings.length}</p>
-                  <p className="text-sm text-slate-500">Anstehende Fahrten</p>
+                  <p className="text-sm text-muted-foreground">Anstehende Fahrten</p>
                 </div>
               </div>
             </CardContent>
@@ -615,7 +615,7 @@ export default function FahrerPortalPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{currentShift?.total_bookings || 0}</p>
-                  <p className="text-sm text-slate-500">Heute abgeschlossen</p>
+                  <p className="text-sm text-muted-foreground">Heute abgeschlossen</p>
                 </div>
               </div>
             </CardContent>
@@ -632,7 +632,7 @@ export default function FahrerPortalPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{safeNumber(currentShift?.total_revenue).toFixed(2)} EUR</p>
-                  <p className="text-sm text-slate-500">Heutiger Umsatz</p>
+                  <p className="text-sm text-muted-foreground">Heutiger Umsatz</p>
                 </div>
               </div>
             </CardContent>
@@ -641,14 +641,14 @@ export default function FahrerPortalPage() {
 
         {/* Aktive Fahrt */}
         {activeBooking && (
-          <Card className="mb-6 border-2 border-blue-500">
+          <Card className="mb-6 border-2 border-primary">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Navigation className="h-5 w-5 text-blue-500 animate-pulse" />
+                  <Navigation className="h-5 w-5 text-primary animate-pulse" />
                   Aktive Fahrt
                 </CardTitle>
-                <Badge className="bg-blue-500">In Fahrt</Badge>
+                <Badge className="bg-primary">In Fahrt</Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -656,14 +656,14 @@ export default function FahrerPortalPage() {
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 rounded-full bg-green-500 mt-1.5"></div>
                   <div>
-                    <p className="text-xs text-slate-500">Abholung</p>
+                    <p className="text-xs text-muted-foreground">Abholung</p>
                     <p className="font-medium">{activeBooking.pickup_address}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 rounded-full bg-red-500 mt-1.5"></div>
+                  <div className="w-3 h-3 rounded-full bg-destructive mt-1.5"></div>
                   <div>
-                    <p className="text-xs text-slate-500">Ziel</p>
+                    <p className="text-xs text-muted-foreground">Ziel</p>
                     <p className="font-medium">{activeBooking.dropoff_address}</p>
                   </div>
                 </div>
@@ -674,7 +674,7 @@ export default function FahrerPortalPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-slate-400" />
+                    <User className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">
                       {activeBooking.customer?.first_name} {activeBooking.customer?.last_name}
                     </span>
@@ -714,7 +714,7 @@ export default function FahrerPortalPage() {
               </CardHeader>
               <CardContent>
                 {pendingBookings.filter((b) => b.status !== "in_progress").length === 0 ? (
-                  <div className="text-center py-8 text-slate-500">
+                  <div className="text-center py-8 text-muted-foreground">
                     <Car className="h-12 w-12 mx-auto mb-4 opacity-30" />
                     <p>Keine anstehenden Fahrten</p>
                   </div>
@@ -723,14 +723,14 @@ export default function FahrerPortalPage() {
                     {pendingBookings
                       .filter((b) => b.status !== "in_progress")
                       .map((booking) => (
-                        <div key={booking.id} className="border rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                        <div key={booking.id} className="border rounded-lg p-4 hover:bg-muted transition-colors">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-slate-400" />
+                              <Calendar className="h-4 w-4 text-muted-foreground" />
                               <span className="font-medium">
                                 {format(new Date(booking.pickup_time), "dd. MMMM yyyy", { locale: de })}
                               </span>
-                              <Clock className="h-4 w-4 text-slate-400 ml-2" />
+                              <Clock className="h-4 w-4 text-muted-foreground ml-2" />
                               <span>{format(new Date(booking.pickup_time), "HH:mm", { locale: de })} Uhr</span>
                             </div>
                             {getStatusBadge(booking.status)}

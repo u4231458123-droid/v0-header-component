@@ -250,7 +250,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
 
       {/* Services Section */}
       {sections.services_enabled && sections.services.length > 0 && (
-        <section className="py-12 px-6 bg-gray-50">
+        <section className="py-12 px-6 bg-muted">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-8" style={{ color: primary_color }}>
               {sections.services_title || "Unsere Services"}

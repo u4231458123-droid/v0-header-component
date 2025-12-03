@@ -90,7 +90,7 @@ export function MobileBottomNav() {
                 borderRadius: designTokens.radius.md,
                 minWidth: "60px",
                 minHeight: "44px",
-                backgroundColor: isActive ? `${designTokens.colors.slate[100]}` : "transparent",
+                backgroundColor: isActive ? "hsl(var(--primary) / 0.1)" : "transparent",
                 transitionDuration: designTokens.motion.duration.default,
               }}
             >
@@ -99,14 +99,14 @@ export function MobileBottomNav() {
                 style={{
                   width: "20px",
                   height: "20px",
-                  color: isActive ? designTokens.colors.slate[900] : designTokens.colors.text.tertiary,
+                  color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                 }}
               />
               <span
                 className="font-medium transition-colors"
                 style={{
                   fontSize: "10px",
-                  color: isActive ? designTokens.colors.slate[900] : designTokens.colors.text.tertiary,
+                  color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))",
                 }}
               >
                 {item.label}
