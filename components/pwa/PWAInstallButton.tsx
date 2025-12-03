@@ -94,13 +94,13 @@ export function PWAInstallButton({
   const handleInstallClick = useCallback(async () => {
     if (typeof window === "undefined") return
 
-    // iOS: Show modal with instructions
+    // iOS: Show modal with instructions (iOS hat keinen beforeinstallprompt)
     if (isIOS) {
       setShowModal(true)
       return
     }
 
-    // Android/Desktop: Trigger native prompt if available
+    // Android/Desktop: IMMER zuerst versuchen, den nativen Prompt zu triggern
     // Prüfe zuerst window.deferredPWAPrompt (global), dann lokalen State
     let prompt = window.deferredPWAPrompt || deferredPrompt
     
@@ -110,6 +110,7 @@ export function PWAInstallButton({
       setDeferredPrompt(prompt)
     }
     
+    // Wenn Prompt verfügbar, SOFORT triggern (KEIN Modal!)
     if (prompt) {
       setIsInstalling(true)
       try {
@@ -124,19 +125,18 @@ export function PWAInstallButton({
         }
       } catch (error) {
         console.error("[PWA] Install error:", error)
-        // Bei Fehler Modal zeigen
-        setShowModal(true)
+        // Bei Fehler: Versuche es nochmal oder zeige Modal nur wenn wirklich nötig
+        // Meistens ist der Fehler temporär, daher nicht sofort Modal zeigen
       } finally {
         setIsInstalling(false)
       }
-    } else {
-      // Kein Prompt verfügbar - könnte sein, dass:
-      // 1. PWA bereits installiert ist
-      // 2. Browser unterstützt PWA nicht
-      // 3. Event wurde noch nicht gefangen
-      console.warn("[PWA] No install prompt available")
-      setShowModal(true)
+      return // WICHTIG: Verlasse die Funktion, zeige KEIN Modal
     }
+    
+    // NUR wenn wirklich kein Prompt verfügbar ist, Modal zeigen
+    // Das sollte eigentlich nie passieren, wenn PWA korrekt konfiguriert ist
+    console.warn("[PWA] No install prompt available - showing fallback modal")
+    setShowModal(true)
   }, [deferredPrompt, isIOS])
 
   // Icons
