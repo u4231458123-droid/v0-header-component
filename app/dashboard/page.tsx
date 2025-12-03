@@ -112,30 +112,33 @@ export default async function DashboardPage() {
         }
       }
 
+      // WICHTIG: Master-Account wird NIEMALS als Kunde behandelt, auch wenn er in customers/customer_accounts steht!
       // Pruefe ob Kunde (NUR wenn NICHT Master)
-      const { data: customer } = await supabase
-        .from("customers")
-        .select("id, company_id, company:companies(company_slug)")
-        .eq("user_id", user.id)
-        .maybeSingle()
+      if (!isMasterAccount) {
+        const { data: customer } = await supabase
+          .from("customers")
+          .select("id, company_id, company:companies(company_slug)")
+          .eq("user_id", user.id)
+          .maybeSingle()
 
-      if (customer) {
-        const companySlug = (customer.company as any)?.company_slug
-        if (companySlug) {
-          redirect(`/c/${companySlug}/kunde/portal`)
+        if (customer) {
+          const companySlug = (customer.company as any)?.company_slug
+          if (companySlug) {
+            redirect(`/c/${companySlug}/kunde/portal`)
+          }
+          redirect("/kunden-portal")
         }
-        redirect("/kunden-portal")
-      }
 
-      // Pruefe customer_accounts als Fallback (NUR wenn NICHT Master)
-      const { data: customerAccount } = await supabase
-        .from("customer_accounts")
-        .select("id, registered_companies")
-        .eq("user_id", user.id)
-        .maybeSingle()
+        // Pruefe customer_accounts als Fallback (NUR wenn NICHT Master)
+        const { data: customerAccount } = await supabase
+          .from("customer_accounts")
+          .select("id, registered_companies")
+          .eq("user_id", user.id)
+          .maybeSingle()
 
-      if (customerAccount) {
-        redirect("/kunden-portal")
+        if (customerAccount) {
+          redirect("/kunden-portal")
+        }
       }
 
       // Kein bekannter Nutzertyp - Logout und zur Startseite

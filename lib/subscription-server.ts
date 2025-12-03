@@ -36,7 +36,9 @@ export async function checkSubscriptionAccess(): Promise<{
     return { hasAccess: false, isMasterAdmin: false, message: "Not authenticated" }
   }
 
-  if (user.email && MASTER_ACCOUNT_EMAILS.includes(user.email)) {
+  // Case-insensitive E-Mail-Prüfung für Master-Accounts
+  const userEmailNormalized = user.email?.toLowerCase().trim()
+  if (userEmailNormalized && MASTER_ACCOUNT_EMAILS.some((email) => email.toLowerCase().trim() === userEmailNormalized)) {
     return {
       hasAccess: true,
       isMasterAdmin: true,
