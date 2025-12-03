@@ -97,7 +97,6 @@ export default function LoginPage() {
         }
 
         // 1. Kunden-Account (courbois83@gmail.com) - Case-insensitive
-        const normalizedEmail = userEmail?.toLowerCase().trim()
         if (normalizedEmail === "courbois83@gmail.com") {
            // Prüfe ob Kunde in customers Tabelle
            const { data: customer } = await supabase

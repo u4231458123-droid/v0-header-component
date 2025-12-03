@@ -101,23 +101,40 @@ export function PWAInstallButton({
     }
 
     // Android/Desktop: Trigger native prompt if available
-    const prompt = deferredPrompt || window.deferredPWAPrompt
+    // Prüfe zuerst window.deferredPWAPrompt (global), dann lokalen State
+    let prompt = window.deferredPWAPrompt || deferredPrompt
+    
+    // Wenn kein Prompt im State, aber Event wurde gefangen, hole es vom Window
+    if (!prompt && window.deferredPWAPrompt) {
+      prompt = window.deferredPWAPrompt
+      setDeferredPrompt(prompt)
+    }
+    
     if (prompt) {
       setIsInstalling(true)
       try {
+        console.log("[PWA] Triggering native install prompt")
         await prompt.prompt()
         const { outcome } = await prompt.userChoice
+        console.log("[PWA] User choice:", outcome)
         if (outcome === "accepted") {
           setDeferredPrompt(null)
           window.deferredPWAPrompt = null
+          setIsInstalled(true)
         }
       } catch (error) {
         console.error("[PWA] Install error:", error)
+        // Bei Fehler Modal zeigen
+        setShowModal(true)
       } finally {
         setIsInstalling(false)
       }
     } else {
-      // Kein Prompt verfuegbar - Modal mit Anleitung zeigen
+      // Kein Prompt verfügbar - könnte sein, dass:
+      // 1. PWA bereits installiert ist
+      // 2. Browser unterstützt PWA nicht
+      // 3. Event wurde noch nicht gefangen
+      console.warn("[PWA] No install prompt available")
       setShowModal(true)
     }
   }, [deferredPrompt, isIOS])
