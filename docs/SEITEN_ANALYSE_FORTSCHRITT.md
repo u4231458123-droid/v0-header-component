@@ -17,6 +17,20 @@
 - **Änderung:** Starter 31€ → 31,20€, Business 79€ → 79,20€
 - **Status:** ✅ Korrigiert
 
+### 3. Angebot-Erstellung - Preis zeigt leer statt 0 ✅
+- **Datei:** `components/finanzen/NewQuoteDialog.tsx`
+- **Änderung:** `value={item.unitPrice > 0 ? item.unitPrice : ""}` - zeigt jetzt leer wenn 0
+- **Status:** ✅ Korrigiert
+
+### 4. Angebot-Erstellung - Fahrzeug-Klasse nur wenn Fahrzeuge vorhanden ✅
+- **Datei:** `components/finanzen/NewQuoteDialog.tsx`
+- **Änderung:** Warnung angezeigt wenn keine Fahrzeuge im Fleet vorhanden
+- **Status:** ✅ Korrigiert
+
+### 5. Angebot-Erstellung - MwSt. Auswahl ✅
+- **Datei:** `components/finanzen/NewQuoteDialog.tsx`
+- **Status:** ✅ Bereits vorhanden (0%, 7%, 19% und inkl./exkl.)
+
 ---
 
 ## 🔄 In Bearbeitung

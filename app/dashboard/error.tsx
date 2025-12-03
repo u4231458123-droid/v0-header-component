@@ -69,11 +69,11 @@ export default function DashboardError({
 
         <div className="pt-4 border-t border-border">
           <Link
-            href="/"
+            href="/dashboard"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
           >
             <Home className="w-3 h-3" />
-            Zur Startseite
+            Zum Dashboard
           </Link>
         </div>
       </div>
