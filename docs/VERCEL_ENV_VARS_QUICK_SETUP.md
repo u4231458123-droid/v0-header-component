@@ -14,21 +14,21 @@ Klicke für **jede** Variable auf **"Add New"** und setze sie für **Production,
 #### Variable 1: NEXT_PUBLIC_SUPABASE_URL
 
 - **Name:** `NEXT_PUBLIC_SUPABASE_URL`
-- **Value:** `https://ygpwuiygivxoqtyoigtg.supabase.co`
+- **Value:** `https://ykfufejycdgwonrlbhzn.supabase.co`
 - **Environment:** ✅ Production, ✅ Preview, ✅ Development
 - **Klicke:** "Save"
 
 #### Variable 2: NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 - **Name:** `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- **Value:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHd1aXlnaXZ4b3F0eW9pZ3RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NDQzNDIsImV4cCI6MjA3NjAyMDM0Mn0.1ZJtuko179K8j7bm6K3FwtpS5POY6RVu3Ixeh1ye3KE`
+- **Value:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrZnVmZWp5Y2Rnd29ucmxiaHpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5ODQ0NjAsImV4cCI6MjA3OTU2MDQ2MH0.q4Zx-5bcDUWGKJbwqdQcy423thv6M5iZczM7M5SN8Y0`
 - **Environment:** ✅ Production, ✅ Preview, ✅ Development
 - **Klicke:** "Save"
 
 #### Variable 3: SUPABASE_SERVICE_ROLE_KEY
 
 - **Name:** `SUPABASE_SERVICE_ROLE_KEY`
-- **Value:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlncHd1aXlnaXZ4b3F0eW9pZ3RnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQ0NDM0MywiZXhwIjoyMDc2MDIwMzQzfQ.W_rbOUxa57VffJiUX9TClCAFB6m11qS2GVxpEzWQ56Q`
+- **Value:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrZnVmZWp5Y2Rnd29ucmxiaHpuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Mzk4NDQ2MCwiZXhwIjoyMDc5NTYwNDYwfQ.j9vb-Vcp5VFpGTofFMkKgFP-wLVNtvlS1Cx0GDnll38`
 - **Environment:** ✅ Production, ✅ Preview, ✅ Development
 - **Klicke:** "Save"
 
