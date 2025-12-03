@@ -19,7 +19,7 @@ export async function validateSupabaseProject(): Promise<{
   try {
     // Dynamischer Import für MCP (wird zur Laufzeit verfügbar sein)
     // In Produktion würde dies über MCP-Server laufen
-    const expectedUrl = "https://ygpwuiygivxoqtyoigtg.supabase.co"
+    const expectedUrl = "https://ykfufejycdgwonrlbhzn.supabase.co"
     
     // TODO: Implementiere MCP-Aufruf wenn verfügbar
     // const url = await mcp_supabase_get_project_url()

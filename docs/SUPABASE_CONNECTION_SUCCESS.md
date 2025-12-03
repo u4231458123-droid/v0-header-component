@@ -2,7 +2,7 @@
 
 ## Status
 
-**Supabase URL:** `https://ygpwuiygivxoqtyoigtg.supabase.co`
+**Supabase URL:** `https://ykfufejycdgwonrlbhzn.supabase.co`
 
 **Verbindung:** ✅ Erfolgreich
 
@@ -21,7 +21,7 @@ GET /api/health/supabase
 {
   "status": "success",
   "message": "Supabase Verbindung erfolgreich",
-  "url": "https://ygpwuiygivxoqtyoigtg.supabase.co",
+      "url": "https://ykfufejycdgwonrlbhzn.supabase.co",
   "anonKeyConfigured": true,
   "serviceKeyConfigured": true,
   "anonKeyTest": "success",
@@ -46,7 +46,7 @@ https://v0-header-component-pink.vercel.app/api/health/supabase
 
 ### Environment Variables (in Vercel gesetzt)
 
-- ✅ `NEXT_PUBLIC_SUPABASE_URL` = `https://ygpwuiygivxoqtyoigtg.supabase.co`
+- ✅ `NEXT_PUBLIC_SUPABASE_URL` = `https://ykfufejycdgwonrlbhzn.supabase.co`
 - ✅ `NEXT_PUBLIC_SUPABASE_ANON_KEY` = (gesetzt)
 - ✅ `SUPABASE_SERVICE_ROLE_KEY` = (gesetzt)
 
@@ -56,7 +56,7 @@ https://v0-header-component-pink.vercel.app/api/health/supabase
 {
   "mcpServers": {
     "supabase": {
-      "url": "https://mcp.supabase.com/mcp?project_ref=ygpwuiygivxoqtyoigtg&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+      "url": "https://mcp.supabase.com/mcp?project_ref=ykfufejycdgwonrlbhzn&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
     }
   }
 }
