@@ -1546,11 +1546,27 @@ export function SettingsPageClient({
               </div>
             </CardContent>
           </Card>
+          )}
         </TabsContent>
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
-          <Card className="border-border">
+          {!company ? (
+            <Card className="border-amber-500/50 bg-amber-500/10">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Sie müssen zuerst ein Unternehmen erstellen, um Benachrichtigungen zu konfigurieren.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="w-5 h-5" />
