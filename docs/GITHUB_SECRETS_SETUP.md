@@ -24,6 +24,9 @@ Die folgenden Secrets müssen in GitHub Repository Settings → Secrets and vari
 ### Supabase Service Role (für Backend-Operationen)
 - `SUPABASE_SERVICE_ROLE_KEY`: `<Ihr-Supabase-Service-Role-Key>`
 
+### Vercel Webhook (für Deployment-Events)
+- `VERCEL_WEBHOOK_SECRET`: `mbDmy0nOH2HjaK53lHX2gvLM` (KRITISCH - für Webhook-Signatur-Verifizierung)
+
 ## Setup-Anleitung
 
 1. Gehe zu: https://github.com/u4231458123-droid/v0-header-component/settings/secrets/actions
@@ -47,6 +50,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<Ihr-Supabase-Anon-Key>
 HUGGINGFACE_API_KEY=<Ihr-HuggingFace-API-Key>
 ANTHROPIC_API_KEY=<Ihr-Anthropic-API-Key>
 GEMINI_API_KEY=<Ihr-Gemini-API-Key>
+VERCEL_WEBHOOK_SECRET=mbDmy0nOH2HjaK53lHX2gvLM
 ```
 
 **Wichtig**: `.env.local` ist in `.gitignore` und wird nicht committed.
