@@ -267,9 +267,21 @@ export function SettingsPageClient({
   const gewerbeanmeldungInputRef = useRef<HTMLInputElement>(null)
   const briefpapierInputRef = useRef<HTMLInputElement>(null)
 
-  const tier = (company?.subscription_plan as keyof typeof TIER_LIMITS) || "starter"
+  // Mapping: DB subscription_plan -> Code SubscriptionTier
+  // DB: free|basic|professional|enterprise
+  // Code: starter|business|enterprise
+  const planToTier: Record<string, keyof typeof TIER_LIMITS> = {
+    free: "starter",
+    basic: "starter",
+    professional: "business",
+    enterprise: "enterprise",
+    starter: "starter",
+    business: "business",
+  }
+  const dbPlan = company?.subscription_plan || company?.subscription_tier || "starter"
+  const tier = planToTier[dbPlan] || "starter"
   const limits = TIER_LIMITS[tier]
-  const tierInfo = TIER_INFO[tier]
+  const tierInfo = TIER_INFO[tier] || TIER_INFO.starter
 
   // Form state
   const [formData, setFormData] = useState({
