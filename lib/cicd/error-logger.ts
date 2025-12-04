@@ -10,7 +10,7 @@ import path from "path"
 export interface ErrorLogEntry {
   id: string
   timestamp: string
-  type: "error" | "violation" | "bug" | "warning" | "change-request" | "task-assignment" | "optimization" | "recovery" | "health-check"
+  type: "error" | "violation" | "bug" | "warning" | "change-request" | "task-assignment" | "optimization" | "recovery" | "health-check" | "autonomous-loop" | "gap-analysis" | "git-protocol" | "terminal-error"
   severity: "critical" | "high" | "medium" | "low"
   category: string
   message: string

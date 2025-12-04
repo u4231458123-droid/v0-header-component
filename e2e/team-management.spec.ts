@@ -47,7 +47,7 @@ test.describe("Team-Management", () => {
 
     // Klicke auf "Details" oder ersten Mitarbeiter
     await page.click('button:has-text("Details"), tr:first-child, [data-testid*="employee"]:first-child').catch(async () => {
-      await page.click('a:has-text("Details")').first().catch(() => {})
+      await page.locator('a:has-text("Details")').first().click().catch(() => {})
     })
 
     // Warte auf Dialog oder Detailseite
@@ -67,8 +67,8 @@ test.describe("Team-Management", () => {
     await page.waitForTimeout(1000)
 
     // Klicke auf "Bearbeiten"
-    await page.click('button:has-text("Bearbeiten")').first().catch(async () => {
-      await page.click('a:has-text("Bearbeiten")').first().catch(() => {})
+    await page.locator('button:has-text("Bearbeiten")').first().click().catch(async () => {
+      await page.locator('a:has-text("Bearbeiten")').first().click().catch(() => {})
     })
 
     // Warte auf Bearbeitungsdialog

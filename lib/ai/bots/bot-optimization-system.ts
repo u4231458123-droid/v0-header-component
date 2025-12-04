@@ -34,10 +34,11 @@ export class BotOptimizationSystem {
     const errors = await findErrorsByBot(botName)
     
     // Analysiere Fehler-Patterns
+    const allErrorEntries = errors.flatMap((doc) => doc.errors || [])
     const errorPatterns: BotOptimization["errorPatterns"] = []
     const typeCounts: Record<string, { count: number; severity: "critical" | "high" | "medium" | "low" }> = {}
 
-    for (const error of errors) {
+    for (const error of allErrorEntries) {
       if (!typeCounts[error.type]) {
         typeCounts[error.type] = { count: 0, severity: error.severity }
       }
@@ -61,22 +62,22 @@ export class BotOptimizationSystem {
       recommendations.push(`Bot sollte ${mostCommon.type}-Fehler vermeiden`)
     }
 
-    if (errors.some((e) => e.severity === "critical")) {
+    if (allErrorEntries.some((e) => e.severity === "critical")) {
       recommendations.push("Kritische Fehler vorhanden - sofortige Nachjustierung erforderlich")
     }
 
-    if (errors.length > 10) {
+    if (allErrorEntries.length > 10) {
       recommendations.push("Viele Fehler - Bot benötigt umfassende Überarbeitung")
     }
 
     // Bestimme Priorität
-    const hasCritical = errors.some((e) => e.severity === "critical")
-    const hasHigh = errors.some((e) => e.severity === "high")
+    const hasCritical = allErrorEntries.some((e) => e.severity === "critical")
+    const hasHigh = allErrorEntries.some((e) => e.severity === "high")
     const priority: BotOptimization["priority"] = hasCritical
       ? "critical"
       : hasHigh
       ? "high"
-      : errors.length > 5
+      : allErrorEntries.length > 5
       ? "medium"
       : "low"
 

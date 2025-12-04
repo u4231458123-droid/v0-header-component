@@ -59,7 +59,7 @@ function FileIcon({ className }: { className?: string }) {
 
 interface Driver {
   id: string
-  company_id: string
+  company_id?: string
   salutation?: string
   title?: string
   first_name: string

@@ -630,6 +630,7 @@ export abstract class BaseBot {
         content: {
           content: `Terminal-Fehler aufgetreten: ${error.message}\n\nKontext: ${JSON.stringify(context, null, 2)}`,
           summary: `Terminal-Fehler in ${this.botName}`,
+          references: [],
         },
       })
     } catch (docError) {

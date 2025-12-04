@@ -376,7 +376,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
               XLSX.utils.book_append_sheet(wb, wsUebersicht, "Übersicht")
 
               // Buchungen Sheet
-              if (data?.recentBookings?.length > 0) {
+              if (data?.recentBookings && data.recentBookings.length > 0) {
                 const buchungenData = [
                   ["Datum", "Kunde", "Von", "Nach", "Status", "Betrag"],
                   ...data.recentBookings.map((b: any) => [
@@ -397,8 +397,8 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
                 const umsatzData = [
                   ["Monat", "Umsatz"],
                   ...data.revenue.byMonth.map((m: { month: string; year: number; revenue: number; bookings: number }) => [
-                    m.month || m.name,
-                    `${safeNumber(m.revenue || m.value).toFixed(2)} €`,
+                    m.month,
+                    `${safeNumber(m.revenue).toFixed(2)} €`,
                   ]),
                 ]
                 const wsUmsatz = XLSX.utils.aoa_to_sheet(umsatzData)
@@ -555,7 +555,11 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
                         outerRadius={100}
                         paddingAngle={2}
                         dataKey="value"
-                        label={({ name, percent }: { name: string; percent?: number }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                        label={(props: any) => {
+                          const name = props.name || props.payload?.name || ""
+                          const percent = props.percent || 0
+                          return `${name} ${(percent * 100).toFixed(0)}%`
+                        }}
                         labelLine={false}
                       >
                         {statusChartData.map((entry, index) => (

@@ -41,8 +41,9 @@ export class AdjustmentRequestSystem {
     }
 
     // Bestimme Priorität basierend auf Fehler-Schweregrad
-    const hasCritical = errors.some((e) => e.severity === "critical")
-    const hasHigh = errors.some((e) => e.severity === "high")
+    const allErrorEntries = errors.flatMap((doc) => doc.errors || [])
+    const hasCritical = allErrorEntries.some((e) => e.severity === "critical")
+    const hasHigh = allErrorEntries.some((e) => e.severity === "high")
     const priority: AdjustmentRequest["priority"] = hasCritical
       ? "critical"
       : hasHigh
@@ -52,7 +53,7 @@ export class AdjustmentRequestSystem {
     const request: AdjustmentRequest = {
       id: `adjustment-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       botName,
-      errors: errors.map((e) => ({
+      errors: allErrorEntries.map((e) => ({
         type: e.type,
         severity: e.severity,
         message: e.message,

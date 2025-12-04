@@ -160,25 +160,30 @@ function SelectItem({
   className,
   children,
   value,
+  disabled,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & { value: string }) {
+}: React.HTMLAttributes<HTMLDivElement> & { value: string; disabled?: boolean }) {
   const { value: selectedValue, onValueChange, setOpen } = useSelect()
   const isSelected = value === selectedValue
 
   return (
     <div
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
-        "hover:bg-accent hover:text-accent-foreground",
-        "focus:bg-accent focus:text-accent-foreground",
+        "relative flex w-full select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+        disabled
+          ? "cursor-not-allowed opacity-50"
+          : "cursor-pointer hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
         className,
       )}
       onClick={() => {
-        onValueChange(value)
-        setOpen(false)
+        if (!disabled) {
+          onValueChange(value)
+          setOpen(false)
+        }
       }}
       role="option"
       aria-selected={isSelected}
+      aria-disabled={disabled}
       {...props}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">

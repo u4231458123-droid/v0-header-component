@@ -278,7 +278,7 @@ export function SettingsPageClient({
     starter: "starter",
     business: "business",
   }
-  const dbPlan = company?.subscription_plan || company?.subscription_tier || "starter"
+  const dbPlan = company?.subscription_plan || "starter"
   const tier = planToTier[dbPlan] || "starter"
   const limits = TIER_LIMITS[tier]
   const tierInfo = TIER_INFO[tier] || TIER_INFO.starter

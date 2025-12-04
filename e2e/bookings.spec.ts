@@ -111,9 +111,9 @@ test.describe("Buchungen - CRUD", () => {
     await page.waitForTimeout(2000)
 
     // Klicke auf Löschen-Button der ersten Buchung
-    await page.click('button:has-text("Löschen"), button[aria-label*="Löschen"]').first().catch(async () => {
+    await page.locator('button:has-text("Löschen"), button[aria-label*="Löschen"]').first().click().catch(async () => {
       // Fallback: Suche nach Löschen-Icon
-      await page.click('[data-testid*="delete"]').first().catch(() => {})
+      await page.locator('[data-testid*="delete"]').first().click().catch(() => {})
     })
 
     // Bestätige Löschung (falls Bestätigungsdialog)

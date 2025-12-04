@@ -127,9 +127,9 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
 
       await downloadPDF({
         type: "quote",
-        data: {
+        company: company,
+        content: {
           quote: fullQuote,
-          company: company,
           customer: fullQuote.customer,
           booking: fullQuote.booking,
           items: items || [],

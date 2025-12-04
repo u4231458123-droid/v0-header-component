@@ -119,7 +119,14 @@ export class AutoQualityChecker {
   }> {
     let fixedCode = code
     const lines = fixedCode.split("\n")
-    const remainingViolations: typeof violations = []
+    const remainingViolations: Array<{
+      type: string
+      severity: "critical" | "high" | "medium" | "low"
+      message: string
+      line?: number
+      suggestion: string
+      autoFixed?: boolean
+    }> = []
     let autoFixed = false
     let manualActionRequired = false
 
