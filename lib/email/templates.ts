@@ -281,6 +281,117 @@ export const PARTNER_FORWARD_TEMPLATE: EmailTemplate = {
 }
 
 /**
+ * Erinnerung E-Mail (z.B. für Dokumente, Zahlungen)
+ */
+export const REMINDER_TEMPLATE: EmailTemplate = {
+  id: "reminder",
+  name: "Erinnerung",
+  subject: "Erinnerung: {{reminder_type}}",
+  html: `
+    <h1>Erinnerung</h1>
+    <p>Sehr geehrte/r {{customer_salutation}} {{customer_name}},</p>
+    <p>wir möchten Sie an folgendes erinnern:</p>
+    
+    <h2>{{reminder_type}}</h2>
+    <p>{{reminder_message}}</p>
+    ${"{{#if due_date}}"}
+    <p><strong>Fälligkeitsdatum:</strong> {{due_date}}</p>
+    ${"{{/if}}"}
+    ${"{{#if action_url}}"}
+    <p><a href="{{action_url}}">Jetzt bearbeiten</a></p>
+    ${"{{/if}}"}
+    
+    <p>Mit freundlichen Grüßen,<br>{{company_name}}</p>
+  `,
+  text: "Erinnerung Text-Version",
+  variables: [
+    "customer_salutation",
+    "customer_name",
+    "reminder_type",
+    "reminder_message",
+    "due_date",
+    "action_url",
+  ],
+}
+
+/**
+ * Dokument-Erinnerung E-Mail
+ */
+export const DOCUMENT_REMINDER_TEMPLATE: EmailTemplate = {
+  id: "document-reminder",
+  name: "Dokument-Erinnerung",
+  subject: "Erinnerung: {{document_type}} läuft ab",
+  html: `
+    <h1>Dokument-Erinnerung</h1>
+    <p>Sehr geehrte/r {{recipient_salutation}} {{recipient_name}},</p>
+    <p>wir möchten Sie daran erinnern, dass folgendes Dokument bald abläuft:</p>
+    
+    <h2>{{document_type}}</h2>
+    <p><strong>Ablaufdatum:</strong> {{expiry_date}}</p>
+    ${"{{#if days_until_expiry}}"}
+    <p><strong>Verbleibende Tage:</strong> {{days_until_expiry}}</p>
+    ${"{{/if}}"}
+    
+    <p>Bitte erneuern Sie das Dokument rechtzeitig.</p>
+    ${"{{#if upload_url}}"}
+    <p><a href="{{upload_url}}">Dokument hochladen</a></p>
+    ${"{{/if}}"}
+    
+    <p>Mit freundlichen Grüßen,<br>{{company_name}}</p>
+  `,
+  text: "Dokument-Erinnerung Text-Version",
+  variables: [
+    "recipient_salutation",
+    "recipient_name",
+    "document_type",
+    "expiry_date",
+    "days_until_expiry",
+    "upload_url",
+  ],
+}
+
+/**
+ * Zahlungserinnerung E-Mail
+ */
+export const PAYMENT_REMINDER_TEMPLATE: EmailTemplate = {
+  id: "payment-reminder",
+  name: "Zahlungserinnerung",
+  subject: "Zahlungserinnerung: Rechnung {{invoice_number}}",
+  html: `
+    <h1>Zahlungserinnerung</h1>
+    <p>Sehr geehrte/r {{customer_salutation}} {{customer_name}},</p>
+    <p>wir möchten Sie freundlich an die noch ausstehende Zahlung erinnern:</p>
+    
+    <h2>Rechnungsdetails</h2>
+    <p><strong>Rechnungsnummer:</strong> {{invoice_number}}</p>
+    <p><strong>Rechnungsdatum:</strong> {{invoice_date}}</p>
+    <p><strong>Fälligkeitsdatum:</strong> {{due_date}}</p>
+    <p><strong>Betrag:</strong> {{total_amount}}</p>
+    ${"{{#if days_overdue}}"}
+    <p><strong>Tage überfällig:</strong> {{days_overdue}}</p>
+    ${"{{/if}}"}
+    
+    <p>Bitte überweisen Sie den Betrag umgehend auf das angegebene Konto.</p>
+    ${"{{#if payment_url}}"}
+    <p><a href="{{payment_url}}">Jetzt bezahlen</a></p>
+    ${"{{/if}}"}
+    
+    <p>Mit freundlichen Grüßen,<br>{{company_name}}</p>
+  `,
+  text: "Zahlungserinnerung Text-Version",
+  variables: [
+    "customer_salutation",
+    "customer_name",
+    "invoice_number",
+    "invoice_date",
+    "due_date",
+    "total_amount",
+    "days_overdue",
+    "payment_url",
+  ],
+}
+
+/**
  * Support-Anfrage E-Mail
  */
 export const SUPPORT_REQUEST_TEMPLATE: EmailTemplate = {

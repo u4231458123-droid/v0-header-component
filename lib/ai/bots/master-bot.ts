@@ -541,6 +541,7 @@ export class MasterBot {
   /**
    * VALIDIERE ERGEBNIS DURCH QUALITY-BOT
    * Wird nach jeder Bot-Aufgabe aufgerufen
+   * Prüft ALLE Änderungen vollständig (nicht nur bis zum ersten Fehler)
    */
   async validateBotResult(
     botId: string,
@@ -554,7 +555,9 @@ export class MasterBot {
     const { QualityBot } = await import("./quality-bot")
     const qualityBot = new QualityBot()
     
-    // Prüfe Ergebnis gegen Dokumentation
+    const allViolations: Array<{ type: string; message: string; suggestion: string }> = []
+    
+    // Prüfe Ergebnis gegen Dokumentation - ALLE Änderungen prüfen
     if (result.changes && Array.isArray(result.changes)) {
       for (const change of result.changes) {
         if (change.content) {
@@ -564,29 +567,30 @@ export class MasterBot {
             change.file || filePath || "unknown"
           )
           
+          // Sammle alle Verstöße (nicht sofort zurückgeben)
           if (!check.passed) {
-            return {
-              valid: false,
-              violations: check.violations.map((v) => ({
+            allViolations.push(
+              ...check.violations.map((v) => ({
                 type: v.type,
                 message: v.message,
                 suggestion: v.suggestion,
-              })),
-            }
+              }))
+            )
           }
         }
       }
     }
     
     return {
-      valid: true,
-      violations: [],
+      valid: allViolations.length === 0,
+      violations: allViolations,
     }
   }
 
   /**
    * AUTOMATISCHER COMMIT/PUSH NACH AUFGABE
    * Wird nach erfolgreicher Validierung aufgerufen
+   * SICHER: Verwendet spawn mit Argument-Arrays (keine Command Injection möglich)
    */
   async commitAndPush(
     taskId: string,
@@ -597,32 +601,89 @@ export class MasterBot {
     
     try {
       // Git-Operationen (nur wenn in Git-Repository)
-      const { execSync } = await import("child_process")
+      const { spawn } = await import("child_process")
+      const { promisify } = await import("util")
       
-      try {
-        // Prüfe ob Git-Repository
-        execSync("git rev-parse --git-dir", { stdio: "ignore" })
-        
-        // Add files
-        if (files.length > 0) {
-          execSync(`git add ${files.join(" ")}`, { stdio: "ignore" })
-        } else {
-          execSync("git add -A", { stdio: "ignore" })
+      // Helper: Führe Git-Befehl sicher aus (mit Argument-Array, nicht String)
+      const execGit = async (args: string[], options: { cwd?: string } = {}): Promise<{ success: boolean; error?: string }> => {
+        return new Promise((resolve) => {
+          const gitProcess = spawn("git", args, {
+            stdio: "ignore",
+            cwd: options.cwd || process.cwd(),
+          })
+          
+          gitProcess.on("error", (error) => {
+            resolve({ success: false, error: error.message })
+          })
+          
+          gitProcess.on("close", (code) => {
+            resolve({ success: code === 0, error: code !== 0 ? `Exit code: ${code}` : undefined })
+          })
+        })
+      }
+      
+      // 1. Prüfe ob Git-Repository
+      const repoCheck = await execGit(["rev-parse", "--git-dir"])
+      if (!repoCheck.success) {
+        errors.push(`Nicht in Git-Repository: ${repoCheck.error}`)
+        return { success: false, errors }
+      }
+      
+      // 2. Validiere Inputs (zusätzliche Sicherheitsschicht)
+      const dangerousChars = [";", "|", "&", "`", "$", "(", ")", "<", ">", "\n", "\r"]
+      const hasDangerousChars = (str: string) => dangerousChars.some((char) => str.includes(char))
+      
+      // Validiere Commit-Message
+      if (hasDangerousChars(message)) {
+        errors.push("Commit-Message enthält ungültige Zeichen")
+        return { success: false, errors }
+      }
+      
+      // Validiere Dateipfade
+      const safeFiles = files.filter((file) => {
+        // Nur relative Pfade, keine absoluten oder gefährlichen Zeichen
+        if (
+          file.includes("..") ||
+          file.startsWith("/") ||
+          file.includes(":") ||
+          hasDangerousChars(file)
+        ) {
+          errors.push(`Ungültiger Dateipfad: ${file}`)
+          return false
         }
-        
-        // Commit
-        execSync(`git commit -m "${message}"`, { stdio: "ignore" })
-        
-        // Push (nur wenn remote konfiguriert)
-        try {
-          execSync("git push", { stdio: "ignore" })
-        } catch (pushError: any) {
+        return true
+      })
+      
+      if (errors.length > 0) {
+        return { success: false, errors }
+      }
+      
+      // 3. Add files - SICHER: Argument-Array (keine String-Interpolation)
+      if (safeFiles.length > 0) {
+        const addResult = await execGit(["add", "--", ...safeFiles])
+        if (!addResult.success) {
+          errors.push(`git add fehlgeschlagen: ${addResult.error}`)
+        }
+      } else {
+        const addAllResult = await execGit(["add", "-A"])
+        if (!addAllResult.success) {
+          errors.push(`git add -A fehlgeschlagen: ${addAllResult.error}`)
+        }
+      }
+      
+      // 4. Commit - SICHER: Argument-Array (keine String-Interpolation)
+      const commitResult = await execGit(["commit", "-m", message])
+      if (!commitResult.success) {
+        errors.push(`git commit fehlgeschlagen: ${commitResult.error}`)
+      }
+      
+      // 5. Push (nur wenn remote konfiguriert)
+      if (errors.length === 0) {
+        const pushResult = await execGit(["push"])
+        if (!pushResult.success) {
           // Push fehlgeschlagen (z.B. kein remote) - nicht kritisch
-          errors.push(`Push fehlgeschlagen: ${pushError.message}`)
+          errors.push(`Push fehlgeschlagen: ${pushResult.error}`)
         }
-      } catch (gitError: any) {
-        // Nicht in Git-Repository oder Git nicht verfügbar
-        errors.push(`Git-Operation fehlgeschlagen: ${gitError.message}`)
       }
     } catch (error: any) {
       errors.push(`Fehler bei Commit/Push: ${error.message}`)

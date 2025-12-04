@@ -360,6 +360,46 @@ Gib NUR den optimierten Prompt zurück, ohne zusätzliche Erklärungen.`
       }
       
       await fs.writeFile(promptFile, JSON.stringify(prompts, null, 2), "utf-8")
+      
+      // 2. Speichere in Supabase (wenn verfügbar)
+      try {
+        const { createClient } = await import("@/lib/supabase/client")
+        const supabase = createClient()
+        
+        // Prüfe ob documentation Tabelle existiert
+        const { error: tableError } = await supabase
+          .from("documentation")
+          .select("id")
+          .limit(1)
+        
+        if (!tableError || tableError.code !== "42P01") {
+          // Tabelle existiert, speichere dort
+          const { error: insertError } = await supabase
+            .from("documentation")
+            .insert({
+              category: "optimization-report",
+              author: "prompt-optimization-bot",
+              version: promptEntry.version.toString(),
+              summary: `Optimierter Prompt für ${botId}/${taskType} (Version ${promptEntry.version})`,
+              content: JSON.stringify(promptEntry, null, 2),
+              references: [],
+              change_history: [
+                {
+                  date: promptEntry.timestamp,
+                  author: "prompt-optimization-bot",
+                  changes: `Prompt optimiert: ${improvements.join(", ")}`,
+                },
+              ],
+            })
+          
+          if (insertError) {
+            console.warn("Fehler beim Speichern in Supabase:", insertError.message)
+          }
+        }
+      } catch (supabaseError: any) {
+        // Supabase nicht verfügbar, ignoriere Fehler
+        console.warn("Supabase-Speicherung nicht verfügbar:", supabaseError.message)
+      }
     } catch (error) {
       console.warn("Fehler beim Speichern des optimierten Prompts:", error)
       // Nicht kritisch - Prompt wird trotzdem zurückgegeben
