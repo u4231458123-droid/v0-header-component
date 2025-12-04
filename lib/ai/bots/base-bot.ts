@@ -11,8 +11,19 @@ import { botCommunicationManager, type BotAnswer } from "./bot-communication"
 import { errorRecoverySystem } from "@/lib/cicd/error-recovery"
 import { botMonitor } from "@/lib/cicd/bot-monitor"
 import { perfLogger, getCached, PerformanceTimer } from "@/lib/utils/performance"
-import { loadDocumentationForBot } from "@/lib/knowledge-base/documentation-api"
+import { loadDocumentationForBot, searchDocumentation, addDocumentation } from "@/lib/knowledge-base/documentation-api"
 import type { DocumentationCategory } from "@/lib/knowledge-base/documentation-templates"
+import {
+  loadInformationSources,
+  validateISTAnalysis,
+  determineAgentRole,
+  IST_ANALYSIS_REQUIREMENTS,
+  INFORMATION_SOURCES,
+} from "./agent-directives"
+import { getGitProtocol, type GitProtocolResult } from "./git-protocol"
+import { logError } from "@/lib/cicd/error-logger"
+import { promises as fs } from "fs"
+import path from "path"
 
 export interface BotTask {
   id: string
@@ -36,12 +47,19 @@ export abstract class BaseBot {
   protected knowledgeBase: any
   protected documentation: any[] = []
   protected aiClient: any
+  protected informationSources: {
+    codebase: any
+    planung: string
+    documentation: any[]
+  } | null = null
+  protected istAnalysisCompleted: Record<string, boolean> = {}
 
   constructor(botName: string, area: string) {
     this.botName = botName
     this.area = area
     this.loadKnowledgeBase()
     this.loadDocumentation()
+    this.loadInformationSources()
     this.initializeAIClient()
   }
 
@@ -289,24 +307,357 @@ export abstract class BaseBot {
   }
 
   /**
+   * Lade Informationen aus priorisierten Quellen
+   * OBLIGATORISCH: Muss vor jeder Aufgabe aufgerufen werden
+   */
+  protected async loadInformationSources(categories?: DocumentationCategory[]): Promise<void> {
+    try {
+      this.informationSources = await loadInformationSources(categories)
+      perfLogger.log(`[${this.botName}] Informationsquellen geladen`)
+    } catch (error) {
+      console.error(`[${this.botName}] Fehler beim Laden der Informationsquellen:`, error)
+      this.informationSources = {
+        codebase: null,
+        planung: "",
+        documentation: [],
+      }
+    }
+  }
+
+  /**
+   * Führe obligatorische IST-Analyse durch
+   * OBLIGATORISCH: Muss vor jeder neuen Aufgabe ausgeführt werden
+   */
+  protected async performMandatoryISTAnalysis(task: BotTask): Promise<{
+    valid: boolean
+    missing: string[]
+    results: Record<string, any>
+  }> {
+    const results: Record<string, any> = {}
+
+    // 1. Bestandsprüfung
+    try {
+      results.bestandspruefung = await this.checkIncompleteWork()
+      this.istAnalysisCompleted.bestandspruefung = true
+    } catch (error) {
+      results.bestandspruefung = { error: (error as Error).message }
+      this.istAnalysisCompleted.bestandspruefung = false
+    }
+
+    // 2. Fehlerdokumentation
+    try {
+      results.fehlerdokumentation = await this.documentAllErrors()
+      this.istAnalysisCompleted.fehlerdokumentation = true
+    } catch (error) {
+      results.fehlerdokumentation = { error: (error as Error).message }
+      this.istAnalysisCompleted.fehlerdokumentation = false
+    }
+
+    // 3. Abhängigkeitsanalyse
+    try {
+      results.abhaengigkeitsanalyse = await this.analyzeDependencies(task)
+      this.istAnalysisCompleted.abhaengigkeitsanalyse = true
+    } catch (error) {
+      results.abhaengigkeitsanalyse = { error: (error as Error).message }
+      this.istAnalysisCompleted.abhaengigkeitsanalyse = false
+    }
+
+    // 4. Konsolidierung
+    try {
+      results.konsolidierung = await this.consolidateTasks(task)
+      this.istAnalysisCompleted.konsolidierung = true
+    } catch (error) {
+      results.konsolidierung = { error: (error as Error).message }
+      this.istAnalysisCompleted.konsolidierung = false
+    }
+
+    // 5. Verifikation
+    try {
+      results.verifikation = await this.verifyGitStatus()
+      this.istAnalysisCompleted.verifikation = true
+    } catch (error) {
+      results.verifikation = { error: (error as Error).message }
+      this.istAnalysisCompleted.verifikation = false
+    }
+
+    const validation = validateISTAnalysis(this.istAnalysisCompleted)
+
+    return {
+      valid: validation.valid,
+      missing: validation.missing,
+      results,
+    }
+  }
+
+  /**
+   * Prüfe auf unvollständige Arbeiten
+   */
+  private async checkIncompleteWork(): Promise<{ incomplete: number; items: string[] }> {
+    // TODO: Implementierung mit WorkTracker
+    return { incomplete: 0, items: [] }
+  }
+
+  /**
+   * Dokumentiere alle Fehler
+   */
+  private async documentAllErrors(): Promise<{ documented: number }> {
+    // TODO: Implementierung mit error-logger
+    return { documented: 0 }
+  }
+
+  /**
+   * Analysiere Abhängigkeiten
+   */
+  private async analyzeDependencies(task: BotTask): Promise<{ dependencies: string[] }> {
+    // TODO: Implementierung
+    return { dependencies: [] }
+  }
+
+  /**
+   * Konsolidiere Tasks
+   */
+  private async consolidateTasks(task: BotTask): Promise<{ consolidated: boolean }> {
+    // TODO: Implementierung
+    return { consolidated: true }
+  }
+
+  /**
+   * Verifiziere Git-Status
+   */
+  private async verifyGitStatus(): Promise<{ clean: boolean; uncommitted: number }> {
+    try {
+      const gitProtocol = getGitProtocol()
+      const isClean = await gitProtocol.isClean()
+      const status = await gitProtocol.getStatus()
+      return {
+        clean: isClean,
+        uncommitted: status.hasChanges ? 1 : 0,
+      }
+    } catch (error) {
+      return { clean: false, uncommitted: 0 }
+    }
+  }
+
+  /**
+   * Führe Qualitätssicherungs-Pipeline aus
+   * HuggingFace -> GitHub Copilot -> Iteration
+   */
+  protected async executeQualityPipeline(code: string, filePath: string): Promise<{
+    passed: boolean
+    issues: Array<{ severity: string; message: string; line?: number }>
+    fixedCode?: string
+  }> {
+    // 1. HuggingFace für erste Analyse
+    let hfResult: any
+    try {
+      const hfPrompt = `Analysiere folgenden Code auf Fehler und Verbesserungen:\n\n${code}`
+      hfResult = await this.generateWithAI(hfPrompt, "code-analysis")
+    } catch (error) {
+      perfLogger.warn(`[${this.botName}] HuggingFace-Analyse fehlgeschlagen:`, error)
+      hfResult = null
+    }
+
+    // 2. Copilot für Code-Review
+    let copilotResult: any
+    try {
+      const { CopilotQualityBot } = await import("./copilot-quality-bot")
+      const copilotBot = new CopilotQualityBot()
+      copilotResult = await copilotBot.reviewCode(code, filePath, {
+        taskDescription: "Code-Review durch Quality-Pipeline",
+      })
+    } catch (error) {
+      perfLogger.warn(`[${this.botName}] Copilot-Review fehlgeschlagen:`, error)
+      copilotResult = { passed: false, issues: [] }
+    }
+
+    // 3. Iteration bis Production-Ready
+    let currentCode = code
+    let iteration = 0
+    const maxIterations = 5
+
+    while (!copilotResult.passed && iteration < maxIterations) {
+      iteration++
+      perfLogger.log(`[${this.botName}] Quality-Pipeline Iteration ${iteration}/${maxIterations}`)
+
+      // Wende Fixes an
+      if (copilotResult.fixes && copilotResult.fixes.length > 0) {
+        for (const fix of copilotResult.fixes) {
+          currentCode = currentCode.replace(fix.oldCode, fix.newCode)
+        }
+      }
+
+      // Erneutes Review
+      try {
+        const { CopilotQualityBot } = await import("./copilot-quality-bot")
+        const copilotBot = new CopilotQualityBot()
+        copilotResult = await copilotBot.reviewCode(currentCode, filePath)
+      } catch (error) {
+        break
+      }
+    }
+
+    return {
+      passed: copilotResult.passed || false,
+      issues: copilotResult.issues || [],
+      fixedCode: iteration > 0 ? currentCode : undefined,
+    }
+  }
+
+  /**
+   * Erzwinge Git-Protokoll nach Aufgabe
+   * OBLIGATORISCH: Muss nach jeder abgeschlossenen Aufgabe aufgerufen werden
+   */
+  protected async enforceGitProtocol(
+    task: BotTask,
+    description: string
+  ): Promise<GitProtocolResult> {
+    try {
+      const gitProtocol = getGitProtocol()
+      const agentRole = determineAgentRole(task.type)
+
+      const result = await gitProtocol.executeAfterTask({
+        agentRole,
+        taskId: task.id,
+        description,
+      })
+
+      if (!result.success) {
+        await logError({
+          type: "git-protocol",
+          severity: "high",
+          category: this.botName,
+          message: `Git-Protokoll fehlgeschlagen: ${result.errors?.join(", ")}`,
+          context: { taskId: task.id, agentRole },
+          botId: this.botName,
+        })
+      }
+
+      return result
+    } catch (error: any) {
+      await logError({
+        type: "git-protocol",
+        severity: "critical",
+        category: this.botName,
+        message: `Git-Protokoll Fehler: ${error.message}`,
+        context: { taskId: task.id },
+        botId: this.botName,
+      })
+
+      return {
+        success: false,
+        errors: [error.message],
+      }
+    }
+  }
+
+  /**
+   * Behandle Terminal-Fehler
+   * Sofort-Stop, Root-Cause-Analyse, Dokumentation
+   */
+  protected async handleTerminalError(
+    error: Error,
+    context: { task?: BotTask; command?: string }
+  ): Promise<{
+    handled: boolean
+    shouldStop: boolean
+    documented: boolean
+  }> {
+    // Sofortige Dokumentation
+    await logError({
+      type: "terminal-error",
+      severity: "critical",
+      category: this.botName,
+      message: `Terminal-Fehler: ${error.message}`,
+      context: {
+        taskId: context.task?.id,
+        command: context.command,
+        stack: error.stack,
+      },
+      botId: this.botName,
+    })
+
+    // Dokumentation in Documentation-API
+    try {
+      await addDocumentation({
+        metadata: {
+          category: "error-documentation",
+          author: this.botName,
+        },
+        content: {
+          content: `Terminal-Fehler aufgetreten: ${error.message}\n\nKontext: ${JSON.stringify(context, null, 2)}`,
+          summary: `Terminal-Fehler in ${this.botName}`,
+        },
+      })
+    } catch (docError) {
+      perfLogger.warn(`[${this.botName}] Fehler bei Dokumentation:`, docError)
+    }
+
+    return {
+      handled: true,
+      shouldStop: true, // Sofort-Stop bei Terminal-Fehlern
+      documented: true,
+    }
+  }
+
+  /**
    * Abstrakte Methode: Führe Aufgabe aus
    */
   abstract execute(task: BotTask): Promise<BotResponse>
 
   /**
    * Führe Aufgabe mit Error-Recovery und Monitoring aus
+   * Erweitert um obligatorische Workflow-Schritte
    */
   async executeWithRecovery(task: BotTask): Promise<BotResponse> {
     const timer = new PerformanceTimer()
     let retryCount = 0
     const maxRetries = 3
 
+    try {
+      // OBLIGATORISCH: IST-Analyse vor Aufgabe
+      perfLogger.log(`[${this.botName}] Führe obligatorische IST-Analyse durch...`)
+      const istAnalysis = await this.performMandatoryISTAnalysis(task)
+      
+      if (!istAnalysis.valid) {
+        perfLogger.warn(`[${this.botName}] IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`)
+        // Weiterführen, aber warnen
+      }
+
+      // OBLIGATORISCH: Lade Informationsquellen (falls noch nicht geladen)
+      if (!this.informationSources) {
+        await this.loadInformationSources()
+      }
+    } catch (error: any) {
+      // Terminal-Fehler behandeln
+      const errorHandling = await this.handleTerminalError(error, { task })
+      if (errorHandling.shouldStop) {
+        return {
+          success: false,
+          errors: [`Terminal-Fehler: ${error.message}`],
+          warnings: ["Aufgabe gestoppt aufgrund von Terminal-Fehler"],
+        }
+      }
+    }
+
     while (retryCount <= maxRetries) {
       try {
         timer.checkpoint("start")
+        
         // Führe Aufgabe aus
         const result = await this.execute(task)
         timer.checkpoint("end")
+        
+        // OBLIGATORISCH: Git-Protokoll nach erfolgreicher Aufgabe
+        if (result.success) {
+          try {
+            const gitResult = await this.enforceGitProtocol(task, result.result || task.description)
+            if (!gitResult.success) {
+              result.warnings = [...(result.warnings || []), `Git-Protokoll fehlgeschlagen: ${gitResult.errors?.join(", ")}`]
+            }
+          } catch (gitError: any) {
+            result.warnings = [...(result.warnings || []), `Git-Protokoll Fehler: ${gitError.message}`]
+          }
+        }
         
         // Erfasse Metriken (asynchron, blockiert nicht)
         const responseTime = timer.getElapsed()
@@ -321,6 +672,16 @@ export abstract class BaseBot {
 
         return result
       } catch (error: any) {
+        // Terminal-Fehler behandeln
+        const errorHandling = await this.handleTerminalError(error, { task })
+        if (errorHandling.shouldStop) {
+          return {
+            success: false,
+            errors: [`Terminal-Fehler: ${error.message}`],
+            warnings: ["Aufgabe gestoppt aufgrund von Terminal-Fehler"],
+          }
+        }
+
         // Error-Recovery
         const recoveryAction = await errorRecoverySystem.handleError(error, {
           botId: this.botName,

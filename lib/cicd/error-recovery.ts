@@ -6,6 +6,8 @@
 
 import { logError, getErrors, analyzeErrorPatterns } from "./error-logger"
 import { botMonitor } from "./bot-monitor"
+import { ERROR_HANDLING_RULES } from "@/lib/ai/bots/agent-directives"
+import { addDocumentation } from "@/lib/knowledge-base/documentation-api"
 
 export interface RecoveryAction {
   id: string
@@ -34,9 +36,35 @@ export class ErrorRecoverySystem {
 
   /**
    * Initialisiere Standard-Recovery-Strategien
+   * Erweitert um Terminal-, Build- und Runtime-Fehler
    */
   private initializeDefaultStrategies() {
     this.recoveryStrategies = [
+      // Terminal-Fehler: Sofort-Stop, Dokumentation, Root-Cause-Analyse
+      {
+        errorPattern: "terminal|command|exec|spawn|exit code",
+        action: "escalate",
+        maxRetries: 0, // Keine Retries bei Terminal-Fehlern
+      },
+      // Build-Fehler: Deployment-Blocker, alle Tasks stoppen
+      {
+        errorPattern: "build|compile|typescript|eslint|syntax error",
+        action: "escalate",
+        maxRetries: 0, // Keine Retries - muss sofort behoben werden
+      },
+      // Runtime-Fehler: Tracking, priorisierte Behebung
+      {
+        errorPattern: "runtime|uncaught|reference error|type error",
+        action: "escalate",
+        maxRetries: 1,
+      },
+      // Test-Failures: Deployment-Blocker, vor Commit beheben
+      {
+        errorPattern: "test.*fail|assertion.*fail|expect.*fail",
+        action: "escalate",
+        maxRetries: 0, // Keine Retries - muss vor Commit behoben werden
+      },
+      // Standard-Recovery-Strategien
       {
         errorPattern: "rate limit|429",
         action: "retry",
@@ -72,6 +100,7 @@ export class ErrorRecoverySystem {
 
   /**
    * Behandle Fehler mit Recovery-Mechanismus
+   * Erweitert um spezifische Behandlung für Terminal/Build/Runtime-Fehler
    */
   async handleError(
     error: Error,
@@ -80,9 +109,24 @@ export class ErrorRecoverySystem {
       taskId?: string
       filePath?: string
       retryCount?: number
+      errorType?: "terminal" | "build" | "runtime" | "test" | "other"
     }
   ): Promise<RecoveryAction> {
     const errorMessage = error.message.toLowerCase()
+    
+    // Spezifische Behandlung basierend auf Error-Type
+    if (context.errorType === "terminal") {
+      return await this.handleTerminalError(error, context)
+    }
+    if (context.errorType === "build") {
+      return await this.handleBuildError(error, context)
+    }
+    if (context.errorType === "runtime") {
+      return await this.handleRuntimeError(error, context)
+    }
+    if (context.errorType === "test") {
+      return await this.handleTestFailure(error, context)
+    }
     
     // Finde passende Recovery-Strategie
     const strategy = this.recoveryStrategies.find((s) =>
@@ -111,6 +155,197 @@ export class ErrorRecoverySystem {
       default:
         return await this.escalateError(error, context)
     }
+  }
+
+  /**
+   * Behandle Terminal-Fehler
+   * Sofortige Dokumentation, Root-Cause-Analyse, Behebung
+   */
+  private async handleTerminalError(
+    error: Error,
+    context: { botId: string; taskId?: string; filePath?: string }
+  ): Promise<RecoveryAction> {
+    // Sofortige Dokumentation
+    await logError({
+      type: "terminal-error",
+      severity: "critical",
+      category: "error-recovery",
+      message: `Terminal-Fehler: ${error.message}`,
+      context: {
+        botId: context.botId,
+        taskId: context.taskId,
+        filePath: context.filePath,
+        stack: error.stack,
+      },
+      botId: "error-recovery-system",
+    })
+
+    // Dokumentation in Documentation-API
+    try {
+      await addDocumentation({
+        metadata: {
+          category: "error-documentation",
+          author: "error-recovery-system",
+        },
+        content: {
+          content: `Terminal-Fehler aufgetreten: ${error.message}\n\nKontext: ${JSON.stringify(context, null, 2)}\n\nStack: ${error.stack}`,
+          summary: `Terminal-Fehler in ${context.botId}`,
+        },
+      })
+    } catch (docError) {
+      console.warn("Fehler bei Dokumentation:", docError)
+    }
+
+    // Root-Cause-Analyse
+    const rootCause = this.analyzeRootCause(error)
+
+    const recoveryAction: RecoveryAction = {
+      id: `recovery-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      timestamp: new Date().toISOString(),
+      errorId: error.message,
+      action: "escalate",
+      success: false,
+      message: `Terminal-Fehler: ${error.message}. Root-Cause: ${rootCause}. Sofort-Stop aktiviert.`,
+    }
+
+    this.recoveryHistory.push(recoveryAction)
+
+    return recoveryAction
+  }
+
+  /**
+   * Behandle Build-Fehler
+   * Deployment-Blocker, alle Tasks stoppen
+   */
+  private async handleBuildError(
+    error: Error,
+    context: { botId: string; taskId?: string; filePath?: string }
+  ): Promise<RecoveryAction> {
+    await logError({
+      type: "build-error",
+      severity: "critical",
+      category: "error-recovery",
+      message: `Build-Fehler: ${error.message}. Alle Tasks gestoppt.`,
+      context: {
+        botId: context.botId,
+        taskId: context.taskId,
+        filePath: context.filePath,
+      },
+      solution: "Build-Fehler muss sofort behoben werden - Deployment blockiert",
+      botId: "error-recovery-system",
+    })
+
+    const recoveryAction: RecoveryAction = {
+      id: `recovery-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      timestamp: new Date().toISOString(),
+      errorId: error.message,
+      action: "escalate",
+      success: false,
+      message: `Build-Fehler: ${error.message}. Alle Tasks gestoppt - Deployment blockiert.`,
+    }
+
+    this.recoveryHistory.push(recoveryAction)
+
+    return recoveryAction
+  }
+
+  /**
+   * Behandle Runtime-Fehler
+   * Tracking via Sentry/Logging, priorisierte Behebung
+   */
+  private async handleRuntimeError(
+    error: Error,
+    context: { botId: string; taskId?: string; filePath?: string }
+  ): Promise<RecoveryAction> {
+    await logError({
+      type: "runtime-error",
+      severity: "high",
+      category: "error-recovery",
+      message: `Runtime-Fehler: ${error.message}`,
+      context: {
+        botId: context.botId,
+        taskId: context.taskId,
+        filePath: context.filePath,
+        stack: error.stack,
+      },
+      solution: "Priorisierte Behebung erforderlich",
+      botId: "error-recovery-system",
+    })
+
+    // TODO: Sentry/Logging-Integration
+    // await sentry.captureException(error, { tags: { botId: context.botId } })
+
+    const recoveryAction: RecoveryAction = {
+      id: `recovery-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      timestamp: new Date().toISOString(),
+      errorId: error.message,
+      action: "escalate",
+      success: false,
+      message: `Runtime-Fehler: ${error.message}. Priorisierte Behebung erforderlich.`,
+    }
+
+    this.recoveryHistory.push(recoveryAction)
+
+    return recoveryAction
+  }
+
+  /**
+   * Behandle Test-Failures
+   * Deployment-Blocker, müssen vor Commit behoben werden
+   */
+  private async handleTestFailure(
+    error: Error,
+    context: { botId: string; taskId?: string; filePath?: string }
+  ): Promise<RecoveryAction> {
+    await logError({
+      type: "test-failure",
+      severity: "critical",
+      category: "error-recovery",
+      message: `Test-Failure: ${error.message}. Commit blockiert.`,
+      context: {
+        botId: context.botId,
+        taskId: context.taskId,
+        filePath: context.filePath,
+      },
+      solution: "Test-Failure muss vor Commit behoben werden",
+      botId: "error-recovery-system",
+    })
+
+    const recoveryAction: RecoveryAction = {
+      id: `recovery-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      timestamp: new Date().toISOString(),
+      errorId: error.message,
+      action: "escalate",
+      success: false,
+      message: `Test-Failure: ${error.message}. Commit blockiert - muss vor Commit behoben werden.`,
+    }
+
+    this.recoveryHistory.push(recoveryAction)
+
+    return recoveryAction
+  }
+
+  /**
+   * Analysiere Root-Cause
+   */
+  private analyzeRootCause(error: Error): string {
+    const errorMessage = error.message.toLowerCase()
+    const stack = error.stack?.toLowerCase() || ""
+
+    if (errorMessage.includes("command not found") || errorMessage.includes("not recognized")) {
+      return "Command nicht gefunden - möglicherweise fehlende Installation oder falscher Pfad"
+    }
+    if (errorMessage.includes("permission denied") || errorMessage.includes("access denied")) {
+      return "Berechtigungsfehler - möglicherweise fehlende Rechte"
+    }
+    if (errorMessage.includes("timeout") || errorMessage.includes("timed out")) {
+      return "Timeout-Fehler - möglicherweise zu lange Ausführungszeit oder Netzwerkproblem"
+    }
+    if (stack.includes("spawn") || stack.includes("exec")) {
+      return "Prozess-Start-Fehler - möglicherweise fehlende Umgebungsvariablen oder falsche Konfiguration"
+    }
+
+    return "Unbekannte Root-Cause - weitere Analyse erforderlich"
   }
 
   /**

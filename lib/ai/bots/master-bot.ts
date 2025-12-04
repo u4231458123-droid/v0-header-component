@@ -15,6 +15,8 @@ import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
 import { validateSupabaseProject, validateSchemaTables, checkSecurityAdvisors } from "./mcp-integration"
 import { promises as fs } from "fs"
 import path from "path"
+import { AGENT_SPECIALIZATIONS, determineAgentRole, PARALLEL_TRACKS } from "./agent-directives"
+import type { BotTask, BotResponse } from "./base-bot"
 
 export interface ChangeRequest {
   id: string
@@ -89,7 +91,7 @@ export class MasterBot {
     this.changeManager = new SystemwideChangeManager()
     this.workTracker = new WorkTracker()
     
-    // Definiere Bot-Spezialisierungen
+    // Definiere Bot-Spezialisierungen (erweitert mit Agent-Rollen)
     this.botSpecializations.set("system-bot", [
       "code-analysis",
       "bug-fix",
@@ -115,6 +117,38 @@ export class MasterBot {
       "wiki-update",
       "changelog",
       "error-documentation",
+    ])
+    
+    // Erweiterte Agent-Rollen aus AGENT_SPECIALIZATIONS
+    this.botSpecializations.set("backend-agent", [
+      "api",
+      "database",
+      "server-components",
+      "migrations",
+    ])
+    this.botSpecializations.set("frontend-agent", [
+      "ui",
+      "ux",
+      "components",
+      "styling",
+    ])
+    this.botSpecializations.set("testing-agent", [
+      "unit",
+      "integration",
+      "e2e",
+      "coverage",
+    ])
+    this.botSpecializations.set("documentation-agent", [
+      "docs",
+      "api-docs",
+      "changelogs",
+      "wiki",
+    ])
+    this.botSpecializations.set("devops-agent", [
+      "deployment",
+      "ci-cd",
+      "monitoring",
+      "infrastructure",
     ])
   }
 
@@ -584,6 +618,168 @@ export class MasterBot {
     return {
       valid: allViolations.length === 0,
       violations: allViolations,
+    }
+  }
+
+  /**
+   * Delegiere Aufgabe an spezialisierten Agenten
+   * Rollenbasierte Aufgabenzuteilung
+   */
+  async delegateToSpecializedAgent(
+    task: BotTask
+  ): Promise<{
+    assignedAgent: string
+    role: string
+    success: boolean
+    error?: string
+  }> {
+    // Bestimme Agent-Rolle basierend auf Task-Typ
+    const role = determineAgentRole(task.type)
+    const agentConfig = AGENT_SPECIALIZATIONS.ROLES[role as keyof typeof AGENT_SPECIALIZATIONS.ROLES]
+
+    if (!agentConfig) {
+      return {
+        assignedAgent: "system-bot",
+        role: "system-bot",
+        success: false,
+        error: `Keine Spezialisierung für Task-Typ: ${task.type}`,
+      }
+    }
+
+    // Finde passenden Bot basierend auf Spezialisierung
+    let assignedAgent = "system-bot" // Fallback
+
+    // Prüfe Bot-Spezialisierungen
+    for (const [botId, specializations] of this.botSpecializations.entries()) {
+      if (agentConfig.responsibilities.some((resp) => specializations.includes(resp))) {
+        assignedAgent = botId
+        break
+      }
+    }
+
+    // Dokumentiere Delegation
+    await logError({
+      type: "task-assignment",
+      severity: "low",
+      category: "master-bot",
+      message: `Task "${task.type}" delegiert an ${assignedAgent} (Rolle: ${role})`,
+      context: { taskId: task.id, taskType: task.type, role, assignedAgent },
+      botId: "master-bot",
+    })
+
+    return {
+      assignedAgent,
+      role,
+      success: true,
+    }
+  }
+
+  /**
+   * Orchestriere parallele Tracks
+   * Track 1: QA & Bugfixing, Track 2: Features, Track 3: Optimization
+   */
+  async orchestrateParallelTracks(tasks: BotTask[]): Promise<{
+    track1: { tasks: BotTask[]; status: string }
+    track2: { tasks: BotTask[]; status: string }
+    track3: { tasks: BotTask[]; status: string }
+  }> {
+    const track1: BotTask[] = [] // QA & Bugfixing
+    const track2: BotTask[] = [] // Feature-Completion
+    const track3: BotTask[] = [] // Workflow-Optimization
+
+    // Kategorisiere Tasks nach Tracks
+    for (const task of tasks) {
+      const taskLower = task.type.toLowerCase()
+      if (
+        taskLower.includes("quality") ||
+        taskLower.includes("bug") ||
+        taskLower.includes("fix") ||
+        taskLower.includes("test")
+      ) {
+        track1.push(task)
+      } else if (
+        taskLower.includes("feature") ||
+        taskLower.includes("implement") ||
+        taskLower.includes("add")
+      ) {
+        track2.push(task)
+      } else if (
+        taskLower.includes("optimize") ||
+        taskLower.includes("refactor") ||
+        taskLower.includes("improve")
+      ) {
+        track3.push(task)
+      } else {
+        // Standard: Track 2 (Features)
+        track2.push(task)
+      }
+    }
+
+    return {
+      track1: { tasks: track1, status: "ready" },
+      track2: { tasks: track2, status: "ready" },
+      track3: { tasks: track3, status: "ready" },
+    }
+  }
+
+  /**
+   * Validiere Agent-Compliance
+   * Prüft ob alle Agenten ihre Vorgaben befolgen
+   */
+  async validateAgentCompliance(agentId: string): Promise<{
+    compliant: boolean
+    violations: Array<{ type: string; message: string; severity: string }>
+  }> {
+    const violations: Array<{ type: string; message: string; severity: string }> = []
+
+    // Prüfe ob Agent Knowledge-Base lädt
+    const agentWork = await this.workTracker.getCurrentWorkForBot(agentId)
+    if (agentWork.length === 0) {
+      violations.push({
+        type: "compliance",
+        message: `Agent ${agentId} hat keine aktuellen Arbeiten dokumentiert`,
+        severity: "medium",
+      })
+    }
+
+    // Prüfe ob Agent Vorgaben befolgt (vereinfacht)
+    // TODO: Erweiterte Prüfung gegen agent-directives
+
+    return {
+      compliant: violations.length === 0,
+      violations,
+    }
+  }
+
+  /**
+   * Erzwinge Zero-User-Intervention
+   * Stellt sicher, dass alle Tasks autonom ausgeführt werden können
+   */
+  async enforceZeroUserIntervention(task: BotTask): Promise<{
+    autonomous: boolean
+    blockers: string[]
+  }> {
+    const blockers: string[] = []
+
+    // Prüfe ob Task vollständig definiert ist
+    if (!task.description || task.description.trim() === "") {
+      blockers.push("Task-Beschreibung fehlt")
+    }
+
+    // Prüfe ob alle notwendigen Informationen verfügbar sind
+    if (!task.context && task.area === "unknown") {
+      blockers.push("Task-Kontext unvollständig")
+    }
+
+    // Prüfe ob Task autonom ausführbar ist
+    const taskLower = task.type.toLowerCase()
+    if (taskLower.includes("user-input") || taskLower.includes("manual")) {
+      blockers.push("Task erfordert User-Intervention")
+    }
+
+    return {
+      autonomous: blockers.length === 0,
+      blockers,
     }
   }
 

@@ -3,9 +3,27 @@
  * ========================
  * Automatische Integration des QualityBots in alle Code-Änderungen
  * Wird automatisch bei jedem File-Edit aufgerufen
+ * Erweitert um HuggingFace + Copilot Pipeline
  */
 
 import { autoCheckCode, autoCheckAndSave, type AutoFixResult } from "./auto-quality-checker"
+import { QUALITY_ASSURANCE_PIPELINE } from "./agent-directives"
+import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
+import { perfLogger } from "@/lib/utils/performance"
+
+export interface QualityResult {
+  passed: boolean
+  issues: Array<{
+    severity: "error" | "warning" | "suggestion"
+    message: string
+    line?: number
+    suggestion?: string
+  }>
+  fixedCode?: string
+  iterations: number
+  hfAnalysis?: string
+  copilotReview?: any
+}
 
 /**
  * Wrapper für Code-Änderungen mit automatischer Quality-Prüfung
