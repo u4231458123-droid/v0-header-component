@@ -13,6 +13,7 @@ import { de } from "date-fns/locale"
 import Link from "next/link"
 import { CustomerHelpBot } from "@/components/ai/CustomerHelpBot"
 import { safeNumber } from "@/lib/utils/safe-number"
+import { toast } from "sonner"
 
 export const dynamic = "force-dynamic"
 
@@ -392,6 +393,207 @@ export default function CustomerPortalPage() {
     window.location.href = "/"
   }
 
+  // PDF-Beleg für eine Buchung generieren und herunterladen
+  const handleDownloadReceipt = async (booking: Booking) => {
+    try {
+      toast.success("Beleg wird erstellt...", {
+        description: "Das Dokument öffnet sich in einem neuen Fenster.",
+        duration: 3000,
+      })
+      
+      // Erzeuge ein einfaches HTML-Dokument für den Beleg
+      const receiptHTML = `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+          <meta charset="UTF-8">
+          <title>Fahrbeleg - ${format(new Date(booking.pickup_time), "dd.MM.yyyy", { locale: de })}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+            .header { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+            .header h1 { margin: 0; color: #1a365d; }
+            .company { font-size: 14px; color: #666; margin-top: 5px; }
+            .section { margin: 20px 0; }
+            .label { font-weight: bold; color: #555; font-size: 12px; text-transform: uppercase; }
+            .value { font-size: 16px; margin-top: 5px; }
+            .route { background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0; }
+            .route-point { display: flex; align-items: flex-start; margin: 10px 0; }
+            .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; margin-top: 4px; }
+            .dot.start { background: #22c55e; }
+            .dot.end { background: #ef4444; }
+            .total { background: #1a365d; color: white; padding: 15px; border-radius: 8px; text-align: right; font-size: 20px; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; text-align: center; }
+            @media print { body { margin: 20px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Fahrbeleg</h1>
+            <div class="company">${booking.company?.name || "MyDispatch"}</div>
+          </div>
+          
+          <div class="section">
+            <div class="label">Datum & Uhrzeit</div>
+            <div class="value">${format(new Date(booking.pickup_time), "EEEE, dd. MMMM yyyy 'um' HH:mm 'Uhr'", { locale: de })}</div>
+          </div>
+          
+          <div class="route">
+            <div class="route-point">
+              <div class="dot start"></div>
+              <div>
+                <div class="label">Abholung</div>
+                <div class="value">${booking.pickup_address}</div>
+              </div>
+            </div>
+            <div class="route-point">
+              <div class="dot end"></div>
+              <div>
+                <div class="label">Ziel</div>
+                <div class="value">${booking.dropoff_address}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="label">Passagiere</div>
+            <div class="value">${booking.passengers} Person(en)</div>
+          </div>
+          
+          ${booking.driver ? `
+          <div class="section">
+            <div class="label">Fahrer</div>
+            <div class="value">${booking.driver.first_name} ${booking.driver.last_name || ""}</div>
+          </div>
+          ` : ""}
+          
+          <div class="total">
+            Gesamtbetrag: ${safeNumber(booking.price).toFixed(2)} €
+          </div>
+          
+          <div class="footer">
+            <p>Vielen Dank für Ihre Buchung!</p>
+            <p>Erstellt am ${format(new Date(), "dd.MM.yyyy 'um' HH:mm 'Uhr'", { locale: de })}</p>
+          </div>
+        </body>
+        </html>
+      `
+      
+      // Öffne ein neues Fenster mit dem Beleg und starte den Druck
+      const printWindow = window.open("", "_blank")
+      if (printWindow) {
+        printWindow.document.write(receiptHTML)
+        printWindow.document.close()
+        setTimeout(() => {
+          printWindow.print()
+        }, 250)
+      } else {
+        toast.error("Popup-Blocker aktiv", {
+          description: "Bitte erlauben Sie Popups für diese Seite.",
+          duration: 5000,
+        })
+      }
+    } catch (error) {
+      console.error("Error generating receipt:", error)
+      toast.error("Fehler beim Erstellen des Belegs", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
+    }
+  }
+
+  // PDF-Rechnung herunterladen
+  const handleDownloadInvoice = async (invoice: Invoice) => {
+    try {
+      toast.success("Rechnung wird geladen...", {
+        description: "Das Dokument öffnet sich in einem neuen Fenster.",
+        duration: 3000,
+      })
+      
+      // Erzeuge ein einfaches HTML-Dokument für die Rechnung
+      const invoiceHTML = `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+          <meta charset="UTF-8">
+          <title>Rechnung ${invoice.invoice_number}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+            .header { border-bottom: 2px solid #1a365d; padding-bottom: 20px; margin-bottom: 30px; }
+            .header h1 { margin: 0; color: #1a365d; }
+            .invoice-number { font-size: 14px; color: #666; margin-top: 5px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0; }
+            .section { margin: 20px 0; }
+            .label { font-weight: bold; color: #555; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
+            .value { font-size: 16px; }
+            .status { display: inline-block; padding: 5px 12px; border-radius: 4px; font-size: 14px; font-weight: bold; }
+            .status.paid { background: #dcfce7; color: #166534; }
+            .status.open { background: #fef3c7; color: #92400e; }
+            .amount-box { background: #1a365d; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 30px 0; }
+            .amount { font-size: 32px; font-weight: bold; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+            @media print { body { margin: 20px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Rechnung</h1>
+            <div class="invoice-number">${invoice.invoice_number}</div>
+          </div>
+          
+          <div class="info-grid">
+            <div class="section">
+              <div class="label">Rechnungsdatum</div>
+              <div class="value">${format(new Date(invoice.created_at), "dd. MMMM yyyy", { locale: de })}</div>
+            </div>
+            <div class="section">
+              <div class="label">Fälligkeitsdatum</div>
+              <div class="value">${format(new Date(invoice.due_date), "dd. MMMM yyyy", { locale: de })}</div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="label">Status</div>
+            <span class="status ${invoice.status === "paid" ? "paid" : "open"}">
+              ${invoice.status === "paid" ? "Bezahlt" : "Offen"}
+            </span>
+          </div>
+          
+          <div class="amount-box">
+            <div class="label" style="color: rgba(255,255,255,0.8);">Rechnungsbetrag</div>
+            <div class="amount">${safeNumber(invoice.amount).toFixed(2)} €</div>
+          </div>
+          
+          <div class="footer">
+            <p>Bei Fragen zu dieser Rechnung wenden Sie sich bitte an unseren Kundenservice.</p>
+            <p>Erstellt am ${format(new Date(), "dd.MM.yyyy 'um' HH:mm 'Uhr'", { locale: de })}</p>
+          </div>
+        </body>
+        </html>
+      `
+      
+      // Öffne ein neues Fenster mit der Rechnung und starte den Druck
+      const printWindow = window.open("", "_blank")
+      if (printWindow) {
+        printWindow.document.write(invoiceHTML)
+        printWindow.document.close()
+        setTimeout(() => {
+          printWindow.print()
+        }, 250)
+      } else {
+        toast.error("Popup-Blocker aktiv", {
+          description: "Bitte erlauben Sie Popups für diese Seite.",
+          duration: 5000,
+        })
+      }
+    } catch (error) {
+      console.error("Error generating invoice PDF:", error)
+      toast.error("Fehler beim Laden der Rechnung", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -566,7 +768,12 @@ export default function CustomerPortalPage() {
                             <MessageSquareIcon className="h-4 w-4 mr-1" />
                             Feedback geben
                           </Button>
-                          <Button variant="ghost" size="sm" className="text-muted-foreground">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-muted-foreground"
+                            onClick={() => handleDownloadReceipt(booking)}
+                          >
                             <DownloadIcon className="h-4 w-4 mr-1" />
                             Beleg
                           </Button>
@@ -611,7 +818,11 @@ export default function CustomerPortalPage() {
                         </div>
                       </div>
                       <div className="mt-3 flex justify-end">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDownloadInvoice(invoice)}
+                        >
                           <DownloadIcon className="h-4 w-4 mr-1" />
                           PDF herunterladen
                         </Button>

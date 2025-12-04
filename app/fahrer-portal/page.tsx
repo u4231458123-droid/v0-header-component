@@ -81,6 +81,21 @@ interface Message {
   read_at: string | null
 }
 
+interface CompletedBooking {
+  id: string
+  pickup_address: string
+  dropoff_address: string
+  pickup_time: string
+  completed_at: string
+  status: string
+  passengers: number
+  price: number
+  customer: {
+    first_name: string
+    last_name: string
+  } | null
+}
+
 interface Driver {
   id: string
   first_name: string
@@ -102,6 +117,7 @@ export default function FahrerPortalPage() {
   const [driver, setDriver] = useState<Driver | null>(null)
   const [currentShift, setCurrentShift] = useState<DriverShift | null>(null)
   const [pendingBookings, setPendingBookings] = useState<Booking[]>([])
+  const [completedBookings, setCompletedBookings] = useState<CompletedBooking[]>([])
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
@@ -112,6 +128,7 @@ export default function FahrerPortalPage() {
   const [showStartBreakDialog, setShowStartBreakDialog] = useState(false)
   const [showEndBreakDialog, setShowEndBreakDialog] = useState(false)
   const [showEndShiftDialog, setShowEndShiftDialog] = useState(false)
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   const primaryColor = "#343f60"
 
@@ -259,11 +276,17 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(data)
-        toast.success("Schicht erfolgreich gestartet")
+        toast.success("Schicht erfolgreich gestartet", {
+          description: "Sie können jetzt Fahrten annehmen.",
+          duration: 4000,
+        })
       }
     } catch (error: any) {
       console.error("Error starting shift:", error)
-      toast.error("Fehler beim Starten der Schicht")
+      toast.error("Fehler beim Starten der Schicht", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setShowStartShiftDialog(false)
     }
@@ -289,11 +312,17 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(data)
-        toast.success("Pause gestartet")
+        toast.success("Pause gestartet", {
+          description: "Vergessen Sie nicht, die Pause zu beenden.",
+          duration: 4000,
+        })
       }
     } catch (error: any) {
       console.error("Error starting break:", error)
-      toast.error("Fehler beim Starten der Pause")
+      toast.error("Fehler beim Starten der Pause", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setShowStartBreakDialog(false)
     }
@@ -330,11 +359,17 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(data)
-        toast.success("Pause beendet")
+        toast.success("Pause beendet", {
+          description: "Willkommen zurück! Sie können wieder Fahrten annehmen.",
+          duration: 4000,
+        })
       }
     } catch (error: any) {
       console.error("Error ending break:", error)
-      toast.error("Fehler beim Beenden der Pause")
+      toast.error("Fehler beim Beenden der Pause", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setShowEndBreakDialog(false)
     }
@@ -376,11 +411,17 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(null)
-        toast.success("Schicht erfolgreich beendet")
+        toast.success("Schicht erfolgreich beendet", {
+          description: "Ihre Arbeitszeit wurde protokolliert. Gute Erholung!",
+          duration: 4000,
+        })
       }
     } catch (error: any) {
       console.error("Error ending shift:", error)
-      toast.error("Fehler beim Beenden der Schicht")
+      toast.error("Fehler beim Beenden der Schicht", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setShowEndShiftDialog(false)
     }
@@ -437,6 +478,47 @@ export default function FahrerPortalPage() {
       loadDriverData()
     }
   }
+
+  // Lade abgeschlossene Fahrten für den Verlauf-Tab
+  const loadCompletedBookings = async () => {
+    if (!driver) return
+
+    setLoadingHistory(true)
+    try {
+      const { data, error } = await supabase
+        .from("bookings")
+        .select(`
+          id,
+          pickup_address,
+          dropoff_address,
+          pickup_time,
+          completed_at,
+          status,
+          passengers,
+          price,
+          customer:customers(first_name, last_name)
+        `)
+        .eq("driver_id", driver.id)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(50)
+
+      if (!error && data) {
+        setCompletedBookings(data as CompletedBooking[])
+      }
+    } catch (error) {
+      console.error("Error loading completed bookings:", error)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
+
+  // Lade Fahrtenverlauf wenn Tab gewechselt wird
+  useEffect(() => {
+    if (activeTab === "verlauf" && driver && completedBookings.length === 0) {
+      loadCompletedBookings()
+    }
+  }, [activeTab, driver])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -978,15 +1060,99 @@ export default function FahrerPortalPage() {
           {/* Verlauf Tab */}
           <TabsContent value="verlauf">
             <Card>
-              <CardHeader>
-                <CardTitle>Fahrtenverlauf</CardTitle>
-                <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Fahrtenverlauf</CardTitle>
+                  <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={loadCompletedBookings}
+                  disabled={loadingHistory}
+                  className="bg-transparent"
+                >
+                  {loadingHistory ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  ) : (
+                    "Aktualisieren"
+                  )}
+                </Button>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-slate-500">
-                  <Car className="h-12 w-12 mx-auto mb-4 opacity-30" />
-                  <p>Keine abgeschlossenen Fahrten</p>
-                </div>
+                {loadingHistory ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  </div>
+                ) : completedBookings.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Car className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                    <p>Keine abgeschlossenen Fahrten</p>
+                    <p className="text-sm mt-1">Hier erscheinen Ihre abgeschlossenen Aufträge</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {completedBookings.map((booking) => (
+                      <div key={booking.id} className="border rounded-lg p-4 bg-muted/30">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">
+                              {format(new Date(booking.pickup_time), "dd. MMMM yyyy", { locale: de })}
+                            </span>
+                            <Clock className="h-4 w-4 text-muted-foreground ml-2" />
+                            <span>{format(new Date(booking.pickup_time), "HH:mm", { locale: de })} Uhr</span>
+                          </div>
+                          <Badge className="bg-green-600 hover:bg-green-700">Abgeschlossen</Badge>
+                        </div>
+
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-green-500 mt-0.5" />
+                            <span className="text-sm">{booking.pickup_address}</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-red-500 mt-0.5" />
+                            <span className="text-sm">{booking.dropoff_address}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t">
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            {booking.customer && (
+                              <div className="flex items-center gap-1">
+                                <User className="h-4 w-4" />
+                                <span>
+                                  {booking.customer.first_name} {booking.customer.last_name}
+                                </span>
+                              </div>
+                            )}
+                            {booking.passengers && <span>{booking.passengers} Passagier(e)</span>}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-foreground">
+                              {safeNumber(booking.price).toFixed(2)} EUR
+                            </span>
+                          </div>
+                        </div>
+
+                        {booking.completed_at && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Abgeschlossen: {format(new Date(booking.completed_at), "dd.MM.yyyy HH:mm", { locale: de })} Uhr
+                          </p>
+                        )}
+                      </div>
+                    ))}
+
+                    {completedBookings.length > 0 && (
+                      <div className="text-center pt-4 border-t">
+                        <p className="text-sm text-muted-foreground">
+                          {completedBookings.length} abgeschlossene {completedBookings.length === 1 ? "Fahrt" : "Fahrten"} angezeigt
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
