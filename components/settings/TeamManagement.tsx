@@ -691,7 +691,7 @@ export function TeamManagement({
                   return (
                     <div
                       key={entry.id}
-                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors"
                     >
                       <div className={`mt-0.5 ${colorClass}`}>
                         <IconComponent className="w-4 h-4" />
