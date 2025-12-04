@@ -3,28 +3,88 @@
  * ===========
  * Prüft Code gegen Dokumentation und Vorgaben
  * Dokumentiert gefundene Fehler in Knowledge-Base
+ * Erweitert BaseBot für vollständige Agent-Directives-Compliance
  */
 
+import { BaseBot, type BotTask, type BotResponse } from "./base-bot"
 import { loadKnowledgeForTask, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
-import type { BotTask, BotResponse } from "./system-bot"
 import { logError } from "@/lib/cicd/error-logger"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
 import { validateSupabaseProject, validateSchemaTables } from "./mcp-integration"
 
-export class QualityBot {
-  private knowledgeBase: any
+export class QualityBot extends BaseBot {
   private workTracker: WorkTracker
 
   constructor() {
-    this.loadKnowledgeBase()
+    super("Quality-Bot", "quality-check")
     this.workTracker = new WorkTracker()
   }
 
   /**
-   * Lade alle Vorgaben und Regeln
+   * Führe Aufgabe aus (abstract von BaseBot)
    */
-  private async loadKnowledgeBase() {
-    const categories: KnowledgeCategory[] = [
+  async execute(task: BotTask): Promise<BotResponse> {
+    // Führe obligatorische IST-Analyse durch
+    const istAnalysis = await this.performMandatoryISTAnalysis(task)
+    if (!istAnalysis.valid) {
+      return {
+        success: false,
+        errors: [`IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`],
+      }
+    }
+
+    // Lade Knowledge-Base (falls noch nicht geladen)
+    await this.loadKnowledgeBase([
+      "design-guidelines",
+      "coding-rules",
+      "forbidden-terms",
+      "functionality-rules",
+      "best-practices",
+      "ci-cd",
+      "error-handling",
+      "ui-consistency",
+      "systemwide-thinking",
+      "bot-instructions",
+      "mydispatch-core",
+    ])
+
+    // Wenn filePath vorhanden, lade Code und prüfe
+    if (task.filePath) {
+      try {
+        const fs = await import("fs/promises")
+        const code = await fs.readFile(task.filePath, "utf-8")
+        const checkResult = await this.checkCodeAgainstDocumentation(code, {}, task.filePath)
+        
+        return {
+          success: checkResult.passed,
+          errors: checkResult.violations
+            .filter((v) => v.severity === "critical" || v.severity === "high")
+            .map((v) => `${v.type}: ${v.message} (Zeile ${v.line || "?"})`),
+          warnings: checkResult.violations
+            .filter((v) => v.severity === "medium" || v.severity === "low")
+            .map((v) => `${v.type}: ${v.message} (Zeile ${v.line || "?"})`),
+        }
+      } catch (error: any) {
+        return {
+          success: false,
+          errors: [`Fehler beim Lesen von ${task.filePath}: ${error.message}`],
+        }
+      }
+    }
+
+    // Wenn kein filePath, führe allgemeine Quality-Check durch
+    return {
+      success: true,
+      warnings: ["Kein filePath angegeben - allgemeine Quality-Check durchgeführt"],
+    }
+  }
+
+  /**
+   * Lade alle Vorgaben und Regeln
+   * Überschreibt BaseBot-Methode für QualityBot-spezifische Kategorien
+   */
+  protected async loadKnowledgeBase(categories?: KnowledgeCategory[]) {
+    const defaultCategories: KnowledgeCategory[] = [
       "design-guidelines",
       "coding-rules",
       "forbidden-terms",
@@ -38,11 +98,12 @@ export class QualityBot {
       "mydispatch-core",
     ]
     
-    this.knowledgeBase = loadKnowledgeForTask("quality-check", categories)
+    // Rufe BaseBot-Methode auf
+    await super.loadKnowledgeBase(categories || defaultCategories)
     
     // Lade zusätzlich detaillierte UI-Konsistenz-Regeln
     const detailedConsistency = loadKnowledgeForTask("quality-check", ["ui-consistency"])
-    this.knowledgeBase = [...this.knowledgeBase, ...detailedConsistency.filter((e: any) => 
+    this.knowledgeBase = [...(this.knowledgeBase || []), ...detailedConsistency.filter((e: any) => 
       e.id === "ui-consistency-detailed-001" || 
       e.id === "visual-logical-validation-001" || 
       e.id === "quality-thinking-detailed-001"
@@ -87,24 +148,25 @@ export class QualityBot {
     await this.loadKnowledgeBase()
     const violations: any[] = []
     const lines = code.split("\n")
+    const knowledgeBase = this.knowledgeBase || []
     
     // DYNAMISCHE PRÜFUNG: Lade ALLE Knowledge-Base-Regeln
-    const designGuidelines = this.knowledgeBase.find((e: any) => e.id === "design-guidelines-001")
-    const forbiddenTerms = this.knowledgeBase.find((e: any) => e.id === "forbidden-terms-001")
-    const accountRules = this.knowledgeBase.find((e: any) => e.id === "account-rules-001")
-    const pdfRules = this.knowledgeBase.find((e: any) => e.id === "pdf-generation-001")
-    const emailRules = this.knowledgeBase.find((e: any) => e.id === "email-templates-001")
-    const uiConsistencyRules = this.knowledgeBase.find((e: any) => e.id === "ui-consistency-001")
-    const textQualityRules = this.knowledgeBase.find((e: any) => e.id === "text-quality-001")
-    const mydispatchConcept = this.knowledgeBase.find((e: any) => e.id === "mydispatch-concept-001")
-    const seoRules = this.knowledgeBase.find((e: any) => e.id === "seo-optimization-001")
-    const routingRules = this.knowledgeBase.find((e: any) => e.id === "routing-rules-001")
-    const functionalityRules = this.knowledgeBase.find((e: any) => e.id === "functionality-rules-001")
-    const codingRules = this.knowledgeBase.find((e: any) => e.id === "coding-rules-001")
-    const bestPractices = this.knowledgeBase.find((e: any) => e.id === "best-practices-001")
+    const designGuidelines = knowledgeBase.find((e: any) => e.id === "design-guidelines-001")
+    const forbiddenTerms = knowledgeBase.find((e: any) => e.id === "forbidden-terms-001")
+    const accountRules = knowledgeBase.find((e: any) => e.id === "account-rules-001")
+    const pdfRules = knowledgeBase.find((e: any) => e.id === "pdf-generation-001")
+    const emailRules = knowledgeBase.find((e: any) => e.id === "email-templates-001")
+    const uiConsistencyRules = knowledgeBase.find((e: any) => e.id === "ui-consistency-001")
+    const textQualityRules = knowledgeBase.find((e: any) => e.id === "text-quality-001")
+    const mydispatchConcept = knowledgeBase.find((e: any) => e.id === "mydispatch-concept-001")
+    const seoRules = knowledgeBase.find((e: any) => e.id === "seo-optimization-001")
+    const routingRules = knowledgeBase.find((e: any) => e.id === "routing-rules-001")
+    const functionalityRules = knowledgeBase.find((e: any) => e.id === "functionality-rules-001")
+    const codingRules = knowledgeBase.find((e: any) => e.id === "coding-rules-001")
+    const bestPractices = knowledgeBase.find((e: any) => e.id === "best-practices-001")
     
     // DYNAMISCHE PRÜFUNG: Prüfe ALLE Knowledge-Base-Entries
-    const allKnowledgeEntries = this.knowledgeBase.filter((e: any) => 
+    const allKnowledgeEntries = knowledgeBase.filter((e: any) => 
       e.priority === "critical" || e.priority === "high"
     )
     

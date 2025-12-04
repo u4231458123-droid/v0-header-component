@@ -6,8 +6,10 @@
  * - Support-Bot Wissen
  * - Prüfungsergebnissen
  * - Aktuellen Daten und Dokumentationen
+ * Erweitert BaseBot für vollständige Agent-Directives-Compliance
  */
 
+import { BaseBot, type BotTask, type BotResponse } from "./base-bot"
 import { loadKnowledgeForTask, generatePromptWithKnowledge, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { getHuggingFaceClient } from "@/lib/ai/huggingface"
 import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
@@ -27,20 +29,67 @@ export interface PromptOptimization {
   }
 }
 
-export class PromptOptimizationBot {
-  private knowledgeBase: any
+export class PromptOptimizationBot extends BaseBot {
   private supportBotKnowledge: any[] = []
   private testResults: any[] = []
 
   constructor() {
-    this.loadKnowledgeBase()
+    super("Prompt-Optimization-Bot", "prompt-optimization")
+  }
+
+  /**
+   * Führe Aufgabe aus (abstract von BaseBot)
+   */
+  async execute(task: BotTask): Promise<BotResponse> {
+    // Führe obligatorische IST-Analyse durch
+    const istAnalysis = await this.performMandatoryISTAnalysis(task)
+    if (!istAnalysis.valid) {
+      return {
+        success: false,
+        errors: [`IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`],
+      }
+    }
+
+    // Lade Knowledge-Base (falls noch nicht geladen)
+    await this.loadKnowledgeBase([
+      "design-guidelines",
+      "coding-rules",
+      "forbidden-terms",
+      "best-practices",
+      "error-handling",
+      "ci-cd",
+    ])
+
+    // Lade Support-Bot Wissen und Test-Ergebnisse
+    await this.loadSupportBotKnowledge()
+    await this.loadTestResults()
+
+    // Führe Prompt-Optimierung durch
+    if (task.context?.originalPrompt) {
+      const optimization = await this.optimizePrompt(
+        task.context.botId || "unknown",
+        task.context.taskType || task.type,
+        task.context.originalPrompt
+      )
+
+      return {
+        success: true,
+        result: JSON.stringify(optimization, null, 2),
+      }
+    }
+
+    return {
+      success: false,
+      errors: ["Kein originalPrompt im Kontext gefunden"],
+    }
   }
 
   /**
    * Lade alle relevanten Daten
+   * Überschreibt BaseBot-Methode für PromptOptimizationBot-spezifische Kategorien
    */
-  private async loadKnowledgeBase() {
-    const categories: KnowledgeCategory[] = [
+  protected async loadKnowledgeBase(categories?: KnowledgeCategory[]) {
+    const defaultCategories: KnowledgeCategory[] = [
       "design-guidelines",
       "coding-rules",
       "forbidden-terms",
@@ -49,7 +98,8 @@ export class PromptOptimizationBot {
       "ci-cd",
     ]
     
-    this.knowledgeBase = loadKnowledgeForTask("prompt-optimization", categories)
+    // Rufe BaseBot-Methode auf
+    await super.loadKnowledgeBase(categories || defaultCategories)
   }
 
   /**

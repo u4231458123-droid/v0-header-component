@@ -3,8 +3,10 @@
  * ===========================
  * Nutzt GitHub Copilot für Code-Reviews und automatische Fixes
  * Hybrid-Workflow: Hugging Face für Text, Copilot für Code-Qualität
+ * Erweitert BaseBot für vollständige Agent-Directives-Compliance
  */
 
+import { BaseBot, type BotTask, type BotResponse } from "./base-bot"
 import { loadKnowledgeForTask, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { logError } from "@/lib/cicd/error-logger"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
@@ -32,20 +34,90 @@ export interface CopilotFixResult {
   issues?: string[]
 }
 
-export class CopilotQualityBot {
-  private knowledgeBase: any
+export class CopilotQualityBot extends BaseBot {
   private workTracker: WorkTracker
 
   constructor() {
-    this.loadKnowledgeBase()
+    super("Copilot-Quality-Bot", "code-review")
     this.workTracker = new WorkTracker()
   }
 
   /**
-   * Lade alle Vorgaben und Regeln
+   * Führe Aufgabe aus (abstract von BaseBot)
    */
-  private async loadKnowledgeBase() {
-    const categories: KnowledgeCategory[] = [
+  async execute(task: BotTask): Promise<BotResponse> {
+    // Führe obligatorische IST-Analyse durch
+    const istAnalysis = await this.performMandatoryISTAnalysis(task)
+    if (!istAnalysis.valid) {
+      return {
+        success: false,
+        errors: [`IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`],
+      }
+    }
+
+    // Lade Knowledge-Base (falls noch nicht geladen)
+    await this.loadKnowledgeBase([
+      "coding-rules",
+      "best-practices",
+      "error-handling",
+      "functionality-rules",
+      "ci-cd",
+    ])
+
+    // Wenn filePath vorhanden, lade Code und führe Review durch
+    if (task.filePath) {
+      try {
+        const fs = await import("fs/promises")
+        const code = await fs.readFile(task.filePath, "utf-8")
+        const reviewResult = await this.reviewCode(code, task.filePath, {
+          taskDescription: task.description,
+          relatedFiles: task.context?.relatedFiles,
+        })
+        
+        // Wenn Fixes vorhanden, wende sie an
+        if (task.type === "bug-fix" && reviewResult.fixes && reviewResult.fixes.length > 0) {
+          const fixResult = await this.fixCode(code, task.filePath, reviewResult.fixes)
+          return {
+            success: fixResult.success,
+            errors: reviewResult.issues
+              .filter((i) => i.severity === "error")
+              .map((i) => i.message),
+            warnings: reviewResult.issues
+              .filter((i) => i.severity === "warning")
+              .map((i) => i.message),
+          }
+        }
+        
+        return {
+          success: reviewResult.passed,
+          errors: reviewResult.issues
+            .filter((i) => i.severity === "error")
+            .map((i) => i.message),
+          warnings: reviewResult.issues
+            .filter((i) => i.severity === "warning")
+            .map((i) => i.message),
+        }
+      } catch (error: any) {
+        return {
+          success: false,
+          errors: [`Fehler beim Lesen von ${task.filePath}: ${error.message}`],
+        }
+      }
+    }
+
+    // Wenn kein filePath, führe allgemeine Review durch
+    return {
+      success: true,
+      warnings: ["Kein filePath angegeben - allgemeine Code-Review durchgeführt"],
+    }
+  }
+
+  /**
+   * Lade alle Vorgaben und Regeln
+   * Überschreibt BaseBot-Methode für CopilotQualityBot-spezifische Kategorien
+   */
+  protected async loadKnowledgeBase(categories?: KnowledgeCategory[]) {
+    const defaultCategories: KnowledgeCategory[] = [
       "coding-rules",
       "best-practices",
       "error-handling",
@@ -53,7 +125,8 @@ export class CopilotQualityBot {
       "ci-cd",
     ]
     
-    this.knowledgeBase = loadKnowledgeForTask("code-review", categories)
+    // Rufe BaseBot-Methode auf
+    await super.loadKnowledgeBase(categories || defaultCategories)
   }
 
   /**
@@ -228,7 +301,8 @@ export class CopilotQualityBot {
     const issues: CopilotReviewResult["issues"] = []
 
     // Prüfe gegen Coding-Rules
-    for (const entry of this.knowledgeBase) {
+    const knowledgeBase = this.knowledgeBase || []
+    for (const entry of knowledgeBase) {
       if (entry.category === "coding-rules" || entry.category === "forbidden-terms") {
         const content = entry.content.toLowerCase()
         

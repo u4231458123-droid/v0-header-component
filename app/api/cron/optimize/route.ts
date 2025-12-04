@@ -29,9 +29,10 @@ export async function GET(request: Request) {
       id: `optimize-${Date.now()}`,
       type: 'optimization' as const,
       description: 'Erweiterte Codebase-Optimierungen',
+      area: 'system-maintenance',
     };
     
-    const optimizationResults = await systemBot.optimizeCode(task);
+    const optimizationResults = await systemBot.executeWithRecovery(task);
     
     return NextResponse.json({
       ok: true,

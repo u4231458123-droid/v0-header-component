@@ -3,8 +3,10 @@
  * ==========
  * Bot für System-Wartung, Code-Analyse und Fehlerbehebung
  * Hat Zugriff auf zentrale Wissensdatenbank
+ * Erweitert BaseBot für vollständige Agent-Directives-Compliance
  */
 
+import { BaseBot, type BotTask, type BotResponse } from "./base-bot"
 import { loadKnowledgeForTask, generatePromptWithKnowledge, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { getOptimizedHuggingFaceClient } from "@/lib/ai/huggingface-optimized"
 import { validateSupabaseProject, validateSchemaTables, applyMigrationWithValidation } from "./mcp-integration"
@@ -13,40 +15,76 @@ import { logError } from "@/lib/cicd/error-logger"
 import { analyzeCodebase, formatPatternsForPrompt } from "@/lib/cicd/codebase-analyzer"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
 
-export interface BotTask {
-  id: string
-  type: "code-analysis" | "bug-fix" | "optimization" | "refactoring" | "feature"
-  description: string
-  filePath?: string
-  context?: any
-}
-
-export interface BotResponse {
-  success: boolean
-  analysis?: string
-  changes?: any[]
-  errors?: string[]
-  warnings?: string[]
-  documentation?: string
-}
-
-export class SystemBot {
-  private knowledgeBase: any
+export class SystemBot extends BaseBot {
   private modelId: string = "deepseek-ai/DeepSeek-V3" // Standard-Modell
   private workTracker: WorkTracker
 
   constructor() {
-    this.loadKnowledgeBase()
+    super("System-Bot", "system-maintenance")
     this.workTracker = new WorkTracker()
+  }
+
+  /**
+   * Führe Aufgabe aus (abstract von BaseBot)
+   */
+  async execute(task: BotTask): Promise<BotResponse> {
+    // Führe obligatorische IST-Analyse durch
+    const istAnalysis = await this.performMandatoryISTAnalysis(task)
+    if (!istAnalysis.valid) {
+      return {
+        success: false,
+        errors: [`IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`],
+      }
+    }
+
+    // Lade Knowledge-Base (falls noch nicht geladen)
+    await this.loadKnowledgeBase([
+      "design-guidelines",
+      "coding-rules",
+      "forbidden-terms",
+      "architecture",
+      "best-practices",
+      "account-rules",
+      "routing-rules",
+      "pdf-generation",
+      "email-templates",
+      "functionality-rules",
+      "ci-cd",
+      "error-handling",
+      "ui-consistency",
+      "systemwide-thinking",
+      "bot-instructions",
+      "mydispatch-core",
+    ])
+
+    // Delegiere an spezifische Methode basierend auf Task-Typ
+    switch (task.type) {
+      case "code-analysis":
+        return await this.analyzeCode(task)
+      case "bug-fix":
+        return await this.fixBugs(task)
+      case "optimization":
+        return await this.optimizeCode(task)
+      case "refactoring":
+        return await this.optimizeCode(task) // Refactoring ähnlich wie Optimization
+      case "feature":
+        return await this.analyzeCode(task) // Feature-Analyse ähnlich wie Code-Analyse
+      default:
+        return {
+          success: false,
+          errors: [`Unbekannter Task-Typ: ${task.type}`],
+        }
+    }
   }
 
   /**
    * Lade alle Vorgaben, Regeln, Verbote und Docs
    * OBLIGATORISCH vor jeder Aufgabe
+   * Überschreibt BaseBot-Methode für SystemBot-spezifische Kategorien
    */
-  private async loadKnowledgeBase() {
-    // Lade alle kritischen Knowledge-Entries inkl. CI/CD
-    const categories: KnowledgeCategory[] = [
+  protected async loadKnowledgeBase(categories?: KnowledgeCategory[]) {
+    // Wenn keine Kategorien angegeben, verwende Standard-Kategorien
+    const defaultCategories: KnowledgeCategory[] = [
       "design-guidelines",
       "coding-rules",
       "forbidden-terms",
@@ -65,11 +103,12 @@ export class SystemBot {
       "mydispatch-core",
     ]
     
-    this.knowledgeBase = loadKnowledgeForTask("system-maintenance", categories)
+    // Rufe BaseBot-Methode auf
+    await super.loadKnowledgeBase(categories || defaultCategories)
     
     // Lade zusätzlich detaillierte UI-Konsistenz-Regeln
     const detailedConsistency = loadKnowledgeForTask("system-maintenance", ["ui-consistency"])
-    this.knowledgeBase = [...this.knowledgeBase, ...detailedConsistency.filter((e: any) => 
+    this.knowledgeBase = [...(this.knowledgeBase || []), ...detailedConsistency.filter((e: any) => 
       e.id === "ui-consistency-detailed-001" || 
       e.id === "visual-logical-validation-001" || 
       e.id === "quality-thinking-detailed-001"
@@ -128,15 +167,16 @@ export class SystemBot {
 
     // Identifiziere Risiken basierend auf Knowledge-Base
     const risks: string[] = []
-    if (this.knowledgeBase) {
+    const knowledgeBase = this.knowledgeBase || []
+    if (knowledgeBase.length > 0) {
       // Prüfe gegen Design-Guidelines
-      const designGuidelines = this.knowledgeBase.find((e: any) => e.id === "design-guidelines-001")
+      const designGuidelines = knowledgeBase.find((e: any) => e.id === "design-guidelines-001")
       if (designGuidelines) {
         risks.push("Design-Änderungen sind streng verboten")
       }
       
       // Prüfe gegen Funktionalitäts-Regeln
-      const functionalityRules = this.knowledgeBase.find((e: any) => e.id === "functionality-rules-001")
+      const functionalityRules = knowledgeBase.find((e: any) => e.id === "functionality-rules-001")
       if (functionalityRules) {
         risks.push("Bestehende Funktionalität darf nicht entfernt werden")
       }

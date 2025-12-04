@@ -27,9 +27,10 @@ export async function GET(request: Request) {
       id: `auto-fix-${Date.now()}`,
       type: 'bug-fix' as const,
       description: 'Automatische Bug-Fixes für gesamte Codebase',
+      area: 'system-maintenance',
     };
     
-    const results = await systemBot.fixBugs(task);
+    const results = await systemBot.executeWithRecovery(task);
     
     return NextResponse.json({
       ok: true,

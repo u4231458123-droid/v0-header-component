@@ -57,10 +57,54 @@ export abstract class BaseBot {
   constructor(botName: string, area: string) {
     this.botName = botName
     this.area = area
-    this.loadKnowledgeBase()
-    this.loadDocumentation()
-    this.loadInformationSources()
+    // Starte asynchrone Datenladung (wird in executeWithRecovery validiert)
+    this.loadKnowledgeBase().catch((err) => {
+      console.warn(`[${botName}] Fehler beim Laden der Knowledge-Base:`, err)
+    })
+    this.loadDocumentation().catch((err) => {
+      console.warn(`[${botName}] Fehler beim Laden der Dokumentation:`, err)
+    })
+    this.loadInformationSources().catch((err) => {
+      console.warn(`[${botName}] Fehler beim Laden der Informationsquellen:`, err)
+    })
     this.initializeAIClient()
+  }
+
+  /**
+   * Validiere dass alle obligatorischen Daten geladen wurden
+   * OBLIGATORISCH: Muss vor jeder Aufgabe aufgerufen werden
+   */
+  protected async validateDataLoading(): Promise<{
+    valid: boolean
+    missing: string[]
+  }> {
+    const missing: string[] = []
+
+    // Prüfe Knowledge-Base
+    if (!this.knowledgeBase || (Array.isArray(this.knowledgeBase) && this.knowledgeBase.length === 0)) {
+      missing.push("knowledgeBase")
+      // Versuche erneut zu laden
+      await this.loadKnowledgeBase()
+    }
+
+    // Prüfe Dokumentation
+    if (!this.documentation || this.documentation.length === 0) {
+      missing.push("documentation")
+      // Versuche erneut zu laden
+      await this.loadDocumentation()
+    }
+
+    // Prüfe Informationsquellen
+    if (!this.informationSources) {
+      missing.push("informationSources")
+      // Versuche erneut zu laden
+      await this.loadInformationSources()
+    }
+
+    return {
+      valid: missing.length === 0,
+      missing,
+    }
   }
 
   /**
@@ -614,6 +658,24 @@ export abstract class BaseBot {
     const maxRetries = 3
 
     try {
+      // OBLIGATORISCH: Validiere Datenladung
+      perfLogger.log(`[${this.botName}] Validiere obligatorische Datenladung...`)
+      const dataValidation = await this.validateDataLoading()
+      
+      if (!dataValidation.valid) {
+        perfLogger.warn(`[${this.botName}] Datenladung unvollständig. Fehlende: ${dataValidation.missing.join(", ")}`)
+        // Versuche erneut zu laden
+        if (dataValidation.missing.includes("knowledgeBase")) {
+          await this.loadKnowledgeBase()
+        }
+        if (dataValidation.missing.includes("documentation")) {
+          await this.loadDocumentation()
+        }
+        if (dataValidation.missing.includes("informationSources")) {
+          await this.loadInformationSources()
+        }
+      }
+
       // OBLIGATORISCH: IST-Analyse vor Aufgabe
       perfLogger.log(`[${this.botName}] Führe obligatorische IST-Analyse durch...`)
       const istAnalysis = await this.performMandatoryISTAnalysis(task)
@@ -621,11 +683,6 @@ export abstract class BaseBot {
       if (!istAnalysis.valid) {
         perfLogger.warn(`[${this.botName}] IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`)
         // Weiterführen, aber warnen
-      }
-
-      // OBLIGATORISCH: Lade Informationsquellen (falls noch nicht geladen)
-      if (!this.informationSources) {
-        await this.loadInformationSources()
       }
     } catch (error: any) {
       // Terminal-Fehler behandeln
