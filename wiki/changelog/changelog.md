@@ -4,6 +4,63 @@ Alle wichtigen Änderungen am MyDispatch-Projekt werden hier dokumentiert.
 
 ---
 
+## [2.5.0] - Dezember 2025
+
+### Added
+- **Autonome Bot-Orchestrierung**
+  - `lib/ai/bots/master-bot.ts` - Autonome Task-Verteilung an spezialisierte Bots
+  - `distributeTask()` - Automatische Zuweisung von Aufgaben basierend auf Bot-Spezialisierungen
+  - `validateBotResult()` - Vollständige Validierung aller Änderungen durch Quality-Bot
+  - `commitAndPush()` - Automatischer Commit/Push nach erfolgreicher Validierung (sicher gegen Command Injection)
+
+- **MCP-Integration vervollständigt**
+  - `lib/ai/bots/mcp-integration.ts` - Alle 5 TODOs implementiert mit Fallback-Mechanismen
+  - `validateSupabaseProject()` - MCP-Aufruf mit Fallback zu Supabase-Client
+  - `validateSchemaTables()` - MCP-Aufruf mit Fallback zu Tabellen-Prüfung
+  - `applyMigrationWithValidation()` - MCP-Aufruf mit Fallback zu RPC
+  - `generateTypesWithValidation()` - MCP-Aufruf mit Fallback zu information_schema
+  - `checkSecurityAdvisors()` - MCP-Aufruf mit Fallback zu RLS-Prüfung
+
+- **E-Mail-Templates erweitert**
+  - `REMINDER_TEMPLATE` - Allgemeine Erinnerungen (Dokumente, Zahlungen)
+  - `DOCUMENT_REMINDER_TEMPLATE` - Dokument-Ablauf-Erinnerungen
+  - `PAYMENT_REMINDER_TEMPLATE` - Zahlungserinnerungen mit Rechnungsdetails
+  - Alle Templates in `lib/email/templates.ts` implementiert
+
+- **Security Advisors Optimierung**
+  - `scripts/036_optimize_security_advisors.sql` - Migration für Security-Prüfungen
+  - Prüft Function search_path
+  - Prüft Extension-Platzierung
+  - Prüft RLS auf kritischen Tabellen
+  - Security Score-Berechnung
+
+- **Prompt-Optimization-Bot erweitert**
+  - Hugging Face Integration für Prompt-Optimierung
+  - Persistente Speicherung optimierter Prompts in Supabase
+  - Integration in Knowledge-Base
+
+### Fixed
+- **Command Injection in commitAndPush**
+  - `lib/ai/bots/master-bot.ts` - Verwendet jetzt `spawn` mit Argument-Arrays statt `execSync` mit String-Interpolation
+  - Vollständige Validierung von Dateipfaden und Commit-Messages
+  - Keine Command Injection mehr möglich
+
+- **Validierung in validateBotResult**
+  - Sammelt jetzt ALLE Verstöße vor Rückgabe (nicht nur bis zum ersten Fehler)
+  - Vollständige Sichtbarkeit aller Probleme
+
+- **MCP-Integration Fallbacks**
+  - Duplikat-Warnungen in Migration-Fallback entfernt
+  - Hardcodierte Function search_path Warnung entfernt
+  - Korrekte Fehlerbehandlung bei information_schema-Zugriff
+
+### Updated
+- Bot-Spezialisierungen in Master-Bot definiert
+- Alle Bots erweitert um Dokumentations-Laden beim Start
+- CI/CD optimiert für schnellere Builds
+
+---
+
 ## [2.4.0] - Dezember 2025
 
 ### Added
