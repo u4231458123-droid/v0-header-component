@@ -75,7 +75,7 @@ export default async function TenantAGBPage({
           <section>
             <h2 className="text-xl font-semibold mb-4">§ 4 Stornierung</h2>
             <p className="text-muted-foreground">
-              (1) Eine kostenlose Stornierung ist bis zu 24 Stunden vor dem vereinbarten Abholtermin möglich.
+              (1) Eine unentgeltliche Stornierung ist bis zu 24 Stunden vor dem vereinbarten Abholtermin möglich.
               <br />
               <br />
               (2) Bei späterer Stornierung oder Nichterscheinen kann eine Stornogebühr erhoben werden.

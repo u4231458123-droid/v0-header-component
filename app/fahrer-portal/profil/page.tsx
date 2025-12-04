@@ -186,13 +186,13 @@ export default function FahrerProfilPage() {
   const getExpiryBadge = (days: number | null) => {
     if (days === null) return null
     if (days < 0) return <Badge variant="destructive">Abgelaufen</Badge>
-    if (days <= 30) return <Badge className="bg-amber-500 text-white">Läuft in {days} Tagen ab</Badge>
-    return <Badge className="bg-emerald-500 text-white">Gültig</Badge>
+    if (days <= 30) return <Badge variant="destructive">Läuft in {days} Tagen ab</Badge>
+    return <Badge className="bg-primary text-primary-foreground">Gültig</Badge>
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Lade Profil...</div>
       </div>
     )
@@ -200,7 +200,7 @@ export default function FahrerProfilPage() {
 
   if (!driver) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="max-w-md">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="w-12 h-12 mx-auto text-destructive mb-4" />
@@ -216,13 +216,15 @@ export default function FahrerProfilPage() {
   }
 
   const licenseExpiry = getDaysUntilExpiry(driver.license_expiry)
-  const pbefExpiry = getDaysUntilExpiry(driver.pbef_data?.valid_until || null)
+  // Support both valid_until and expiry_date for backwards compatibility
+  const pbefExpiryDate = driver.pbef_data?.valid_until || (driver.pbef_data as any)?.expiry_date || null
+  const pbefExpiry = getDaysUntilExpiry(pbefExpiryDate)
   const licenseClasses = driver.license_classes || driver.license_data?.classes || []
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -232,25 +234,25 @@ export default function FahrerProfilPage() {
                 </Button>
               </Link>
               <div>
-                <h1 className="font-semibold text-slate-900">Mein Profil</h1>
-                <p className="text-xs text-slate-500">{driver.companies?.name || "Unternehmen"}</p>
+                <h1 className="font-semibold text-foreground">Mein Profil</h1>
+                <p className="text-xs text-muted-foreground">{driver.companies?.name || "Unternehmen"}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/fahrer-portal">
-                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
                   <Home className="h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/fahrer-portal/dokumente">
-                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
                   <FileText className="h-5 w-5" />
                 </Button>
               </Link>
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full text-slate-700 hover:text-slate-900"
+                className="rounded-full text-muted-foreground hover:text-foreground"
                 onClick={handleLogout}
               >
                 <LogOut className="h-5 w-5" />
@@ -263,13 +265,13 @@ export default function FahrerProfilPage() {
       <main className="flex-1 max-w-5xl mx-auto px-4 py-6 w-full space-y-6">
         {/* Warnungen */}
         {((licenseExpiry !== null && licenseExpiry <= 30) || (pbefExpiry !== null && pbefExpiry <= 30)) && (
-          <Card className="bg-amber-50 border-amber-200">
+          <Card className="bg-destructive/10 border-destructive/30">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-amber-900">Achtung: Dokumente laufen bald ab</p>
-                  <ul className="text-sm text-amber-700 mt-1 space-y-1">
+                  <p className="font-medium text-destructive">Achtung: Dokumente laufen bald ab</p>
+                  <ul className="text-sm text-destructive/80 mt-1 space-y-1">
                     {licenseExpiry !== null && licenseExpiry <= 30 && (
                       <li>Führerschein: {licenseExpiry < 0 ? "Abgelaufen" : `${licenseExpiry} Tage`}</li>
                     )}
@@ -279,7 +281,7 @@ export default function FahrerProfilPage() {
                   </ul>
                   <Link
                     href="/fahrer-portal/dokumente"
-                    className="text-sm text-amber-800 hover:underline mt-2 inline-block font-medium"
+                    className="text-sm text-destructive hover:underline mt-2 inline-block font-medium"
                   >
                     Dokumente aktualisieren →
                   </Link>
@@ -290,7 +292,7 @@ export default function FahrerProfilPage() {
         )}
 
         {/* Profil Header */}
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-card border-border">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
               <Avatar className="w-20 h-20">
@@ -300,11 +302,11 @@ export default function FahrerProfilPage() {
                 </AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left flex-1">
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className="text-2xl font-bold text-foreground">
                   {driver.salutation} {driver.title && `${driver.title} `}
                   {driver.first_name} {driver.last_name}
                 </h2>
-                <p className="text-slate-500">
+                <p className="text-muted-foreground">
                   Fahrer seit{" "}
                   {driver.employment_data?.start_date
                     ? format(new Date(driver.employment_data.start_date), "MMMM yyyy", { locale: de })
@@ -315,7 +317,7 @@ export default function FahrerProfilPage() {
                     className={
                       driver.status === "available" || driver.status === "active"
                         ? "bg-emerald-500 text-white"
-                        : "bg-slate-200 text-slate-700"
+                        : "bg-muted text-muted-foreground"
                     }
                   >
                     {driver.status === "available" || driver.status === "active"
@@ -333,19 +335,19 @@ export default function FahrerProfilPage() {
               </div>
               {stats && (
                 <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <div className="flex items-center justify-center gap-1 text-slate-600 mb-1">
+                  <div className="p-3 bg-muted rounded-xl">
+                    <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
                       <Car className="h-4 w-4" />
                     </div>
-                    <div className="text-2xl font-bold text-slate-900">{stats.total_bookings}</div>
-                    <div className="text-xs text-slate-500">Fahrten</div>
+                    <div className="text-2xl font-bold text-foreground">{stats.total_bookings}</div>
+                    <div className="text-xs text-muted-foreground">Fahrten</div>
                   </div>
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <div className="flex items-center justify-center gap-1 text-slate-600 mb-1">
+                  <div className="p-3 bg-muted rounded-xl">
+                    <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
                       <Star className="h-4 w-4" />
                     </div>
-                    <div className="text-2xl font-bold text-slate-900">{safeNumber(stats.avg_rating).toFixed(1)}</div>
-                    <div className="text-xs text-slate-500">Bewertung</div>
+                    <div className="text-2xl font-bold text-foreground">{safeNumber(stats.avg_rating).toFixed(1)}</div>
+                    <div className="text-xs text-muted-foreground">Bewertung</div>
                   </div>
                 </div>
               )}
@@ -354,9 +356,9 @@ export default function FahrerProfilPage() {
         </Card>
 
         {/* Kontaktdaten */}
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg text-slate-900">Kontaktdaten</CardTitle>
+            <CardTitle className="text-lg text-foreground">Kontaktdaten</CardTitle>
             {!editMode ? (
               <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="rounded-full">
                 Bearbeiten
@@ -374,36 +376,36 @@ export default function FahrerProfilPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                <Mail className="w-5 h-5 text-slate-400" />
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                <Mail className="w-5 h-5 text-muted-foreground" />
                 {editMode ? (
                   <Input
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     type="email"
-                    className="border-0 bg-white"
+                    className="border-0 bg-card"
                   />
                 ) : (
-                  <span className="text-slate-700">{driver.email}</span>
+                  <span className="text-foreground">{driver.email}</span>
                 )}
               </div>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                <Phone className="w-5 h-5 text-slate-400" />
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                <Phone className="w-5 h-5 text-muted-foreground" />
                 {editMode ? (
                   <Input
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="border-0 bg-white"
+                    className="border-0 bg-card"
                   />
                 ) : (
-                  <span className="text-slate-700">{driver.phone}</span>
+                  <span className="text-foreground">{driver.phone}</span>
                 )}
               </div>
             </div>
             {driver.address_data && (
-              <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
-                <MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
-                <span className="text-slate-700">
+              <div className="flex items-start gap-3 p-3 bg-muted rounded-xl">
+                <MapPin className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <span className="text-foreground">
                   {driver.address_data.street} {driver.address_data.house_number}, {driver.address_data.postal_code}{" "}
                   {driver.address_data.city}
                 </span>
@@ -413,25 +415,25 @@ export default function FahrerProfilPage() {
         </Card>
 
         {/* Dokumente & Lizenzen */}
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-lg text-slate-900">Dokumente & Lizenzen</CardTitle>
+            <CardTitle className="text-lg text-foreground">Dokumente & Lizenzen</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-xl">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-xl">
-                  <CreditCard className="w-5 h-5 text-blue-600" />
+                <div className="p-2 bg-primary/10 rounded-xl">
+                  <CreditCard className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-slate-900">Führerschein</p>
-                  <p className="text-sm text-slate-500">Nr. {driver.license_number}</p>
+                  <p className="font-medium text-foreground">Führerschein</p>
+                  <p className="text-sm text-muted-foreground">Nr. {driver.license_number || "Nicht angegeben"}</p>
                 </div>
               </div>
               <div className="text-right">
                 {driver.license_expiry && (
                   <>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-muted-foreground">
                       Gültig bis {format(new Date(driver.license_expiry), "dd.MM.yyyy")}
                     </p>
                     {getExpiryBadge(licenseExpiry)}
@@ -440,23 +442,23 @@ export default function FahrerProfilPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-xl">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-100 rounded-xl">
-                  <Shield className="w-5 h-5 text-emerald-600" />
+                <div className="p-2 bg-primary/10 rounded-xl">
+                  <Shield className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-slate-900">P-Schein</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="font-medium text-foreground">P-Schein</p>
+                  <p className="text-sm text-muted-foreground">
                     {driver.pbef_data?.number ? `Nr. ${driver.pbef_data.number}` : "Keine Nummer hinterlegt"}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                {driver.pbef_data?.valid_until && (
+                {pbefExpiryDate && (
                   <>
-                    <p className="text-sm text-slate-600">
-                      Gültig bis {format(new Date(driver.pbef_data.valid_until), "dd.MM.yyyy")}
+                    <p className="text-sm text-muted-foreground">
+                      Gültig bis {format(new Date(pbefExpiryDate), "dd.MM.yyyy")}
                     </p>
                     {getExpiryBadge(pbefExpiry)}
                   </>
@@ -476,35 +478,35 @@ export default function FahrerProfilPage() {
 
         {/* Arbeitsverhältnis */}
         {driver.employment_data && (
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-900">Arbeitsverhältnis</CardTitle>
+              <CardTitle className="text-lg text-foreground">Arbeitsverhältnis</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 sm:grid-cols-3">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <Calendar className="w-5 h-5 text-slate-400" />
+                <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                  <Calendar className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-xs text-slate-500">Eintrittsdatum</p>
-                    <p className="font-medium text-slate-900">
+                    <p className="text-xs text-muted-foreground">Eintrittsdatum</p>
+                    <p className="font-medium text-foreground">
                       {driver.employment_data.start_date
                         ? format(new Date(driver.employment_data.start_date), "dd.MM.yyyy")
                         : "k.A."}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <FileText className="w-5 h-5 text-slate-400" />
+                <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                  <FileText className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-xs text-slate-500">Vertragsart</p>
-                    <p className="font-medium text-slate-900">{driver.employment_data.contract_type || "k.A."}</p>
+                    <p className="text-xs text-muted-foreground">Vertragsart</p>
+                    <p className="font-medium text-foreground">{driver.employment_data.contract_type || "k.A."}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <Clock className="w-5 h-5 text-slate-400" />
+                <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                  <Clock className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-xs text-slate-500">Wochenstunden</p>
-                    <p className="font-medium text-slate-900">{driver.employment_data.working_hours || "k.A."} Std.</p>
+                    <p className="text-xs text-muted-foreground">Wochenstunden</p>
+                    <p className="font-medium text-foreground">{driver.employment_data.working_hours || "k.A."} Std.</p>
                   </div>
                 </div>
               </div>

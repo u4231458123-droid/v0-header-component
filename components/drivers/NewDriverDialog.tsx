@@ -352,14 +352,15 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
         pbef_data: {
           number: formData.pbef_number || "",
           issue_date: formData.pbef_issued_date || null,
-          expiry_date: formData.pbef_expiry_date || null,
+          valid_until: formData.pbef_expiry_date || null,
           issuing_authority: formData.pbef_authority || "",
           valid: formData.pbef_number ? true : false,
         },
         employment_data: {
           type: formData.employment_type || "employee",
           start_date: formData.employment_start || null,
-          contract_type: "full-time",
+          contract_type: formData.employment_type === "freelance" ? "freelance" : "full-time",
+          working_hours: 40,
           hourly_rate: null,
           monthly_salary: null,
         },
@@ -375,7 +376,10 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
       }
 
       console.log("[v0] Driver inserted successfully:", data)
-      toast.success("Fahrer erfolgreich angelegt")
+      toast.success("Fahrer erfolgreich angelegt", {
+        description: "Der Fahrer wurde in Ihr System aufgenommen und kann nun zugewiesen werden.",
+        duration: 4000,
+      })
       setOpen(false)
       resetForm()
 
@@ -386,7 +390,10 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
       router.refresh()
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler"
-      toast.error(`Fehler beim Anlegen des Fahrers: ${errorMessage}`)
+      toast.error("Fehler beim Anlegen des Fahrers", {
+        description: errorMessage,
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }
@@ -826,9 +833,9 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                     </div>
                   </div>
 
-                  <Alert className="bg-amber-50 border-amber-200">
-                    <AlertCircle className="h-4 w-4 text-amber-600" />
-                    <AlertDescription className="text-amber-800">
+                  <Alert className="bg-destructive/10 border-destructive/30">
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <AlertDescription className="text-destructive/90">
                       <strong>Wichtig:</strong> Der Fahrer wird beim ersten Login aufgefordert, ein neues Passwort zu
                       waehlen. Teilen Sie ihm das initiale Passwort sicher mit.
                     </AlertDescription>
@@ -837,9 +844,9 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                   {formData.password &&
                     formData.password.length >= 8 &&
                     formData.password === formData.password_confirm && (
-                      <Alert className="bg-green-50 border-green-200">
-                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        <AlertDescription className="text-green-800">
+                      <Alert className="bg-primary/10 border-primary/30">
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                        <AlertDescription className="text-primary">
                           Zugangsdaten sind vollstaendig und gueltig.
                         </AlertDescription>
                       </Alert>

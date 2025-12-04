@@ -293,7 +293,10 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
 
       if (error) throw error
 
-      toast.success("Fahrer erfolgreich aktualisiert")
+      toast.success("Fahrer erfolgreich aktualisiert", {
+        description: "Die Änderungen wurden gespeichert und sind sofort sichtbar.",
+        duration: 4000,
+      })
       onOpenChange(false)
 
       if (onSuccess && data) {
@@ -303,7 +306,10 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
       router.refresh()
     } catch (error) {
       console.error("Error updating driver:", error)
-      toast.error("Fehler beim Aktualisieren des Fahrers")
+      toast.error("Fehler beim Aktualisieren des Fahrers", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setIsSubmitting(false)
     }

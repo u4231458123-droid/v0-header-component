@@ -121,7 +121,10 @@ export function EditInvoiceDialog({ invoice, open, onOpenChange, onSuccess }: Ed
 
       if (error) throw error
 
-      toast.success("Rechnung erfolgreich aktualisiert")
+      toast.success("Rechnung erfolgreich aktualisiert", {
+        description: "Die Änderungen wurden gespeichert und sind sofort sichtbar.",
+        duration: 4000,
+      })
       onOpenChange(false)
       router.refresh()
 
@@ -130,7 +133,10 @@ export function EditInvoiceDialog({ invoice, open, onOpenChange, onSuccess }: Ed
       }
     } catch (error) {
       console.error("Error updating invoice:", error)
-      toast.error("Fehler beim Aktualisieren der Rechnung")
+      toast.error("Fehler beim Aktualisieren der Rechnung", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

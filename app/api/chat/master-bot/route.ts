@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Erstelle System-Prompt für Master-Bot
     const systemPrompt = `
-Du bist der Master-Bot von MyDispatch - der systemweite Verantwortungsträger.
+Sie sind der Master-Bot von MyDispatch - der systemweite Verantwortungsträger.
 
 ## DEINE ROLLE:
 - Systemweite Verantwortung für das gesamte System
