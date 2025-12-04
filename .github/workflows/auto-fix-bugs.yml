@@ -102,8 +102,6 @@ jobs:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
-          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
 
       - name: TypeScript Error Detection
         run: |
@@ -159,4 +157,3 @@ jobs:
               body: 'The auto-fix workflow found critical bugs that require manual review. Please check the workflow logs.',
               labels: ['bug', 'critical', 'auto-detected']
             })
-
