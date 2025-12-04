@@ -6,6 +6,7 @@
 -- =====================================================
 
 -- 1. Erstelle Nexify Unternehmen (falls nicht vorhanden)
+-- Verwende echte UUID statt String-ID
 INSERT INTO companies (
   id,
   name,
@@ -26,7 +27,7 @@ INSERT INTO companies (
   created_at,
   updated_at
 ) VALUES (
-  'nexify-company-0001',
+  'a1b2c3d4-e5f6-7890-abcd-ef1234567890'::uuid, -- Feste UUID fuer Nexify
   'Nexify',
   'login.nexify@gmail.com',
   NULL,
@@ -77,7 +78,7 @@ ON CONFLICT (id) DO UPDATE SET
 --   - Email bestätigt: Ja
 UPDATE profiles
 SET 
-  company_id = 'nexify-company-0001',
+  company_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'::uuid,
   role = 'owner',
   updated_at = NOW()
 WHERE email = 'login.nexify@gmail.com';
@@ -97,4 +98,4 @@ SELECT
   c.vehicle_limit
 FROM profiles p
 LEFT JOIN companies c ON p.company_id = c.id
-WHERE p.email = 'login.nexify@gmail.com' OR c.id = 'nexify-company-0001';
+WHERE p.email = 'login.nexify@gmail.com' OR c.id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'::uuid;
