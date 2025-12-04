@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { format, differenceInDays } from "date-fns"
 import { de } from "date-fns/locale"
 import Link from "next/link"
@@ -199,7 +198,7 @@ export default function DriverDocumentsPage() {
       }
       if (daysUntilExpiry < 30) {
         return (
-          <Badge className="bg-amber-500 text-white text-xs">
+          <Badge variant="destructive" className="text-xs">
             <Clock className="h-3 w-3 mr-1" /> Läuft bald ab
           </Badge>
         )
@@ -209,7 +208,7 @@ export default function DriverDocumentsPage() {
     switch (doc.status) {
       case "approved":
         return (
-          <Badge className="bg-emerald-500 text-white text-xs">
+          <Badge className="bg-primary text-primary-foreground text-xs">
             <CheckCircle className="h-3 w-3 mr-1" /> Genehmigt
           </Badge>
         )
@@ -244,44 +243,44 @@ export default function DriverDocumentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Lade Dokumente...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/fahrer-portal">
-                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
               <div>
-                <h1 className="font-semibold text-slate-900">Meine Dokumente</h1>
-                <p className="text-xs text-slate-500">{company?.name || "Unternehmen"}</p>
+                <h1 className="font-semibold text-foreground">Meine Dokumente</h1>
+                <p className="text-xs text-muted-foreground">{company?.name || "Unternehmen"}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/fahrer-portal">
-                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
                   <Home className="h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/fahrer-portal/profil">
-                <Button variant="ghost" size="icon" className="rounded-full text-slate-700 hover:text-slate-900">
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full text-slate-700 hover:text-slate-900"
+                className="rounded-full text-muted-foreground hover:text-foreground"
                 onClick={handleLogout}
               >
                 <LogOut className="h-5 w-5" />
@@ -295,31 +294,31 @@ export default function DriverDocumentsPage() {
       <main className="flex-1 max-w-5xl mx-auto px-4 py-6 w-full">
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-card border-border">
             <CardContent className="p-4 text-center">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
                 <FileText className="h-5 w-5 text-primary" />
               </div>
-              <p className="text-2xl font-bold text-slate-900">{uploadedCount}</p>
-              <p className="text-xs text-slate-500">Hochgeladen</p>
+              <p className="text-2xl font-bold text-foreground">{uploadedCount}</p>
+              <p className="text-xs text-muted-foreground">Hochgeladen</p>
             </CardContent>
           </Card>
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-card border-border">
             <CardContent className="p-4 text-center">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-2">
-                <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
               </div>
-              <p className="text-2xl font-bold text-slate-900">{approvedCount}</p>
-              <p className="text-xs text-slate-500">Genehmigt</p>
+              <p className="text-2xl font-bold text-foreground">{approvedCount}</p>
+              <p className="text-xs text-muted-foreground">Genehmigt</p>
             </CardContent>
           </Card>
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-card border-border">
             <CardContent className="p-4 text-center">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-2">
-                <Shield className="h-5 w-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-2">
+                <Shield className="h-5 w-5 text-destructive" />
               </div>
-              <p className="text-2xl font-bold text-slate-900">{requiredCount}</p>
-              <p className="text-xs text-slate-500">Erforderlich</p>
+              <p className="text-2xl font-bold text-foreground">{requiredCount}</p>
+              <p className="text-xs text-muted-foreground">Erforderlich</p>
             </CardContent>
           </Card>
         </div>
@@ -341,9 +340,9 @@ export default function DriverDocumentsPage() {
         </Card>
 
         {/* Document List */}
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-slate-900">Dokumentenliste</CardTitle>
+            <CardTitle className="text-lg text-foreground">Dokumentenliste</CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="space-y-3">
@@ -356,8 +355,8 @@ export default function DriverDocumentsPage() {
                     className="flex items-center justify-between p-4 bg-card rounded-xl border border-border"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2.5 rounded-xl ${existingDoc ? "bg-emerald-100" : "bg-muted"}`}>
-                        <FileText className={`h-5 w-5 ${existingDoc ? "text-emerald-600" : "text-muted-foreground"}`} />
+                      <div className={`p-2.5 rounded-xl ${existingDoc ? "bg-primary/10" : "bg-muted"}`}>
+                        <FileText className={`h-5 w-5 ${existingDoc ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
                       <div>
                         <p className="font-medium text-foreground flex items-center gap-2">
@@ -408,26 +407,25 @@ export default function DriverDocumentsPage() {
                           <Eye className="h-4 w-4" />
                         </Button>
                       )}
-                      <Label htmlFor={`upload-${docType.key}`} className="cursor-pointer">
-                        <Button
-                          variant={existingDoc ? "outline" : "default"}
-                          size="sm"
-                          disabled={uploading === docType.key}
-                          className="rounded-full"
-                          asChild
-                        >
-                          <span>
-                            {uploading === docType.key ? (
-                              <span className="animate-spin">...</span>
-                            ) : (
-                              <>
-                                <Upload className="h-4 w-4 mr-1" />
-                                {existingDoc ? "Ersetzen" : "Hochladen"}
-                              </>
-                            )}
-                          </span>
-                        </Button>
-                      </Label>
+                      <Button
+                        variant={existingDoc ? "outline" : "default"}
+                        size="sm"
+                        disabled={uploading === docType.key}
+                        className="rounded-full"
+                        onClick={() => {
+                          const input = document.getElementById(`upload-${docType.key}`) as HTMLInputElement
+                          if (input) input.click()
+                        }}
+                      >
+                        {uploading === docType.key ? (
+                          <span className="animate-spin">...</span>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 mr-1" />
+                            {existingDoc ? "Ersetzen" : "Hochladen"}
+                          </>
+                        )}
+                      </Button>
                       <Input
                         id={`upload-${docType.key}`}
                         type="file"
@@ -437,6 +435,8 @@ export default function DriverDocumentsPage() {
                           const file = e.target.files?.[0]
                           if (file) {
                             uploadDocument(docType.key, file)
+                            // Reset input value so same file can be selected again
+                            e.target.value = ""
                           }
                         }}
                       />
@@ -448,12 +448,12 @@ export default function DriverDocumentsPage() {
 
             {/* Rejected Documents Info */}
             {documents.some((d) => d.status === "rejected") && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-sm font-medium text-red-900 mb-2">Abgelehnte Dokumente</p>
+              <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
+                <p className="text-sm font-medium text-destructive mb-2">Abgelehnte Dokumente</p>
                 {documents
                   .filter((d) => d.status === "rejected")
                   .map((doc) => (
-                    <div key={doc.id} className="text-sm text-red-700">
+                    <div key={doc.id} className="text-sm text-destructive/80">
                       <strong>{DOCUMENT_TYPES.find((t) => t.key === doc.document_type)?.label}:</strong>{" "}
                       {doc.rejection_reason || "Kein Grund angegeben"}
                     </div>
@@ -465,8 +465,8 @@ export default function DriverDocumentsPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4">
-        <div className="max-w-5xl mx-auto px-4 text-center text-xs text-slate-500">
+      <footer className="bg-primary text-primary-foreground py-4">
+        <div className="max-w-5xl mx-auto px-4 text-center text-xs text-primary-foreground/70">
           <p>
             © {new Date().getFullYear()} {company?.name || "MyDispatch"}
           </p>
