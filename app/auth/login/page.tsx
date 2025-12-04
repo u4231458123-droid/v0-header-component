@@ -140,43 +140,38 @@ export default function LoginPage() {
           .eq("id", userId)
           .maybeSingle()
 
-        // 2. Prüfe ob Fahrer (alle Accounts außer Kunden-Account)
-        if (normalizedEmail !== "courbois83@gmail.com") {
-          const { data: driver } = await supabase
-            .from("drivers")
-            .select("company_id")
-            .eq("user_id", userId)
-            .maybeSingle()
+        // 3. Prüfe ob Fahrer
+        const { data: driver } = await supabase
+          .from("drivers")
+          .select("company_id")
+          .eq("user_id", userId)
+          .maybeSingle()
 
-          if (driver) {
-            const { data: company } = await supabase.from("companies").select("company_slug").eq("id", driver.company_id).maybeSingle()
-            if (company) {
-              window.location.href = `/c/${company.company_slug}/fahrer/portal`
-            } else {
-              window.location.href = "/fahrer-portal"
-            }
-            return
+        if (driver) {
+          const { data: company } = await supabase.from("companies").select("company_slug").eq("id", driver.company_id).maybeSingle()
+          if (company) {
+            window.location.href = `/c/${company.company_slug}/fahrer/portal`
+          } else {
+            window.location.href = "/fahrer-portal"
           }
+          return
         }
 
-        // 3. Prüfe ob Kunde (NUR wenn NICHT Master-Account)
-        // Prüfe ob Kunde (nur für courbois83@gmail.com)
-        if (normalizedEmail !== "courbois83@gmail.com") {
-          const { data: customer } = await supabase
-            .from("customers")
-            .select("company_id")
-            .eq("user_id", userId)
-            .maybeSingle()
+        // 4. Prüfe ob Kunde
+        const { data: customer } = await supabase
+          .from("customers")
+          .select("company_id")
+          .eq("user_id", userId)
+          .maybeSingle()
 
-          if (customer) {
-            const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
-            if (company) {
-              window.location.href = `/c/${company.company_slug}/kunde/portal`
-            } else {
-              window.location.href = "/kunden-portal"
-            }
-            return
+        if (customer) {
+          const { data: company } = await supabase.from("companies").select("company_slug").eq("id", customer.company_id).maybeSingle()
+          if (company) {
+            window.location.href = `/c/${company.company_slug}/kunde/portal`
+          } else {
+            window.location.href = "/kunden-portal"
           }
+          return
         }
 
         // 4. Prüfe ob Unternehmer (Erst jetzt, da dies der Standard-Fallback für Profile ist)
