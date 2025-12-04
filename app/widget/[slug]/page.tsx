@@ -4,7 +4,21 @@ import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useParams } from "next/navigation"
 import { TenantBookingForm } from "@/app/c/[company]/kunde/buchen/TenantBookingForm"
-import type { Company, Customer } from "@/types"
+// Types inline definiert, da @/types nicht existiert
+interface Company {
+  id: string
+  name: string
+  slug?: string
+  logo_url?: string | null
+  [key: string]: any
+}
+
+interface Customer {
+  id: string
+  first_name?: string
+  last_name?: string
+  [key: string]: any
+}
 
 export default function WidgetPage() {
   const params = useParams()

@@ -7,6 +7,7 @@
  */
 
 import { promises as fs } from "fs"
+import * as fsSync from "fs"
 import path from "path"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
 
@@ -44,8 +45,8 @@ export class AutonomousWorkflow {
   }
 
   private ensureDocsDir() {
-    if (!fs.existsSync(this.documentationPath)) {
-      fs.mkdirSync(this.documentationPath, { recursive: true })
+    if (!fsSync.existsSync(this.documentationPath)) {
+      fsSync.mkdirSync(this.documentationPath, { recursive: true })
     }
   }
 

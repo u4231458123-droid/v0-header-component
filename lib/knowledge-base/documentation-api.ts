@@ -159,13 +159,13 @@ export async function createDocumentationFromRaw(
  * Verlinkt verwandte Dokumentationen automatisch
  */
 export async function autoLinkDocumentation(docId: string): Promise<Documentation> {
-  const doc = autoDocumentationEngine.getDocumentation(docId)
+  const doc = await autoDocumentationEngine.getDocumentation(docId)
   if (!doc) {
     throw new Error(`Dokumentation mit ID ${docId} nicht gefunden`)
   }
 
   const allDocs = await autoDocumentationEngine.getAllDocumentation()
-  const linked = autoDocumentationEngine.autoLinkRelated(doc, allDocs)
+  const linked = await Promise.resolve(autoDocumentationEngine.autoLinkRelated(doc, allDocs))
 
   // Speichere verlinkte Version
   const { documentationStore } = await import("./documentation-store")

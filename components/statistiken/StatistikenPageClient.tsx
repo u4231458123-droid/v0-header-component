@@ -393,10 +393,10 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
               }
 
               // Umsatz nach Monat Sheet
-              if (data?.revenueByMonth?.length > 0) {
+              if (data?.revenue?.byMonth && data.revenue.byMonth.length > 0) {
                 const umsatzData = [
                   ["Monat", "Umsatz"],
-                  ...data.revenueByMonth.map((m: any) => [
+                  ...data.revenue.byMonth.map((m: { month: string; year: number; revenue: number; bookings: number }) => [
                     m.month || m.name,
                     `${safeNumber(m.revenue || m.value).toFixed(2)} €`,
                   ]),
@@ -555,7 +555,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
                         outerRadius={100}
                         paddingAngle={2}
                         dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }: { name: string; percent?: number }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                         labelLine={false}
                       >
                         {statusChartData.map((entry, index) => (

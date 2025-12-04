@@ -43,6 +43,31 @@ interface Invoice {
   due_date?: string
 }
 
+interface CashbookEntry {
+  id: string
+  entry_type: "income" | "expense"
+  amount?: number | null
+  category?: string | null
+}
+
+interface Shift {
+  id: string
+  shift_start?: string | null
+  shift_end?: string | null
+  total_revenue?: number | null
+  total_distance_km?: number | null
+}
+
+interface PartnerConnection {
+  id: string
+  status: string
+}
+
+interface PartnerBooking {
+  id: string
+  status: string
+}
+
 async function getComprehensiveStatistics(companyId: string) {
   const supabase = await createClient()
 
@@ -349,31 +374,31 @@ async function getComprehensiveStatistics(companyId: string) {
   const totalOutstanding = totalInvoiced - totalPaid
 
   // Kassenbuch-Statistiken
-  const cashIncome = cashbook.filter((e) => e.entry_type === "income").reduce((sum, e) => sum + (e.amount || 0), 0)
-  const cashExpense = cashbook.filter((e) => e.entry_type === "expense").reduce((sum, e) => sum + (e.amount || 0), 0)
+  const cashIncome = (cashbook || []).filter((e: CashbookEntry) => e.entry_type === "income").reduce((sum: number, e: CashbookEntry) => sum + (e.amount || 0), 0)
+  const cashExpense = (cashbook || []).filter((e: CashbookEntry) => e.entry_type === "expense").reduce((sum: number, e: CashbookEntry) => sum + (e.amount || 0), 0)
   const cashBalance = cashIncome - cashExpense
 
   const cashbookByCategory: Record<string, number> = {}
-  cashbook.forEach((entry) => {
+  ;(cashbook || []).forEach((entry: CashbookEntry) => {
     const cat = entry.category || "Sonstiges"
-    cashbookByCategory[cat] = (cashbookByCategory[cat] || 0) + entry.amount
+    cashbookByCategory[cat] = (cashbookByCategory[cat] || 0) + (entry.amount || 0)
   })
 
   // Partner-Statistiken
-  const activePartners = (partnerConnections || []).filter((p) => p.status === "accepted").length
-  const pendingPartnerRequests = (partnerConnections || []).filter((p) => p.status === "pending").length
+  const activePartners = (partnerConnections || []).filter((p: PartnerConnection) => p.status === "accepted").length
+  const pendingPartnerRequests = (partnerConnections || []).filter((p: PartnerConnection) => p.status === "pending").length
   const partnerBookingsReceived = (partnerBookings || []).length
-  const partnerBookingsAccepted = (partnerBookings || []).filter((p) => p.status === "accepted").length
+  const partnerBookingsAccepted = (partnerBookings || []).filter((p: PartnerBooking) => p.status === "accepted").length
 
   // Schicht-Statistiken
-  const totalShiftHours = shifts.reduce((sum, s) => {
+  const totalShiftHours = (shifts || []).reduce((sum: number, s: Shift) => {
     if (s.shift_start && s.shift_end) {
       return sum + (new Date(s.shift_end).getTime() - new Date(s.shift_start).getTime()) / (1000 * 60 * 60)
     }
     return sum
   }, 0)
-  const totalShiftRevenue = shifts.reduce((sum, s) => sum + (s.total_revenue || 0), 0)
-  const totalShiftDistance = shifts.reduce((sum, s) => sum + (s.total_distance_km || 0), 0)
+  const totalShiftRevenue = (shifts || []).reduce((sum: number, s: Shift) => sum + (s.total_revenue || 0), 0)
+  const totalShiftDistance = (shifts || []).reduce((sum: number, s: Shift) => sum + (s.total_distance_km || 0), 0)
 
   // Durchschnittswerte
   const avgPassengers =

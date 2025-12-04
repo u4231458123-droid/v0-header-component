@@ -154,7 +154,7 @@ export function ChatWidget({
           table: "chat_messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
-        (payload) => {
+        (payload: { new: ChatMessage }) => {
           const newMsg = payload.new as ChatMessage
           setMessages((prev) => [...prev, newMsg])
           scrollToBottom()

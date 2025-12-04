@@ -77,6 +77,7 @@ export default function DriverDocumentsPage() {
   const loadDocuments = async () => {
     try {
       const supabase = getSupabase()
+      if (!supabase) return
 
       const {
         data: { user },
@@ -93,6 +94,7 @@ export default function DriverDocumentsPage() {
         setDriver(driverData)
         setCompany(driverData.companies)
 
+        if (!supabase) return
         const { data: docsData } = await supabase
           .from("documents")
           .select("*")
@@ -117,6 +119,11 @@ export default function DriverDocumentsPage() {
 
     try {
       const supabase = getSupabase()
+      if (!supabase) {
+        toast.error("Fehler: Supabase-Client nicht verfügbar")
+        setUploading(null)
+        return
+      }
 
       // Dateigröße prüfen (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
@@ -156,7 +163,9 @@ export default function DriverDocumentsPage() {
         console.error("Insert error:", insertError)
         toast.error(`Fehler beim Speichern: ${insertError.message}`)
         // Lösche hochgeladene Datei bei Fehler
-        await supabase.storage.from("documents").remove([fileName])
+        if (supabase) {
+          await supabase.storage.from("documents").remove([fileName])
+        }
         setUploading(null)
         return
       }
@@ -173,6 +182,7 @@ export default function DriverDocumentsPage() {
 
   const handleLogout = async () => {
     const supabase = getSupabase()
+    if (!supabase) return
     await supabase.auth.signOut()
     window.location.href = "/auth/login"
   }
@@ -377,6 +387,7 @@ export default function DriverDocumentsPage() {
                           onClick={async () => {
                             try {
                               const supabase = getSupabase()
+                              if (!supabase) return
 
                               // Erstelle signed URL für Download
                               const { data, error } = await supabase.storage

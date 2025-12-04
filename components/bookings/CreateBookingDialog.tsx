@@ -121,7 +121,7 @@ export function CreateBookingDialog({
         .select("id, name, max_passengers")
         .eq("company_id", companyId)
         .order("name")
-        .then(({ data }) => {
+        .then(({ data }: { data: Array<{ id: string; name: string; max_passengers: number }> | null }) => {
           if (data) setVehicleCategories(data)
         })
     }
@@ -571,7 +571,7 @@ export function CreateBookingDialog({
                         </SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>Keine Fahrer verfügbar</SelectItem>
+                      <SelectItem value="">Keine Fahrer verfügbar</SelectItem>
                     )}
                   </SelectContent>
                 </Select>

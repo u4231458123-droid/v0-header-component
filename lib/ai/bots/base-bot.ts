@@ -100,7 +100,7 @@ export abstract class BaseBot {
         return await loadDocumentationForBot(categories || defaultCategories)
       })
       
-      perfLogger.info(`${this.botName}`, `Dokumentationen geladen: ${this.documentation.length}`)
+      perfLogger.log(`[${this.botName}] Dokumentationen geladen: ${this.documentation.length}`)
     } catch (error) {
       console.warn(`[${this.botName}] Fehler beim Laden der Dokumentation:`, error)
       this.documentation = []

@@ -31,6 +31,7 @@ import { safeNumber } from "@/lib/utils/safe-number"
 
 interface Booking {
   id: string
+  company_id: string
   pickup_address: string
   dropoff_address: string
   pickup_time: string
