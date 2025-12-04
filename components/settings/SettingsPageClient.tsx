@@ -422,6 +422,15 @@ export function SettingsPageClient({
 
       console.log("[Settings] Update successful:", data)
 
+      // Revalidate Landing Page Route wenn landingpage_enabled geändert wurde
+      if (updateData.landingpage_enabled !== undefined && company.company_slug) {
+        try {
+          await fetch(`/api/revalidate?path=/c/${company.company_slug}`, { method: "POST" })
+        } catch (revalidateError) {
+          console.warn("[Settings] Revalidation failed:", revalidateError)
+        }
+      }
+
       toast.success("Einstellungen erfolgreich gespeichert")
       router.refresh()
     } catch (error: any) {

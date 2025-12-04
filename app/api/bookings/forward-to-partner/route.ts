@@ -56,20 +56,23 @@ export async function POST(request: Request) {
     // Generiere E-Mail-Inhalt mit nur ausgewählten Feldern
     const emailContent = generatePartnerEmail(booking, selectedFields)
 
-    // TODO: E-Mail-Versand implementieren (z.B. mit Resend, SendGrid, etc.)
-    // Beispiel:
-    // await resend.emails.send({
-    //   from: 'noreply@my-dispatch.de',
-    //   to: partner.email,
-    //   subject: `Auftrag ${booking.id} - Weiterleitung`,
-    //   html: emailContent
-    // })
+    // Versende E-Mail an Partner
+    try {
+      const { sendPartnerForwardEmail } = await import("@/lib/email/email-service")
+      const emailResult = await sendPartnerForwardEmail({
+        to: partner.email,
+        bookingId: booking.id,
+        bookingDetails: emailContent,
+      })
 
-    console.log("Partner Forward Email:", {
-      to: partner.email,
-      subject: `Auftrag ${booking.id} - Weiterleitung`,
-      content: emailContent,
-    })
+      if (!emailResult.success) {
+        console.error("E-Mail-Versand fehlgeschlagen:", emailResult.error)
+        // Weiterhin als Erfolg zurückgeben, da die Weiterleitung gespeichert wurde
+      }
+    } catch (emailError) {
+      console.error("Fehler beim Versenden der E-Mail:", emailError)
+      // Weiterhin als Erfolg zurückgeben, da die Weiterleitung gespeichert wurde
+    }
 
     return NextResponse.json({
       success: true,

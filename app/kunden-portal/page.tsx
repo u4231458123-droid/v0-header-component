@@ -630,6 +630,16 @@ export default function CustomerPortalPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <p className="text-sm text-muted-foreground">Anrede</p>
+                    <p className="font-medium">{customer.salutation || "Nicht angegeben"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Titel</p>
+                    <p className="font-medium">{customer.title || "Kein Titel"}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                     <p className="text-sm text-muted-foreground">Vorname</p>
                     <p className="font-medium">{customer.first_name}</p>
                   </div>

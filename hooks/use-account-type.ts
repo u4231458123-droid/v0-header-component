@@ -3,14 +3,13 @@
 import { useAuth } from "./use-auth"
 import { getDemoAccountDetails } from "@/lib/demo-accounts"
 
-const MASTER_ACCOUNT_EMAILS = ["courbois1981@gmail.com", "info@my-dispatch.de"]
-
 const DEMO_ACCOUNT_EMAILS = ["demo.starter@my-dispatch.de", "demo.business@my-dispatch.de"]
 
 export function useAccountType() {
-  const { user, company } = useAuth()
+  const { user, profile, company } = useAuth()
 
-  const isMasterAccount = user?.email ? MASTER_ACCOUNT_EMAILS.includes(user.email) : false
+  // Master-Admin wird über Role-Check ermittelt
+  const isMasterAccount = profile?.role === "master_admin" || profile?.role === "master"
 
   const isDemoUser = user?.email ? DEMO_ACCOUNT_EMAILS.includes(user.email) : false
   const demoDetails = user?.email ? getDemoAccountDetails(user.email) : null

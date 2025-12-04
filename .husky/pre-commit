@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# MANDATORY QUALITY GATE - NICHT UMG-EHBAR
+echo ""
+echo "🚨 MANDATORY QUALITY GATE - Pre-Commit Check"
+echo "=============================================="
+echo ""
+
+# Prüfe alle geänderten Dateien mit QualityBot
+node scripts/cicd/mandatory-quality-gate.js --pre-commit
+
+# Exit-Code prüfen
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ QUALITY GATE FEHLGESCHLAGEN - Commit blockiert!"
+  echo "💡 Behebe die Fehler und versuche es erneut."
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "✅ QUALITY GATE BESTANDEN - Commit erlaubt"
+echo ""
+

@@ -31,9 +31,10 @@ interface EditCustomerDialogProps {
   customer: Customer
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: (updatedCustomer: Customer) => void
 }
 
-export function EditCustomerDialog({ customer, open, onOpenChange }: EditCustomerDialogProps) {
+export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: EditCustomerDialogProps) {
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState(customer.status)
   const [address, setAddress] = useState(customer.address || "")
@@ -81,9 +82,29 @@ export function EditCustomerDialog({ customer, open, onOpenChange }: EditCustome
         })
         .eq("id", customer.id)
 
-      if (error) throw error
+      if (error) {
+        console.error("[EditCustomerDialog] Update error:", error)
+        throw error
+      }
+
+      // Lade aktualisierten Kunden
+      const { data: updatedCustomer, error: fetchError } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("id", customer.id)
+        .single()
+
+      if (fetchError) {
+        console.error("[EditCustomerDialog] Fetch error:", fetchError)
+      }
 
       toast.success("Kunde erfolgreich aktualisiert")
+      
+      // Callback aufrufen wenn vorhanden
+      if (onSuccess && updatedCustomer) {
+        onSuccess(updatedCustomer)
+      }
+      
       onOpenChange(false)
       router.refresh()
     } catch (error) {

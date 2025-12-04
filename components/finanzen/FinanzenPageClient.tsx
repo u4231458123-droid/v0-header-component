@@ -665,7 +665,7 @@ export function FinanzenPageClient({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 min-h-[calc(100vh-200px)]">
       {/* Header mit Tab-Switcher */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">

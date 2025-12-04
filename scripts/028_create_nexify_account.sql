@@ -71,7 +71,10 @@ ON CONFLICT (id) DO UPDATE SET
   updated_at = NOW();
 
 -- 2. Aktualisiere Profil für nexify.login@gmail.com mit company_id und role: "owner"
--- Hinweis: Auth-User muss manuell in Supabase Dashboard erstellt werden, falls nicht vorhanden
+-- HINWEIS: Auth-User muss manuell in Supabase Dashboard erstellt werden:
+--   - Email: nexify.login@gmail.com
+--   - Passwort: 1def!xO2022!!
+--   - Email bestätigt: Ja
 UPDATE profiles
 SET 
   company_id = 'nexify-company-0001',
@@ -95,4 +98,3 @@ SELECT
 FROM profiles p
 LEFT JOIN companies c ON p.company_id = c.id
 WHERE p.email = 'nexify.login@gmail.com' OR c.id = 'nexify-company-0001';
-

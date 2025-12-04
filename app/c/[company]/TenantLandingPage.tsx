@@ -773,13 +773,15 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                     </div>
                     <div>
                       <Label htmlFor="phone" className="text-gray-700 font-medium">
-                        Telefon (optional)
+                        Telefon *
                       </Label>
                       <Input
                         id="phone"
+                        type="tel"
                         value={contactForm.phone}
                         onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                        placeholder="Fuer Rueckfragen"
+                        placeholder="+49 123 456789"
+                        required
                         className="mt-1.5 bg-white"
                       />
                     </div>

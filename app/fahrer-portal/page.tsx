@@ -1009,16 +1009,16 @@ export default function FahrerPortalPage() {
       </main>
 
       {/* Footer - wie Kundenportal */}
-      <footer className="border-t border-slate-200 mt-8 py-6">
-        <div className="max-w-5xl mx-auto px-4 text-center text-sm text-slate-500">
+      <footer className="bg-primary text-primary-foreground mt-8 py-6">
+        <div className="max-w-5xl mx-auto px-4 text-center text-sm text-primary-foreground/70">
           <p>
             &copy; {new Date().getFullYear()} {driver.company?.name}. Alle Rechte vorbehalten.
           </p>
           <div className="flex items-center justify-center gap-4 mt-2">
-            <Link href="/impressum" className="hover:underline">
+            <Link href="/impressum" className="hover:text-primary-foreground transition-colors">
               Impressum
             </Link>
-            <Link href="/datenschutz" className="hover:underline">
+            <Link href="/datenschutz" className="hover:text-primary-foreground transition-colors">
               Datenschutz
             </Link>
           </div>
