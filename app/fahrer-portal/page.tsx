@@ -130,7 +130,7 @@ export default function FahrerPortalPage() {
   const [showEndShiftDialog, setShowEndShiftDialog] = useState(false)
   const [loadingHistory, setLoadingHistory] = useState(false)
 
-  const primaryColor = "#343f60"
+  // Design-Tokens werden über Tailwind CSS-Klassen verwendet (bg-primary, text-primary)
 
   useEffect(() => {
     loadDriverData()
@@ -635,8 +635,7 @@ export default function FahrerPortalPage() {
                 />
               ) : (
                 <div
-                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold"
-                  style={{ backgroundColor: primaryColor }}
+                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold bg-primary"
                 >
                   {driver.company?.name?.charAt(0) || "F"}
                 </div>
@@ -723,7 +722,7 @@ export default function FahrerPortalPage() {
         <Card className="mb-6">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" style={{ color: primaryColor }} />
+              <Clock className="h-5 w-5 text-primary" />
               Schicht-Steuerung
             </CardTitle>
           </CardHeader>
@@ -732,8 +731,7 @@ export default function FahrerPortalPage() {
               <>
                 <Button
                   onClick={() => setShowStartShiftDialog(true)}
-                  className="w-full h-14 text-lg text-white"
-                  style={{ backgroundColor: primaryColor }}
+                  className="w-full h-14 text-lg text-white bg-primary hover:bg-primary/90"
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Schicht starten
@@ -748,7 +746,7 @@ export default function FahrerPortalPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                      <AlertDialogAction onClick={startShift} style={{ backgroundColor: primaryColor }}>
+                      <AlertDialogAction onClick={startShift} className="bg-primary hover:bg-primary/90">
                         Schicht starten
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -849,8 +847,7 @@ export default function FahrerPortalPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="h-12 w-12 rounded-full flex items-center justify-center text-white"
-                  style={{ backgroundColor: primaryColor }}
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-white bg-primary"
                 >
                   <Car className="h-6 w-6" />
                 </div>
@@ -866,8 +863,7 @@ export default function FahrerPortalPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="h-12 w-12 rounded-full flex items-center justify-center text-white"
-                  style={{ backgroundColor: primaryColor }}
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-white bg-primary"
                 >
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
@@ -883,8 +879,7 @@ export default function FahrerPortalPage() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="h-12 w-12 rounded-full flex items-center justify-center text-white"
-                  style={{ backgroundColor: primaryColor }}
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-white bg-primary"
                 >
                   <Euro className="h-6 w-6" />
                 </div>
@@ -1027,8 +1022,7 @@ export default function FahrerPortalPage() {
                               </Button>
                               <Button
                                 size="sm"
-                                className="text-white"
-                                style={{ backgroundColor: primaryColor }}
+                                className="text-white bg-primary hover:bg-primary/90"
                                 onClick={() => acceptBooking(booking.id)}
                               >
                                 <CheckCircle2 className="h-4 w-4 mr-1" />
@@ -1098,7 +1092,7 @@ export default function FahrerPortalPage() {
                       }
                     }}
                   />
-                  <Button onClick={sendMessage} style={{ backgroundColor: primaryColor }} className="text-white">
+                  <Button onClick={sendMessage} className="text-white bg-primary hover:bg-primary/90">
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
