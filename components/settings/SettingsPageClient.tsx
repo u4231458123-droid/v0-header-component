@@ -36,7 +36,9 @@ import {
   MapPin,
   FileText,
   ImageIcon,
+  HelpCircle,
 } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 import { TeamManagement } from "./TeamManagement"
 

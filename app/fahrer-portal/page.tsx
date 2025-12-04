@@ -428,25 +428,67 @@ export default function FahrerPortalPage() {
   }
 
   const acceptBooking = async (bookingId: string) => {
+    // Optimistic UI: Sofortige Aktualisierung
+    const bookingToAccept = pendingBookings.find((b) => b.id === bookingId)
+    if (bookingToAccept) {
+      setPendingBookings((prev) => prev.filter((b) => b.id !== bookingId))
+      setActiveBooking({ ...bookingToAccept, status: "in_progress" })
+      toast.success("Fahrt angenommen", {
+        description: "Navigation wird geladen...",
+        duration: 3000,
+      })
+    }
+
     const { error } = await supabase.from("bookings").update({ status: "in_progress" }).eq("id", bookingId)
 
-    if (!error) {
-      loadDriverData()
+    if (error) {
+      // Rollback bei Fehler
+      if (bookingToAccept) {
+        setPendingBookings((prev) => [...prev, bookingToAccept])
+        setActiveBooking(null)
+      }
+      toast.error("Fehler beim Annehmen der Fahrt", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
     }
   }
 
   const declineBooking = async (bookingId: string) => {
+    // Optimistic UI: Sofortige Entfernung aus der Liste
+    const bookingToDecline = pendingBookings.find((b) => b.id === bookingId)
+    setPendingBookings((prev) => prev.filter((b) => b.id !== bookingId))
+    toast.success("Fahrt abgelehnt", {
+      description: "Die Fahrt wird einem anderen Fahrer zugewiesen.",
+      duration: 3000,
+    })
+
     const { error } = await supabase
       .from("bookings")
       .update({ status: "cancelled", driver_id: null })
       .eq("id", bookingId)
 
-    if (!error) {
-      loadDriverData()
+    if (error) {
+      // Rollback bei Fehler
+      if (bookingToDecline) {
+        setPendingBookings((prev) => [...prev, bookingToDecline])
+      }
+      toast.error("Fehler beim Ablehnen der Fahrt", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
     }
   }
 
   const completeBooking = async (bookingId: string) => {
+    // Optimistic UI: Sofortige Status-Änderung
+    const previousActiveBooking = activeBooking
+    setActiveBooking(null)
+    toast.success("Fahrt abgeschlossen", {
+      description: "Vielen Dank! Die Fahrt wurde erfolgreich beendet.",
+      duration: 4000,
+    })
+
     const { error } = await supabase
       .from("bookings")
       .update({
@@ -455,8 +497,15 @@ export default function FahrerPortalPage() {
       })
       .eq("id", bookingId)
 
-    if (!error) {
-      setActiveBooking(null)
+    if (error) {
+      // Rollback bei Fehler
+      setActiveBooking(previousActiveBooking)
+      toast.error("Fehler beim Abschließen der Fahrt", {
+        description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
+      })
+    } else {
+      // Daten neu laden für Fahrtenverlauf
       loadDriverData()
     }
   }
