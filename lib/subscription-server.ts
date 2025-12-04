@@ -59,7 +59,7 @@ export async function checkSubscriptionAccess(): Promise<{
 
   return {
     hasAccess,
-    isMasterAdmin: false,
+    isMasterAdmin: false, // Wurde bereits oben geprüft, hier immer false
     status: company.subscription_status as SubscriptionStatus,
     tier,
     features: TIER_FEATURES[tier],
