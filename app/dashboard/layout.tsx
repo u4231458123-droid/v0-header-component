@@ -5,17 +5,8 @@ import { checkSubscriptionAccess } from "@/lib/subscription-server"
 
 export const dynamic = "force-dynamic"
 
-// Master Account Email - hat direkten Zugang ohne Subscription-Check
-const MASTER_ACCOUNT_EMAIL = "courbois1981@gmail.com"
 // Kunden-Account Email - sollte ins Kunden-Portal
 const CUSTOMER_ACCOUNT_EMAIL = "courbois83@gmail.com"
-
-// Helper function für case-insensitive E-Mail-Vergleich
-function isMasterAccount(email: string | undefined | null): boolean {
-  if (!email) return false
-  const normalized = email.toLowerCase().trim()
-  return normalized === MASTER_ACCOUNT_EMAIL || normalized === "info@my-dispatch.de"
-}
 
 function isCustomerAccount(email: string | undefined | null): boolean {
   if (!email) return false
@@ -37,12 +28,6 @@ export default async function DashboardLayout({
 
     if (userError || !user) {
       redirect("/auth/login")
-    }
-
-    // Spezielle Routing-Logik für Master-Account
-    if (isMasterAccount(user.email)) {
-      // Master-Account hat direkten Zugang ohne Subscription-Check
-      return <>{children}</>
     }
 
     // Spezielle Routing-Logik für Kunden-Account

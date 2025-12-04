@@ -31,8 +31,7 @@ export async function POST(request: Request) {
     // Prüfe ob User Admin ist
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
 
-    const isMasterAccount = user.email?.toLowerCase().trim() === "courbois1981@gmail.com" || user.email?.toLowerCase().trim() === "info@my-dispatch.de"
-    const isAdmin = profile?.role === "admin" || profile?.role === "master" || profile?.role === "owner" || isMasterAccount
+    const isAdmin = profile?.role === "admin" || profile?.role === "master" || profile?.role === "master_admin" || profile?.role === "owner"
 
     if (!isAdmin) {
       return NextResponse.json({ success: false, error: "Keine Berechtigung" }, { status: 403 })

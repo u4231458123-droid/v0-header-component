@@ -636,18 +636,18 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                     ⚠️ Keine Fahrzeuge im Fleet vorhanden. Bitte zuerst Fahrzeuge anlegen.
                   </div>
                 ) : (
-                  <Select value={vehicleClass} onValueChange={setVehicleClass} required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Kategorie wählen" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {VEHICLE_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <Select value={vehicleClass} onValueChange={setVehicleClass} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Kategorie wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VEHICLE_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 )}
               </div>
               <div className="grid gap-2">

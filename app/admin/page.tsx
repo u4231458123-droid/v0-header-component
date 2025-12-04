@@ -12,8 +12,6 @@ export const dynamic = "force-dynamic"
  * Normale Kunden werden zum Dashboard weitergeleitet
  */
 
-const MASTER_EMAILS = ["courbois1981@gmail.com", "info@my-dispatch.de"]
-
 export default async function AdminPage() {
   const supabase = await createClient()
 
@@ -25,16 +23,14 @@ export default async function AdminPage() {
     redirect("/auth/login")
   }
 
-  // Prüfe Master-Admin Status
-  const isMasterByEmail = user.email && MASTER_EMAILS.includes(user.email)
-
+  // Prüfe Master-Admin Status (nur Role-Check)
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .maybeSingle()
 
-  const isMasterAdmin = profile?.role === "master_admin" || isMasterByEmail
+  const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
 
   if (!isMasterAdmin) {
     // Keine Berechtigung - zum Dashboard weiterleiten

@@ -73,31 +73,23 @@ async function getDashboardStatsFallback(
 
 export default async function DashboardPage() {
   try {
-    const supabase = await createClient()
+  const supabase = await createClient()
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
 
-    if (userError || !user) {
-      redirect("/auth/login")
-    }
+  if (userError || !user) {
+    redirect("/auth/login")
+  }
 
-  // Spezielle Routing-Logik für Master-Account (courbois1981@gmail.com)
-  // Master-Account hat direkten Zugang ins Dashboard ohne weitere Checks
-  const MASTER_ACCOUNT_EMAIL = "courbois1981@gmail.com"
+  // Kunden-Account: Weiterleitung ins Kunden-Portal
   const CUSTOMER_ACCOUNT_EMAIL = "courbois83@gmail.com"
-  
-  // Case-insensitive E-Mail-Vergleich
   const userEmailNormalized = user.email?.toLowerCase().trim()
-  const isMasterAccount = userEmailNormalized === MASTER_ACCOUNT_EMAIL || userEmailNormalized === "info@my-dispatch.de"
   const isCustomerAccount = userEmailNormalized === CUSTOMER_ACCOUNT_EMAIL
 
-  if (isMasterAccount) {
-    // Master-Account: Direkter Zugang, keine weiteren Checks nötig
-    // Weiter mit normalem Dashboard-Flow - KEINE Weiterleitung
-  } else if (isCustomerAccount) {
+  if (isCustomerAccount) {
     // Kunden-Account: Weiterleitung ins Kunden-Portal
     const { data: customer } = await supabase
       .from("customers")
@@ -121,13 +113,12 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .maybeSingle()
 
-  // WICHTIG: Master-Account (courbois1981@gmail.com) ist NUR Unternehmer, NIEMALS Fahrer!
-  if (profile?.role === "driver" && !isMasterAccount) {
+  // Prüfe Rollen-basierte Weiterleitung
+  if (profile?.role === "driver") {
     redirect("/fahrer-portal")
   }
 
-  // WICHTIG: Master-Account wird NICHT als Kunde behandelt
-  if (profile?.role === "customer" && !isMasterAccount) {
+  if (profile?.role === "customer") {
     const { data: customer } = await supabase
       .from("customers")
       .select("id, company_id, company:companies(company_slug)")
@@ -144,67 +135,50 @@ export default async function DashboardPage() {
   }
 
   if (profileError || !profile) {
-    // Master-Account hat möglicherweise kein Profil, aber sollte trotzdem ins Dashboard
-    if (isMasterAccount) {
-      // Master-Account: Weiter mit Dashboard (keine Weiterleitung)
-      // Kein return - Code läuft weiter zum Dashboard-Rendering
-    } else {
-      // Pruefe ob Fahrer (NUR wenn NICHT Master-Account)
-      // WICHTIG: courbois1981@gmail.com ist NUR Unternehmer, NIEMALS Fahrer!
-      if (!isMasterAccount) {
-        const { data: driver } = await supabase
-          .from("drivers")
-          .select("id, company_id, company:companies(company_slug)")
-          .eq("user_id", user.id)
-          .maybeSingle()
+    // Prüfe ob Fahrer
+    const { data: driver } = await supabase
+      .from("drivers")
+      .select("id, company_id, company:companies(company_slug)")
+      .eq("user_id", user.id)
+      .maybeSingle()
 
-        if (driver) {
-          redirect("/fahrer-portal")
-        }
-      }
-
-      // WICHTIG: Master-Account wird NIEMALS als Kunde behandelt, auch wenn er in customers/customer_accounts steht!
-      // Pruefe ob Kunde (NUR wenn NICHT Master)
-      if (!isMasterAccount) {
-        const { data: customer } = await supabase
-          .from("customers")
-          .select("id, company_id, company:companies(company_slug)")
-          .eq("user_id", user.id)
-          .maybeSingle()
-
-        if (customer) {
-          const companySlug = (customer.company as any)?.company_slug
-          if (companySlug) {
-            redirect(`/c/${companySlug}/kunde/portal`)
-          }
-          redirect("/kunden-portal")
-        }
-
-        // Pruefe customer_accounts als Fallback (NUR wenn NICHT Master)
-        const { data: customerAccount } = await supabase
-          .from("customer_accounts")
-          .select("id, registered_companies")
-          .eq("user_id", user.id)
-          .maybeSingle()
-
-        if (customerAccount) {
-          redirect("/kunden-portal")
-        }
-      }
-
-      // Kein bekannter Nutzertyp - Logout und zur Startseite
-      await supabase.auth.signOut()
-      redirect("/")
+    if (driver) {
+      redirect("/fahrer-portal")
     }
+
+    // Prüfe ob Kunde
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, company_id, company:companies(company_slug)")
+      .eq("user_id", user.id)
+      .maybeSingle()
+
+    if (customer) {
+      const companySlug = (customer.company as any)?.company_slug
+      if (companySlug) {
+        redirect(`/c/${companySlug}/kunde/portal`)
+      }
+      redirect("/kunden-portal")
+    }
+
+    // Prüfe customer_accounts als Fallback
+    const { data: customerAccount } = await supabase
+      .from("customer_accounts")
+      .select("id, registered_companies")
+      .eq("user_id", user.id)
+      .maybeSingle()
+
+    if (customerAccount) {
+      redirect("/kunden-portal")
+    }
+
+    // Kein bekannter Nutzertyp - Logout und zur Startseite
+    await supabase.auth.signOut()
+    redirect("/")
   }
 
-  // Master-Account sollte auch ohne Company funktionieren
-  let companyId = profile?.company_id || null
-  
-  // Wenn Master-Account und kein Company, erlaube trotzdem Dashboard-Zugriff
-  if (isMasterAccount && !companyId) {
-    companyId = null // Explizit null für Master ohne Company
-  }
+  // Company-ID aus Profil
+  const companyId = profile?.company_id || null
 
   const stats = {
     bookingsToday: 0,
@@ -227,9 +201,8 @@ export default async function DashboardPage() {
   let customers: any[] = []
   let drivers: any[] = []
 
-  // Master-Account ohne Company: Zeige leeres Dashboard
-  // Andere Accounts: Nur wenn companyId vorhanden
-  if (companyId || isMasterAccount) {
+  // Nur wenn companyId vorhanden
+  if (companyId) {
     const today = new Date()
     const todayStr = today.toISOString().split("T")[0]
     const yesterday = new Date(today)
@@ -270,91 +243,91 @@ export default async function DashboardPage() {
 
       // 2. Listen-Daten und Chart-Daten parallel laden (nur wenn companyId vorhanden)
       try {
-        const [
-          recentBookingsRes,
-          upcomingBookingsRes,
-          customersRes,
-          driversRes,
-          vehiclesRes,
-          revenue30DaysRes // Für Charts benötigt
-        ] = await Promise.all([
-          supabase
-            .from("bookings")
-            .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
-            .eq("company_id", companyId)
-            .order("created_at", { ascending: false })
-            .limit(5),
-          supabase
-            .from("bookings")
-            .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
-            .eq("company_id", companyId)
-            .gte("pickup_time", today.toISOString())
-            .in("status", ["pending", "confirmed", "assigned"])
-            .order("pickup_time", { ascending: true })
-            .limit(5),
-          supabase
-            .from("customers")
-            .select("id, first_name, last_name, salutation, email, phone")
-            .eq("company_id", companyId)
-            .limit(100),
-          supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
-          supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
-          supabase
-            .from("bookings")
-            .select("price, pickup_time, created_at")
-            .eq("company_id", companyId)
-            .eq("status", "completed")
-            .gte("created_at", thirtyDaysAgo.toISOString())
-        ]);
+      const [
+        recentBookingsRes,
+        upcomingBookingsRes,
+        customersRes,
+        driversRes,
+        vehiclesRes,
+        revenue30DaysRes // Für Charts benötigt
+      ] = await Promise.all([
+        supabase
+          .from("bookings")
+          .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
+          .eq("company_id", companyId)
+          .order("created_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("bookings")
+          .select("*, customer:customers(first_name, last_name, salutation), driver:drivers(first_name, last_name)")
+          .eq("company_id", companyId)
+          .gte("pickup_time", today.toISOString())
+          .in("status", ["pending", "confirmed", "assigned"])
+          .order("pickup_time", { ascending: true })
+          .limit(5),
+        supabase
+          .from("customers")
+          .select("id, first_name, last_name, salutation, email, phone")
+          .eq("company_id", companyId)
+          .limit(100),
+        supabase.from("drivers").select("id, first_name, last_name, status").eq("company_id", companyId),
+        supabase.from("vehicles").select("id, license_plate, make, model, status, current_lat, current_lng, location_updated_at").eq("company_id", companyId),
+        supabase
+          .from("bookings")
+          .select("price, pickup_time, created_at")
+          .eq("company_id", companyId)
+          .eq("status", "completed")
+          .gte("created_at", thirtyDaysAgo.toISOString())
+      ]);
 
-        // Zuweisung der Werte aus RPC
-        stats.bookingsToday = safeStats.bookings_today || 0;
-        stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
-        stats.activeBookings = safeStats.active_bookings || 0;
-        stats.driversAvailable = safeStats.drivers_available || 0;
-        stats.driversTotal = safeStats.drivers_total || 0;
-        stats.customersTotal = safeStats.customers_total || 0;
-        stats.pendingInvoices = safeStats.pending_invoices || 0;
-        
-        recentBookings = recentBookingsRes.data || [];
-        upcomingBookings = upcomingBookingsRes.data || [];
-        customers = customersRes.data || [];
-        drivers = driversRes.data || [];
+      // Zuweisung der Werte aus RPC
+      stats.bookingsToday = safeStats.bookings_today || 0;
+      stats.bookingsYesterday = safeStats.bookings_yesterday || 0;
+      stats.activeBookings = safeStats.active_bookings || 0;
+      stats.driversAvailable = safeStats.drivers_available || 0;
+      stats.driversTotal = safeStats.drivers_total || 0;
+      stats.customersTotal = safeStats.customers_total || 0;
+      stats.pendingInvoices = safeStats.pending_invoices || 0;
+      
+      recentBookings = recentBookingsRes.data || [];
+      upcomingBookings = upcomingBookingsRes.data || [];
+      customers = customersRes.data || [];
+      drivers = driversRes.data || [];
 
-        if (revenue30DaysRes.data) {
-          stats.revenue30Days = revenue30DaysRes.data.reduce((sum, b) => sum + (Number(b.price) || 0), 0)
-          const revenueByDay: Record<string, number> = {}
-          for (let i = 29; i >= 0; i--) {
-            const date = new Date(today)
-            date.setDate(date.getDate() - i)
-            const dateStr = date.toISOString().split("T")[0]
-            revenueByDay[dateStr] = 0
-          }
-          revenue30DaysRes.data.forEach((booking) => {
-            const dateStr = new Date(booking.created_at).toISOString().split("T")[0]
-            if (revenueByDay[dateStr] !== undefined) {
-              revenueByDay[dateStr] += Number(booking.price) || 0
-            }
-          })
-          revenueData = Object.entries(revenueByDay).map(([date, amount]) => ({
-            date,
-            amount,
-            label: new Date(date).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" }),
-          }))
+      if (revenue30DaysRes.data) {
+      stats.revenue30Days = revenue30DaysRes.data.reduce((sum, b) => sum + (Number(b.price) || 0), 0)
+      const revenueByDay: Record<string, number> = {}
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(today)
+        date.setDate(date.getDate() - i)
+        const dateStr = date.toISOString().split("T")[0]
+        revenueByDay[dateStr] = 0
+      }
+      revenue30DaysRes.data.forEach((booking) => {
+        const dateStr = new Date(booking.created_at).toISOString().split("T")[0]
+        if (revenueByDay[dateStr] !== undefined) {
+          revenueByDay[dateStr] += Number(booking.price) || 0
         }
+      })
+      revenueData = Object.entries(revenueByDay).map(([date, amount]) => ({
+        date,
+        amount,
+        label: new Date(date).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" }),
+      }))
+    }
 
-        if (!vehiclesRes.error && vehiclesRes.data) {
-          stats.vehiclesTotal = vehiclesRes.data.length
-          vehicles = vehiclesRes.data.map((v: any) => ({
-            id: v.id,
-            licensePlate: v.license_plate,
-            make: v.make,
-            model: v.model,
-            status: v.status || "offline",
-            location: v.current_lat && v.current_lng ? { lat: v.current_lat, lng: v.current_lng } : undefined,
-            driverName: v.driver ? `${v.driver.first_name} ${v.driver.last_name}` : undefined,
-            lastUpdate: v.location_updated_at,
-          }))
+      if (!vehiclesRes.error && vehiclesRes.data) {
+        stats.vehiclesTotal = vehiclesRes.data.length
+        vehicles = vehiclesRes.data.map((v: any) => ({
+          id: v.id,
+          licensePlate: v.license_plate,
+          make: v.make,
+          model: v.model,
+          status: v.status || "offline",
+          location: v.current_lat && v.current_lng ? { lat: v.current_lat, lng: v.current_lng } : undefined,
+          driverName: v.driver ? `${v.driver.first_name} ${v.driver.last_name}` : undefined,
+          lastUpdate: v.location_updated_at,
+        }))
         }
       } catch (queryError) {
         console.error("[Dashboard] Query error:", queryError)

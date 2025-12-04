@@ -12,8 +12,6 @@ import {
   TIER_FEATURES,
 } from "@/lib/subscription"
 
-const MASTER_ACCOUNT_EMAILS = ["courbois1981@gmail.com", "info@my-dispatch.de"]
-
 export async function checkSubscriptionAccess(): Promise<{
   hasAccess: boolean
   isMasterAdmin: boolean
@@ -36,29 +34,10 @@ export async function checkSubscriptionAccess(): Promise<{
     return { hasAccess: false, isMasterAdmin: false, message: "Not authenticated" }
   }
 
-  // Case-insensitive E-Mail-Prüfung für Master-Accounts
-  const userEmailNormalized = user.email?.toLowerCase().trim()
-  if (userEmailNormalized && MASTER_ACCOUNT_EMAILS.some((email) => email.toLowerCase().trim() === userEmailNormalized)) {
-    return {
-      hasAccess: true,
-      isMasterAdmin: true,
-      tier: "enterprise",
-      features: TIER_FEATURES.enterprise,
-      limits: TIER_LIMITS.enterprise,
-    }
-  }
-
   const { data: profile } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
 
-  if (profile?.role === "master_admin" || profile?.role === "master") {
-    return {
-      hasAccess: true,
-      isMasterAdmin: true,
-      tier: "enterprise",
-      features: TIER_FEATURES.enterprise,
-      limits: TIER_LIMITS.enterprise,
-    }
-  }
+  // Master-Admin Role-Check (nur für Admin-Bereiche, nicht für normale Subscription-Checks)
+  const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
 
   // Check subscription status
   if (!profile?.company_id) {
@@ -92,6 +71,7 @@ export async function checkSubscriptionAccess(): Promise<{
 export async function checkFeatureAccess(feature: keyof TierFeatures): Promise<boolean> {
   const access = await checkSubscriptionAccess()
 
+  // Master-Admin hat Zugriff auf alle Features
   if (access.isMasterAdmin) return true
   if (!access.hasAccess || !access.features) return false
 

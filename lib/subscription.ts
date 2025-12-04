@@ -1,8 +1,6 @@
 // Client-safe subscription utilities - NO server imports allowed
 // This file can be safely imported in client components
 
-const MASTER_ACCOUNT_EMAILS = ["courbois1981@gmail.com", "info@my-dispatch.de"]
-
 export type SubscriptionStatus = "active" | "inactive" | "past_due" | "canceled" | "trialing" | "incomplete"
 export type SubscriptionTier = "starter" | "business" | "enterprise"
 
@@ -119,6 +117,4 @@ export function getTierInfo(tier: SubscriptionTier) {
   return info[tier]
 }
 
-export function isMasterAccountEmail(email: string): boolean {
-  return MASTER_ACCOUNT_EMAILS.includes(email)
-}
+// Master-Account-Check wurde entfernt - Master-Admin wird über Role-Check ermittelt

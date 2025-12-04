@@ -156,7 +156,7 @@ const Zap = ({ className }: { className?: string }) => (
   </svg>
 )
 
-const MASTER_ACCOUNT_EMAILS = ["courbois1981@gmail.com", "info@my-dispatch.de"]
+// Master-Admin wird über Role-Check ermittelt, nicht über E-Mail
 
 interface MenuItem {
   title: string
@@ -404,7 +404,8 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
     }
   }
 
-  const isMasterAccount = user?.email && MASTER_ACCOUNT_EMAILS.includes(user.email)
+  // Master-Admin wird über Role-Check ermittelt
+  const isMasterAccount = profile?.role === "master_admin" || profile?.role === "master"
   const displayName = profile?.full_name || profile?.company_name || user?.email?.split("@")[0] || "Benutzer"
 
   return (
@@ -432,8 +433,8 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
 
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         <ul className="space-y-1">
-          {/* Master-only items (only for courbois1981@gmail.com) */}
-          {isMasterAccount && user?.email === "courbois1981@gmail.com" && (
+          {/* Master-only items (nur für master_admin Role) */}
+          {isMasterAccount && (
             <>
               {masterNavigationItems.map((item) => {
                 const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)

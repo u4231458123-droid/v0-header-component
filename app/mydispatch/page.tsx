@@ -4,8 +4,6 @@ import { MasterDashboard } from "@/components/mydispatch/MasterDashboard"
 
 export const dynamic = "force-dynamic"
 
-const MASTER_ACCOUNT_EMAIL = "courbois1981@gmail.com"
-
 export default async function MyDispatchPage() {
   const supabase = await createClient()
 
@@ -18,8 +16,16 @@ export default async function MyDispatchPage() {
     redirect("/auth/login")
   }
 
-  // Nur Master-Account hat Zugang
-  if (user.email !== MASTER_ACCOUNT_EMAIL) {
+  // Nur Master-Admin (Role-Check) hat Zugang
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle()
+
+  const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
+
+  if (!isMasterAdmin) {
     redirect("/dashboard")
   }
 

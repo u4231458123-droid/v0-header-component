@@ -68,7 +68,8 @@ export function TierGuard({ children, requiredFeature, fallback }: TierGuardProp
 
     const { data: profile } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
 
-    if (profile?.role === "master_admin") {
+    // Master-Admin hat Zugriff auf alle Features (nur für Admin-Bereiche)
+    if (profile?.role === "master_admin" || profile?.role === "master") {
       setHasAccess(true)
       setTier("enterprise")
       return
