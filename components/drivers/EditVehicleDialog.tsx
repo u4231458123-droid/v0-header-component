@@ -61,8 +61,8 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
           license_plate: licensePlate,
           make,
           model,
-          year: year ? Number.parseInt(year) : undefined,
-          color: color || undefined,
+          year: year ? Number.parseInt(year) : null,
+          color: color || null,
           seats: Number.parseInt(seats),
           status,
           updated_at: new Date().toISOString(),
@@ -71,12 +71,16 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
 
       if (error) throw error
 
-      const updateData = {
+      // Verwende dieselben Werte wie beim Supabase-Update für Konsistenz
+      const yearValue = year ? Number.parseInt(year) : undefined
+      const colorValue = color || undefined
+
+      const updateData: Partial<Vehicle> = {
         license_plate: licensePlate,
         make,
         model,
-        year: year ? Number.parseInt(year) : undefined,
-        color: color || undefined,
+        year: yearValue,
+        color: colorValue,
         seats: Number.parseInt(seats),
         status,
       }
@@ -85,7 +89,7 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
       onOpenChange(false)
       router.refresh()
       if (onSuccess) {
-        onSuccess({ ...vehicle, ...updateData })
+        onSuccess({ ...vehicle, ...updateData } as Vehicle)
       }
     } catch (error) {
       console.error("Error updating vehicle:", error)

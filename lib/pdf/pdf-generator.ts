@@ -83,14 +83,24 @@ export function generatePDFHTML(data: PDFData): string {
       max-width: 200px;
       object-fit: contain;
     }
+    .content-wrapper {
+      ${hasLetterhead ? "padding: 0 20mm;" : ""}
+    }
     .header {
       display: flex;
       justify-content: space-between;
       margin-bottom: 30px;
-      ${hasLetterhead ? "position: relative; z-index: 10; padding: 0 20mm;" : ""}
+      ${hasLetterhead ? "position: relative; z-index: 10;" : ""}
+    }
+    .content-wrapper .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
     }
     .company-info {
       text-align: right;
+      font-size: 10pt;
+      color: #4a5568;
     }
     .company-name {
       font-size: 18pt;
@@ -241,13 +251,15 @@ export function generatePDFHTML(data: PDFData): string {
         <img src="${logoUrl}" class="logo" alt="${data.company.name} Logo" />
       </div>
 
-      <div class="header">
+      <div class="content-wrapper">
         ${contentHTML}
       </div>
 
       <div class="footer">
         <p>${data.company.name}${data.company.address ? ` | ${data.company.address}` : ""}${data.company.email ? ` | ${data.company.email}` : ""}${data.company.phone ? ` | ${data.company.phone}` : ""}</p>
         ${data.company.tax_id ? `<p>Steuernummer: ${data.company.tax_id}${data.company.vat_id ? ` | USt-IdNr.: ${data.company.vat_id}` : ""}</p>` : ""}
+        ${data.company.bank_info?.iban ? `<p>IBAN: ${data.company.bank_info.iban}${data.company.bank_info.bic ? ` | BIC: ${data.company.bank_info.bic}` : ""}${data.company.bank_info.bank_name ? ` | ${data.company.bank_info.bank_name}` : ""}</p>` : ""}
+        ${data.company.is_small_business && data.company.small_business_note ? `<p style="font-style: italic; margin-top: 8px;">${data.company.small_business_note}</p>` : ""}
       </div>
     </body>
     </html>
@@ -301,69 +313,197 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
   const booking = data.content
   const showField = (field: string) => selectedFields.length === 0 || selectedFields.includes(field)
 
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      pending: "#f59e0b",
+      confirmed: "#10b981",
+      in_progress: "#3b82f6",
+      completed: "#6b7280",
+      cancelled: "#ef4444",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending: "Ausstehend",
+      confirmed: "Bestätigt",
+      in_progress: "Unterwegs",
+      completed: "Abgeschlossen",
+      cancelled: "Storniert",
+    }
+    return labels[status] || status
+  }
+
+  const getPaymentStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending: "Ausstehend",
+      paid: "Bezahlt",
+      unpaid: "Unbezahlt",
+    }
+    return labels[status] || status
+  }
+
   return `
-    <div>
-      <div class="document-title">AUFTRAG</div>
-      ${showField("id") ? `<div class="label">Auftrags-ID</div><div class="value">${booking.id}</div>` : ""}
-      ${showField("date") ? `<div class="label">Datum</div><div class="value">${formatDateTime(booking.pickup_time).split(" ")[0]}</div>` : ""}
-      ${showField("time") ? `<div class="label">Uhrzeit</div><div class="value">${formatDateTime(booking.pickup_time).split(" ")[1]}</div>` : ""}
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">AUFTRAG</div>
+        ${showField("id") ? `
+          <div class="label">Auftrags-ID</div>
+          <div class="value" style="font-family: monospace; font-size: 12pt;">${booking.id?.substring(0, 8).toUpperCase() || "-"}</div>
+        ` : ""}
+        ${booking.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(booking.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(booking.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
     </div>
-    <div class="company-info">
-      <div class="company-name">${data.company.name}</div>
+
+    <!-- Auftragszeitpunkt -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div class="meta-grid">
+        <div>
+          <div class="label">Auftrag eingegangen</div>
+          <div class="value">${booking.created_at ? formatDateTime(booking.created_at) : "-"} Uhr</div>
+        </div>
+        <div>
+          <div class="label">Abholung geplant</div>
+          <div class="value" style="font-size: 14pt; font-weight: bold;">${booking.pickup_time ? formatDateTime(booking.pickup_time) : "-"} Uhr</div>
+        </div>
+      </div>
     </div>
-    
-    <div class="meta-grid">
+
+    <!-- Kunde und Adressen -->
+    <div class="meta-grid" style="margin-top: 30px;">
       <div class="address-block">
         ${showField("customer") ? `
           <div class="label">Kunde</div>
           <div class="value">
-            ${booking.customer?.salutation || ""} ${booking.customer?.first_name || ""} ${booking.customer?.last_name || ""}
+            ${booking.customer?.salutation || ""} ${booking.customer?.first_name || ""} ${booking.customer?.last_name || "-"}
+            ${booking.customer?.email ? `<br/><span style="color: #4a5568;">${booking.customer.email}</span>` : ""}
+            ${booking.customer?.phone ? `<br/><span style="color: #4a5568;">${booking.customer.phone}</span>` : ""}
           </div>
         ` : ""}
+        
         ${showField("pickup") ? `
-          <div class="label" style="margin-top: 16px;">Abhol-Adresse</div>
-          <div class="value">${booking.pickup_address}</div>
+          <div class="label" style="margin-top: 20px;">Abhol-Adresse</div>
+          <div class="value">${booking.pickup_address || "-"}</div>
         ` : ""}
+        
         ${showField("dropoff") ? `
-          <div class="label" style="margin-top: 16px;">Ziel-Adresse</div>
-          <div class="value">${booking.dropoff_address}</div>
+          <div class="label" style="margin-top: 20px;">Ziel-Adresse</div>
+          <div class="value">${booking.dropoff_address || "-"}</div>
         ` : ""}
       </div>
-      <div>
+
+      <div class="address-block">
         ${showField("passengers") ? `
-          <div class="label">Passagier Anzahl</div>
-          <div class="value">${booking.passengers || 1}</div>
+          <div class="label">Passagiere</div>
+          <div class="value">${booking.passengers || 1} Person(en)</div>
         ` : ""}
+        
         ${showField("passenger_names") && booking.passenger_name ? `
-          <div class="label" style="margin-top: 16px;">Passagier Name/n</div>
+          <div class="label" style="margin-top: 20px;">Passagier-Name(n)</div>
           <div class="value">${booking.passenger_name}</div>
         ` : ""}
+        
         ${showField("vehicle_category") ? `
-          <div class="label" style="margin-top: 16px;">Fahrzeug Kategorie</div>
+          <div class="label" style="margin-top: 20px;">Fahrzeugkategorie</div>
           <div class="value">${booking.vehicle_category || "Standard"}</div>
-        ` : ""}
-        ${showField("flight_train_origin") && booking.flight_train_origin ? `
-          <div class="label" style="margin-top: 16px;">Flug / Zug aus</div>
-          <div class="value">${booking.flight_train_origin}</div>
-        ` : ""}
-        ${showField("flight_train_number") && booking.flight_train_number ? `
-          <div class="label" style="margin-top: 16px;">Flug / Zug Nummer</div>
-          <div class="value">${booking.flight_train_number}</div>
-        ` : ""}
-        ${showField("driver") && booking.driver ? `
-          <div class="label" style="margin-top: 16px;">Fahrer</div>
-          <div class="value">${booking.driver.first_name} ${booking.driver.last_name}</div>
-        ` : ""}
-        ${showField("vehicle") && booking.vehicle ? `
-          <div class="label" style="margin-top: 16px;">Fahrzeug Kennzeichen</div>
-          <div class="value">${booking.vehicle.license_plate}</div>
-        ` : ""}
-        ${showField("price") ? `
-          <div class="label" style="margin-top: 16px;">Fahrpreis</div>
-          <div class="value">${booking.price ? booking.price.toLocaleString("de-DE", { style: "currency", currency: "EUR" }) : "Nicht festgelegt"}</div>
         ` : ""}
       </div>
     </div>
+
+    <!-- Flug/Zug Info falls vorhanden -->
+    ${(booking.flight_train_number || booking.flight_train_origin) ? `
+      <div style="margin-top: 24px; padding: 16px; border: 1px solid #e5e5e5; border-radius: 8px;">
+        <div class="label" style="margin-bottom: 12px;">Flug-/Zug-Abholung</div>
+        <div class="meta-grid">
+          ${showField("flight_train_number") && booking.flight_train_number ? `
+            <div>
+              <div class="label">Flug-/Zug-Nr.</div>
+              <div class="value" style="font-family: monospace;">${booking.flight_train_number}</div>
+            </div>
+          ` : ""}
+          ${showField("flight_train_origin") && booking.flight_train_origin ? `
+            <div>
+              <div class="label">Herkunft</div>
+              <div class="value">${booking.flight_train_origin}</div>
+            </div>
+          ` : ""}
+        </div>
+      </div>
+    ` : ""}
+
+    <!-- Fahrer und Fahrzeug -->
+    <div class="meta-grid" style="margin-top: 24px;">
+      ${showField("driver") ? `
+        <div class="address-block">
+          <div class="label">Fahrer</div>
+          <div class="value">${booking.driver ? `${booking.driver.first_name || ""} ${booking.driver.last_name || ""}` : "Nicht zugewiesen"}</div>
+        </div>
+      ` : ""}
+      ${showField("vehicle") ? `
+        <div class="address-block">
+          <div class="label">Fahrzeug</div>
+          <div class="value">${booking.vehicle ? `${booking.vehicle.make || ""} ${booking.vehicle.model || ""} (${booking.vehicle.license_plate || "-"})` : "Nicht zugewiesen"}</div>
+        </div>
+      ` : ""}
+    </div>
+
+    <!-- Preis und Zahlung -->
+    <div style="margin-top: 30px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+      <div class="meta-grid">
+        ${showField("price") ? `
+          <div>
+            <div class="label" style="color: #9ca3af;">Fahrpreis</div>
+            <div class="value" style="font-size: 24pt; font-weight: bold; color: white;">
+              ${booking.price ? booking.price.toLocaleString("de-DE", { style: "currency", currency: "EUR" }) : "Auf Anfrage"}
+            </div>
+          </div>
+        ` : ""}
+        <div>
+          <div class="label" style="color: #9ca3af;">Zahlungsart</div>
+          <div class="value" style="color: white;">${booking.payment_method || "-"}</div>
+          ${booking.payment_status ? `
+            <div style="margin-top: 8px;">
+              <span style="padding: 4px 8px; border-radius: 4px; background: ${booking.payment_status === "paid" ? "#10b981" : "#f59e0b"}; font-size: 9pt;">
+                ${getPaymentStatusLabel(booking.payment_status)}
+              </span>
+            </div>
+          ` : ""}
+        </div>
+      </div>
+    </div>
+
+    <!-- Notizen falls vorhanden -->
+    ${booking.notes ? `
+      <div style="margin-top: 24px;">
+        <div class="label">Besondere Wünsche / Notizen</div>
+        <div class="value" style="padding: 12px; background: #fffbeb; border-radius: 8px; border-left: 4px solid #f59e0b;">
+          ${booking.notes}
+        </div>
+      </div>
+    ` : ""}
+
+    <!-- Kostenstelle falls vorhanden -->
+    ${booking.cost_center ? `
+      <div style="margin-top: 16px;">
+        <div class="label">Kostenstelle</div>
+        <div class="value">${booking.cost_center}</div>
+      </div>
+    ` : ""}
   `
 }
 
