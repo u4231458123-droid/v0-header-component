@@ -147,6 +147,49 @@ export class PromptOptimizationBot {
       }
     }
     
+    // 6.5. OPTIMIERE PROMPT MIT HUGGING FACE
+    try {
+      const aiClient = getOptimizedHuggingFaceClient()
+      const optimizationPrompt = `Optimiere folgenden Prompt für einen AI-Bot (${botId}) der Aufgabe "${taskType}" ausführt.
+
+Original Prompt:
+${originalPrompt}
+
+Basis-optimierter Prompt (mit Knowledge-Base):
+${optimizedPrompt}
+
+Anforderungen:
+- Prompt muss klar und präzise sein
+- Alle relevanten Vorgaben und Regeln müssen enthalten sein
+- Prompt muss für ${botId} spezifisch optimiert sein
+- Häufige Fehler müssen vermieden werden
+- Prompt muss vollständig sein, aber nicht zu lang
+
+Gib NUR den optimierten Prompt zurück, ohne zusätzliche Erklärungen.`
+
+      const optimizationResult = await aiClient.generateForBot(
+        "prompt-optimization-bot",
+        optimizationPrompt,
+        "prompt-optimization"
+      )
+      
+      if (optimizationResult.text && optimizationResult.text.trim().length > 0) {
+        // Verwende Hugging Face-optimierten Prompt
+        optimizedPrompt = optimizationResult.text.trim()
+        
+        // Entferne Markdown-Code-Blöcke falls vorhanden
+        if (optimizedPrompt.startsWith("```")) {
+          const match = optimizedPrompt.match(/```(?:text|markdown)?\s*([\s\S]*?)\s*```/)
+          if (match) {
+            optimizedPrompt = match[1].trim()
+          }
+        }
+      }
+    } catch (hfError: any) {
+      console.warn("Hugging Face Optimierung fehlgeschlagen, verwende Basis-Prompt:", hfError.message)
+      // Fallback: Verwende Basis-optimierten Prompt
+    }
+    
     // 7. Optimiere basierend auf Performance (vereinfacht)
     const improvements: string[] = []
     if (originalPrompt.length < optimizedPrompt.length) {
