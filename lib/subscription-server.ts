@@ -36,8 +36,20 @@ export async function checkSubscriptionAccess(): Promise<{
 
   const { data: profile } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
 
-  // Master-Admin Role-Check (nur für Admin-Bereiche, nicht für normale Subscription-Checks)
+  // Master-Admin Role-Check
   const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
+
+  // Master-Admins haben sofort Enterprise-Tier-Zugriff (auch ohne company_id)
+  if (isMasterAdmin) {
+    return {
+      hasAccess: true,
+      isMasterAdmin: true,
+      tier: "enterprise",
+      features: TIER_FEATURES.enterprise,
+      limits: TIER_LIMITS.enterprise,
+      status: "active",
+    }
+  }
 
   // Check subscription status
   if (!profile?.company_id) {
