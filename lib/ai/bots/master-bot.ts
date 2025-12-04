@@ -80,6 +80,7 @@ export class MasterBot {
   private decisionsPath: string
   private changeManager: SystemwideChangeManager
   private workTracker: WorkTracker
+  private botSpecializations: Map<string, string[]> = new Map()
 
   constructor() {
     this.loadKnowledgeBase()
@@ -87,6 +88,34 @@ export class MasterBot {
     this.decisionsPath = path.join(process.cwd(), ".cicd", "master-decisions.json")
     this.changeManager = new SystemwideChangeManager()
     this.workTracker = new WorkTracker()
+    
+    // Definiere Bot-Spezialisierungen
+    this.botSpecializations.set("system-bot", [
+      "code-analysis",
+      "bug-fix",
+      "optimization",
+      "refactoring",
+      "migration",
+      "schema-changes",
+    ])
+    this.botSpecializations.set("quality-bot", [
+      "quality-check",
+      "design-validation",
+      "documentation-check",
+      "compliance-check",
+      "violation-detection",
+    ])
+    this.botSpecializations.set("prompt-optimization-bot", [
+      "prompt-optimization",
+      "prompt-generation",
+      "knowledge-integration",
+    ])
+    this.botSpecializations.set("documentation-bot", [
+      "documentation",
+      "wiki-update",
+      "changelog",
+      "error-documentation",
+    ])
   }
 
   /**
@@ -446,6 +475,162 @@ export class MasterBot {
       return JSON.parse(content)
     } catch {
       return []
+    }
+  }
+
+  /**
+   * AUTONOME TASK-VERTEILUNG
+   * Verteilt Aufgaben automatisch an spezialisierte Bots
+   */
+  async distributeTask(
+    taskType: string,
+    taskDescription: string,
+    filePath?: string,
+    context?: any
+  ): Promise<{
+    assignedBot: string
+    taskId: string
+    success: boolean
+    errors?: string[]
+  }> {
+    // 1. Finde passenden Bot basierend auf Spezialisierung
+    let assignedBot: string | null = null
+    
+    for (const [botId, specializations] of this.botSpecializations.entries()) {
+      if (specializations.includes(taskType)) {
+        assignedBot = botId
+        break
+      }
+    }
+    
+    // Fallback: System-Bot für unbekannte Task-Typen
+    if (!assignedBot) {
+      assignedBot = "system-bot"
+    }
+    
+    // 2. Erstelle Task-ID
+    const taskId = `task-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    
+    // 3. Starte Work-Tracking
+    const work = await this.workTracker.startWork({
+      type: "work",
+      title: taskDescription,
+      description: `Automatisch zugewiesen an ${assignedBot}`,
+      botId: assignedBot,
+      filePath,
+    })
+    
+    // 4. Dokumentiere Task-Zuweisung
+    await logError({
+      type: "task-assignment",
+      severity: "low",
+      category: "master-bot",
+      message: `Task "${taskType}" zugewiesen an ${assignedBot}`,
+      context: { taskId, taskType, assignedBot, filePath },
+      solution: "Task wird autonom bearbeitet",
+      botId: "master-bot",
+    })
+    
+    return {
+      assignedBot,
+      taskId,
+      success: true,
+    }
+  }
+
+  /**
+   * VALIDIERE ERGEBNIS DURCH QUALITY-BOT
+   * Wird nach jeder Bot-Aufgabe aufgerufen
+   */
+  async validateBotResult(
+    botId: string,
+    taskId: string,
+    result: any,
+    filePath?: string
+  ): Promise<{
+    valid: boolean
+    violations: Array<{ type: string; message: string; suggestion: string }>
+  }> {
+    const { QualityBot } = await import("./quality-bot")
+    const qualityBot = new QualityBot()
+    
+    // Prüfe Ergebnis gegen Dokumentation
+    if (result.changes && Array.isArray(result.changes)) {
+      for (const change of result.changes) {
+        if (change.content) {
+          const check = await qualityBot.checkCodeAgainstDocumentation(
+            change.content,
+            {},
+            change.file || filePath || "unknown"
+          )
+          
+          if (!check.passed) {
+            return {
+              valid: false,
+              violations: check.violations.map((v) => ({
+                type: v.type,
+                message: v.message,
+                suggestion: v.suggestion,
+              })),
+            }
+          }
+        }
+      }
+    }
+    
+    return {
+      valid: true,
+      violations: [],
+    }
+  }
+
+  /**
+   * AUTOMATISCHER COMMIT/PUSH NACH AUFGABE
+   * Wird nach erfolgreicher Validierung aufgerufen
+   */
+  async commitAndPush(
+    taskId: string,
+    message: string,
+    files: string[]
+  ): Promise<{ success: boolean; errors?: string[] }> {
+    const errors: string[] = []
+    
+    try {
+      // Git-Operationen (nur wenn in Git-Repository)
+      const { execSync } = await import("child_process")
+      
+      try {
+        // Prüfe ob Git-Repository
+        execSync("git rev-parse --git-dir", { stdio: "ignore" })
+        
+        // Add files
+        if (files.length > 0) {
+          execSync(`git add ${files.join(" ")}`, { stdio: "ignore" })
+        } else {
+          execSync("git add -A", { stdio: "ignore" })
+        }
+        
+        // Commit
+        execSync(`git commit -m "${message}"`, { stdio: "ignore" })
+        
+        // Push (nur wenn remote konfiguriert)
+        try {
+          execSync("git push", { stdio: "ignore" })
+        } catch (pushError: any) {
+          // Push fehlgeschlagen (z.B. kein remote) - nicht kritisch
+          errors.push(`Push fehlgeschlagen: ${pushError.message}`)
+        }
+      } catch (gitError: any) {
+        // Nicht in Git-Repository oder Git nicht verfügbar
+        errors.push(`Git-Operation fehlgeschlagen: ${gitError.message}`)
+      }
+    } catch (error: any) {
+      errors.push(`Fehler bei Commit/Push: ${error.message}`)
+    }
+    
+    return {
+      success: errors.length === 0,
+      errors: errors.length > 0 ? errors : undefined,
     }
   }
 }
