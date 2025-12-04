@@ -187,15 +187,7 @@ export class QualityBot {
       
       // Account-Routing-Prüfung
       if (accountRules && filePath.includes("dashboard") && filePath.includes("page.tsx")) {
-        if (line.includes("courbois1981@gmail.com") && !line.includes("redirect(\"/dashboard\")") && !line.includes("redirect('/dashboard')")) {
-          violations.push({
-            type: "account-routing",
-            severity: "critical",
-            message: "Master-Account (courbois1981@gmail.com) muss zu /dashboard weiterleiten ohne Subscription-Check",
-            line: i + 1,
-            suggestion: "Implementiere korrekte Routing-Logik für Master-Account",
-          })
-        }
+        // Prüfe Kunden-Account-Routing (Master-Accounts wurden vollständig entfernt)
         if (line.includes("courbois83@gmail.com") && !line.includes("redirect(\"/kunden-portal\")") && !line.includes("redirect('/kunden-portal')")) {
           violations.push({
             type: "account-routing",
