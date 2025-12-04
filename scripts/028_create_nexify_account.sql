@@ -2,7 +2,7 @@
 -- NEXIFY BUSINESS ACCOUNT SETUP
 -- =====================================================
 -- Dieses Script erstellt das Nexify Business-Unternehmen
--- für nexify.login@gmail.com mit Business-Tarif
+-- für login.nexify@gmail.com mit Business-Tarif
 -- =====================================================
 
 -- 1. Erstelle Nexify Unternehmen (falls nicht vorhanden)
@@ -28,7 +28,7 @@ INSERT INTO companies (
 ) VALUES (
   'nexify-company-0001',
   'Nexify',
-  'nexify.login@gmail.com',
+  'login.nexify@gmail.com',
   NULL,
   NULL,
   'business',
@@ -45,7 +45,7 @@ INSERT INTO companies (
     'logo_url', null
   ),
   jsonb_build_object(
-    'email', 'nexify.login@gmail.com',
+    'email', 'login.nexify@gmail.com',
     'phone', null,
     'website', null
   ),
@@ -70,9 +70,9 @@ ON CONFLICT (id) DO UPDATE SET
   vehicle_limit = EXCLUDED.vehicle_limit,
   updated_at = NOW();
 
--- 2. Aktualisiere Profil für nexify.login@gmail.com mit company_id und role: "owner"
+-- 2. Aktualisiere Profil für login.nexify@gmail.com mit company_id und role: "owner"
 -- HINWEIS: Auth-User muss manuell in Supabase Dashboard erstellt werden:
---   - Email: nexify.login@gmail.com
+--   - Email: login.nexify@gmail.com
 --   - Passwort: 1def!xO2022!!
 --   - Email bestätigt: Ja
 UPDATE profiles
@@ -80,7 +80,7 @@ SET
   company_id = 'nexify-company-0001',
   role = 'owner',
   updated_at = NOW()
-WHERE email = 'nexify.login@gmail.com';
+WHERE email = 'login.nexify@gmail.com';
 
 -- 3. Falls Profil noch nicht existiert, wird es beim ersten Login automatisch erstellt
 -- (via Supabase Auth Trigger)
@@ -97,4 +97,4 @@ SELECT
   c.vehicle_limit
 FROM profiles p
 LEFT JOIN companies c ON p.company_id = c.id
-WHERE p.email = 'nexify.login@gmail.com' OR c.id = 'nexify-company-0001';
+WHERE p.email = 'login.nexify@gmail.com' OR c.id = 'nexify-company-0001';

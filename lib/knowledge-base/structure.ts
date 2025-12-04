@@ -149,27 +149,25 @@ export const ACCOUNT_RULES: KnowledgeEntry = {
   content: `
 # Account-spezifische Routing-Regeln
 
-## MASTER-ACCOUNT (courbois1981@gmail.com)
-- Direkter Zugang ins /dashboard (OHNE Subscription-Check)
-- Spezieller Button in Tarifverwaltung (nur für diesen Account sichtbar)
-- Zugang zu /mydispatch (nur für diesen Account)
-- Button zum Wechseln zwischen Basic/Business Tarif in Tarifverwaltung
-- Führt nach Login ins /dashboard (ohne Bezahlung)
-
 ## KUNDEN-ACCOUNT (courbois83@gmail.com)
 - Einfacher Kunden-Account
-- NICHT mit courbois1981@gmail.com verwechseln
 - Weiterleitung ins /kunden-portal
+
+## NEXIFY BUSINESS-ACCOUNT (nexify.login@gmail.com)
+- Normales Business-Konto mit vollständigem Zugriff
+- Subscription: Business-Tarif, Status: active
+- Limits: Unbegrenzt (Fahrer & Fahrzeuge)
+- Rolle: owner (normale Unternehmer-Rolle)
 
 ## ROUTING-LOGIK
 - Middleware prüft Account-Typ
-- Dashboard-Layout prüft Account-Typ
-- Dashboard-Page prüft Account-Typ
-- Spezielle Behandlung für Master-Account
+- Dashboard-Layout prüft Subscription-Status
+- Dashboard-Page prüft Rollen-basierte Weiterleitung
+- Alle Accounts funktionieren gleich (keine Sonderregeln)
   `,
-  tags: ["account", "routing", "master", "customer"],
+  tags: ["account", "routing", "customer", "nexify"],
   relatedEntries: ["rules-001", "routing-rules-001"],
-  version: "1.0.0",
+  version: "2.0.0",
   lastUpdated: new Date().toISOString(),
   priority: "critical",
 }

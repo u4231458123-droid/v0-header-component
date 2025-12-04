@@ -119,9 +119,6 @@ export function Header() {
   const router = useRouter()
   const { user, profile, logout } = useAuth()
 
-  // Master-Admin wird über Role-Check ermittelt
-  const isMasterAccount = profile?.role === "master_admin" || profile?.role === "master"
-
   useEffect(() => {
     setMenuOpen(false)
   }, [pathname])
@@ -257,11 +254,6 @@ export function Header() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || "Benutzer"}</p>
                   <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                  {isMasterAccount && (
-                    <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded">
-                      Master-Account
-                    </span>
-                  )}
                 </div>
               </div>
             </div>

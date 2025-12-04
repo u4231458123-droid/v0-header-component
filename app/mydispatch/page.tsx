@@ -16,16 +16,16 @@ export default async function MyDispatchPage() {
     redirect("/auth/login")
   }
 
-  // Nur Master-Admin (Role-Check) hat Zugang
+  // Nur Owner hat Zugang (normale Berechtigung)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, company_id")
     .eq("id", user.id)
     .maybeSingle()
 
-  const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
+  const isOwner = profile?.role === "owner"
 
-  if (!isMasterAdmin) {
+  if (!isOwner) {
     redirect("/dashboard")
   }
 

@@ -52,7 +52,7 @@ export default async function DashboardLayout({
 
     const subscriptionAccess = await checkSubscriptionAccess()
 
-    if (!subscriptionAccess.hasAccess && !subscriptionAccess.isMasterAdmin) {
+    if (!subscriptionAccess.hasAccess) {
       redirect("/subscription-required")
     }
 

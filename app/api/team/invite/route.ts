@@ -28,10 +28,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Unternehmen nicht gefunden" }, { status: 404 })
     }
 
-    // Prüfe ob User Admin ist
+    // Prüfe ob User Admin oder Owner ist
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
 
-    const isAdmin = profile?.role === "admin" || profile?.role === "master" || profile?.role === "master_admin" || profile?.role === "owner"
+    const isAdmin = profile?.role === "admin" || profile?.role === "owner"
 
     if (!isAdmin) {
       return NextResponse.json({ success: false, error: "Keine Berechtigung" }, { status: 403 })

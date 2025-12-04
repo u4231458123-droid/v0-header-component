@@ -39,14 +39,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: TypeScript Check
-        run: pnpm exec tsc --noEmit --strict
+      - name: TypeScript Check (Strict)
+        run: pnpm exec tsc --noEmit --strict --pretty false
+        continue-on-error: false
 
-      - name: ESLint Check
-        run: pnpm exec eslint . --max-warnings 0
+      - name: ESLint Check (Strict)
+        run: pnpm exec eslint . --max-warnings 0 --quiet
+        continue-on-error: false
 
-      - name: Syntax Validation
+      - name: Next.js Lint
         run: pnpm exec next lint
+        continue-on-error: false
 
   # Phase 2: Parallele Validierungen
   layout-design:

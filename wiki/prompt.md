@@ -64,13 +64,17 @@ Siehe: [Go-Live Report](./docs/golive-report.md)
 
 ---
 
-## Master Admin Account
+## Nexify Business Account
 
 | Attribut | Wert |
 |----------|------|
-| E-Mail | info@my-dispatch.de |
-| Passwort | #25_FS.42-FKS! |
-| Rolle | master_admin |
+| E-Mail | login.nexify@gmail.com |
+| Passwort | 1def!xO2022!! |
+| Rolle | owner |
+| Subscription | Business, active |
+| Limits | Unbegrenzt (Fahrer & Fahrzeuge) |
+
+**HINWEIS:** Master-Accounts wurden vollständig entfernt. Alle Accounts funktionieren jetzt gleich (keine Sonderregeln).
 
 ---
 

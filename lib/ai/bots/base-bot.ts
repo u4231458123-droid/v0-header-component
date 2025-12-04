@@ -28,9 +28,6 @@ export interface BotResponse {
   documentation?: WorkDocumentation
 }
 
-import { errorRecoverySystem } from "@/lib/cicd/error-recovery"
-import { botMonitor } from "@/lib/cicd/bot-monitor"
-
 export abstract class BaseBot {
   protected botName: string
   protected area: string

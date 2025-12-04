@@ -140,14 +140,8 @@ export default function LoginPage() {
           .eq("id", userId)
           .maybeSingle()
 
-        if (profile && (profile.role === "master_admin" || profile.role === "master")) {
-          window.location.href = "/dashboard"
-          return
-        }
-
-        // 2. Prüfe ob Fahrer (NUR wenn NICHT Master-Account)
-        // WICHTIG: courbois1981@gmail.com ist NUR Unternehmer, NIEMALS Fahrer!
-        if (normalizedEmail !== "courbois1981@gmail.com" && normalizedEmail !== "info@my-dispatch.de") {
+        // 2. Prüfe ob Fahrer (alle Accounts außer Kunden-Account)
+        if (normalizedEmail !== "courbois83@gmail.com") {
           const { data: driver } = await supabase
             .from("drivers")
             .select("company_id")
@@ -166,8 +160,8 @@ export default function LoginPage() {
         }
 
         // 3. Prüfe ob Kunde (NUR wenn NICHT Master-Account)
-        // WICHTIG: Master-Account (courbois1981@gmail.com) wird NIEMALS als Kunde behandelt!
-        if (normalizedEmail !== "courbois1981@gmail.com" && normalizedEmail !== "info@my-dispatch.de") {
+        // Prüfe ob Kunde (nur für courbois83@gmail.com)
+        if (normalizedEmail !== "courbois83@gmail.com") {
           const { data: customer } = await supabase
             .from("customers")
             .select("company_id")

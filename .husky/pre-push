@@ -7,7 +7,32 @@ echo "🚨 MANDATORY QUALITY GATE - Pre-Push Check"
 echo "==========================================="
 echo ""
 
-# Prüfe alle geänderten Dateien mit QualityBot
+# Phase 1: TypeScript-Prüfung
+echo "📋 Phase 1: TypeScript-Prüfung..."
+if ! pnpm exec tsc --noEmit --pretty false 2>&1 | grep -q "error TS"; then
+  echo "✅ TypeScript-Prüfung bestanden"
+else
+  echo ""
+  echo "❌ TYPESCRIPT-FEHLER GEFUNDEN - Push blockiert!"
+  echo "💡 Führe 'pnpm exec tsc --noEmit' aus, um die Fehler zu sehen."
+  echo ""
+  exit 1
+fi
+
+# Phase 2: Build-Prüfung
+echo "📋 Phase 2: Build-Prüfung..."
+if ! pnpm build 2>&1 | grep -q "error"; then
+  echo "✅ Build-Prüfung bestanden"
+else
+  echo ""
+  echo "❌ BUILD-FEHLER GEFUNDEN - Push blockiert!"
+  echo "💡 Führe 'pnpm build' aus, um die Fehler zu sehen."
+  echo ""
+  exit 1
+fi
+
+# Phase 3: Bot-Validation
+echo "📋 Phase 3: Bot-Validation..."
 node scripts/cicd/mandatory-quality-gate.js --pre-push
 
 # Exit-Code prüfen
@@ -20,6 +45,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
-echo "✅ QUALITY GATE BESTANDEN - Push erlaubt"
+echo "✅ ALLE PRÜFUNGEN BESTANDEN - Push erlaubt"
 echo ""
 

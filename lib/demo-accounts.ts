@@ -22,28 +22,11 @@ export const DEMO_ACCOUNTS = {
   },
 } as const
 
-export const MASTER_ACCOUNT = {
-  email: "info@my-dispatch.de",
-  password: "#25_FS.42-FKS!",
-  role: "master_admin",
-  name: "Master Admin",
-  description: "Master-Admin Account für Systemverwaltung",
-} as const
-
 /**
  * Prüft ob eine E-Mail ein Demo-Account ist
  */
 export function isDemoAccount(email: string): boolean {
   return email === DEMO_ACCOUNTS.starter.email || email === DEMO_ACCOUNTS.business.email
-}
-
-/**
- * Prüft ob eine E-Mail ein Master-Account ist
- * HINWEIS: Master-Admin-Status wird primär über Role-Check ermittelt (profile.role === "master_admin")
- * Diese Funktion dient nur als Fallback für Legacy-Code
- */
-export function isMasterAccount(email: string): boolean {
-  return email === MASTER_ACCOUNT.email
 }
 
 /**

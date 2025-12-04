@@ -158,12 +158,10 @@ export const CICD_MYDISPATCH_SPECIFIC: KnowledgeEntry = {
 # MyDispatch-spezifische CI/CD-Regeln
 
 ## ACCOUNT-ROUTING (KRITISCH)
-- courbois1981@gmail.com → /dashboard (OHNE Subscription-Check)
-- courbois1981@gmail.com → /mydispatch zugänglich
-- courbois1981@gmail.com → Tarifwechsel-Button sichtbar
-- courbois1981@gmail.com → "MyDispatch" Link in Sidebar sichtbar
 - courbois83@gmail.com → /kunden-portal
+- login.nexify@gmail.com → /dashboard (Business-Account mit Subscription-Check)
 - Andere Accounts → Normales Routing mit Subscription-Check
+- Alle Accounts funktionieren gleich (keine Sonderregeln mehr)
 
 ## DESIGN-VORGABEN (UNVERÄNDERLICH)
 - Primärfarbe: #323D5E (nur als Design-Token bg-primary)

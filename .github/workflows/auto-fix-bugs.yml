@@ -60,11 +60,12 @@ jobs:
       - name: AI Bug Analysis (System-Bot)
         run: |
           echo "Running AI-powered bug analysis with System-Bot..."
-          pnpm exec node scripts/ai-bug-analysis.js || true
+          pnpm exec node scripts/ai-bug-analysis.js
         env:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        continue-on-error: true
 
       - name: Pattern-based Fixes (with Quality-Bot)
         run: |
@@ -104,9 +105,33 @@ jobs:
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
 
-      - name: TypeScript & Linter Auto-Fix
+      - name: TypeScript Error Detection
         run: |
-          echo "Running TypeScript and ESLint auto-fix..."
+          echo "Detecting TypeScript errors..."
+          pnpm exec tsc --noEmit --pretty false 2>&1 | tee ts-errors.log || true
+          if [ -s ts-errors.log ]; then
+            echo "TypeScript errors found - will attempt auto-fix"
+            cat ts-errors.log | head -50
+          else
+            echo "No TypeScript errors found"
+          fi
+
+      - name: TypeScript Auto-Fix (AI-Powered)
+        run: |
+          echo "Running AI-powered TypeScript auto-fix..."
+          if [ -s ts-errors.log ]; then
+            pnpm exec node scripts/cicd/auto-fix-typescript.js || true
+          else
+            echo "No TypeScript errors to fix"
+          fi
+        env:
+          HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
+          GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+
+      - name: ESLint Auto-Fix
+        run: |
+          echo "Running ESLint auto-fix..."
           pnpm exec eslint . --fix || true
 
       - name: Commit and Push (if changes)

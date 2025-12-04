@@ -117,4 +117,3 @@ export function getTierInfo(tier: SubscriptionTier) {
   return info[tier]
 }
 
-// Master-Account-Check wurde entfernt - Master-Admin wird über Role-Check ermittelt

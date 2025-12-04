@@ -14,7 +14,6 @@ import {
 
 export async function checkSubscriptionAccess(): Promise<{
   hasAccess: boolean
-  isMasterAdmin: boolean
   status?: SubscriptionStatus
   tier?: SubscriptionTier
   features?: TierFeatures
@@ -24,36 +23,21 @@ export async function checkSubscriptionAccess(): Promise<{
   const supabase = await createClient()
 
   if (!supabase) {
-    return { hasAccess: false, isMasterAdmin: false, message: "Database not available" }
+    return { hasAccess: false, message: "Database not available" }
   }
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    return { hasAccess: false, isMasterAdmin: false, message: "Not authenticated" }
+    return { hasAccess: false, message: "Not authenticated" }
   }
 
   const { data: profile } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
 
-  // Master-Admin Role-Check
-  const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
-
-  // Master-Admins haben sofort Enterprise-Tier-Zugriff (auch ohne company_id)
-  if (isMasterAdmin) {
-    return {
-      hasAccess: true,
-      isMasterAdmin: true,
-      tier: "enterprise",
-      features: TIER_FEATURES.enterprise,
-      limits: TIER_LIMITS.enterprise,
-      status: "active",
-    }
-  }
-
   // Check subscription status
   if (!profile?.company_id) {
-    return { hasAccess: false, isMasterAdmin: false, message: "No company assigned" }
+    return { hasAccess: false, message: "No company assigned" }
   }
 
   const { data: company } = await supabase
@@ -63,7 +47,7 @@ export async function checkSubscriptionAccess(): Promise<{
     .single()
 
   if (!company) {
-    return { hasAccess: false, isMasterAdmin: false, message: "Company not found" }
+    return { hasAccess: false, message: "Company not found" }
   }
 
   const tier = (company.subscription_tier as SubscriptionTier) || "starter"
@@ -71,7 +55,6 @@ export async function checkSubscriptionAccess(): Promise<{
 
   return {
     hasAccess,
-    isMasterAdmin: false, // Wurde bereits oben geprüft, hier immer false
     status: company.subscription_status as SubscriptionStatus,
     tier,
     features: TIER_FEATURES[tier],
@@ -83,8 +66,6 @@ export async function checkSubscriptionAccess(): Promise<{
 export async function checkFeatureAccess(feature: keyof TierFeatures): Promise<boolean> {
   const access = await checkSubscriptionAccess()
 
-  // Master-Admin hat Zugriff auf alle Features
-  if (access.isMasterAdmin) return true
   if (!access.hasAccess || !access.features) return false
 
   return access.features[feature]
@@ -95,10 +76,6 @@ export async function checkResourceLimit(
   currentCount: number,
 ): Promise<{ allowed: boolean; limit: number; message?: string }> {
   const access = await checkSubscriptionAccess()
-
-  if (access.isMasterAdmin) {
-    return { allowed: true, limit: -1 }
-  }
 
   if (!access.hasAccess || !access.tier) {
     return { allowed: false, limit: 0, message: "No active subscription" }

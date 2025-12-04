@@ -353,10 +353,6 @@ const navigationItems = [
   { href: "/einstellungen", label: "Einstellungen", icon: SettingsIcon },
 ]
 
-// Master-only navigation items
-const masterNavigationItems = [
-  { href: "/mydispatch", label: "MyDispatch", icon: MyDispatchIcon, masterOnly: true },
-]
 
 interface AppSidebarProps {
   isCollapsed?: boolean
@@ -404,8 +400,6 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
     }
   }
 
-  // Master-Admin wird über Role-Check ermittelt
-  const isMasterAccount = profile?.role === "master_admin" || profile?.role === "master"
   const displayName = profile?.full_name || profile?.company_name || user?.email?.split("@")[0] || "Benutzer"
 
   return (
@@ -433,38 +427,6 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
 
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         <ul className="space-y-1">
-          {/* Master-only items (nur für master_admin Role) */}
-          {isMasterAccount && (
-            <>
-              {masterNavigationItems.map((item) => {
-                const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
-                const Icon = item.icon
-
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={`
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg
-                        transition-colors duration-150
-                        ${
-                          isActive
-                            ? "bg-primary text-primary-foreground font-medium"
-                            : "text-sidebar-foreground hover:bg-primary/10"
-                        }
-                        ${isCollapsed ? "justify-center" : ""}
-                      `}
-                      title={isCollapsed ? item.label : undefined}
-                    >
-                      <Icon />
-                      {!isCollapsed && <span className="font-semibold">{item.label}</span>}
-                    </Link>
-                  </li>
-                )
-              })}
-              <li className="my-2 border-t border-sidebar-border" />
-            </>
-          )}
           {navigationItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
             const Icon = item.icon
@@ -520,13 +482,6 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
                 <span className="text-sm font-medium text-primary-foreground">
                   {displayName.charAt(0).toUpperCase()}
                 </span>
-                {isMasterAccount && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-warning rounded-full flex items-center justify-center">
-                    <svg className="w-2.5 h-2.5 text-warning-foreground" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  </div>
-                )}
               </div>
 
               {!isCollapsed && (
@@ -534,7 +489,7 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium text-sidebar-foreground truncate">{displayName}</p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {isMasterAccount ? "Master Admin" : profile?.role || "Benutzer"}
+                      {profile?.role || "Benutzer"}
                     </p>
                   </div>
                   <ChevronDownIcon

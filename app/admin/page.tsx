@@ -23,16 +23,16 @@ export default async function AdminPage() {
     redirect("/auth/login")
   }
 
-  // Prüfe Master-Admin Status (nur Role-Check)
+  // Prüfe ob User Owner ist (normale Berechtigung)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, company_id")
     .eq("id", user.id)
     .maybeSingle()
 
-  const isMasterAdmin = profile?.role === "master_admin" || profile?.role === "master"
+  const isOwner = profile?.role === "owner"
 
-  if (!isMasterAdmin) {
+  if (!isOwner) {
     // Keine Berechtigung - zum Dashboard weiterleiten
     redirect("/dashboard")
   }

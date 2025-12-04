@@ -44,19 +44,46 @@ async function loadAllBots() {
   }
 
   try {
-    // SystemBot (optional, aber empfohlen)
+    // SystemBot (VERPFLICHTEND - Teil des AI-Teams)
     const SystemBot = require("../../lib/ai/bots/system-bot").SystemBot
     bots.systemBot = new SystemBot()
   } catch (error) {
-    console.warn("⚠️  SystemBot nicht verfügbar (optional)")
+    console.error("❌ Fehler beim Laden des SystemBot:", error.message)
+    throw new Error("SystemBot ist verpflichtend und muss verfügbar sein!")
   }
 
   try {
-    // PromptOptimizationBot (optional)
+    // PromptOptimizationBot (VERPFLICHTEND - Teil des AI-Teams)
     const PromptOptimizationBot = require("../../lib/ai/bots/prompt-optimization-bot").PromptOptimizationBot
     bots.promptOptimizationBot = new PromptOptimizationBot()
   } catch (error) {
-    console.warn("⚠️  PromptOptimizationBot nicht verfügbar (optional)")
+    console.error("❌ Fehler beim Laden des PromptOptimizationBot:", error.message)
+    throw new Error("PromptOptimizationBot ist verpflichtend und muss verfügbar sein!")
+  }
+
+  // Lade alle weiteren verfügbaren Bots (verpflichtend)
+  try {
+    const { MasterBot } = require("../../lib/ai/bots/master-bot")
+    bots.masterBot = new MasterBot()
+  } catch (error) {
+    console.error("❌ Fehler beim Laden des MasterBot:", error.message)
+    throw new Error("MasterBot ist verpflichtend und muss verfügbar sein!")
+  }
+
+  try {
+    const { DocumentationBot } = require("../../lib/ai/bots/documentation-bot")
+    bots.documentationBot = new DocumentationBot()
+  } catch (error) {
+    console.error("❌ Fehler beim Laden des DocumentationBot:", error.message)
+    throw new Error("DocumentationBot ist verpflichtend und muss verfügbar sein!")
+  }
+
+  try {
+    const { CodeAssistant } = require("../../lib/ai/bots/code-assistant")
+    bots.codeAssistant = new CodeAssistant()
+  } catch (error) {
+    console.error("❌ Fehler beim Laden des CodeAssistant:", error.message)
+    throw new Error("CodeAssistant ist verpflichtend und muss verfügbar sein!")
   }
 
   return bots
@@ -114,15 +141,30 @@ async function checkFileWithAllBots(filePath, bots) {
     results.errors.push(`QualityBot: ${error.message}`)
   }
 
-  // 2. SystemBot (optional, aber empfohlen)
-  if (bots.systemBot && CONFIG.USE_ALL_BOTS) {
+  // 2. SystemBot (VERPFLICHTEND)
+  if (bots.systemBot) {
     try {
       console.log(`🔍 [SystemBot] Prüfe: ${filePath}`)
-      // SystemBot hat andere API, hier vereinfacht
-      // In Produktion würde man die vollständige SystemBot-API nutzen
+      // SystemBot-Analyse durchführen
+      const systemAnalysis = await bots.systemBot.analyzeCode(codeContent, filePath)
+      if (systemAnalysis && systemAnalysis.issues && systemAnalysis.issues.length > 0) {
+        results.allPassed = false
+        systemAnalysis.issues.forEach((issue) => {
+          if (issue.severity === "critical") results.criticalViolations.push(issue)
+          else if (issue.severity === "high") results.highViolations.push(issue)
+        })
+      }
     } catch (error) {
-      console.warn(`⚠️  [SystemBot] Fehler (optional):`, error.message)
+      console.error(`❌ [SystemBot] Fehler:`, error.message)
+      results.allPassed = false
+      results.errors = results.errors || []
+      results.errors.push(`SystemBot: ${error.message}`)
     }
+  } else {
+    console.error("❌ SystemBot fehlt - VERPFLICHTEND!")
+    results.allPassed = false
+    results.errors = results.errors || []
+    results.errors.push("SystemBot fehlt - verpflichtend für AI-Team-Arbeit")
   }
 
   // 3. Auto-Fix versuchen
