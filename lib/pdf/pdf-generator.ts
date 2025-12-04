@@ -10,7 +10,7 @@ import { format } from "date-fns"
 import { de } from "date-fns/locale"
 
 export interface PDFData {
-  type: "invoice" | "booking" | "offer" | "partner" | "quote"
+  type: "invoice" | "booking" | "offer" | "partner" | "quote" | "driver" | "vehicle" | "customer" | "employee"
   company: {
     id: string
     name: string
@@ -212,6 +212,18 @@ export function generatePDFHTML(data: PDFData): string {
     case "quote":
       contentHTML = generateQuoteContent(data, formatDate, formatCurrency)
       break
+    case "driver":
+      contentHTML = generateDriverContent(data, formatDate)
+      break
+    case "vehicle":
+      contentHTML = generateVehicleContent(data, formatDate)
+      break
+    case "customer":
+      contentHTML = generateCustomerContent(data, formatDate)
+      break
+    case "employee":
+      contentHTML = generateEmployeeContent(data, formatDate)
+      break
   }
 
   return `
@@ -254,6 +266,14 @@ function getDocumentTitle(type: string): string {
       return "Partner-Auftrag"
     case "quote":
       return "Angebot"
+    case "driver":
+      return "Fahrer-Profil"
+    case "vehicle":
+      return "Fahrzeug-Datenblatt"
+    case "customer":
+      return "Kunden-Profil"
+    case "employee":
+      return "Mitarbeiter-Profil"
     default:
       return "Dokument"
   }
@@ -454,6 +474,190 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
         <div class="value">${quote.notes}</div>
       </div>
     ` : ""}
+  `
+}
+
+function generateDriverContent(data: PDFData, formatDate: (s: string) => string): string {
+  const driver = data.content
+  return `
+    <div>
+      <div class="document-title">FAHRER-PROFIL</div>
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Name</div>
+          <div class="value">${driver.salutation || ""} ${driver.first_name || ""} ${driver.last_name || ""}</div>
+          ${driver.email ? `<div class="label" style="margin-top: 16px;">E-Mail</div><div class="value">${driver.email}</div>` : ""}
+          ${driver.phone ? `<div class="label" style="margin-top: 16px;">Telefon</div><div class="value">${driver.phone}</div>` : ""}
+          ${driver.mobile ? `<div class="label" style="margin-top: 16px;">Mobil</div><div class="value">${driver.mobile}</div>` : ""}
+        </div>
+        <div class="address-block">
+          ${driver.date_of_birth ? `<div class="label">Geburtsdatum</div><div class="value">${formatDate(driver.date_of_birth)}</div>` : ""}
+          ${driver.nationality ? `<div class="label" style="margin-top: 16px;">Nationalität</div><div class="value">${driver.nationality}</div>` : ""}
+          ${driver.address_data ? `
+            <div class="label" style="margin-top: 16px;">Adresse</div>
+            <div class="value">
+              ${driver.address_data.street || ""} ${driver.address_data.house_number || ""}<br>
+              ${driver.address_data.postal_code || ""} ${driver.address_data.city || ""}
+            </div>
+          ` : ""}
+        </div>
+      </div>
+      <div class="section-title" style="margin-top: 30px;">Führerschein</div>
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Führerscheinnummer</div>
+          <div class="value">${driver.license_number || "-"}</div>
+          ${driver.license_expiry ? `<div class="label" style="margin-top: 16px;">Ablaufdatum</div><div class="value">${formatDate(driver.license_expiry)}</div>` : ""}
+        </div>
+        <div class="address-block">
+          ${driver.license_classes && driver.license_classes.length > 0 ? `
+            <div class="label">Fahrerlaubnisklassen</div>
+            <div class="value">${driver.license_classes.join(", ")}</div>
+          ` : ""}
+        </div>
+      </div>
+      ${driver.pbef_number ? `
+        <div class="section-title" style="margin-top: 30px;">Personenbeförderungsschein</div>
+        <div class="meta-grid">
+          <div class="address-block">
+            <div class="label">P-Schein Nummer</div>
+            <div class="value">${driver.pbef_number}</div>
+            ${driver.pbef_expiry_date ? `<div class="label" style="margin-top: 16px;">Ablaufdatum</div><div class="value">${formatDate(driver.pbef_expiry_date)}</div>` : ""}
+          </div>
+        </div>
+      ` : ""}
+      ${driver.employment_data ? `
+        <div class="section-title" style="margin-top: 30px;">Beschäftigung</div>
+        <div class="meta-grid">
+          <div class="address-block">
+            ${driver.employment_data.start_date ? `<div class="label">Beschäftigungsbeginn</div><div class="value">${formatDate(driver.employment_data.start_date)}</div>` : ""}
+            ${driver.employment_data.contract_type ? `<div class="label" style="margin-top: 16px;">Vertragsart</div><div class="value">${driver.employment_data.contract_type}</div>` : ""}
+          </div>
+        </div>
+      ` : ""}
+    </div>
+  `
+}
+
+function generateVehicleContent(data: PDFData, formatDate: (s: string) => string): string {
+  const vehicle = data.content
+  return `
+    <div>
+      <div class="document-title">FAHRZEUG-DATENBLATT</div>
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Kennzeichen</div>
+          <div class="value">${vehicle.license_plate || "-"}</div>
+          <div class="label" style="margin-top: 16px;">Marke</div>
+          <div class="value">${vehicle.make || "-"}</div>
+          <div class="label" style="margin-top: 16px;">Modell</div>
+          <div class="value">${vehicle.model || "-"}</div>
+        </div>
+        <div class="address-block">
+          ${vehicle.year ? `<div class="label">Baujahr</div><div class="value">${vehicle.year}</div>` : ""}
+          ${vehicle.color ? `<div class="label" style="margin-top: 16px;">Farbe</div><div class="value">${vehicle.color}</div>` : ""}
+          <div class="label" style="margin-top: 16px;">Sitzplätze</div>
+          <div class="value">${vehicle.seats || "-"}</div>
+          <div class="label" style="margin-top: 16px;">Status</div>
+          <div class="value">${vehicle.status || "-"}</div>
+        </div>
+      </div>
+      ${vehicle.vehicle_data ? `
+        <div class="section-title" style="margin-top: 30px;">Technische Daten</div>
+        <div class="meta-grid">
+          <div class="address-block">
+            ${vehicle.vehicle_data.vin ? `<div class="label">FIN</div><div class="value">${vehicle.vehicle_data.vin}</div>` : ""}
+            ${vehicle.vehicle_data.fuel_type ? `<div class="label" style="margin-top: 16px;">Kraftstoff</div><div class="value">${vehicle.vehicle_data.fuel_type}</div>` : ""}
+          </div>
+          <div class="address-block">
+            ${vehicle.vehicle_data.mileage ? `<div class="label">Kilometerstand</div><div class="value">${vehicle.vehicle_data.mileage.toLocaleString("de-DE")} km</div>` : ""}
+          </div>
+        </div>
+      ` : ""}
+    </div>
+  `
+}
+
+function generateCustomerContent(data: PDFData, formatDate: (s: string) => string): string {
+  const customer = data.content
+  return `
+    <div>
+      <div class="document-title">KUNDEN-PROFIL</div>
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Name</div>
+          <div class="value">${customer.salutation || ""} ${customer.first_name || ""} ${customer.last_name || ""}</div>
+          ${customer.email ? `<div class="label" style="margin-top: 16px;">E-Mail</div><div class="value">${customer.email}</div>` : ""}
+          ${customer.phone ? `<div class="label" style="margin-top: 16px;">Telefon</div><div class="value">${customer.phone}</div>` : ""}
+        </div>
+        <div class="address-block">
+          ${customer.date_of_birth ? `<div class="label">Geburtsdatum</div><div class="value">${formatDate(customer.date_of_birth)}</div>` : ""}
+          ${customer.address_data ? `
+            <div class="label" style="margin-top: 16px;">Adresse</div>
+            <div class="value">
+              ${customer.address_data.street || ""} ${customer.address_data.house_number || ""}<br>
+              ${customer.address_data.postal_code || ""} ${customer.address_data.city || ""}
+            </div>
+          ` : ""}
+        </div>
+      </div>
+      ${customer.booking_count !== undefined ? `
+        <div class="section-title" style="margin-top: 30px;">Buchungshistorie</div>
+        <div class="meta-grid">
+          <div class="address-block">
+            <div class="label">Anzahl Buchungen</div>
+            <div class="value">${customer.booking_count || 0}</div>
+          </div>
+        </div>
+      ` : ""}
+    </div>
+  `
+}
+
+function generateEmployeeContent(data: PDFData, formatDate: (s: string) => string): string {
+  const employee = data.content
+  return `
+    <div>
+      <div class="document-title">MITARBEITER-PROFIL</div>
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Name</div>
+          <div class="value">${employee.salutation || ""} ${employee.full_name || employee.email || "-"}</div>
+          <div class="label" style="margin-top: 16px;">E-Mail</div>
+          <div class="value">${employee.email || "-"}</div>
+          ${employee.phone ? `<div class="label" style="margin-top: 16px;">Telefon</div><div class="value">${employee.phone}</div>` : ""}
+          ${employee.phone_mobile ? `<div class="label" style="margin-top: 16px;">Mobil</div><div class="value">${employee.phone_mobile}</div>` : ""}
+        </div>
+        <div class="address-block">
+          ${employee.date_of_birth ? `<div class="label">Geburtsdatum</div><div class="value">${formatDate(employee.date_of_birth)}</div>` : ""}
+          ${employee.nationality ? `<div class="label" style="margin-top: 16px;">Nationalität</div><div class="value">${employee.nationality}</div>` : ""}
+          <div class="label" style="margin-top: 16px;">Rolle</div>
+          <div class="value">${employee.role || "-"}</div>
+          ${employee.address_data ? `
+            <div class="label" style="margin-top: 16px;">Adresse</div>
+            <div class="value">
+              ${employee.address_data.street || ""} ${employee.address_data.house_number || ""}<br>
+              ${employee.address_data.postal_code || ""} ${employee.address_data.city || ""}
+            </div>
+          ` : ""}
+        </div>
+      </div>
+      ${employee.employment_data ? `
+        <div class="section-title" style="margin-top: 30px;">Beschäftigung</div>
+        <div class="meta-grid">
+          <div class="address-block">
+            ${employee.employment_data.start_date ? `<div class="label">Beschäftigungsbeginn</div><div class="value">${formatDate(employee.employment_data.start_date)}</div>` : ""}
+            ${employee.employment_data.contract_type ? `<div class="label" style="margin-top: 16px;">Vertragsart</div><div class="value">${employee.employment_data.contract_type}</div>` : ""}
+            ${employee.employment_data.department ? `<div class="label" style="margin-top: 16px;">Abteilung</div><div class="value">${employee.employment_data.department}</div>` : ""}
+          </div>
+          <div class="address-block">
+            ${employee.employment_data.position ? `<div class="label">Position</div><div class="value">${employee.employment_data.position}</div>` : ""}
+            ${employee.employment_data.working_hours ? `<div class="label" style="margin-top: 16px;">Arbeitsstunden/Woche</div><div class="value">${employee.employment_data.working_hours}</div>` : ""}
+            ${employee.employment_data.monthly_salary ? `<div class="label" style="margin-top: 16px;">Monatsgehalt</div><div class="value">${employee.employment_data.monthly_salary.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</div>` : ""}
+          </div>
+        </div>
+      ` : ""}
+    </div>
   `
 }
 

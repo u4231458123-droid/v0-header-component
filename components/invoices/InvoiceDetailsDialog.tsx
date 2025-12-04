@@ -8,7 +8,8 @@ import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
 import { safeNumber } from "@/lib/utils/safe-number"
-import { CalendarIcon, ClockIcon, UserIcon, CreditCardIcon, FileTextIcon, Printer } from "lucide-react"
+import { CalendarIcon, ClockIcon, UserIcon, CreditCardIcon, FileTextIcon, Printer, PencilIcon } from "lucide-react"
+import { toast } from "sonner"
 import { downloadPDF } from "@/lib/pdf/pdf-generator"
 import { createClient } from "@/lib/supabase/client"
 
@@ -242,7 +243,18 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
             <Printer className="h-4 w-4 mr-2" />
             {printing ? "Wird erstellt..." : "PDF drucken"}
           </Button>
-          <Button onClick={() => onOpenChange(false)}>Schließen</Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                toast.info("Rechnungsbearbeitung wird in Kürze verfügbar sein")
+              }}
+            >
+              <PencilIcon className="h-4 w-4 mr-2" />
+              Bearbeiten
+            </Button>
+            <Button onClick={() => onOpenChange(false)}>Schließen</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

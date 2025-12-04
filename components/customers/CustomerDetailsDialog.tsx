@@ -2,6 +2,10 @@
 
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { createClient } from "@/lib/supabase/client"
+import { Printer } from "lucide-react"
+import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -21,6 +25,8 @@ interface CustomerDetailsDialogProps {
 export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomerUpdated }: CustomerDetailsDialogProps) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [localCustomer, setLocalCustomer] = useState(customer)
+  const [printing, setPrinting] = useState(false)
+  const supabase = createClient()
 
   // Update local customer when prop changes
   if (customer?.id !== localCustomer?.id) {
@@ -28,6 +34,52 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
   }
 
   if (!localCustomer) return null
+
+  const handlePrintPDF = async () => {
+    setPrinting(true)
+    try {
+      // Lade Company-Daten (falls vorhanden)
+      let company = null
+      if (localCustomer.company_id) {
+        const { data } = await supabase
+          .from("companies")
+          .select("*")
+          .eq("id", localCustomer.company_id)
+          .single()
+        company = data
+      }
+
+      // Fallback Company falls keine vorhanden
+      if (!company) {
+        company = {
+          id: "default",
+          name: "MyDispatch",
+          address: "",
+          email: "info@my-dispatch.de",
+          phone: "",
+        }
+      }
+
+      await downloadPDF({
+        type: "customer",
+        company: {
+          id: company.id,
+          name: company.name,
+          address: company.address || "",
+          email: company.email || "",
+          phone: company.phone || "",
+          logo_url: company.logo_url,
+        },
+        content: localCustomer,
+      })
+
+      setPrinting(false)
+    } catch (error: any) {
+      console.error("Fehler beim PDF-Druck:", error)
+      toast.error("Fehler beim Erstellen des PDFs")
+      setPrinting(false)
+    }
+  }
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<
@@ -198,6 +250,10 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
           <DialogFooter className="mt-6 flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Schliessen
+            </Button>
+            <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+              <Printer className="h-4 w-4 mr-2" />
+              {printing ? "Wird erstellt..." : "PDF Drucken"}
             </Button>
             <Button onClick={() => setShowEditDialog(true)}>
               <PencilIcon className="mr-2 h-4 w-4" />

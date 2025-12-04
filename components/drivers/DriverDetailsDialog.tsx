@@ -20,6 +20,10 @@ import {
   PencilIcon,
 } from "lucide-react"
 import { EditDriverDialog } from "./EditDriverDialog"
+import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { createClient } from "@/lib/supabase/client"
+import { Printer } from "lucide-react"
+import { toast } from "sonner"
 
 interface DriverDetailsDialogProps {
   driver: any
@@ -32,6 +36,8 @@ interface DriverDetailsDialogProps {
 export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdated }: DriverDetailsDialogProps) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [localDriver, setLocalDriver] = useState(driver)
+  const [printing, setPrinting] = useState(false)
+  const supabase = createClient()
 
   // Update local driver when prop changes
   if (driver?.id !== localDriver?.id) {
@@ -67,6 +73,41 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
       return format(new Date(date), "dd.MM.yyyy", { locale: de })
     } catch {
       return "-"
+    }
+  }
+
+  const handlePrintPDF = async () => {
+    setPrinting(true)
+    try {
+      const { data: company } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("id", localDriver.company_id)
+        .single()
+
+      if (!company) {
+        toast.error("Unternehmen nicht gefunden")
+        return
+      }
+
+      await downloadPDF({
+        type: "driver",
+        company: {
+          id: company.id,
+          name: company.name,
+          address: company.address || "",
+          email: company.email || "",
+          phone: company.phone || "",
+          logo_url: company.logo_url,
+        },
+        content: localDriver,
+      })
+
+      setPrinting(false)
+    } catch (error: any) {
+      console.error("Fehler beim PDF-Druck:", error)
+      toast.error("Fehler beim Erstellen des PDFs")
+      setPrinting(false)
     }
   }
 
@@ -311,7 +352,14 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Schliessen
             </Button>
-            {/* Bearbeiten-Button entfernt - Daten sind nur lesend */}
+            <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+              <Printer className="h-4 w-4 mr-2" />
+              {printing ? "Wird erstellt..." : "PDF Drucken"}
+            </Button>
+            <Button onClick={() => setShowEditDialog(true)}>
+              <PencilIcon className="h-4 w-4 mr-2" />
+              Bearbeiten
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

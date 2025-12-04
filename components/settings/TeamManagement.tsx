@@ -54,6 +54,7 @@ import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 import { de } from "date-fns/locale"
 import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog"
+import { NewEmployeeDialog } from "./NewEmployeeDialog"
 
 interface TeamMember {
   id: string
@@ -192,6 +193,7 @@ export function TeamManagement({
   const [uploadingDocument, setUploadingDocument] = useState<string | null>(null)
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [detailsMember, setDetailsMember] = useState<TeamMember | null>(null)
+  const [newEmployeeDialogOpen, setNewEmployeeDialogOpen] = useState(false)
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -508,11 +510,31 @@ export function TeamManagement({
             </CardDescription>
           </div>
           {isAdmin && (
+            <>
+              <NewEmployeeDialog
+                companyId={companyId}
+                currentUserId={currentUserId}
+                open={newEmployeeDialogOpen}
+                onOpenChange={setNewEmployeeDialogOpen}
+                onSuccess={() => {
+                  setNewEmployeeDialogOpen(false)
+                  onRefresh()
+                  loadInvitations()
+                  loadActivityLog()
+                }}
+              />
+              <Button className="gap-2" onClick={() => setNewEmployeeDialogOpen(true)}>
+                <UserPlus className="w-4 h-4" />
+                Einladen
+              </Button>
+            </>
+          )}
+          {false && isAdmin && (
             <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="gap-2">
                   <UserPlus className="w-4 h-4" />
-                  Einladen
+                  Einladen (Alt)
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -600,9 +622,15 @@ export function TeamManagement({
                       {(member.full_name || member.email || "?").charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="flex-1 cursor-pointer" onClick={() => handleOpenDetailsDialog(member)}>
                     <p className="font-medium">{member.full_name || "Kein Name"}</p>
                     <p className="text-sm text-muted-foreground">{member.email}</p>
+                    {member.employment_data?.position && (
+                      <p className="text-xs text-muted-foreground">{member.employment_data.position}</p>
+                    )}
+                    {member.employment_data?.department && (
+                      <p className="text-xs text-muted-foreground">{member.employment_data.department}</p>
+                    )}
                     {member.last_sign_in_at && (
                       <p className="text-xs text-muted-foreground">
                         Zuletzt aktiv:{" "}

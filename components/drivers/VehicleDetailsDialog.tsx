@@ -20,6 +20,10 @@ import {
   PencilIcon,
 } from "lucide-react"
 import { EditVehicleDialog } from "./EditVehicleDialog"
+import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { createClient } from "@/lib/supabase/client"
+import { Printer } from "lucide-react"
+import { toast } from "sonner"
 
 interface VehicleDetailsDialogProps {
   vehicle: any
@@ -32,6 +36,8 @@ interface VehicleDetailsDialogProps {
 export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpdated }: VehicleDetailsDialogProps) {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [localVehicle, setLocalVehicle] = useState(vehicle)
+  const [printing, setPrinting] = useState(false)
+  const supabase = createClient()
 
   // Update local vehicle when prop changes
   if (vehicle?.id !== localVehicle?.id) {
@@ -39,6 +45,41 @@ export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpd
   }
 
   if (!localVehicle) return null
+
+  const handlePrintPDF = async () => {
+    setPrinting(true)
+    try {
+      const { data: company } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("id", localVehicle.company_id)
+        .single()
+
+      if (!company) {
+        toast.error("Unternehmen nicht gefunden")
+        return
+      }
+
+      await downloadPDF({
+        type: "vehicle",
+        company: {
+          id: company.id,
+          name: company.name,
+          address: company.address || "",
+          email: company.email || "",
+          phone: company.phone || "",
+          logo_url: company.logo_url,
+        },
+        content: localVehicle,
+      })
+
+      setPrinting(false)
+    } catch (error: any) {
+      console.error("Fehler beim PDF-Druck:", error)
+      toast.error("Fehler beim Erstellen des PDFs")
+      setPrinting(false)
+    }
+  }
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<
@@ -266,6 +307,10 @@ export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpd
           <DialogFooter className="mt-6 flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Schliessen
+            </Button>
+            <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+              <Printer className="h-4 w-4 mr-2" />
+              {printing ? "Wird erstellt..." : "PDF Drucken"}
             </Button>
             <Button onClick={() => setShowEditDialog(true)}>
               <PencilIcon className="mr-2 h-4 w-4" />

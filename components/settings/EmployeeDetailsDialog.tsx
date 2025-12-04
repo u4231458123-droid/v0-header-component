@@ -21,6 +21,9 @@ import {
 } from "lucide-react"
 import { EditEmployeeDialog } from "./EditEmployeeDialog"
 import { createClient } from "@/lib/supabase/client"
+import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { Printer } from "lucide-react"
+import { toast } from "sonner"
 
 interface EmployeeDetailsDialogProps {
   employee: any
@@ -66,6 +69,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
   const [localEmployee, setLocalEmployee] = useState(employee)
   const [documents, setDocuments] = useState<EmployeeDocument[]>([])
   const [loadingDocuments, setLoadingDocuments] = useState(false)
+  const [printing, setPrinting] = useState(false)
   const supabase = createClient()
 
   // Update local employee when prop changes
@@ -112,6 +116,41 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
     }
 
     window.open(data.signedUrl, "_blank")
+  }
+
+  const handlePrintPDF = async () => {
+    setPrinting(true)
+    try {
+      const { data: company } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("id", localEmployee.company_id)
+        .single()
+
+      if (!company) {
+        toast.error("Unternehmen nicht gefunden")
+        return
+      }
+
+      await downloadPDF({
+        type: "employee",
+        company: {
+          id: company.id,
+          name: company.name,
+          address: company.address || "",
+          email: company.email || "",
+          phone: company.phone || "",
+          logo_url: company.logo_url,
+        },
+        content: localEmployee,
+      })
+
+      setPrinting(false)
+    } catch (error: any) {
+      console.error("Fehler beim PDF-Druck:", error)
+      toast.error("Fehler beim Erstellen des PDFs")
+      setPrinting(false)
+    }
   }
 
   if (!localEmployee) return null
@@ -342,6 +381,10 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
           <DialogFooter className="mt-6 flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Schließen
+            </Button>
+            <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+              <Printer className="h-4 w-4 mr-2" />
+              {printing ? "Wird erstellt..." : "PDF Drucken"}
             </Button>
             <Button onClick={() => setShowEditDialog(true)} className="gap-2">
               <PencilIcon className="h-4 w-4" />
