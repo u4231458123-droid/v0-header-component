@@ -32,6 +32,45 @@ export interface MyDispatchEmailData {
 }
 
 /**
+ * Verarbeite Handlebars Conditionals in HTML-Templates
+ * Unterstützt: {{#if variable}}...{{/if}}
+ */
+function processHandlebarsConditionals(html: string, data: any): string {
+  let processed = html
+  
+  // Regex für {{#if variable}}...{{/if}} Blöcke
+  // Unterstützt auch verschachtelte Blöcke
+  const conditionalRegex = /\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g
+  
+  let match
+  while ((match = conditionalRegex.exec(processed)) !== null) {
+    const [fullMatch, variable, content] = match
+    
+    // Prüfe ob Variable existiert und truthy ist
+    const value = data[variable]
+    const shouldInclude = value !== undefined && value !== null && value !== "" && value !== false
+    
+    if (shouldInclude) {
+      // Ersetze den gesamten Block durch den Inhalt
+      processed = processed.replace(fullMatch, content)
+    } else {
+      // Entferne den gesamten Block
+      processed = processed.replace(fullMatch, "")
+    }
+    
+    // Setze lastIndex zurück, um alle Matches zu finden
+    conditionalRegex.lastIndex = 0
+  }
+  
+  // Rekursiv verarbeiten für verschachtelte Conditionals
+  if (conditionalRegex.test(processed)) {
+    processed = processHandlebarsConditionals(processed, data)
+  }
+  
+  return processed
+}
+
+/**
  * Generiere E-Mail mit Logo und Branding
  */
 export function generateEmailHTML(
@@ -442,4 +481,3 @@ export function generateCompanyEmail(
 ): string {
   return generateEmailHTML(template, data, companyData, false)
 }
-
