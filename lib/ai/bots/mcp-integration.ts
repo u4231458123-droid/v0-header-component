@@ -226,31 +226,25 @@ export async function applyMigrationWithValidation(
       const { error } = await supabase.rpc("exec_sql", { sql_query: query })
       
       if (error) {
-        // Versuche direkte Ausführung über execute_sql (falls RPC nicht verfügbar)
-        // Split query in einzelne Statements
-        const statements = query
-          .split(";")
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0 && !s.startsWith("--"))
-        
-        for (const statement of statements) {
-          if (statement.trim()) {
-            // Verwende Supabase Admin-Client falls verfügbar
-            // Ansonsten: Migration muss manuell angewendet werden
-            warnings.push(
-              `Migration "${name}" muss manuell angewendet werden. SQL-Query ist validiert und bereit.`
-            )
-          }
-        }
+        // RPC nicht verfügbar oder fehlgeschlagen
+        // Migration muss manuell angewendet werden
+        // Warnung nur einmal hinzufügen (nicht in Schleife)
+        warnings.push(
+          `Migration "${name}" muss manuell angewendet werden. SQL-Query ist validiert und bereit.`
+        )
       } else {
         migrationApplied = true
       }
     }
     
     if (!migrationApplied) {
-      warnings.push(
-        `Migration "${name}" wurde nicht automatisch angewendet. Bitte manuell in Supabase Dashboard ausführen.`
-      )
+      // Warnung nur hinzufügen wenn noch nicht vorhanden
+      const hasWarning = warnings.some((w) => w.includes(`Migration "${name}"`))
+      if (!hasWarning) {
+        warnings.push(
+          `Migration "${name}" wurde nicht automatisch angewendet. Bitte manuell in Supabase Dashboard ausführen.`
+        )
+      }
     }
     
     return {
@@ -307,13 +301,19 @@ export async function generateTypesWithValidation(): Promise<{
       const supabase = createClient()
       
       // Hole Tabellen-Informationen
-      const { data: tables } = await supabase
+      // HINWEIS: information_schema ist möglicherweise nicht über anonymen Client zugänglich
+      const { data: tables, error: tablesError } = await supabase
         .from("information_schema.tables")
         .select("table_name")
         .eq("table_schema", "public")
         .limit(100)
       
-      if (tables && tables.length > 0) {
+      if (tablesError) {
+        // System-Tabellen nicht zugänglich über anonymen Client
+        errors.push(
+          `Typ-Generierung fehlgeschlagen: Kein Zugriff auf information_schema.tables. ${tablesError.message}. Verwende MCP oder Admin-Client für Typ-Generierung.`
+        )
+      } else if (tables && tables.length > 0) {
         // Generiere einfache TypeScript-Typen
         types = `// Auto-generated TypeScript types for Supabase\n\n`
         types += `export interface Database {\n`
@@ -330,11 +330,23 @@ export async function generateTypesWithValidation(): Promise<{
         
         types += `  }\n`
         types += `}\n`
+      } else {
+        // Keine Tabellen gefunden
+        errors.push(
+          `Typ-Generierung fehlgeschlagen: Keine Tabellen gefunden. Verwende MCP oder Admin-Client für Typ-Generierung.`
+        )
       }
     }
     
+    // Wenn types undefined ist, war die Generierung nicht erfolgreich
+    if (!types && errors.length === 0) {
+      errors.push(
+        `Typ-Generierung fehlgeschlagen: Keine Typen konnten generiert werden. Verwende MCP oder Admin-Client.`
+      )
+    }
+    
     return {
-      success: errors.length === 0,
+      success: errors.length === 0 && types !== undefined,
       types,
       errors,
     }
@@ -387,6 +399,7 @@ export async function checkSecurityAdvisors(): Promise<{
       
       // Prüfe RLS auf kritischen Tabellen
       const criticalTables = ["profiles", "companies", "bookings", "invoices", "customers"]
+      let missingTables: string[] = []
       
       for (const table of criticalTables) {
         try {
@@ -396,24 +409,25 @@ export async function checkSecurityAdvisors(): Promise<{
           if (error && error.code === "42501") {
             // RLS ist aktiv (gut)
           } else if (error && error.code === "42P01") {
-            issues.push({
-              name: `Missing table: ${table}`,
-              level: "error",
-              description: `Kritische Tabelle ${table} existiert nicht`,
-            })
+            missingTables.push(table)
           }
         } catch (tableError: any) {
           // Ignoriere einzelne Fehler
         }
       }
       
-      // Warnung: Function search_path sollte gesetzt sein
-      issues.push({
-        name: "Function search_path",
-        level: "warning",
-        description:
-          "Function search_path sollte explizit gesetzt werden für bessere Sicherheit",
-      })
+      // Nur fehlende Tabellen als Issues melden
+      for (const table of missingTables) {
+        issues.push({
+          name: `Missing table: ${table}`,
+          level: "error",
+          description: `Kritische Tabelle ${table} existiert nicht`,
+        })
+      }
+      
+      // Function search_path Warnung nur hinzufügen wenn tatsächlich ein Problem vorliegt
+      // (z.B. wenn Funktionen ohne search_path definiert sind)
+      // Für jetzt: Keine hardcodierte Warnung, da wir den tatsächlichen Status nicht prüfen können
     }
     
     return {
