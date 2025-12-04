@@ -237,6 +237,8 @@ interface CustomerAccount {
   postal_code: string
   city: string
   preferred_payment_method: string
+  salutation?: string
+  title?: string
   registered_companies: string[]
 }
 

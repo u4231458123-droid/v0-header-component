@@ -213,10 +213,10 @@ interface Profile {
   id?: string
   full_name?: string
   email?: string
-  phone?: string
-  avatar_url?: string
+  phone?: string | null
+  avatar_url?: string | null
   role?: string
-  company_id?: string
+  company_id?: string | null
 }
 
 interface TeamMember {

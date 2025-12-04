@@ -32,6 +32,16 @@ export async function GET() {
     }
 
     // Teste Verbindung mit Anon Key
+    if (!url || !anonKey) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: "URL oder Anon Key fehlt",
+        },
+        { status: 500 }
+      )
+    }
+
     const supabase = createClient(url, anonKey)
     const { data, error } = await supabase.from("companies").select("count").limit(1)
 
@@ -50,6 +60,16 @@ export async function GET() {
     }
 
     // Teste Service Role Key
+    if (!serviceKey) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: "Service Key fehlt",
+        },
+        { status: 500 }
+      )
+    }
+
     const supabaseAdmin = createClient(url, serviceKey)
     const { data: adminData, error: adminError } = await supabaseAdmin
       .from("companies")

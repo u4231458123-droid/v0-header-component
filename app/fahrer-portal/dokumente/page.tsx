@@ -175,6 +175,7 @@ export default function DriverDocumentsPage() {
 
   const handleLogout = async () => {
     const supabase = getSupabase()
+    if (!supabase) return
     await supabase.auth.signOut()
     window.location.href = "/auth/login"
   }

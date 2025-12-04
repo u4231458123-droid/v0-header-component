@@ -42,7 +42,7 @@ export async function checkSubscriptionAccess(): Promise<{
 
   const { data: company } = await supabase
     .from("companies")
-    .select("subscription_status, subscription_tier")
+    .select("subscription_tier, subscription_status, subscription_plan")
     .eq("id", profile.company_id)
     .single()
 
@@ -50,12 +50,32 @@ export async function checkSubscriptionAccess(): Promise<{
     return { hasAccess: false, message: "Company not found" }
   }
 
-  const tier = (company.subscription_tier as SubscriptionTier) || "starter"
-  const hasAccess = ["active", "trialing"].includes(company.subscription_status)
+  // Mapping: DB subscription_plan -> Code SubscriptionTier
+  // DB: free|basic|professional|enterprise
+  // Code: starter|business|enterprise
+  const planToTier: Record<string, SubscriptionTier> = {
+    free: "starter",
+    basic: "starter",
+    professional: "business",
+    enterprise: "enterprise",
+  }
+
+  // Verwende subscription_tier falls vorhanden, sonst mappe subscription_plan
+  let tier: SubscriptionTier = "starter"
+  if (company.subscription_tier && ["starter", "business", "enterprise"].includes(company.subscription_tier)) {
+    tier = company.subscription_tier as SubscriptionTier
+  } else if (company.subscription_plan) {
+    tier = planToTier[company.subscription_plan] || "starter"
+  }
+
+  // Prüfe subscription_status falls vorhanden, sonst angenommen aktiv
+  const hasAccess = company.subscription_status
+    ? ["active", "trialing"].includes(company.subscription_status)
+    : true // Falls kein Status, angenommen aktiv
 
   return {
     hasAccess,
-    status: company.subscription_status as SubscriptionStatus,
+    status: (company.subscription_status as SubscriptionStatus) || "active",
     tier,
     features: TIER_FEATURES[tier],
     limits: TIER_LIMITS[tier],

@@ -19,8 +19,8 @@ interface Profile {
   role?: string
   full_name?: string
   email?: string
-  phone?: string
-  avatar_url?: string
+  phone?: string | null
+  avatar_url?: string | null
 }
 
 async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
@@ -105,18 +105,15 @@ export default async function SettingsPage() {
       console.error("[v0] Could not create profile:", error)
     }
 
-    return renderSettingsPage(
-      supabase,
-      profile || {
-        company_id: null,
-        role: "owner",
-        full_name: user!.email?.split("@")[0] || "Benutzer",
-        email: user!.email || "",
-        phone: null,
-        avatar_url: null,
-      },
-      user,
-    )
+    const fallbackProfile: Profile = {
+      company_id: null,
+      role: "owner",
+      full_name: user!.email?.split("@")[0] || "Benutzer",
+      email: user!.email || "",
+      phone: null,
+      avatar_url: null,
+    }
+    return renderSettingsPage(supabase, profile || fallbackProfile, user)
   }
 
   try {

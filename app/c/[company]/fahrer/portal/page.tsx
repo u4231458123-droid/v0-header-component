@@ -63,7 +63,18 @@ export default async function TenantDriverPortalPage({ params }: PageProps) {
     .order("shift_start", { ascending: true })
 
   // Transform bookings to match expected interface
-  const transformedBookings = (bookings || []).map((b) => ({
+  interface BookingData {
+    id: string
+    passenger_name?: string
+    pickup_address?: string
+    dropoff_address?: string
+    pickup_time?: string
+    status?: string
+    passengers?: number
+    notes?: string
+    price?: number
+  }
+  const transformedBookings = (bookings || []).map((b: BookingData) => ({
     id: b.id,
     customer_name: b.passenger_name || "Unbekannt",
     pickup_address: b.pickup_address || "",
@@ -76,7 +87,13 @@ export default async function TenantDriverPortalPage({ params }: PageProps) {
   }))
 
   // Transform shifts to match expected interface
-  const transformedShifts = (shifts || []).map((s) => ({
+  interface ShiftData {
+    id: string
+    shift_start?: string
+    shift_end?: string
+    status?: string
+  }
+  const transformedShifts = (shifts || []).map((s: ShiftData) => ({
     id: s.id,
     start_time: s.shift_start,
     end_time: s.shift_end,

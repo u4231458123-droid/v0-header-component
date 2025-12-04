@@ -212,7 +212,10 @@ export default function FahrerPortalPage() {
 
       if (bookingsData) {
         setPendingBookings(bookingsData)
-        const active = bookingsData.find((b) => b.status === "in_progress")
+        interface Booking {
+          status?: string
+        }
+        const active = bookingsData.find((b: Booking) => b.status === "in_progress")
         if (active) setActiveBooking(active)
       }
 

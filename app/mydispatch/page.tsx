@@ -59,23 +59,35 @@ export default async function MyDispatchPage() {
   ])
 
   // Berechne Statistiken
+  interface Company {
+    id: string
+    name?: string
+    subscription_status?: string
+  }
+  interface Invoice {
+    total_amount?: number | string | null
+    company_id?: string
+  }
+  interface ContactRequest {
+    status?: string
+  }
   const stats = {
     totalCompanies: companies?.length || 0,
-    activeSubscriptions: companies?.filter((c) => c.subscription_status === "active").length || 0,
-    totalRevenue: invoices?.reduce((sum, inv) => sum + (Number(inv.total_amount) || 0), 0) || 0,
+    activeSubscriptions: (companies as Company[])?.filter((c: Company) => c.subscription_status === "active").length || 0,
+    totalRevenue: (invoices as Invoice[])?.reduce((sum: number, inv: Invoice) => sum + (Number(inv.total_amount) || 0), 0) || 0,
     totalBookings: bookings?.length || 0,
-    pendingContactRequests: contactRequests?.filter((r) => r.status === "new").length || 0,
+    pendingContactRequests: (contactRequests as ContactRequest[])?.filter((r: ContactRequest) => r.status === "new").length || 0,
     totalCustomers: customers?.length || 0,
     totalDrivers: drivers?.length || 0,
   }
 
   // Revenue pro Kunde berechnen
-  const revenuePerCompany = companies?.map((company) => {
-    const companyInvoices = invoices?.filter((inv) => inv.company_id === company.id) || []
-    const revenue = companyInvoices.reduce((sum, inv) => sum + (Number(inv.total_amount) || 0), 0)
+  const revenuePerCompany = (companies as Company[])?.map((company: Company) => {
+    const companyInvoices = (invoices as Invoice[])?.filter((inv: Invoice) => inv.company_id === company.id) || []
+    const revenue = companyInvoices.reduce((sum: number, inv: Invoice) => sum + (Number(inv.total_amount) || 0), 0)
     return {
       companyId: company.id,
-      companyName: company.name,
+      companyName: company.name || "Unbekannt",
       revenue,
       invoiceCount: companyInvoices.length,
     }

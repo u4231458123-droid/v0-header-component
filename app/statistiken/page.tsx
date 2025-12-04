@@ -8,6 +8,41 @@ import { redirect } from "next/navigation"
 import { MainLayout } from "@/components/layout/MainLayout"
 import { StatistikenPageClient } from "@/components/statistiken/StatistikenPageClient"
 
+interface Booking {
+  id: string
+  status: string
+  price?: number | null
+  payment_status?: string
+  payment_method?: string
+  pickup_time?: string
+  created_at?: string
+  customer?: { id: string }
+  driver?: { id: string }
+}
+
+interface Vehicle {
+  id: string
+  status?: string
+  category?: string
+  fuel_type?: string
+  tuev_date?: string
+  insurance_valid_until?: string
+}
+
+interface Customer {
+  id: string
+  first_name?: string
+  last_name?: string
+  created_at?: string
+}
+
+interface Invoice {
+  id: string
+  status?: string
+  total_amount?: number | null
+  due_date?: string
+}
+
 async function getComprehensiveStatistics(companyId: string) {
   const supabase = await createClient()
 
@@ -150,58 +185,58 @@ async function getComprehensiveStatistics(companyId: string) {
   const shifts = driverShifts || []
 
   // Buchungs-Statistiken
-  const completedBookings = bookings.filter((b) => b.status === "completed")
-  const totalRevenue = completedBookings.reduce((sum, b) => sum + (b.price || 0), 0)
+  const completedBookings = (bookings as Booking[]).filter((b: Booking) => b.status === "completed")
+  const totalRevenue = completedBookings.reduce((sum: number, b: Booking) => sum + (b.price || 0), 0)
   const avgBookingValue = completedBookings.length > 0 ? totalRevenue / completedBookings.length : 0
 
   const bookingsByStatus = {
-    pending: bookings.filter((b) => b.status === "pending").length,
-    confirmed: bookings.filter((b) => b.status === "confirmed").length,
-    in_progress: bookings.filter((b) => b.status === "in_progress").length,
+    pending: (bookings as Booking[]).filter((b: Booking) => b.status === "pending").length,
+    confirmed: (bookings as Booking[]).filter((b: Booking) => b.status === "confirmed").length,
+    in_progress: (bookings as Booking[]).filter((b: Booking) => b.status === "in_progress").length,
     completed: completedBookings.length,
-    cancelled: bookings.filter((b) => b.status === "cancelled").length,
+    cancelled: (bookings as Booking[]).filter((b: Booking) => b.status === "cancelled").length,
   }
 
   const bookingsByPaymentStatus = {
-    pending: bookings.filter((b) => b.payment_status === "pending").length,
-    paid: bookings.filter((b) => b.payment_status === "paid").length,
-    partial: bookings.filter((b) => b.payment_status === "partial").length,
-    overdue: bookings.filter((b) => b.payment_status === "overdue").length,
+    pending: (bookings as Booking[]).filter((b: Booking) => b.payment_status === "pending").length,
+    paid: (bookings as Booking[]).filter((b: Booking) => b.payment_status === "paid").length,
+    partial: (bookings as Booking[]).filter((b: Booking) => b.payment_status === "partial").length,
+    overdue: (bookings as Booking[]).filter((b: Booking) => b.payment_status === "overdue").length,
   }
 
   const bookingsByPaymentMethod = {
-    cash: bookings.filter((b) => b.payment_method === "cash").length,
-    card: bookings.filter((b) => b.payment_method === "card").length,
-    invoice: bookings.filter((b) => b.payment_method === "invoice").length,
-    paypal: bookings.filter((b) => b.payment_method === "paypal").length,
+    cash: (bookings as Booking[]).filter((b: Booking) => b.payment_method === "cash").length,
+    card: (bookings as Booking[]).filter((b: Booking) => b.payment_method === "card").length,
+    invoice: (bookings as Booking[]).filter((b: Booking) => b.payment_method === "invoice").length,
+    paypal: (bookings as Booking[]).filter((b: Booking) => b.payment_method === "paypal").length,
   }
 
   // Umsatz nach Zeiträumen
-  const revenueToday = (bookingsToday || [])
-    .filter((b) => b.status === "completed")
-    .reduce((sum, b) => sum + (b.price || 0), 0)
-  const revenueThisMonth = (bookingsThisMonth || [])
-    .filter((b) => b.status === "completed")
-    .reduce((sum, b) => sum + (b.price || 0), 0)
-  const revenueLastMonth = (bookingsLastMonth || [])
-    .filter((b) => b.status === "completed")
-    .reduce((sum, b) => sum + (b.price || 0), 0)
+  const revenueToday = ((bookingsToday || []) as Booking[])
+    .filter((b: Booking) => b.status === "completed")
+    .reduce((sum: number, b: Booking) => sum + (b.price || 0), 0)
+  const revenueThisMonth = ((bookingsThisMonth || []) as Booking[])
+    .filter((b: Booking) => b.status === "completed")
+    .reduce((sum: number, b: Booking) => sum + (b.price || 0), 0)
+  const revenueLastMonth = ((bookingsLastMonth || []) as Booking[])
+    .filter((b: Booking) => b.status === "completed")
+    .reduce((sum: number, b: Booking) => sum + (b.price || 0), 0)
   const revenueGrowth = revenueLastMonth > 0 ? ((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100 : 0
 
   // Buchungen nach Stunde (für Heatmap)
   const bookingsByHour = Array.from({ length: 24 }, (_, hour) => ({
     hour,
-    count: bookings.filter((b) => {
-      const bookingHour = new Date(b.pickup_time).getHours()
+    count: (bookings as Booking[]).filter((b: Booking) => {
+      const bookingHour = new Date(b.pickup_time || "").getHours()
       return bookingHour === hour
     }).length,
   }))
 
   // Buchungen nach Wochentag
   const dayNames = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
-  const bookingsByDay = dayNames.map((day, idx) => ({
+  const bookingsByDay = dayNames.map((day: string, idx: number) => ({
     day,
-    count: bookings.filter((b) => new Date(b.pickup_time).getDay() === idx).length,
+    count: (bookings as Booking[]).filter((b: Booking) => new Date(b.pickup_time || "").getDay() === idx).length,
   }))
 
   // Monatlicher Umsatz (letzte 12 Monate)
@@ -211,28 +246,34 @@ async function getComprehensiveStatistics(companyId: string) {
     date.setMonth(date.getMonth() - (11 - i))
     const month = date.getMonth()
     const year = date.getFullYear()
-    const monthBookings = bookings.filter((b) => {
-      const bDate = new Date(b.created_at)
+    const monthBookings = (bookings as Booking[]).filter((b: Booking) => {
+      const bDate = new Date(b.created_at || "")
       return bDate.getMonth() === month && bDate.getFullYear() === year && b.status === "completed"
     })
     return {
       month: monthNames[month],
       year,
-      revenue: monthBookings.reduce((sum, b) => sum + (b.price || 0), 0),
+      revenue: monthBookings.reduce((sum: number, b: Booking) => sum + (b.price || 0), 0),
       bookings: monthBookings.length,
     }
   })
 
   // Fahrer-Statistiken
-  const driversAvailable = drivers.filter((d) => d.status === "available").length
-  const driversBusy = drivers.filter((d) => d.status === "busy").length
-  const driversOffline = drivers.filter((d) => d.status === "offline").length
+  interface Driver {
+    id: string
+    status?: string
+    first_name?: string
+    last_name?: string
+  }
+  const driversAvailable = (drivers as Driver[]).filter((d: Driver) => d.status === "available").length
+  const driversBusy = (drivers as Driver[]).filter((d: Driver) => d.status === "busy").length
+  const driversOffline = (drivers as Driver[]).filter((d: Driver) => d.status === "offline").length
 
   // Top Fahrer nach Buchungen
-  const driverBookingCounts = drivers
-    .map((driver) => {
-      const driverBookings = bookings.filter((b) => b.driver?.id === driver.id)
-      const completedDriverBookings = driverBookings.filter((b) => b.status === "completed")
+  const driverBookingCounts = (drivers as Driver[])
+    .map((driver: Driver) => {
+      const driverBookings = (bookings as Booking[]).filter((b: Booking) => (b as any).driver?.id === driver.id)
+      const completedDriverBookings = driverBookings.filter((b: Booking) => b.status === "completed")
       return {
         id: driver.id,
         name: `${driver.first_name} ${driver.last_name}`,
@@ -245,38 +286,39 @@ async function getComprehensiveStatistics(companyId: string) {
     .sort((a, b) => b.completedBookings - a.completedBookings)
 
   // Fahrzeug-Statistiken
-  const vehiclesAvailable = vehicles.filter((v) => v.status === "available").length
-  const vehiclesBusy = vehicles.filter((v) => v.status === "busy" || v.status === "in_use").length
-  const vehiclesMaintenance = vehicles.filter((v) => v.status === "maintenance").length
+  const vehiclesAvailable = (vehicles as Vehicle[]).filter((v: Vehicle) => v.status === "available").length
+  const vehiclesBusy = (vehicles as Vehicle[]).filter((v: Vehicle) => v.status === "busy" || v.status === "in_use").length
+  const vehiclesMaintenance = (vehicles as Vehicle[]).filter((v: Vehicle) => v.status === "maintenance").length
 
   const vehiclesByCategory = {
-    limousine: vehicles.filter((v) => v.category === "limousine").length,
-    van: vehicles.filter((v) => v.category === "van").length,
-    suv: vehicles.filter((v) => v.category === "suv").length,
-    luxury: vehicles.filter((v) => v.category === "luxury").length,
-    other: vehicles.filter((v) => !v.category || !["limousine", "van", "suv", "luxury"].includes(v.category)).length,
+    limousine: (vehicles as Vehicle[]).filter((v: Vehicle) => v.category === "limousine").length,
+    van: (vehicles as Vehicle[]).filter((v: Vehicle) => v.category === "van").length,
+    suv: (vehicles as Vehicle[]).filter((v: Vehicle) => v.category === "suv").length,
+    luxury: (vehicles as Vehicle[]).filter((v: Vehicle) => v.category === "luxury").length,
+    other: (vehicles as Vehicle[]).filter((v: Vehicle) => !v.category || !["limousine", "van", "suv", "luxury"].includes(v.category || "")).length,
   }
 
   const vehiclesByFuel = {
-    petrol: vehicles.filter((v) => v.fuel_type === "petrol" || v.fuel_type === "benzin").length,
-    diesel: vehicles.filter((v) => v.fuel_type === "diesel").length,
-    electric: vehicles.filter((v) => v.fuel_type === "electric" || v.fuel_type === "elektro").length,
-    hybrid: vehicles.filter((v) => v.fuel_type === "hybrid").length,
-    other: vehicles.filter((v) => !v.fuel_type).length,
+    petrol: (vehicles as Vehicle[]).filter((v: Vehicle) => v.fuel_type === "petrol" || v.fuel_type === "benzin").length,
+    diesel: (vehicles as Vehicle[]).filter((v: Vehicle) => v.fuel_type === "diesel").length,
+    electric: (vehicles as Vehicle[]).filter((v: Vehicle) => v.fuel_type === "electric" || v.fuel_type === "elektro").length,
+    hybrid: (vehicles as Vehicle[]).filter((v: Vehicle) => v.fuel_type === "hybrid").length,
+    other: (vehicles as Vehicle[]).filter((v: Vehicle) => !v.fuel_type).length,
   }
 
   // TÜV und Versicherung Warnungen
   const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-  const vehiclesWithTuevExpiring = vehicles.filter(
-    (v) => v.tuev_date && new Date(v.tuev_date) <= thirtyDaysFromNow,
+  const vehiclesWithTuevExpiring = (vehicles as Vehicle[]).filter(
+    (v: Vehicle) => v.tuev_date && new Date(v.tuev_date) <= thirtyDaysFromNow,
   ).length
-  const vehiclesWithInsuranceExpiring = vehicles.filter(
-    (v) => v.insurance_valid_until && new Date(v.insurance_valid_until) <= thirtyDaysFromNow,
+  const vehiclesWithInsuranceExpiring = (vehicles as Vehicle[]).filter(
+    (v: Vehicle) => v.insurance_valid_until && new Date(v.insurance_valid_until) <= thirtyDaysFromNow,
   ).length
 
   // Kunden-Statistiken
-  const newCustomersThisMonth = customers.filter((c) => new Date(c.created_at) >= new Date(startOfMonth)).length
-  const newCustomersLastMonth = customers.filter((c) => {
+  const newCustomersThisMonth = (customers as Customer[]).filter((c: Customer) => c.created_at && new Date(c.created_at) >= new Date(startOfMonth)).length
+  const newCustomersLastMonth = (customers as Customer[]).filter((c: Customer) => {
+    if (!c.created_at) return false
     const created = new Date(c.created_at)
     return created >= new Date(startOfLastMonth) && created < new Date(startOfMonth)
   }).length
@@ -284,10 +326,10 @@ async function getComprehensiveStatistics(companyId: string) {
     newCustomersLastMonth > 0 ? ((newCustomersThisMonth - newCustomersLastMonth) / newCustomersLastMonth) * 100 : 0
 
   // Wiederkehrende Kunden (mehr als 1 Buchung)
-  const customerBookingCounts = customers.map((customer) => ({
+  const customerBookingCounts = (customers as Customer[]).map((customer: Customer) => ({
     id: customer.id,
-    name: `${customer.first_name} ${customer.last_name}`,
-    bookings: bookings.filter((b) => b.customer?.id === customer.id).length,
+    name: `${customer.first_name || ""} ${customer.last_name || ""}`,
+    bookings: (bookings as Booking[]).filter((b: Booking) => b.customer?.id === customer.id).length,
   }))
   const repeatCustomers = customerBookingCounts.filter((c) => c.bookings > 1).length
   const customerRetentionRate = customers.length > 0 ? (repeatCustomers / customers.length) * 100 : 0
@@ -296,14 +338,14 @@ async function getComprehensiveStatistics(companyId: string) {
   const topCustomers = customerBookingCounts.sort((a, b) => b.bookings - a.bookings).slice(0, 10)
 
   // Rechnungs-Statistiken
-  const invoicesPaid = invoices.filter((i) => i.status === "paid")
-  const invoicesPending = invoices.filter((i) => i.status === "pending" || i.status === "sent")
-  const invoicesOverdue = invoices.filter(
-    (i) => i.status === "overdue" || (i.status !== "paid" && new Date(i.due_date) < new Date()),
+  const invoicesPaid = (invoices as Invoice[]).filter((i: Invoice) => i.status === "paid")
+  const invoicesPending = (invoices as Invoice[]).filter((i: Invoice) => i.status === "pending" || i.status === "sent")
+  const invoicesOverdue = (invoices as Invoice[]).filter(
+    (i: Invoice) => i.status === "overdue" || (i.status !== "paid" && i.due_date && new Date(i.due_date) < new Date()),
   )
 
-  const totalInvoiced = invoices.reduce((sum, i) => sum + (i.total_amount || 0), 0)
-  const totalPaid = invoicesPaid.reduce((sum, i) => sum + (i.total_amount || 0), 0)
+  const totalInvoiced = (invoices as Invoice[]).reduce((sum: number, i: Invoice) => sum + (i.total_amount || 0), 0)
+  const totalPaid = invoicesPaid.reduce((sum: number, i: Invoice) => sum + (i.total_amount || 0), 0)
   const totalOutstanding = totalInvoiced - totalPaid
 
   // Kassenbuch-Statistiken

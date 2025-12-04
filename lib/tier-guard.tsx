@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import type { SubscriptionTier } from "@/lib/subscription"
 
 // Inline SVG Icons
 function LockIcon({ className }: { className?: string }) {
@@ -75,16 +76,31 @@ export function TierGuard({ children, requiredFeature, fallback }: TierGuardProp
 
     const { data: company } = await supabase
       .from("companies")
-      .select("subscription_tier, subscription_status")
+      .select("subscription_tier, subscription_status, subscription_plan")
       .eq("id", profile.company_id)
       .single()
 
-    if (!company || !["active", "trialing"].includes(company.subscription_status)) {
+    if (!company || !["active", "trialing"].includes(company.subscription_status || "")) {
       setHasAccess(false)
       return
     }
 
-    setTier(company.subscription_tier)
+    // Mapping: DB subscription_plan -> Code SubscriptionTier
+    const planToTier: Record<string, SubscriptionTier> = {
+      free: "starter",
+      basic: "starter",
+      professional: "business",
+      enterprise: "enterprise",
+    }
+
+    let tier: SubscriptionTier = "starter"
+    if (company.subscription_tier && ["starter", "business", "enterprise"].includes(company.subscription_tier)) {
+      tier = company.subscription_tier as SubscriptionTier
+    } else if (company.subscription_plan) {
+      tier = planToTier[company.subscription_plan] || "starter"
+    }
+
+    setTier(tier)
 
     const featureAccess: Record<string, Record<string, boolean>> = {
       starter: {
@@ -98,7 +114,7 @@ export function TierGuard({ children, requiredFeature, fallback }: TierGuardProp
       enterprise: { bookingWidget: true, apiAccess: true, aiCommunication: true, whiteLabel: true, customDomain: true },
     }
 
-    setHasAccess(featureAccess[company.subscription_tier]?.[requiredFeature] ?? false)
+    setHasAccess(featureAccess[tier]?.[requiredFeature] ?? false)
   }
 
   if (hasAccess === null) {
