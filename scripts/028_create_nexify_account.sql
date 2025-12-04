@@ -32,9 +32,9 @@ INSERT INTO companies (
   'login.nexify@gmail.com',
   NULL,
   NULL,
-  'business',
+  'enterprise', -- subscription_tier (Code-Ebene)
   'active',
-  'business',
+  'enterprise', -- subscription_plan CHECK: free|basic|professional|enterprise
   'nexify',
   -1, -- Unbegrenzt (Business-Tarif)
   -1, -- Unbegrenzt (Business-Tarif)
