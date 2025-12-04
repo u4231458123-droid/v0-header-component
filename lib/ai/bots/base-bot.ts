@@ -11,6 +11,8 @@ import { botCommunicationManager, type BotAnswer } from "./bot-communication"
 import { errorRecoverySystem } from "@/lib/cicd/error-recovery"
 import { botMonitor } from "@/lib/cicd/bot-monitor"
 import { perfLogger, getCached, PerformanceTimer } from "@/lib/utils/performance"
+import { loadDocumentationForBot } from "@/lib/knowledge-base/documentation-api"
+import type { DocumentationCategory } from "@/lib/knowledge-base/documentation-templates"
 
 export interface BotTask {
   id: string
@@ -32,12 +34,14 @@ export abstract class BaseBot {
   protected botName: string
   protected area: string
   protected knowledgeBase: any
+  protected documentation: any[] = []
   protected aiClient: any
 
   constructor(botName: string, area: string) {
     this.botName = botName
     this.area = area
     this.loadKnowledgeBase()
+    this.loadDocumentation()
     this.initializeAIClient()
   }
 
@@ -75,6 +79,32 @@ export abstract class BaseBot {
         categories || defaultCategories
       )
     })
+  }
+
+  /**
+   * Lade Dokumentationen beim Bot-Start
+   * Sollte von allen Bots beim Start aufgerufen werden
+   */
+  protected async loadDocumentation(categories?: DocumentationCategory[]) {
+    try {
+      const defaultCategories: DocumentationCategory[] = [
+        "change-log",
+        "error-documentation",
+        "feature-documentation",
+        "architecture-decision",
+      ]
+      
+      const cacheKey = `docs-${this.area}-${(categories || defaultCategories).join("-")}`
+      
+      this.documentation = await getCached(cacheKey, async () => {
+        return await loadDocumentationForBot(categories || defaultCategories)
+      })
+      
+      perfLogger.info(`${this.botName}`, `Dokumentationen geladen: ${this.documentation.length}`)
+    } catch (error) {
+      console.warn(`[${this.botName}] Fehler beim Laden der Dokumentation:`, error)
+      this.documentation = []
+    }
   }
 
   /**

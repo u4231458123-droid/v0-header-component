@@ -391,6 +391,47 @@ export const FUNCTIONALITY_RULES: KnowledgeEntry = {
   priority: "critical",
 }
 
+export const AI_MODEL_RULES: KnowledgeEntry = {
+  id: "ai-model-rules-001",
+  category: "best-practices",
+  title: "AI-Modell-Vorgaben - NUR Hugging Face",
+  content: `
+# AI-Modell-Vorgaben - VERBINDLICH
+
+## STRENG VERBOTEN
+- OpenAI API (GPT-3, GPT-4, etc.)
+- Anthropic Claude API
+- Google Gemini API
+- Alle anderen externen AI-APIs außer Hugging Face
+
+## ERLAUBT - NUR Hugging Face
+- **Zusammenfassungen**: facebook/bart-large-cnn
+- **Strukturierte Dokumentation**: mistralai/Mistral-7B-Instruct-v0.3
+- **Text-Generierung**: Alle Hugging Face Modelle über MCP
+- **Hugging Face MCP Integration**: lib/ai/bots/huggingface-mcp.ts
+
+## Verwendung
+- IMMER Hugging Face MCP Client verwenden
+- Keine direkten API-Calls zu anderen AI-Anbietern
+- Fallback auf einfache String-Operationen wenn Hugging Face nicht verfügbar
+
+## Monitoring
+- KEINE externen Monitoring-Dienste (Sentry, Grafana, DataDog)
+- Nur interne Logging-Mechanismen verwenden
+- Performance-Metriken in Supabase speichern
+
+## Implementierung
+- lib/ai/bots/huggingface-mcp.ts - Hugging Face MCP Client
+- lib/huggingface/ - Hugging Face Integration
+- config/mcp-huggingface.json - MCP-Konfiguration
+  `,
+  tags: ["ai", "huggingface", "forbidden", "critical"],
+  relatedEntries: ["rules-001", "architecture"],
+  version: "1.0.0",
+  lastUpdated: new Date().toISOString(),
+  priority: "critical",
+}
+
 export const INITIAL_KNOWLEDGE_BASE: KnowledgeBase = {
   version: "1.0.0",
   lastUpdated: new Date().toISOString(),
@@ -429,7 +470,7 @@ export const INITIAL_KNOWLEDGE_BASE: KnowledgeBase = {
       "best-practices": {
         title: "Best Practices",
         description: "Bewährte Praktiken und Empfehlungen",
-        entries: ["rules-001", "functionality-rules-001"],
+        entries: ["rules-001", "functionality-rules-001", "ai-model-rules-001"],
       },
       "account-rules": {
         title: "Account-Regeln",
@@ -468,6 +509,7 @@ export const INITIAL_KNOWLEDGE_BASE: KnowledgeBase = {
     EMAIL_TEMPLATE_RULES,
     LOGO_INTEGRATION_RULES,
     FUNCTIONALITY_RULES,
+    AI_MODEL_RULES,
   ],
 }
 

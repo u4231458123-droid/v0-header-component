@@ -2149,3 +2149,71 @@ Nach Implementierung:
 - ✅ Klare Fehlermeldung bei falschen Dateiverweisen
 - ✅ AI-Agent kann solche Fehler selbstständig erkennen und korrigieren
 - ✅ Pre-Commit Hook verhindert fehlerhafte SQL-Dateien im Repository
+
+---
+
+## 14. AI-Modell-Vorgaben (PFLICHT)
+
+### 14.1 Verbindliche Regel: NUR Hugging Face
+
+**KRITISCH**: Alle AI-Modelle müssen von Hugging Face stammen. Keine anderen AI-Anbieter sind erlaubt.
+
+**Verboten:**
+- OpenAI API (GPT-3, GPT-4, etc.)
+- Anthropic Claude API
+- Google Gemini API
+- Alle anderen externen AI-APIs außer Hugging Face
+
+**Erlaubt - NUR Hugging Face:**
+- **Zusammenfassungen**: `facebook/bart-large-cnn`
+- **Strukturierte Dokumentation**: `mistralai/Mistral-7B-Instruct-v0.3`
+- **Text-Generierung**: Alle Hugging Face Modelle über MCP
+- **Hugging Face MCP Integration**: `lib/ai/bots/huggingface-mcp.ts`
+
+### 14.2 Implementierung
+
+**Dateien:**
+- `lib/ai/bots/huggingface-mcp.ts` - Hugging Face MCP Client
+- `lib/huggingface/` - Hugging Face Integration
+- `config/mcp-huggingface.json` - MCP-Konfiguration
+- `lib/knowledge-base/structure.ts` - AI_MODEL_RULES KnowledgeEntry
+
+**Verwendung:**
+```typescript
+// RICHTIG: Hugging Face MCP
+import { HuggingFaceMCPClient } from "@/lib/ai/bots/huggingface-mcp"
+const client = new HuggingFaceMCPClient()
+const result = await client.generate("mistralai/Mistral-7B-Instruct-v0.3", prompt)
+
+// FALSCH: Andere AI-APIs
+import Anthropic from "@anthropic-ai/sdk" // VERBOTEN
+import OpenAI from "openai" // VERBOTEN
+```
+
+### 14.3 Monitoring
+
+**Verboten:**
+- Sentry
+- Grafana
+- DataDog
+- Alle anderen externen Monitoring-Dienste
+
+**Erlaubt:**
+- Interne Logging-Mechanismen
+- Performance-Metriken in Supabase
+- Eigene Monitoring-Lösungen
+
+### 14.4 Agent-Anweisungen (PFLICHT)
+
+**Regel 1**: NIEMALS andere AI-APIs verwenden
+- Prüfe IMMER ob Hugging Face verfügbar ist
+- Verwende Fallback auf einfache String-Operationen wenn Hugging Face nicht verfügbar
+
+**Regel 2**: Bei AI-Funktionen IMMER Hugging Face MCP Client verwenden
+- Keine direkten API-Calls zu anderen AI-Anbietern
+- Verwende `lib/ai/bots/huggingface-mcp.ts`
+
+**Regel 3**: Dokumentiere alle AI-Modell-Verwendungen
+- Welches Hugging Face Modell wird verwendet?
+- Warum wurde dieses Modell gewählt?
+- Fallback-Strategie dokumentieren

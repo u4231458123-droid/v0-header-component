@@ -28,3 +28,14 @@ Das Projekt verwendet eine **v0-kompatible Architektur** für Pre-Login-Seiten:
 - Pricing, FAQ, Contact und Auth-Seiten verwenden **KEINE** shadcn/ui Komponenten
 - Stattdessen werden Inline-SVG-Icons und natives HTML/Tailwind verwendet
 - Details siehe [v0-Kompatibilität](./05-v0-kompatibilitaet.md)
+
+## Wichtige Dokumentation
+
+### Design & Entwicklung
+- [Design-Guidelines](../lib/design-system/DESIGN_GUIDELINES.md) - Verbindliche Design-Vorgaben
+- [SQL-Validierung](../lib/utils/sql-validator.ts) - Verhindert Agent-Fehler bei SQL-Ausführung
+- [Arbeitsprotokoll Dezember 2025](../docs/ARBEITS_PROTOKOLL_2025_12.md) - Zentrale Übersicht aller Dezember-Arbeiten
+
+### Changelog & Fehler
+- [Changelog](./changelog/changelog.md) - Aktuelle Version: 2.4.0
+- [Fehlerliste](./errors/fehlerliste.md) - ERR-013 (SQL-TypeScript-Verwechslung) dokumentiert

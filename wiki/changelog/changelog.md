@@ -4,6 +4,51 @@ Alle wichtigen Änderungen am MyDispatch-Projekt werden hier dokumentiert.
 
 ---
 
+## [2.4.0] - Dezember 2025
+
+### Added
+- **SQL-Validierung und Agent-Fehler-Prävention**
+  - `lib/utils/sql-validator.ts` - Verhindert Ausführung von TypeScript/JavaScript-Dateien als SQL
+  - Automatische Validierung vor jeder SQL-Ausführung
+  - Integration in MCP-Integration (`lib/ai/bots/mcp-integration.ts`)
+  - CI/CD-Validierung: `scripts/cicd/validate-sql-files.mjs`
+  - Dokumentation in `AAAPlanung/planung.txt`
+
+- **Mitarbeiter-Profile und Bearbeiter-Tracking**
+  - SQL-Migrationen 031-034:
+    - `031_fix_dsgvo_company_separation.sql` - DSGVO-konforme Unternehmenstrennung
+    - `032_employee_documents.sql` - Mitarbeiter-Dokumenten-System
+    - `033_add_created_updated_by.sql` - Bearbeiter-Tracking (created_by/updated_by)
+    - `034_extend_profiles_schema.sql` - Erweiterte Profile-Felder für Team-Mitglieder
+  - `components/settings/EmployeeDetailsDialog.tsx` - Mitarbeiter-Details-Dialog
+  - `components/settings/EditEmployeeDialog.tsx` - Mitarbeiter-Bearbeitungs-Dialog
+  - `components/finanzen/QuoteDetailsDialog.tsx` - Angebots-Details mit Bearbeiter-Tracking
+  - `created_by`/`updated_by` in allen Create/Edit-Dialogen implementiert
+
+- **Design-Guidelines**
+  - `lib/design-system/DESIGN_GUIDELINES.md` - Verbindliche Design-Vorgaben
+  - Design-Token-Regeln (keine hardcoded Farben)
+  - Border-Radius-Standards (rounded-xl, rounded-2xl)
+  - Spacing-Vorgaben (gap-5 als Standard)
+  - CI/CD-Validierung: `scripts/cicd/auto-design-validator.mjs`
+
+### Fixed
+- **Design-Konsistenz-Fixes**
+  - `rounded-lg` zu `rounded-xl` in TeamManagement
+  - Design-Validierung strikt gemacht
+  - Hardcoded Farben durch Design-Tokens ersetzt
+
+- **Dead Code und TypeScript-Fixes**
+  - Redundante null-checks entfernt
+  - Mapping DB subscription_plan zu Code tier korrigiert
+
+### Updated
+- Pre-Commit Hook erweitert um SQL-Validierung
+- MCP-Integration abgesichert mit SQL-Validierung
+- Dokumentation in `AAAPlanung/planung.txt` aktualisiert
+
+---
+
 ## [2.3.0] - 25.11.2025
 
 ### Fixed

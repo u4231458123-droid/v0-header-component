@@ -6,13 +6,13 @@
 // AI Models configuration - using Vercel AI Gateway format
 export const AI_MODELS = {
   // Default model for general chat
-  default: "anthropic/claude-3-5-sonnet-20240620",
+  default: "mistralai/Mistral-7B-Instruct-v0.3", // NUR Hugging Face Modelle erlaubt
 
   // Advanced model for complex tasks (System Architecture, Master Bot Decisions)
-  advanced: "google/gemini-2.0-flash-thinking-exp-01-21",
+  advanced: "mistralai/Mistral-7B-Instruct-v0.3", // NUR Hugging Face Modelle erlaubt
 
   // Fast model for quick responses
-  fast: "google/gemini-2.0-flash-001",
+  fast: "facebook/bart-large-cnn", // NUR Hugging Face Modelle erlaubt
 } as const
 
 export const SYSTEM_PROMPTS = {

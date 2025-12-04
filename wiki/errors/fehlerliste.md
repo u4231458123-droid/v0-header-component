@@ -90,6 +90,46 @@ Projekt exportieren und auf Vercel deployen.
 
 ---
 
-## ERR-001 bis ERR-008
+## ERR-013: SQL-TypeScript-Verwechslung (Agent-Fehler)
+
+**Status:** resolved
+**Severity:** critical
+**Datum:** Dezember 2025
+**Betroffene Module:** MCP-Integration, SQL-Ausführung
+
+### Beschreibung
+AI-Agenten haben versucht, TypeScript/JavaScript-Dateien als SQL auszuführen. Dies führte zu Fehlern bei SQL-Migrationen und Datenbankoperationen.
+
+### Root Cause
+Fehlende Validierung vor SQL-Ausführung. Agenten konnten Dateien mit falscher Endung oder falschem Inhalt als SQL interpretieren.
+
+### Loesung
+**SQL-Validierungs-System implementiert:**
+- `lib/utils/sql-validator.ts` - Zentrale Validierungs-Utility
+  - `isValidSQLFile(filePath)` - Prüft Dateiendung (.sql)
+  - `isValidSQLContent(content)` - Prüft Inhalt auf SQL-Keywords und verbotene JS/TS-Syntax
+  - `validateSQLBeforeExecution(query, filePath?)` - Kombinierte Validierung
+- Integration in `lib/ai/bots/mcp-integration.ts`
+  - Automatische Validierung VOR jeder SQL-Ausführung
+  - Blockiert Ausführung bei ungültigen Dateien/Inhalten
+- CI/CD-Validierung: `scripts/cicd/validate-sql-files.mjs`
+  - Prüft alle SQL-Dateien im Repository
+  - Pre-Commit Hook erweitert
+
+### Praevention
+- **Regel 1**: IMMER `validateSQLBeforeExecution()` vor SQL-Ausführung verwenden
+- **Regel 2**: SQL-Dateien müssen `.sql` Endung haben
+- **Regel 3**: SQL-Inhalt muss SQL-Keywords enthalten, keine JS/TS-Syntax
+- **Regel 4**: Pre-Commit Hook validiert automatisch alle SQL-Dateien
+
+### Referenzen
+- Implementierung: [`lib/utils/sql-validator.ts`](../../lib/utils/sql-validator.ts)
+- Integration: [`lib/ai/bots/mcp-integration.ts`](../../lib/ai/bots/mcp-integration.ts)
+- CI/CD: [`scripts/cicd/validate-sql-files.mjs`](../../scripts/cicd/validate-sql-files.mjs)
+- Dokumentation: [`AAAPlanung/planung.txt`](../../AAAPlanung/planung.txt)
+
+---
+
+## ERR-001 bis ERR-012
 
 *[Bestehende Eintraege bleiben unveraendert]*
