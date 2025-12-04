@@ -34,9 +34,10 @@ interface EditVehicleDialogProps {
   vehicle: Vehicle
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: (updatedVehicle: Vehicle) => void
 }
 
-export function EditVehicleDialog({ vehicle, open, onOpenChange }: EditVehicleDialogProps) {
+export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: EditVehicleDialogProps) {
   const [licensePlate, setLicensePlate] = useState(vehicle.license_plate)
   const [make, setMake] = useState(vehicle.make)
   const [model, setModel] = useState(vehicle.model)
@@ -70,9 +71,22 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange }: EditVehicleDi
 
       if (error) throw error
 
+      const updateData = {
+        license_plate: licensePlate,
+        make,
+        model,
+        year: year ? Number.parseInt(year) : null,
+        color: color || null,
+        seats: Number.parseInt(seats),
+        status,
+      }
+
       toast.success("Fahrzeug erfolgreich aktualisiert")
       onOpenChange(false)
       router.refresh()
+      if (onSuccess) {
+        onSuccess({ ...vehicle, ...updateData })
+      }
     } catch (error) {
       console.error("Error updating vehicle:", error)
       toast.error("Fehler beim Aktualisieren des Fahrzeugs")

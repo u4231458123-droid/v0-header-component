@@ -30,15 +30,17 @@ export interface BotTask {
   type: string
   description: string
   area: string
+  filePath?: string
   context?: any
 }
 
 export interface BotResponse {
   success: boolean
   result?: string
+  analysis?: string
   errors?: string[]
   warnings?: string[]
-  documentation?: WorkDocumentation
+  documentation?: string | WorkDocumentation
 }
 
 export abstract class BaseBot {

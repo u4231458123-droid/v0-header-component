@@ -177,7 +177,7 @@ function AccordionItemWithContext({ value, children, className }: AccordionItemP
 
 export {
   Accordion,
-  AccordionItem: AccordionItemWithContext,
+  AccordionItemWithContext as AccordionItem,
   AccordionTrigger,
   AccordionContent,
 }

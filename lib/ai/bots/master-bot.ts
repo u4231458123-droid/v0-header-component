@@ -28,6 +28,9 @@ export interface ChangeRequest {
   justification: string
   priority: "critical" | "high" | "medium" | "low"
   status: "pending" | "approved" | "rejected" | "in-review"
+  currentVorgabe?: any
+  proposedChange?: any
+  evidence?: string[]
   decision?: {
     timestamp: string
     decision: "approved" | "rejected"
@@ -83,6 +86,7 @@ export class MasterBot {
   private changeManager: SystemwideChangeManager
   private workTracker: WorkTracker
   private botSpecializations: Map<string, string[]> = new Map()
+  private botName: string = "Master-Bot"
 
   constructor() {
     this.loadKnowledgeBase()
@@ -350,17 +354,11 @@ export class MasterBot {
 
     // Aktualisiere Work-Status
     const hasViolations = results.some((r) => r.compliance === "violation")
-    await this.workTracker.updateWorkStatus(
+    await this.workTracker.completeWork(
       work.id,
-      hasViolations ? "completed" : "completed",
-      hasViolations ? "Überwachung abgeschlossen mit Verstößen" : "Überwachung abgeschlossen - alle Agenten compliant",
-      undefined,
-      undefined,
-      undefined,
       {
         passed: !hasViolations,
         violations: results.flatMap((r) => r.violations?.map((v) => v.message) || []),
-        timestamp: new Date().toISOString(),
       }
     )
 

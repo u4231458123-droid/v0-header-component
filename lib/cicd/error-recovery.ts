@@ -190,6 +190,7 @@ export class ErrorRecoverySystem {
         content: {
           content: `Terminal-Fehler aufgetreten: ${error.message}\n\nKontext: ${JSON.stringify(context, null, 2)}\n\nStack: ${error.stack}`,
           summary: `Terminal-Fehler in ${context.botId}`,
+          references: [],
         },
       })
     } catch (docError) {

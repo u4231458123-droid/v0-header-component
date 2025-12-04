@@ -137,10 +137,11 @@ export class DocumentationAssistant extends BaseBot {
     // Vergleiche Bot-Angaben mit Prüfungsergebnissen
     if (validationResults.results) {
       for (const [botId, result] of Object.entries(validationResults.results)) {
-        if (result.passed) {
+        const validationResult = result as { passed?: boolean; issues?: string[] }
+        if (validationResult.passed) {
           matches.push(`${botId}: Prüfung bestanden`)
         } else {
-          deviations.push(`${botId}: ${result.issues?.join(", ") || "Prüfung fehlgeschlagen"}`)
+          deviations.push(`${botId}: ${validationResult.issues?.join(", ") || "Prüfung fehlgeschlagen"}`)
         }
       }
     }

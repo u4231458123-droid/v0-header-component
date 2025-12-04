@@ -76,7 +76,7 @@ export class CopilotQualityBot extends BaseBot {
         
         // Wenn Fixes vorhanden, wende sie an
         if (task.type === "bug-fix" && reviewResult.fixes && reviewResult.fixes.length > 0) {
-          const fixResult = await this.fixCode(code, task.filePath, reviewResult.fixes)
+          const fixResult = await this.generateFixes(code, task.filePath, reviewResult)
           return {
             success: fixResult.success,
             errors: reviewResult.issues
@@ -415,7 +415,7 @@ export class CopilotQualityBot extends BaseBot {
     code: string,
     issue: CopilotReviewResult["issues"][0],
     filePath: string
-  ): CopilotReviewResult["fixes"][0] | null {
+  ): NonNullable<CopilotReviewResult["fixes"]>[0] | null {
     if (!issue.suggestion || !issue.line) {
       return null
     }

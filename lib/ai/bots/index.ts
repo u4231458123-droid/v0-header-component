@@ -5,7 +5,8 @@
  * VOLLSTÄNDIGE INTEGRATION ALLER BOTS
  */
 
-export { SystemBot, type BotTask, type BotResponse } from "./system-bot"
+export { SystemBot } from "./system-bot"
+export { type BotTask, type BotResponse } from "./base-bot"
 export { QualityBot } from "./quality-bot"
 export { PromptOptimizationBot, type PromptOptimization } from "./prompt-optimization-bot"
 export { MasterBot } from "./master-bot"
