@@ -35,6 +35,7 @@ interface Driver {
   license_number: string
   license_expiry?: string
   status: string
+  company_id?: string
 }
 
 interface DriversTableProps {

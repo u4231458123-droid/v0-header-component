@@ -26,6 +26,7 @@ interface VehicleDetailsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onVehicleUpdated?: () => void
+  onUpdate?: () => void
 }
 
 export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpdated }: VehicleDetailsDialogProps) {

@@ -8,6 +8,7 @@ interface SelectContextValue {
   onValueChange: (value: string) => void
   open: boolean
   setOpen: (open: boolean) => void
+  disabled?: boolean
 }
 
 const SelectContext = React.createContext<SelectContextValue | null>(null)
@@ -29,6 +30,7 @@ interface SelectProps {
   onOpenChange?: (open: boolean) => void
   name?: string
   required?: boolean
+  disabled?: boolean
 }
 
 function Select({
@@ -40,6 +42,7 @@ function Select({
   onOpenChange,
   name,
   required,
+  disabled,
 }: SelectProps) {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
   const [internalOpen, setInternalOpen] = React.useState(false)
@@ -58,7 +61,7 @@ function Select({
   }
 
   return (
-    <SelectContext.Provider value={{ value, onValueChange: handleValueChange, open, setOpen: handleOpenChange }}>
+    <SelectContext.Provider value={{ value, onValueChange: handleValueChange, open, setOpen: handleOpenChange, disabled }}>
       <div className="relative inline-block w-full">
         {name && <input type="hidden" name={name} value={value} required={required} />}
         {children}
@@ -85,7 +88,8 @@ function SelectValue({ placeholder }: SelectValueProps) {
 }
 
 function SelectTrigger({ className, children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { open, setOpen } = useSelect()
+  const { open, setOpen, disabled: contextDisabled } = useSelect()
+  const disabled = contextDisabled || props.disabled
 
   return (
     <button
@@ -97,8 +101,9 @@ function SelectTrigger({ className, children, ...props }: React.ButtonHTMLAttrib
         "disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
-      onClick={() => setOpen(!open)}
+      onClick={() => !disabled && setOpen(!open)}
       aria-expanded={open}
+      disabled={disabled}
       {...props}
     >
       {children}

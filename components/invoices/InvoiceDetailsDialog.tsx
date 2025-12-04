@@ -94,12 +94,8 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
 
       await downloadPDF({
         type: "invoice",
-        data: {
-          invoice: fullInvoice,
-          company: company,
-          customer: fullInvoice.customer,
-          booking: fullInvoice.booking,
-        },
+        company: company,
+        content: fullInvoice,
       })
 
       setPrinting(false)

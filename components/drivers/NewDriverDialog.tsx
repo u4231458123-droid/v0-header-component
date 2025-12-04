@@ -26,6 +26,8 @@ import { LicenseClassSelector } from "./LicenseClassSelector"
 
 interface NewDriverDialogProps {
   companyId: string | null
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
   onSuccess?: (driver: unknown) => void
 }
 

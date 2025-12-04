@@ -10,7 +10,7 @@ import { format } from "date-fns"
 import { de } from "date-fns/locale"
 
 export interface PDFData {
-  type: "invoice" | "booking" | "offer" | "partner"
+  type: "invoice" | "booking" | "offer" | "partner" | "quote"
   company: {
     id: string
     name: string
@@ -209,6 +209,9 @@ export function generatePDFHTML(data: PDFData): string {
     case "partner":
       contentHTML = generatePartnerContent(data, formatDateTime, data.selectedFields || [])
       break
+    case "quote":
+      contentHTML = generateQuoteContent(data, formatDate, formatCurrency)
+      break
   }
 
   return `
@@ -249,6 +252,8 @@ function getDocumentTitle(type: string): string {
       return "Angebot"
     case "partner":
       return "Partner-Auftrag"
+    case "quote":
+      return "Angebot"
     default:
       return "Dokument"
   }
@@ -350,6 +355,106 @@ function generateOfferContent(data: PDFData, formatDate: (s: string) => string, 
 function generatePartnerContent(data: PDFData, formatDateTime: (s: string) => string, selectedFields: string[]): string {
   // Partner-specific content with selected fields only
   return generateBookingContent(data, formatDateTime, selectedFields)
+}
+
+function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, formatCurrency: (n: number) => string): string {
+  const quote = (data as any).quote || data.content
+  const items = (data as any).items || []
+  const customer = (data as any).customer || quote.customer
+  const booking = (data as any).booking || quote.booking
+
+  const subtotal = items.reduce((sum: number, item: any) => sum + (item.price || 0) * (item.quantity || 1), 0)
+  const tax = quote.tax_rate ? subtotal * (quote.tax_rate / 100) : 0
+  const total = subtotal + tax
+
+  return `
+    <div>
+      <div class="document-title">ANGEBOT</div>
+      <div class="label">Angebotsnummer</div>
+      <div class="value">${quote.quote_number || quote.id}</div>
+      ${quote.valid_until ? `<div class="label" style="margin-top: 16px;">Gültig bis</div><div class="value">${formatDate(quote.valid_until)}</div>` : ""}
+    </div>
+    <div class="company-info">
+      <div class="company-name">${data.company.name}</div>
+      ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+      ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+      ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+    </div>
+    
+    ${customer ? `
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Kunde</div>
+          <div class="value">
+            ${customer.salutation || ""} ${customer.first_name || ""} ${customer.last_name || ""}
+            ${customer.email ? `<br/>${customer.email}` : ""}
+            ${customer.phone ? `<br/>${customer.phone}` : ""}
+          </div>
+        </div>
+      </div>
+    ` : ""}
+    
+    ${booking ? `
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Abhol-Adresse</div>
+          <div class="value">${booking.pickup_address || ""}</div>
+          <div class="label" style="margin-top: 16px;">Ziel-Adresse</div>
+          <div class="value">${booking.dropoff_address || ""}</div>
+        </div>
+      </div>
+    ` : ""}
+    
+    ${items.length > 0 ? `
+      <div class="items-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Beschreibung</th>
+              <th>Menge</th>
+              <th>Preis</th>
+              <th>Gesamt</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map((item: any, index: number) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${item.description || item.name || ""}</td>
+                <td>${item.quantity || 1}</td>
+                <td>${formatCurrency(item.price || 0)}</td>
+                <td>${formatCurrency((item.price || 0) * (item.quantity || 1))}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        <div class="totals">
+          <div class="total-row">
+            <span>Zwischensumme:</span>
+            <span>${formatCurrency(subtotal)}</span>
+          </div>
+          ${tax > 0 ? `
+            <div class="total-row">
+              <span>MwSt. (${quote.tax_rate || 19}%):</span>
+              <span>${formatCurrency(tax)}</span>
+            </div>
+          ` : ""}
+          <div class="total-row total">
+            <span>Gesamt:</span>
+            <span>${formatCurrency(total)}</span>
+          </div>
+        </div>
+      </div>
+    ` : ""}
+    
+    ${quote.notes ? `
+      <div class="notes">
+        <div class="label">Hinweise</div>
+        <div class="value">${quote.notes}</div>
+      </div>
+    ` : ""}
+  `
 }
 
 export function downloadPDF(data: PDFData) {

@@ -26,6 +26,7 @@ interface DriverDetailsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onDriverUpdated?: () => void
+  onUpdate?: () => void
 }
 
 export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdated }: DriverDetailsDialogProps) {

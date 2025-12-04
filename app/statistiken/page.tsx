@@ -12,6 +12,7 @@ interface Booking {
   id: string
   status: string
   price?: number | null
+  passengers?: number
   payment_status?: string
   payment_method?: string
   pickup_time?: string
@@ -304,8 +305,8 @@ async function getComprehensiveStatistics(companyId: string) {
         name: `${driver.first_name} ${driver.last_name}`,
         totalBookings: driverBookings.length,
         completedBookings: completedDriverBookings.length,
-        revenue: completedDriverBookings.reduce((sum, b) => sum + (b.price || 0), 0),
-        status: driver.status,
+        revenue: completedDriverBookings.reduce((sum: number, b: Booking) => sum + (b.price || 0), 0),
+        status: driver.status || "offline",
       }
     })
     .sort((a, b) => b.completedBookings - a.completedBookings)
@@ -402,17 +403,20 @@ async function getComprehensiveStatistics(companyId: string) {
 
   // Durchschnittswerte
   const avgPassengers =
-    bookings.length > 0 ? bookings.reduce((sum, b) => sum + (b.passengers || 1), 0) / bookings.length : 0
+    bookings.length > 0 ? bookings.reduce((sum: number, b: Booking) => sum + (b.passengers || 1), 0) / bookings.length : 0
   const avgRevenuePerDriver = drivers.length > 0 ? totalRevenue / drivers.length : 0
   const avgBookingsPerDriver = drivers.length > 0 ? completedBookings.length / drivers.length : 0
   const avgBookingsPerVehicle = vehicles.length > 0 ? completedBookings.length / vehicles.length : 0
 
   // Aktivitäts-Zusammenfassung
+  interface ActivityLogEntry {
+    action: string
+  }
   const activitySummary = {
     total: (activityLog || []).length,
-    creates: (activityLog || []).filter((a) => a.action === "create").length,
-    updates: (activityLog || []).filter((a) => a.action === "update").length,
-    deletes: (activityLog || []).filter((a) => a.action === "delete").length,
+    creates: (activityLog || []).filter((a: ActivityLogEntry) => a.action === "create").length,
+    updates: (activityLog || []).filter((a: ActivityLogEntry) => a.action === "update").length,
+    deletes: (activityLog || []).filter((a: ActivityLogEntry) => a.action === "delete").length,
   }
 
   return {
@@ -420,7 +424,7 @@ async function getComprehensiveStatistics(companyId: string) {
     overview: {
       totalBookings: bookings.length,
       completedBookings: completedBookings.length,
-      cancelledBookings: bookings.filter((b) => b.status === "cancelled").length,
+      cancelledBookings: bookings.filter((b: Booking) => b.status === "cancelled").length,
       totalRevenue,
       avgBookingValue,
       revenueToday,
@@ -465,6 +469,7 @@ async function getComprehensiveStatistics(companyId: string) {
         totalDistance: 0,
         totalHours: 0,
         cancelledBookings: 0,
+        status: d.status || "offline",
       })),
       avgRevenuePerDriver,
       avgBookingsPerDriver,

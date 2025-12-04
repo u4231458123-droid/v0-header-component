@@ -578,21 +578,20 @@ export function PartnerPageClient({
       <PageHeader
         title="Partner-Netzwerk"
         description="Verbinden Sie sich mit anderen MyDispatch-Unternehmen und teilen Sie Auftraege, Fahrzeuge und Fahrer"
-        actions={
-          <div className="flex items-center gap-2">
-            {company?.mydispatch_id && (
-              <Button variant="outline" size="sm" onClick={copyMdId}>
-                <Copy className="w-4 h-4 mr-2" />
-                Ihre ID: {company.mydispatch_id}
-              </Button>
-            )}
-            <Button onClick={() => setShowSendBookingDialog(true)} disabled={activePartners.length === 0}>
+      >
+        <div className="flex items-center gap-2">
+          {company?.mydispatch_id && (
+            <Button variant="outline" size="sm" onClick={copyMdId}>
+              <Copy className="w-4 h-4 mr-2" />
+              Ihre ID: {company.mydispatch_id}
+            </Button>
+          )}
+          <Button onClick={() => setShowSendBookingDialog(true)} disabled={activePartners.length === 0}>
               <Send className="w-4 h-4 mr-2" />
               Auftrag senden
             </Button>
-          </div>
-        }
-      />
+        </div>
+      </PageHeader>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

@@ -22,6 +22,7 @@ interface PWAInstallButtonProps {
   className?: string
   children?: React.ReactNode
   showIcon?: boolean
+  forceShowInstall?: boolean
 }
 
 export function PWAInstallButton({

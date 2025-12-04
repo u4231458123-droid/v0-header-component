@@ -8,8 +8,12 @@ import { TenantBookingForm } from "@/app/c/[company]/kunde/buchen/TenantBookingF
 interface Company {
   id: string
   name: string
+  email?: string | null
+  phone?: string | null
   slug?: string
+  company_slug?: string
   logo_url?: string | null
+  branding?: Record<string, unknown> | null
   [key: string]: any
 }
 
@@ -17,6 +21,8 @@ interface Customer {
   id: string
   first_name?: string
   last_name?: string
+  email?: string
+  phone?: string | null
   [key: string]: any
 }
 
@@ -90,9 +96,22 @@ export default function WidgetPage() {
     large: "max-w-2xl",
   }
 
+  // Default Customer für Widget (anonyme Buchungen)
+  const defaultCustomer: Customer = {
+    id: "widget-anonymous",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: null,
+  }
+
   return (
     <div className={`w-full ${sizeStyles[size]} mx-auto p-4`}>
-      <TenantBookingForm company={company} customer={null} vehicleCategories={[]} />
+      <TenantBookingForm 
+        company={company as any} 
+        customer={defaultCustomer as any} 
+        vehicleCategories={[]} 
+      />
     </div>
   )
 }

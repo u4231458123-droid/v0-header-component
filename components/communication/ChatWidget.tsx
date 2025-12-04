@@ -274,7 +274,7 @@ export function ChatWidget({
     setSending(true)
     try {
       // Upload Audio
-      const audioFile = new File([audioBlob], `audio-${Date.now()}.webm`, { type: "audio/webm" })
+      const audioFile: File = new (window.File || File)([audioBlob], `audio-${Date.now()}.webm`, { type: "audio/webm" })
       const audioUrl = await uploadFile(audioFile)
 
       if (!audioUrl) {
