@@ -525,7 +525,7 @@ export function TeamManagement({
               />
               <Button className="gap-2" onClick={() => setNewEmployeeDialogOpen(true)}>
                 <UserPlus className="w-4 h-4" />
-                Einladen
+                Neu anlegen
               </Button>
             </>
           )}

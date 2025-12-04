@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,12 +14,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { SALUTATION_OPTIONS, formatPhoneNumber } from "@/lib/form-constants"
-import { AddressAutocomplete } from "@/components/maps/AddressAutocomplete"
-import { Loader2 } from "lucide-react"
+import { Loader2, Upload, FileText, Eye, EyeOff, AlertCircle, CheckCircle2, Key } from "lucide-react"
 
 interface NewEmployeeDialogProps {
   companyId: string
@@ -87,7 +88,111 @@ export function NewEmployeeDialog({
   const [hourlyRate, setHourlyRate] = useState("")
   const [monthlySalary, setMonthlySalary] = useState("")
 
+  // Dokumente
+  const [idFrontFile, setIdFrontFile] = useState<File | null>(null)
+  const [idBackFile, setIdBackFile] = useState<File | null>(null)
+  const [contractFile, setContractFile] = useState<File | null>(null)
+  const [socialSecurityFile, setSocialSecurityFile] = useState<File | null>(null)
+  const [taxIdFile, setTaxIdFile] = useState<File | null>(null)
+  const [healthInsuranceFile, setHealthInsuranceFile] = useState<File | null>(null)
+  const [qualificationFile, setQualificationFile] = useState<File | null>(null)
+  const [bankDetailsFile, setBankDetailsFile] = useState<File | null>(null)
+
+  const idFrontRef = useRef<HTMLInputElement>(null)
+  const idBackRef = useRef<HTMLInputElement>(null)
+  const contractRef = useRef<HTMLInputElement>(null)
+  const socialSecurityRef = useRef<HTMLInputElement>(null)
+  const taxIdRef = useRef<HTMLInputElement>(null)
+  const healthInsuranceRef = useRef<HTMLInputElement>(null)
+  const qualificationRef = useRef<HTMLInputElement>(null)
+  const bankDetailsRef = useRef<HTMLInputElement>(null)
+
+  // Zugangsdaten
+  const [createCredentials, setCreateCredentials] = useState(false)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [passwordConfirm, setPasswordConfirm] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [credentialError, setCredentialError] = useState<string | null>(null)
+
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // File Upload Helper
+  const uploadFile = async (file: File, path: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split(".").pop()
+      const fileName = `${path}/${Date.now()}.${fileExt}`
+
+      const { error: uploadError } = await supabase.storage.from("documents").upload(fileName, file)
+
+      if (uploadError) throw uploadError
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("documents").getPublicUrl(fileName)
+
+      return publicUrl
+    } catch (error) {
+      console.error("File upload error:", error)
+      return null
+    }
+  }
+
+  // FileUploadField Komponente
+  const FileUploadField = ({
+    label,
+    file,
+    setFile,
+    inputRef,
+    accept = ".pdf,.jpg,.jpeg,.png",
+  }: {
+    label: string
+    file: File | null
+    setFile: (file: File | null) => void
+    inputRef: React.RefObject<HTMLInputElement | null>
+    accept?: string
+  }) => (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div
+        className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${
+          file ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+        }`}
+        onClick={() => inputRef.current?.click()}
+      >
+        <input
+          type="file"
+          ref={inputRef}
+          className="hidden"
+          accept={accept}
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+        {file ? (
+          <div className="flex items-center justify-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            <span className="text-sm text-primary font-medium">{file.name}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={(e) => {
+                e.stopPropagation()
+                setFile(null)
+              }}
+            >
+              ✕
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-1">
+            <Upload className="h-8 w-8 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">PDF oder JPG hochladen</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 
   const resetForm = () => {
     setSalutation("")
@@ -111,6 +216,21 @@ export function NewEmployeeDialog({
     setWorkingHours("")
     setHourlyRate("")
     setMonthlySalary("")
+    // Dokumente zurücksetzen
+    setIdFrontFile(null)
+    setIdBackFile(null)
+    setContractFile(null)
+    setSocialSecurityFile(null)
+    setTaxIdFile(null)
+    setHealthInsuranceFile(null)
+    setQualificationFile(null)
+    setBankDetailsFile(null)
+    // Zugangsdaten zurücksetzen
+    setCreateCredentials(false)
+    setUsername("")
+    setPassword("")
+    setPasswordConfirm("")
+    setCredentialError(null)
     setErrors({})
   }
 
@@ -124,6 +244,17 @@ export function NewEmployeeDialog({
     if (email && !emailRegex.test(email)) newErrors.email = "Ungültige E-Mail-Adresse"
     if (!phone && !phoneMobile) newErrors.phone = "Mindestens eine Telefonnummer ist erforderlich"
     if (!role) newErrors.role = "Rolle ist erforderlich"
+
+    // Validierung der Zugangsdaten wenn aktiviert
+    if (createCredentials) {
+      if (!username) newErrors.username = "Benutzername ist erforderlich"
+      if (!password) newErrors.password = "Passwort ist erforderlich"
+      if (password && password.length < 8) newErrors.password = "Passwort muss mindestens 8 Zeichen haben"
+      if (!passwordConfirm) newErrors.passwordConfirm = "Passwort-Bestätigung ist erforderlich"
+      if (password && passwordConfirm && password !== passwordConfirm) {
+        newErrors.passwordConfirm = "Passwörter stimmen nicht überein"
+      }
+    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -280,7 +411,7 @@ export function NewEmployeeDialog({
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Team-Mitglied einladen</DialogTitle>
+          <DialogTitle>Neuen Mitarbeiter anlegen</DialogTitle>
           <DialogDescription>
             Erfassen Sie alle Daten des neuen Mitarbeiters. Nach der Anlage wird eine Einladungs-E-Mail versendet.
           </DialogDescription>
@@ -288,11 +419,13 @@ export function NewEmployeeDialog({
 
         <form onSubmit={handleSubmit}>
           <Tabs defaultValue="personal" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="personal">Persönliche Daten</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="personal">Persönlich</TabsTrigger>
               <TabsTrigger value="contact">Kontakt</TabsTrigger>
               <TabsTrigger value="address">Adresse</TabsTrigger>
               <TabsTrigger value="employment">Beschäftigung</TabsTrigger>
+              <TabsTrigger value="documents">Dokumente</TabsTrigger>
+              <TabsTrigger value="credentials">Zugangsdaten</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Persönliche Daten */}
@@ -573,6 +706,175 @@ export function NewEmployeeDialog({
                 </div>
               </div>
             </TabsContent>
+
+            {/* Tab 5: Dokumente */}
+            <TabsContent value="documents" className="space-y-4 mt-4">
+              <p className="text-sm text-muted-foreground mb-4">
+                Laden Sie die erforderlichen Dokumente des Mitarbeiters hoch. Alle Dokumente werden sicher gespeichert.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FileUploadField
+                  label="Personalausweis Vorderseite"
+                  file={idFrontFile}
+                  setFile={setIdFrontFile}
+                  inputRef={idFrontRef}
+                />
+                <FileUploadField
+                  label="Personalausweis Rückseite"
+                  file={idBackFile}
+                  setFile={setIdBackFile}
+                  inputRef={idBackRef}
+                />
+              </div>
+
+              <FileUploadField
+                label="Arbeitsvertrag"
+                file={contractFile}
+                setFile={setContractFile}
+                inputRef={contractRef}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FileUploadField
+                  label="Sozialversicherungsausweis"
+                  file={socialSecurityFile}
+                  setFile={setSocialSecurityFile}
+                  inputRef={socialSecurityRef}
+                />
+                <FileUploadField
+                  label="Steuer-ID Bestätigung"
+                  file={taxIdFile}
+                  setFile={setTaxIdFile}
+                  inputRef={taxIdRef}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FileUploadField
+                  label="Krankenkassenkarte"
+                  file={healthInsuranceFile}
+                  setFile={setHealthInsuranceFile}
+                  inputRef={healthInsuranceRef}
+                />
+                <FileUploadField
+                  label="Qualifikationsnachweise"
+                  file={qualificationFile}
+                  setFile={setQualificationFile}
+                  inputRef={qualificationRef}
+                />
+              </div>
+
+              <FileUploadField
+                label="Bankverbindung"
+                file={bankDetailsFile}
+                setFile={setBankDetailsFile}
+                inputRef={bankDetailsRef}
+              />
+            </TabsContent>
+
+            {/* Tab 6: Zugangsdaten */}
+            <TabsContent value="credentials" className="space-y-4 mt-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="createCredentials"
+                  checked={createCredentials}
+                  onCheckedChange={(checked) => setCreateCredentials(checked === true)}
+                />
+                <Label htmlFor="createCredentials" className="cursor-pointer">
+                  Zugangsdaten für Mitarbeiter erstellen
+                </Label>
+              </div>
+
+              {createCredentials && (
+                <div className="space-y-4 mt-4 p-4 border rounded-xl bg-muted/30">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Key className="h-5 w-5 text-primary" />
+                    <span className="font-medium">Zugangsdaten konfigurieren</span>
+                  </div>
+
+                  {credentialError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{credentialError}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Benutzername <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="benutzername"
+                    />
+                    {errors.username && <p className="text-sm text-destructive">{errors.username}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Passwort <span className="text-destructive">*</span></Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Mindestens 8 Zeichen"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                    {!errors.password && password && password.length < 8 && (
+                      <p className="text-sm text-destructive">Passwort muss mindestens 8 Zeichen haben</p>
+                    )}
+                    {!errors.password && password && password.length >= 8 && (
+                      <p className="text-sm text-green-600 flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" /> Passwort ist ausreichend lang
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="passwordConfirm">Passwort bestätigen <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="passwordConfirm"
+                      type={showPassword ? "text" : "password"}
+                      value={passwordConfirm}
+                      onChange={(e) => setPasswordConfirm(e.target.value)}
+                      placeholder="Passwort wiederholen"
+                    />
+                    {errors.passwordConfirm && <p className="text-sm text-destructive">{errors.passwordConfirm}</p>}
+                    {!errors.passwordConfirm && passwordConfirm && password !== passwordConfirm && (
+                      <p className="text-sm text-destructive">Passwörter stimmen nicht überein</p>
+                    )}
+                    {!errors.passwordConfirm && passwordConfirm && password === passwordConfirm && password.length >= 8 && (
+                      <p className="text-sm text-green-600 flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" /> Passwörter stimmen überein
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Der Mitarbeiter kann sich nach der Erstellung mit diesen Zugangsdaten anmelden.
+                  </p>
+                </div>
+              )}
+
+              {!createCredentials && (
+                <p className="text-sm text-muted-foreground">
+                  Wenn Sie keine Zugangsdaten erstellen, erhält der Mitarbeiter nur eine Einladungs-E-Mail,
+                  mit der er sich selbst registrieren kann.
+                </p>
+              )}
+            </TabsContent>
           </Tabs>
 
           <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
@@ -586,7 +888,7 @@ export function NewEmployeeDialog({
                   Wird erstellt...
                 </>
               ) : (
-                "Mitarbeiter einladen"
+                "Mitarbeiter anlegen"
               )}
             </Button>
           </div>

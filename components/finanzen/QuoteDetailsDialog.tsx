@@ -8,9 +8,10 @@ import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
 import { safeNumber } from "@/lib/utils/safe-number"
-import { CalendarIcon, ClockIcon, UserIcon, CreditCardIcon, FileTextIcon, Printer, MapPinIcon, PencilIcon } from "lucide-react"
+import { CalendarIcon, UserIcon, CreditCardIcon, Printer, MapPinIcon, PencilIcon, FileTextIcon } from "lucide-react"
 import { downloadPDF } from "@/lib/pdf/pdf-generator"
 import { createClient } from "@/lib/supabase/client"
+import { EditQuoteDialog } from "./EditQuoteDialog"
 import { toast } from "sonner"
 
 interface QuoteDetailsDialogProps {
@@ -26,6 +27,7 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
   const [createdByProfile, setCreatedByProfile] = useState<any>(null)
   const [updatedByProfile, setUpdatedByProfile] = useState<any>(null)
   const [quoteItems, setQuoteItems] = useState<any[]>([])
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -365,9 +367,7 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => {
-                toast.info("Angebotsbearbeitung wird in Kürze verfügbar sein")
-              }}
+              onClick={() => setEditDialogOpen(true)}
             >
               <PencilIcon className="h-4 w-4 mr-2" />
               Bearbeiten
@@ -376,6 +376,19 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
           </div>
         </DialogFooter>
       </DialogContent>
+
+      {/* Edit Dialog */}
+      <EditQuoteDialog
+        quote={currentQuote}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSuccess={(updatedQuote) => {
+          setCurrentQuote(updatedQuote)
+          if (onUpdate) {
+            onUpdate(updatedQuote)
+          }
+        }}
+      />
     </Dialog>
   )
 }

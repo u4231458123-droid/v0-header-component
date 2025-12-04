@@ -293,19 +293,146 @@ function getDocumentTitle(type: string): string {
 
 function generateInvoiceContent(data: PDFData, formatDate: (s: string) => string, formatCurrency: (n: number) => string): string {
   const invoice = data.content
+  
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      draft: "#94a3b8",
+      pending: "#f59e0b",
+      sent: "#3b82f6",
+      paid: "#10b981",
+      overdue: "#ef4444",
+      cancelled: "#6b7280",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      draft: "Entwurf",
+      pending: "Ausstehend",
+      sent: "Versendet",
+      paid: "Bezahlt",
+      overdue: "Überfällig",
+      cancelled: "Storniert",
+    }
+    return labels[status] || status
+  }
+
   return `
-    <div>
-      <div class="document-title">RECHNUNG</div>
-      <div class="label">Rechnungsnummer</div>
-      <div class="value">${invoice.invoice_number}</div>
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">RECHNUNG</div>
+        <div class="label">Rechnungsnummer</div>
+        <div class="value" style="font-family: monospace; font-size: 12pt;">${invoice.invoice_number || "-"}</div>
+        ${invoice.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(invoice.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(invoice.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
     </div>
-    <div class="company-info">
-      <div class="company-name">${data.company.name}</div>
-      ${data.company.address ? `<div>${data.company.address}</div>` : ""}
-      ${data.company.email ? `<div>${data.company.email}</div>` : ""}
-      ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+    
+    <!-- Rechnungszeitraum -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Rechnungsdatum</div>
+          <div class="value">${invoice.issue_date ? formatDate(invoice.issue_date) : formatDate(invoice.created_at)}</div>
+        </div>
+        <div>
+          <div class="label">Fälligkeitsdatum</div>
+          <div class="value">${invoice.due_date ? formatDate(invoice.due_date) : "-"}</div>
+        </div>
+        <div>
+          <div class="label">Zahlungsart</div>
+          <div class="value">${invoice.payment_method || "Rechnung"}</div>
+        </div>
+      </div>
     </div>
-    <!-- Invoice content continues... -->
+
+    <!-- Kunde -->
+    ${invoice.customer ? `
+      <div class="meta-grid">
+        <div class="address-block">
+          <div class="label">Rechnungsempfänger</div>
+          <div class="value">
+            ${invoice.customer.salutation || ""} ${invoice.customer.first_name || ""} ${invoice.customer.last_name || ""}
+            ${invoice.customer.company_name ? `<br/><strong>${invoice.customer.company_name}</strong>` : ""}
+            ${invoice.customer.address_data ? `
+              <br/>${invoice.customer.address_data.street || ""} ${invoice.customer.address_data.house_number || ""}
+              <br/>${invoice.customer.address_data.postal_code || ""} ${invoice.customer.address_data.city || ""}
+            ` : ""}
+            ${invoice.customer.email ? `<br/>${invoice.customer.email}` : ""}
+          </div>
+        </div>
+        <div class="address-block">
+          ${invoice.customer.tax_id ? `
+            <div class="label">Steuernummer Kunde</div>
+            <div class="value">${invoice.customer.tax_id}</div>
+          ` : ""}
+          ${invoice.booking?.id ? `
+            <div class="label" style="margin-top: 16px;">Zugehöriger Auftrag</div>
+            <div class="value" style="font-family: monospace;">${invoice.booking.id.substring(0, 8).toUpperCase()}</div>
+          ` : ""}
+        </div>
+      </div>
+    ` : ""}
+
+    <!-- Beträge -->
+    <div style="margin-top: 30px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">Nettobetrag</div>
+          <div style="font-size: 16pt; font-weight: 600;">${formatCurrency(invoice.amount || 0)}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">MwSt.</div>
+          <div style="font-size: 16pt; font-weight: 600;">${formatCurrency(invoice.tax_amount || 0)}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">Gesamtbetrag</div>
+          <div style="font-size: 20pt; font-weight: 700;">${formatCurrency(invoice.total_amount || 0)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notizen -->
+    ${invoice.notes ? `
+      <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
+        <div class="label">Notizen / Bemerkungen</div>
+        <div class="value">${invoice.notes}</div>
+      </div>
+    ` : ""}
+
+    <!-- Bank-Hinweis -->
+    <div style="margin-top: 30px; padding: 16px; background: #f1f5f9; border-radius: 8px; font-size: 9pt;">
+      <div style="font-weight: 600; margin-bottom: 8px;">Zahlungsinformationen</div>
+      ${data.company.bank_info ? `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div>Bank: ${data.company.bank_info.bank_name || "-"}</div>
+          <div>IBAN: ${data.company.bank_info.iban || "-"}</div>
+          <div>BIC: ${data.company.bank_info.bic || "-"}</div>
+          <div>Kontoinhaber: ${(data.company.bank_info as any).account_holder || data.company.name}</div>
+        </div>
+      ` : `<div>Bitte überweisen Sie den Betrag auf das Ihnen bekannte Geschäftskonto.</div>`}
+    </div>
+
+    <!-- Kleinunternehmer-Hinweis -->
+    ${data.company.is_small_business ? `
+      <div style="margin-top: 16px; font-size: 8pt; color: #6b7280;">
+        Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.
+      </div>
+    ` : ""}
   `
 }
 
@@ -348,8 +475,8 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
   return `
     <!-- Header mit Titel und Unternehmen -->
     <div class="header">
-      <div>
-        <div class="document-title">AUFTRAG</div>
+    <div>
+      <div class="document-title">AUFTRAG</div>
         ${showField("id") ? `
           <div class="label">Auftrags-ID</div>
           <div class="value" style="font-family: monospace; font-size: 12pt;">${booking.id?.substring(0, 8).toUpperCase() || "-"}</div>
@@ -361,18 +488,18 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
             </span>
           </div>
         ` : ""}
-      </div>
-      <div class="company-info">
-        <div class="company-name">${data.company.name}</div>
+    </div>
+    <div class="company-info">
+      <div class="company-name">${data.company.name}</div>
         ${data.company.address ? `<div>${data.company.address}</div>` : ""}
         ${data.company.email ? `<div>${data.company.email}</div>` : ""}
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-
+    
     <!-- Auftragszeitpunkt -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
-      <div class="meta-grid">
+    <div class="meta-grid">
         <div>
           <div class="label">Auftrag eingegangen</div>
           <div class="value">${booking.created_at ? formatDateTime(booking.created_at) : "-"} Uhr</div>
@@ -435,16 +562,16 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
               <div class="label">Flug-/Zug-Nr.</div>
               <div class="value" style="font-family: monospace;">${booking.flight_train_number}</div>
             </div>
-          ` : ""}
-          ${showField("flight_train_origin") && booking.flight_train_origin ? `
+        ` : ""}
+        ${showField("flight_train_origin") && booking.flight_train_origin ? `
             <div>
               <div class="label">Herkunft</div>
-              <div class="value">${booking.flight_train_origin}</div>
+          <div class="value">${booking.flight_train_origin}</div>
             </div>
-          ` : ""}
+        ` : ""}
         </div>
       </div>
-    ` : ""}
+        ` : ""}
 
     <!-- Fahrer und Fahrzeug -->
     <div class="meta-grid" style="margin-top: 24px;">
@@ -453,13 +580,13 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
           <div class="label">Fahrer</div>
           <div class="value">${booking.driver ? `${booking.driver.first_name || ""} ${booking.driver.last_name || ""}` : "Nicht zugewiesen"}</div>
         </div>
-      ` : ""}
+        ` : ""}
       ${showField("vehicle") ? `
         <div class="address-block">
           <div class="label">Fahrzeug</div>
           <div class="value">${booking.vehicle ? `${booking.vehicle.make || ""} ${booking.vehicle.model || ""} (${booking.vehicle.license_plate || "-"})` : "Nicht zugewiesen"}</div>
         </div>
-      ` : ""}
+        ` : ""}
     </div>
 
     <!-- Preis und Zahlung -->
@@ -524,94 +651,185 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
   const booking = (data as any).booking || quote.booking
 
   const subtotal = items.reduce((sum: number, item: any) => sum + (item.price || 0) * (item.quantity || 1), 0)
-  const tax = quote.tax_rate ? subtotal * (quote.tax_rate / 100) : 0
-  const total = subtotal + tax
+  const tax = quote.tax_rate ? subtotal * (quote.tax_rate / 100) : (quote.tax_amount || 0)
+  const total = quote.total_amount || (subtotal + tax)
+
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      draft: "#94a3b8",
+      pending: "#f59e0b",
+      sent: "#3b82f6",
+      accepted: "#10b981",
+      rejected: "#ef4444",
+      expired: "#6b7280",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      draft: "Entwurf",
+      pending: "Ausstehend",
+      sent: "Versendet",
+      accepted: "Angenommen",
+      rejected: "Abgelehnt",
+      expired: "Abgelaufen",
+    }
+    return labels[status] || status
+  }
 
   return `
-    <div>
-      <div class="document-title">ANGEBOT</div>
-      <div class="label">Angebotsnummer</div>
-      <div class="value">${quote.quote_number || quote.id}</div>
-      ${quote.valid_until ? `<div class="label" style="margin-top: 16px;">Gültig bis</div><div class="value">${formatDate(quote.valid_until)}</div>` : ""}
-    </div>
-    <div class="company-info">
-      <div class="company-name">${data.company.name}</div>
-      ${data.company.address ? `<div>${data.company.address}</div>` : ""}
-      ${data.company.email ? `<div>${data.company.email}</div>` : ""}
-      ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">ANGEBOT</div>
+        <div class="label">Angebotsnummer</div>
+        <div class="value" style="font-family: monospace; font-size: 12pt;">${quote.quote_number || quote.id?.substring(0, 8).toUpperCase() || "-"}</div>
+        ${quote.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(quote.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(quote.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
     </div>
     
+    <!-- Gültigkeit und Datum -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Erstelldatum</div>
+          <div class="value">${quote.created_at ? formatDate(quote.created_at) : "-"}</div>
+        </div>
+        <div>
+          <div class="label">Gültig bis</div>
+          <div class="value">${quote.valid_until ? formatDate(quote.valid_until) : "-"}</div>
+        </div>
+        <div>
+          <div class="label">Fahrtdatum</div>
+          <div class="value">${quote.pickup_date ? formatDate(quote.pickup_date) : "-"}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kunde -->
     ${customer ? `
       <div class="meta-grid">
         <div class="address-block">
-          <div class="label">Kunde</div>
+          <div class="label">Angebotsempfänger</div>
           <div class="value">
             ${customer.salutation || ""} ${customer.first_name || ""} ${customer.last_name || ""}
+            ${customer.company_name ? `<br/><strong>${customer.company_name}</strong>` : ""}
+            ${customer.address_data ? `
+              <br/>${customer.address_data.street || ""} ${customer.address_data.house_number || ""}
+              <br/>${customer.address_data.postal_code || ""} ${customer.address_data.city || ""}
+            ` : ""}
             ${customer.email ? `<br/>${customer.email}` : ""}
-            ${customer.phone ? `<br/>${customer.phone}` : ""}
+          </div>
+        </div>
+        <div class="address-block">
+          ${quote.vehicle_category ? `
+            <div class="label">Fahrzeugkategorie</div>
+            <div class="value">${quote.vehicle_category}</div>
+          ` : ""}
+          ${quote.passengers ? `
+            <div class="label" style="margin-top: 16px;">Passagiere</div>
+            <div class="value">${quote.passengers}</div>
+          ` : ""}
+        </div>
+      </div>
+    ` : ""}
+    
+    <!-- Strecke -->
+    ${(quote.pickup_address || quote.dropoff_address || booking) ? `
+      <div style="margin-top: 24px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Fahrtdetails</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <div class="label">Abhol-Adresse</div>
+            <div class="value">${quote.pickup_address || booking?.pickup_address || "-"}</div>
+          </div>
+          <div>
+            <div class="label">Ziel-Adresse</div>
+            <div class="value">${quote.dropoff_address || booking?.dropoff_address || "-"}</div>
           </div>
         </div>
       </div>
     ` : ""}
     
-    ${booking ? `
-      <div class="meta-grid">
-        <div class="address-block">
-          <div class="label">Abhol-Adresse</div>
-          <div class="value">${booking.pickup_address || ""}</div>
-          <div class="label" style="margin-top: 16px;">Ziel-Adresse</div>
-          <div class="value">${booking.dropoff_address || ""}</div>
-        </div>
-      </div>
-    ` : ""}
-    
+    <!-- Positionen -->
     ${items.length > 0 ? `
-      <div class="items-table">
-        <table>
+      <div style="margin-top: 24px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Leistungspositionen</div>
+        <table style="width: 100%; border-collapse: collapse;">
           <thead>
-            <tr>
-              <th>Position</th>
-              <th>Beschreibung</th>
-              <th>Menge</th>
-              <th>Preis</th>
-              <th>Gesamt</th>
+            <tr style="background: #f8f9fa;">
+              <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e5e7eb;">Pos.</th>
+              <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e5e7eb;">Beschreibung</th>
+              <th style="padding: 8px; text-align: center; border-bottom: 2px solid #e5e7eb;">Menge</th>
+              <th style="padding: 8px; text-align: right; border-bottom: 2px solid #e5e7eb;">Einzelpreis</th>
+              <th style="padding: 8px; text-align: right; border-bottom: 2px solid #e5e7eb;">Gesamt</th>
             </tr>
           </thead>
           <tbody>
             ${items.map((item: any, index: number) => `
               <tr>
-                <td>${index + 1}</td>
-                <td>${item.description || item.name || ""}</td>
-                <td>${item.quantity || 1}</td>
-                <td>${formatCurrency(item.price || 0)}</td>
-                <td>${formatCurrency((item.price || 0) * (item.quantity || 1))}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${index + 1}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.description || item.name || ""}</td>
+                <td style="padding: 8px; text-align: center; border-bottom: 1px solid #e5e7eb;">${item.quantity || 1}</td>
+                <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">${formatCurrency(item.price || 0)}</td>
+                <td style="padding: 8px; text-align: right; border-bottom: 1px solid #e5e7eb;">${formatCurrency((item.price || 0) * (item.quantity || 1))}</td>
               </tr>
             `).join("")}
           </tbody>
         </table>
-        <div class="totals">
-          <div class="total-row">
-            <span>Zwischensumme:</span>
-            <span>${formatCurrency(subtotal)}</span>
-          </div>
-          ${tax > 0 ? `
-            <div class="total-row">
-              <span>MwSt. (${quote.tax_rate || 19}%):</span>
-              <span>${formatCurrency(tax)}</span>
-            </div>
-          ` : ""}
-          <div class="total-row total">
-            <span>Gesamt:</span>
-            <span>${formatCurrency(total)}</span>
-          </div>
-        </div>
       </div>
     ` : ""}
+
+    <!-- Beträge -->
+    <div style="margin-top: 30px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">Nettobetrag</div>
+          <div style="font-size: 16pt; font-weight: 600;">${formatCurrency(quote.amount || subtotal || 0)}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">MwSt. ${quote.tax_rate ? `(${quote.tax_rate}%)` : ""}</div>
+          <div style="font-size: 16pt; font-weight: 600;">${formatCurrency(tax)}</div>
+        </div>
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">Gesamtbetrag</div>
+          <div style="font-size: 20pt; font-weight: 700;">${formatCurrency(total)}</div>
+        </div>
+      </div>
+    </div>
     
+    <!-- Notizen -->
     ${quote.notes ? `
-      <div class="notes">
-        <div class="label">Hinweise</div>
+      <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
+        <div class="label">Hinweise / Bemerkungen</div>
         <div class="value">${quote.notes}</div>
+      </div>
+    ` : ""}
+
+    <!-- Gültigkeits-Hinweis -->
+    <div style="margin-top: 30px; padding: 16px; background: #f1f5f9; border-radius: 8px; font-size: 9pt;">
+      <div style="font-weight: 600; margin-bottom: 8px;">Hinweise zum Angebot</div>
+      <div>Dieses Angebot ist freibleibend und unverbindlich. Bei Annahme bitten wir um schriftliche Bestätigung.</div>
+    </div>
+
+    <!-- Kleinunternehmer-Hinweis -->
+    ${data.company.is_small_business ? `
+      <div style="margin-top: 16px; font-size: 8pt; color: #6b7280;">
+        Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.
       </div>
     ` : ""}
   `
@@ -619,184 +837,680 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
 
 function generateDriverContent(data: PDFData, formatDate: (s: string) => string): string {
   const driver = data.content
+  
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      active: "#10b981",
+      inactive: "#6b7280",
+      on_leave: "#f59e0b",
+      terminated: "#ef4444",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      active: "Aktiv",
+      inactive: "Inaktiv",
+      on_leave: "Im Urlaub",
+      terminated: "Ausgeschieden",
+    }
+    return labels[status] || status
+  }
+
   return `
-    <div>
-      <div class="document-title">FAHRER-PROFIL</div>
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">FAHRER-PROFIL</div>
+        <div class="label">Personal-ID</div>
+        <div class="value" style="font-family: monospace; font-size: 12pt;">${driver.id?.substring(0, 8).toUpperCase() || "-"}</div>
+        ${driver.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(driver.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(driver.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
+    </div>
+    
+    <!-- Persönliche Daten -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Persönliche Daten</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Vollständiger Name</div>
+          <div class="value" style="font-size: 14pt; font-weight: 600;">${driver.salutation || ""} ${driver.first_name || ""} ${driver.last_name || ""}</div>
+          ${driver.date_of_birth ? `
+            <div class="label" style="margin-top: 12px;">Geburtsdatum</div>
+            <div class="value">${formatDate(driver.date_of_birth)}</div>
+          ` : ""}
+          ${driver.nationality ? `
+            <div class="label" style="margin-top: 12px;">Nationalität</div>
+            <div class="value">${driver.nationality}</div>
+          ` : ""}
+        </div>
+        <div>
+          ${driver.email ? `
+            <div class="label">E-Mail</div>
+            <div class="value">${driver.email}</div>
+          ` : ""}
+          ${driver.phone ? `
+            <div class="label" style="margin-top: 12px;">Telefon</div>
+            <div class="value">${driver.phone}</div>
+          ` : ""}
+          ${driver.mobile ? `
+            <div class="label" style="margin-top: 12px;">Mobil</div>
+            <div class="value">${driver.mobile}</div>
+          ` : ""}
+        </div>
+      </div>
+    </div>
+
+    <!-- Adresse -->
+    ${driver.address_data ? `
       <div class="meta-grid">
         <div class="address-block">
-          <div class="label">Name</div>
-          <div class="value">${driver.salutation || ""} ${driver.first_name || ""} ${driver.last_name || ""}</div>
-          ${driver.email ? `<div class="label" style="margin-top: 16px;">E-Mail</div><div class="value">${driver.email}</div>` : ""}
-          ${driver.phone ? `<div class="label" style="margin-top: 16px;">Telefon</div><div class="value">${driver.phone}</div>` : ""}
-          ${driver.mobile ? `<div class="label" style="margin-top: 16px;">Mobil</div><div class="value">${driver.mobile}</div>` : ""}
+          <div class="label">Wohnadresse</div>
+          <div class="value">
+            ${driver.address_data.street || ""} ${driver.address_data.house_number || ""}<br>
+            ${driver.address_data.postal_code || ""} ${driver.address_data.city || ""}
+            ${driver.address_data.country ? `<br>${driver.address_data.country}` : ""}
+          </div>
         </div>
-        <div class="address-block">
-          ${driver.date_of_birth ? `<div class="label">Geburtsdatum</div><div class="value">${formatDate(driver.date_of_birth)}</div>` : ""}
-          ${driver.nationality ? `<div class="label" style="margin-top: 16px;">Nationalität</div><div class="value">${driver.nationality}</div>` : ""}
-          ${driver.address_data ? `
-            <div class="label" style="margin-top: 16px;">Adresse</div>
-            <div class="value">
-              ${driver.address_data.street || ""} ${driver.address_data.house_number || ""}<br>
-              ${driver.address_data.postal_code || ""} ${driver.address_data.city || ""}
+      </div>
+    ` : ""}
+
+    <!-- Führerschein -->
+    <div style="margin-top: 24px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Führerschein</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Führerscheinnummer</div>
+          <div class="value" style="font-family: monospace;">${driver.license_number || "-"}</div>
+        </div>
+        <div>
+          <div class="label">Gültig bis</div>
+          <div class="value">${driver.license_expiry ? formatDate(driver.license_expiry) : "-"}</div>
+        </div>
+        <div>
+          <div class="label">Fahrerlaubnisklassen</div>
+          <div class="value">${driver.license_classes && driver.license_classes.length > 0 ? driver.license_classes.join(", ") : "-"}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P-Schein -->
+    ${driver.pbef_number ? `
+      <div style="margin-top: 24px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Personenbeförderungsschein (P-Schein)</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <div style="color: #9ca3af; font-size: 10pt;">P-Schein Nummer</div>
+            <div style="font-size: 14pt; font-weight: 600; font-family: monospace;">${driver.pbef_number}</div>
+          </div>
+          <div>
+            <div style="color: #9ca3af; font-size: 10pt;">Gültig bis</div>
+            <div style="font-size: 14pt; font-weight: 600;">${driver.pbef_expiry_date ? formatDate(driver.pbef_expiry_date) : "-"}</div>
+          </div>
+        </div>
+      </div>
+    ` : ""}
+
+    <!-- Beschäftigung -->
+    ${driver.employment_data ? `
+      <div style="margin-top: 24px; padding: 16px; background: #f1f5f9; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Beschäftigungsdaten</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          ${driver.employment_data.start_date ? `
+            <div>
+              <div class="label">Beschäftigungsbeginn</div>
+              <div class="value">${formatDate(driver.employment_data.start_date)}</div>
+            </div>
+          ` : ""}
+          ${driver.employment_data.contract_type ? `
+            <div>
+              <div class="label">Vertragsart</div>
+              <div class="value">${driver.employment_data.contract_type}</div>
+            </div>
+          ` : ""}
+          ${driver.employment_data.working_hours ? `
+            <div>
+              <div class="label">Wochenstunden</div>
+              <div class="value">${driver.employment_data.working_hours}</div>
             </div>
           ` : ""}
         </div>
       </div>
-      <div class="section-title" style="margin-top: 30px;">Führerschein</div>
-      <div class="meta-grid">
-        <div class="address-block">
-          <div class="label">Führerscheinnummer</div>
-          <div class="value">${driver.license_number || "-"}</div>
-          ${driver.license_expiry ? `<div class="label" style="margin-top: 16px;">Ablaufdatum</div><div class="value">${formatDate(driver.license_expiry)}</div>` : ""}
-        </div>
-        <div class="address-block">
-          ${driver.license_classes && driver.license_classes.length > 0 ? `
-            <div class="label">Fahrerlaubnisklassen</div>
-            <div class="value">${driver.license_classes.join(", ")}</div>
-          ` : ""}
-        </div>
+    ` : ""}
+
+    <!-- Notizen -->
+    ${driver.notes ? `
+      <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
+        <div class="label">Notizen</div>
+        <div class="value">${driver.notes}</div>
       </div>
-      ${driver.pbef_number ? `
-        <div class="section-title" style="margin-top: 30px;">Personenbeförderungsschein</div>
-        <div class="meta-grid">
-          <div class="address-block">
-            <div class="label">P-Schein Nummer</div>
-            <div class="value">${driver.pbef_number}</div>
-            ${driver.pbef_expiry_date ? `<div class="label" style="margin-top: 16px;">Ablaufdatum</div><div class="value">${formatDate(driver.pbef_expiry_date)}</div>` : ""}
-          </div>
-        </div>
-      ` : ""}
-      ${driver.employment_data ? `
-        <div class="section-title" style="margin-top: 30px;">Beschäftigung</div>
-        <div class="meta-grid">
-          <div class="address-block">
-            ${driver.employment_data.start_date ? `<div class="label">Beschäftigungsbeginn</div><div class="value">${formatDate(driver.employment_data.start_date)}</div>` : ""}
-            ${driver.employment_data.contract_type ? `<div class="label" style="margin-top: 16px;">Vertragsart</div><div class="value">${driver.employment_data.contract_type}</div>` : ""}
-          </div>
-        </div>
-      ` : ""}
+    ` : ""}
+
+    <!-- Footer-Hinweis -->
+    <div style="margin-top: 30px; font-size: 8pt; color: #6b7280; text-align: center;">
+      Dieses Dokument wurde automatisch generiert und dient nur internen Zwecken.
     </div>
   `
 }
 
 function generateVehicleContent(data: PDFData, formatDate: (s: string) => string): string {
   const vehicle = data.content
+  
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      available: "#10b981",
+      in_use: "#3b82f6",
+      maintenance: "#f59e0b",
+      out_of_service: "#ef4444",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      available: "Verfügbar",
+      in_use: "Im Einsatz",
+      maintenance: "In Wartung",
+      out_of_service: "Außer Betrieb",
+    }
+    return labels[status] || status
+  }
+
   return `
-    <div>
-      <div class="document-title">FAHRZEUG-DATENBLATT</div>
-      <div class="meta-grid">
-        <div class="address-block">
-          <div class="label">Kennzeichen</div>
-          <div class="value">${vehicle.license_plate || "-"}</div>
-          <div class="label" style="margin-top: 16px;">Marke</div>
-          <div class="value">${vehicle.make || "-"}</div>
-          <div class="label" style="margin-top: 16px;">Modell</div>
-          <div class="value">${vehicle.model || "-"}</div>
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">FAHRZEUG-DATENBLATT</div>
+        <div class="label">Kennzeichen</div>
+        <div class="value" style="font-family: monospace; font-size: 16pt; font-weight: 700;">${vehicle.license_plate || "-"}</div>
+        ${vehicle.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(vehicle.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(vehicle.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
+    </div>
+    
+    <!-- Fahrzeugdaten -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Fahrzeugdaten</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Marke</div>
+          <div class="value" style="font-size: 14pt; font-weight: 600;">${vehicle.make || "-"}</div>
         </div>
-        <div class="address-block">
-          ${vehicle.year ? `<div class="label">Baujahr</div><div class="value">${vehicle.year}</div>` : ""}
-          ${vehicle.color ? `<div class="label" style="margin-top: 16px;">Farbe</div><div class="value">${vehicle.color}</div>` : ""}
-          <div class="label" style="margin-top: 16px;">Sitzplätze</div>
-          <div class="value">${vehicle.seats || "-"}</div>
-          <div class="label" style="margin-top: 16px;">Status</div>
-          <div class="value">${vehicle.status || "-"}</div>
+        <div>
+          <div class="label">Modell</div>
+          <div class="value" style="font-size: 14pt; font-weight: 600;">${vehicle.model || "-"}</div>
+        </div>
+        <div>
+          <div class="label">Baujahr</div>
+          <div class="value" style="font-size: 14pt; font-weight: 600;">${vehicle.year || "-"}</div>
         </div>
       </div>
-      ${vehicle.vehicle_data ? `
-        <div class="section-title" style="margin-top: 30px;">Technische Daten</div>
-        <div class="meta-grid">
-          <div class="address-block">
-            ${vehicle.vehicle_data.vin ? `<div class="label">FIN</div><div class="value">${vehicle.vehicle_data.vin}</div>` : ""}
-            ${vehicle.vehicle_data.fuel_type ? `<div class="label" style="margin-top: 16px;">Kraftstoff</div><div class="value">${vehicle.vehicle_data.fuel_type}</div>` : ""}
-          </div>
-          <div class="address-block">
-            ${vehicle.vehicle_data.mileage ? `<div class="label">Kilometerstand</div><div class="value">${vehicle.vehicle_data.mileage.toLocaleString("de-DE")} km</div>` : ""}
-          </div>
+    </div>
+
+    <!-- Weitere Eigenschaften -->
+    <div class="meta-grid">
+      <div class="address-block">
+        ${vehicle.color ? `
+          <div class="label">Farbe</div>
+          <div class="value">${vehicle.color}</div>
+        ` : ""}
+        <div class="label" style="margin-top: 16px;">Sitzplätze</div>
+        <div class="value">${vehicle.seats || "-"}</div>
+        ${vehicle.category ? `
+          <div class="label" style="margin-top: 16px;">Kategorie</div>
+          <div class="value">${vehicle.category}</div>
+        ` : ""}
+      </div>
+    </div>
+
+    <!-- Technische Daten -->
+    ${vehicle.vehicle_data ? `
+      <div style="margin-top: 24px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Technische Daten</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          ${vehicle.vehicle_data.vin ? `
+            <div>
+              <div class="label">FIN (Fahrgestell-Nr.)</div>
+              <div class="value" style="font-family: monospace;">${vehicle.vehicle_data.vin}</div>
+            </div>
+          ` : ""}
+          ${vehicle.vehicle_data.fuel_type ? `
+            <div>
+              <div class="label">Kraftstoffart</div>
+              <div class="value">${vehicle.vehicle_data.fuel_type}</div>
+            </div>
+          ` : ""}
+          ${vehicle.vehicle_data.mileage ? `
+            <div>
+              <div class="label">Kilometerstand</div>
+              <div class="value">${vehicle.vehicle_data.mileage.toLocaleString("de-DE")} km</div>
+            </div>
+          ` : ""}
+          ${vehicle.vehicle_data.transmission ? `
+            <div>
+              <div class="label">Getriebe</div>
+              <div class="value">${vehicle.vehicle_data.transmission}</div>
+            </div>
+          ` : ""}
+          ${vehicle.vehicle_data.engine_power ? `
+            <div>
+              <div class="label">Leistung</div>
+              <div class="value">${vehicle.vehicle_data.engine_power}</div>
+            </div>
+          ` : ""}
         </div>
-      ` : ""}
+      </div>
+    ` : ""}
+
+    <!-- Versicherung/Dokumente -->
+    ${vehicle.insurance_data || vehicle.registration_date ? `
+      <div style="margin-top: 24px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Zulassung & Versicherung</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          ${vehicle.registration_date ? `
+            <div>
+              <div style="color: #9ca3af; font-size: 10pt;">Erstzulassung</div>
+              <div style="font-size: 14pt; font-weight: 600;">${formatDate(vehicle.registration_date)}</div>
+            </div>
+          ` : ""}
+          ${vehicle.insurance_data?.company ? `
+            <div>
+              <div style="color: #9ca3af; font-size: 10pt;">Versicherung</div>
+              <div style="font-size: 14pt; font-weight: 600;">${vehicle.insurance_data.company}</div>
+            </div>
+          ` : ""}
+          ${vehicle.insurance_data?.policy_number ? `
+            <div>
+              <div style="color: #9ca3af; font-size: 10pt;">Policen-Nr.</div>
+              <div style="font-size: 14pt; font-family: monospace;">${vehicle.insurance_data.policy_number}</div>
+            </div>
+          ` : ""}
+          ${vehicle.next_inspection ? `
+            <div>
+              <div style="color: #9ca3af; font-size: 10pt;">Nächste HU/AU</div>
+              <div style="font-size: 14pt; font-weight: 600;">${formatDate(vehicle.next_inspection)}</div>
+            </div>
+          ` : ""}
+        </div>
+      </div>
+    ` : ""}
+
+    <!-- Notizen -->
+    ${vehicle.notes ? `
+      <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
+        <div class="label">Notizen</div>
+        <div class="value">${vehicle.notes}</div>
+      </div>
+    ` : ""}
+
+    <!-- Footer-Hinweis -->
+    <div style="margin-top: 30px; font-size: 8pt; color: #6b7280; text-align: center;">
+      Dieses Dokument wurde automatisch generiert und dient nur internen Zwecken.
     </div>
   `
 }
 
 function generateCustomerContent(data: PDFData, formatDate: (s: string) => string): string {
   const customer = data.content
+  
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      active: "#10b981",
+      inactive: "#6b7280",
+      vip: "#8b5cf6",
+      blocked: "#ef4444",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      active: "Aktiv",
+      inactive: "Inaktiv",
+      vip: "VIP",
+      blocked: "Gesperrt",
+    }
+    return labels[status] || status
+  }
+
   return `
-    <div>
-      <div class="document-title">KUNDEN-PROFIL</div>
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">KUNDEN-PROFIL</div>
+        <div class="label">Kunden-ID</div>
+        <div class="value" style="font-family: monospace; font-size: 12pt;">${customer.id?.substring(0, 8).toUpperCase() || "-"}</div>
+        ${customer.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(customer.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(customer.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
+    </div>
+    
+    <!-- Persönliche Daten -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Persönliche Daten</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Vollständiger Name</div>
+          <div class="value" style="font-size: 14pt; font-weight: 600;">${customer.salutation || ""} ${customer.first_name || ""} ${customer.last_name || ""}</div>
+          ${customer.company_name ? `
+            <div class="label" style="margin-top: 12px;">Firma</div>
+            <div class="value" style="font-weight: 600;">${customer.company_name}</div>
+          ` : ""}
+          ${customer.date_of_birth ? `
+            <div class="label" style="margin-top: 12px;">Geburtsdatum</div>
+            <div class="value">${formatDate(customer.date_of_birth)}</div>
+          ` : ""}
+        </div>
+        <div>
+          ${customer.email ? `
+            <div class="label">E-Mail</div>
+            <div class="value">${customer.email}</div>
+          ` : ""}
+          ${customer.phone ? `
+            <div class="label" style="margin-top: 12px;">Telefon</div>
+            <div class="value">${customer.phone}</div>
+          ` : ""}
+          ${customer.mobile ? `
+            <div class="label" style="margin-top: 12px;">Mobil</div>
+            <div class="value">${customer.mobile}</div>
+          ` : ""}
+        </div>
+      </div>
+    </div>
+
+    <!-- Adresse -->
+    ${customer.address_data ? `
       <div class="meta-grid">
         <div class="address-block">
-          <div class="label">Name</div>
-          <div class="value">${customer.salutation || ""} ${customer.first_name || ""} ${customer.last_name || ""}</div>
-          ${customer.email ? `<div class="label" style="margin-top: 16px;">E-Mail</div><div class="value">${customer.email}</div>` : ""}
-          ${customer.phone ? `<div class="label" style="margin-top: 16px;">Telefon</div><div class="value">${customer.phone}</div>` : ""}
+          <div class="label">Adresse</div>
+          <div class="value">
+            ${customer.address_data.street || ""} ${customer.address_data.house_number || ""}<br>
+            ${customer.address_data.postal_code || ""} ${customer.address_data.city || ""}
+            ${customer.address_data.country ? `<br>${customer.address_data.country}` : ""}
+          </div>
         </div>
-        <div class="address-block">
-          ${customer.date_of_birth ? `<div class="label">Geburtsdatum</div><div class="value">${formatDate(customer.date_of_birth)}</div>` : ""}
-          ${customer.address_data ? `
-            <div class="label" style="margin-top: 16px;">Adresse</div>
-            <div class="value">
-              ${customer.address_data.street || ""} ${customer.address_data.house_number || ""}<br>
-              ${customer.address_data.postal_code || ""} ${customer.address_data.city || ""}
+      </div>
+    ` : ""}
+
+    <!-- Buchungsstatistik -->
+    <div style="margin-top: 24px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Buchungsstatistik</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">Anzahl Buchungen</div>
+          <div style="font-size: 20pt; font-weight: 700;">${customer.booking_count || 0}</div>
+        </div>
+        ${customer.total_revenue !== undefined ? `
+          <div>
+            <div style="color: #9ca3af; font-size: 10pt;">Gesamtumsatz</div>
+            <div style="font-size: 20pt; font-weight: 700;">${customer.total_revenue?.toLocaleString("de-DE", { style: "currency", currency: "EUR" }) || "0,00 €"}</div>
+          </div>
+        ` : ""}
+        ${customer.last_booking_date ? `
+          <div>
+            <div style="color: #9ca3af; font-size: 10pt;">Letzte Buchung</div>
+            <div style="font-size: 14pt; font-weight: 600;">${formatDate(customer.last_booking_date)}</div>
+          </div>
+        ` : ""}
+      </div>
+    </div>
+
+    <!-- Zahlungsinformationen -->
+    ${customer.payment_data || customer.preferred_payment_method ? `
+      <div style="margin-top: 24px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Zahlungsinformationen</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          ${customer.preferred_payment_method ? `
+            <div>
+              <div class="label">Bevorzugte Zahlungsart</div>
+              <div class="value">${customer.preferred_payment_method}</div>
+            </div>
+          ` : ""}
+          ${customer.tax_id ? `
+            <div>
+              <div class="label">Steuernummer</div>
+              <div class="value">${customer.tax_id}</div>
             </div>
           ` : ""}
         </div>
       </div>
-      ${customer.booking_count !== undefined ? `
-        <div class="section-title" style="margin-top: 30px;">Buchungshistorie</div>
-        <div class="meta-grid">
-          <div class="address-block">
-            <div class="label">Anzahl Buchungen</div>
-            <div class="value">${customer.booking_count || 0}</div>
-          </div>
-        </div>
-      ` : ""}
+    ` : ""}
+
+    <!-- Notizen -->
+    ${customer.notes ? `
+      <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
+        <div class="label">Notizen</div>
+        <div class="value">${customer.notes}</div>
+      </div>
+    ` : ""}
+
+    <!-- Footer-Hinweis -->
+    <div style="margin-top: 30px; font-size: 8pt; color: #6b7280; text-align: center;">
+      Dieses Dokument wurde automatisch generiert und dient nur internen Zwecken.
     </div>
   `
 }
 
 function generateEmployeeContent(data: PDFData, formatDate: (s: string) => string): string {
   const employee = data.content
+  
+  // Status-Badge Farben
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      active: "#10b981",
+      inactive: "#6b7280",
+      on_leave: "#f59e0b",
+      terminated: "#ef4444",
+    }
+    return colors[status] || "#6b7280"
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      active: "Aktiv",
+      inactive: "Inaktiv",
+      on_leave: "Im Urlaub",
+      terminated: "Ausgeschieden",
+    }
+    return labels[status] || status
+  }
+
+  const getRoleLabel = (role: string) => {
+    const labels: Record<string, string> = {
+      admin: "Administrator",
+      owner: "Inhaber",
+      user: "Mitarbeiter",
+      manager: "Manager",
+      accountant: "Buchhalter",
+    }
+    return labels[role] || role
+  }
+
   return `
-    <div>
-      <div class="document-title">MITARBEITER-PROFIL</div>
+    <!-- Header mit Titel und Unternehmen -->
+    <div class="header">
+      <div>
+        <div class="document-title">MITARBEITER-PROFIL</div>
+        <div class="label">Personal-ID</div>
+        <div class="value" style="font-family: monospace; font-size: 12pt;">${employee.id?.substring(0, 8).toUpperCase() || "-"}</div>
+        ${employee.status ? `
+          <div style="margin-top: 12px;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; background: ${getStatusColor(employee.status)}; color: white; font-size: 10pt; font-weight: 600;">
+              ${getStatusLabel(employee.status)}
+            </span>
+          </div>
+        ` : ""}
+      </div>
+      <div class="company-info">
+        <div class="company-name">${data.company.name}</div>
+        ${data.company.address ? `<div>${data.company.address}</div>` : ""}
+        ${data.company.email ? `<div>${data.company.email}</div>` : ""}
+        ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
+      </div>
+    </div>
+    
+    <!-- Persönliche Daten -->
+    <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Persönliche Daten</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <div class="label">Vollständiger Name</div>
+          <div class="value" style="font-size: 14pt; font-weight: 600;">${employee.salutation || ""} ${employee.full_name || employee.email || "-"}</div>
+          ${employee.date_of_birth ? `
+            <div class="label" style="margin-top: 12px;">Geburtsdatum</div>
+            <div class="value">${formatDate(employee.date_of_birth)}</div>
+          ` : ""}
+          ${employee.nationality ? `
+            <div class="label" style="margin-top: 12px;">Nationalität</div>
+            <div class="value">${employee.nationality}</div>
+          ` : ""}
+        </div>
+        <div>
+          <div class="label">E-Mail</div>
+          <div class="value">${employee.email || "-"}</div>
+          ${employee.phone ? `
+            <div class="label" style="margin-top: 12px;">Telefon</div>
+            <div class="value">${employee.phone}</div>
+          ` : ""}
+          ${employee.phone_mobile ? `
+            <div class="label" style="margin-top: 12px;">Mobil</div>
+            <div class="value">${employee.phone_mobile}</div>
+          ` : ""}
+        </div>
+      </div>
+    </div>
+
+    <!-- Adresse -->
+    ${employee.address_data ? `
       <div class="meta-grid">
         <div class="address-block">
-          <div class="label">Name</div>
-          <div class="value">${employee.salutation || ""} ${employee.full_name || employee.email || "-"}</div>
-          <div class="label" style="margin-top: 16px;">E-Mail</div>
-          <div class="value">${employee.email || "-"}</div>
-          ${employee.phone ? `<div class="label" style="margin-top: 16px;">Telefon</div><div class="value">${employee.phone}</div>` : ""}
-          ${employee.phone_mobile ? `<div class="label" style="margin-top: 16px;">Mobil</div><div class="value">${employee.phone_mobile}</div>` : ""}
+          <div class="label">Wohnadresse</div>
+          <div class="value">
+            ${employee.address_data.street || ""} ${employee.address_data.house_number || ""}<br>
+            ${employee.address_data.postal_code || ""} ${employee.address_data.city || ""}
+            ${employee.address_data.country ? `<br>${employee.address_data.country}` : ""}
+          </div>
         </div>
-        <div class="address-block">
-          ${employee.date_of_birth ? `<div class="label">Geburtsdatum</div><div class="value">${formatDate(employee.date_of_birth)}</div>` : ""}
-          ${employee.nationality ? `<div class="label" style="margin-top: 16px;">Nationalität</div><div class="value">${employee.nationality}</div>` : ""}
-          <div class="label" style="margin-top: 16px;">Rolle</div>
-          <div class="value">${employee.role || "-"}</div>
-          ${employee.address_data ? `
-            <div class="label" style="margin-top: 16px;">Adresse</div>
-            <div class="value">
-              ${employee.address_data.street || ""} ${employee.address_data.house_number || ""}<br>
-              ${employee.address_data.postal_code || ""} ${employee.address_data.city || ""}
+      </div>
+    ` : ""}
+
+    <!-- Rolle und Berechtigungen -->
+    <div style="margin-top: 24px; padding: 20px; background: #1a1a1a; color: white; border-radius: 8px;">
+      <div style="font-weight: 600; margin-bottom: 12px;">Rolle & Zugriff</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <div style="color: #9ca3af; font-size: 10pt;">System-Rolle</div>
+          <div style="font-size: 16pt; font-weight: 700;">${getRoleLabel(employee.role) || "-"}</div>
+        </div>
+        ${employee.last_sign_in_at ? `
+          <div>
+            <div style="color: #9ca3af; font-size: 10pt;">Letzte Anmeldung</div>
+            <div style="font-size: 14pt; font-weight: 600;">${formatDate(employee.last_sign_in_at)}</div>
+          </div>
+        ` : ""}
+      </div>
+    </div>
+
+    <!-- Beschäftigungsdaten -->
+    ${employee.employment_data ? `
+      <div style="margin-top: 24px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 8px;">
+        <div style="font-weight: 600; margin-bottom: 12px;">Beschäftigungsdaten</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          ${employee.employment_data.start_date ? `
+            <div>
+              <div class="label">Beschäftigungsbeginn</div>
+              <div class="value">${formatDate(employee.employment_data.start_date)}</div>
+            </div>
+          ` : ""}
+          ${employee.employment_data.contract_type ? `
+            <div>
+              <div class="label">Vertragsart</div>
+              <div class="value">${employee.employment_data.contract_type}</div>
+            </div>
+          ` : ""}
+          ${employee.employment_data.department ? `
+            <div>
+              <div class="label">Abteilung</div>
+              <div class="value">${employee.employment_data.department}</div>
+            </div>
+          ` : ""}
+          ${employee.employment_data.position ? `
+            <div>
+              <div class="label">Position</div>
+              <div class="value">${employee.employment_data.position}</div>
+            </div>
+          ` : ""}
+          ${employee.employment_data.working_hours ? `
+            <div>
+              <div class="label">Wochenstunden</div>
+              <div class="value">${employee.employment_data.working_hours} h</div>
+            </div>
+          ` : ""}
+          ${employee.employment_data.monthly_salary ? `
+            <div>
+              <div class="label">Monatsgehalt</div>
+              <div class="value">${employee.employment_data.monthly_salary.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</div>
+            </div>
+          ` : ""}
+          ${employee.employment_data.hourly_rate ? `
+            <div>
+              <div class="label">Stundensatz</div>
+              <div class="value">${employee.employment_data.hourly_rate.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}/h</div>
             </div>
           ` : ""}
         </div>
       </div>
-      ${employee.employment_data ? `
-        <div class="section-title" style="margin-top: 30px;">Beschäftigung</div>
-        <div class="meta-grid">
-          <div class="address-block">
-            ${employee.employment_data.start_date ? `<div class="label">Beschäftigungsbeginn</div><div class="value">${formatDate(employee.employment_data.start_date)}</div>` : ""}
-            ${employee.employment_data.contract_type ? `<div class="label" style="margin-top: 16px;">Vertragsart</div><div class="value">${employee.employment_data.contract_type}</div>` : ""}
-            ${employee.employment_data.department ? `<div class="label" style="margin-top: 16px;">Abteilung</div><div class="value">${employee.employment_data.department}</div>` : ""}
-          </div>
-          <div class="address-block">
-            ${employee.employment_data.position ? `<div class="label">Position</div><div class="value">${employee.employment_data.position}</div>` : ""}
-            ${employee.employment_data.working_hours ? `<div class="label" style="margin-top: 16px;">Arbeitsstunden/Woche</div><div class="value">${employee.employment_data.working_hours}</div>` : ""}
-            ${employee.employment_data.monthly_salary ? `<div class="label" style="margin-top: 16px;">Monatsgehalt</div><div class="value">${employee.employment_data.monthly_salary.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</div>` : ""}
-          </div>
-        </div>
-      ` : ""}
+    ` : ""}
+
+    <!-- Notizen -->
+    ${employee.notes ? `
+      <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
+        <div class="label">Notizen</div>
+        <div class="value">${employee.notes}</div>
+      </div>
+    ` : ""}
+
+    <!-- Footer-Hinweis -->
+    <div style="margin-top: 30px; font-size: 8pt; color: #6b7280; text-align: center;">
+      Dieses Dokument enthält vertrauliche Personaldaten und ist nur für den internen Gebrauch bestimmt.
     </div>
   `
 }
