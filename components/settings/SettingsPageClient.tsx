@@ -1244,6 +1244,7 @@ export function SettingsPageClient({
               )}
             </CardContent>
           </Card>
+          )}
         </TabsContent>
 
         {/* Branding Tab */}
@@ -1445,6 +1446,7 @@ export function SettingsPageClient({
               </div>
             </CardContent>
           </Card>
+          )}
         </TabsContent>
 
         {/* Subscription Tab */}
@@ -1624,6 +1626,7 @@ export function SettingsPageClient({
               </div>
             </CardContent>
           </Card>
+          )}
         </TabsContent>
 
         {/* Team Tab */}
@@ -1668,6 +1671,7 @@ export function SettingsPageClient({
               }
             }}
           />
+          )}
         </TabsContent>
 
         {/* Profile Tab */}

@@ -186,18 +186,8 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
         }
       }
 
-      // 3. Prüfe ob User ein Profil hat (Unternehmer)
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("id, company_id, role")
-        .eq("id", currentUserId)
-        .maybeSingle()
-
-      if (profile && profile.company_id === company.id) {
-        // Unternehmer dieses Unternehmens - zum Dashboard
-        window.location.href = "/dashboard"
-        return
-      }
+      // 3. Prüfe ob User ein Profil hat (Unternehmer) - bereits oben geprüft
+      // Die erste Prüfung auf profile (Zeile ~125) behandelt diesen Fall bereits
 
       // Kein Zugang zu diesem Unternehmen
       throw new Error("Sie haben keinen Zugang zu diesem Unternehmen. Bitte registrieren Sie sich zuerst oder wenden Sie sich an das Unternehmen.")

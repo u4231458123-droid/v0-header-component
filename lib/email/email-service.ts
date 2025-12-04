@@ -8,7 +8,8 @@
 import { Resend } from "resend"
 import { generateUnifiedEmailHTML, EmailContent } from "./unified-template"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Resend client - nur initialisieren wenn API Key vorhanden
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export interface SendEmailOptions {
   to: string
@@ -37,8 +38,8 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
     // Generiere HTML mit Template
     const html = generateUnifiedEmailHTML(content)
 
-    // Development: Logge E-Mail
-    if (process.env.NODE_ENV === "development" || !process.env.RESEND_API_KEY) {
+    // Development oder kein API Key: Logge E-Mail
+    if (process.env.NODE_ENV === "development" || !resend) {
       console.log("--- DEVELOPMENT EMAIL PREVIEW ---")
       console.log(`To: ${to}`)
       console.log(`Subject: ${subject}`)
@@ -48,7 +49,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
     }
 
     // Versende E-Mail über Resend
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await resend!.emails.send({
       from: `MyDispatch <${from}>`,
       to: [to],
       subject: subject,

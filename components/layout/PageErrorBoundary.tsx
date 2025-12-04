@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { Card, CardContent } from "@/components/ui/card-v0"
-import { Button } from "@/components/ui/button-v0"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { logger } from "@/lib/logger"
 import { AlertTriangleIcon, RefreshIcon, HomeIcon } from "@/components/icons"
 

@@ -30,6 +30,8 @@ import {
 
 interface NewVehicleDialogProps {
   companyId: string | null
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
   onSuccess?: (vehicle: unknown) => void
 }
 
@@ -86,8 +88,10 @@ function FileIcon({ className }: { className?: string }) {
   )
 }
 
-export function NewVehicleDialog({ companyId }: NewVehicleDialogProps) {
-  const [open, setOpen] = useState(false)
+export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange, onSuccess }: NewVehicleDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = onOpenChange || setInternalOpen
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("fahrzeug")
   const router = useRouter()
