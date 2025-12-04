@@ -90,14 +90,11 @@ jobs:
           echo "Validating complete system..."
           pnpm cicd:validate-system || true
 
-      - name: Design System Validation (with Quality-Bot)
+      - name: Design System Validation (Strict)
         run: |
-          echo "Validating design system consistency with Quality-Bot..."
-          pnpm exec node scripts/validate-layout.js || true
-        env:
-          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || '' }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
+          echo "Validating design system consistency..."
+          pnpm exec node scripts/cicd/auto-design-validator.mjs
+        continue-on-error: false
 
       - name: Mobile Responsiveness Check
         run: |

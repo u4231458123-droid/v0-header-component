@@ -210,6 +210,14 @@ export function CreateBookingDialog({
         bookingData.flight_train_origin = (formData.get("departure_location") as string)?.trim() || null
       }
 
+      // Setze created_by (Bearbeiter)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (user) {
+        bookingData.created_by = user.id
+      }
+
       const { error: bookingError } = await supabase.from("bookings").insert(bookingData)
 
       if (bookingError) throw bookingError

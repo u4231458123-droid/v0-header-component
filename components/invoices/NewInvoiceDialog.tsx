@@ -288,6 +288,12 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
       const totalAmount = netAmount + taxAmount
       const invoiceNumber = `RE-${format(new Date(), "yyyyMMdd")}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
 
+      // Setze created_by (Bearbeiter)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      const createdBy = user?.id || null
+
       const { error } = await supabase.from("invoices").insert({
         company_id: companyId,
         customer_id: customerId,
@@ -300,6 +306,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
         tax_amount: taxAmount,
         total_amount: totalAmount,
         status: "pending",
+        created_by: createdBy,
       })
 
       if (error) throw error

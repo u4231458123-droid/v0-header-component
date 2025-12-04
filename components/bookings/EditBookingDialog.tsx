@@ -137,6 +137,14 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
         updateData.dropoff_location = `POINT(${dropoffLocation.lng} ${dropoffLocation.lat})`
       }
 
+      // Setze updated_by (Bearbeiter)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (user) {
+        updateData.updated_by = user.id
+      }
+
       const { data: updatedBooking, error } = await supabase
         .from("bookings")
         .update(updateData)

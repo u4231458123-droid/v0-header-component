@@ -46,10 +46,14 @@ import {
   CreditCard,
   Settings,
   User,
+  Upload,
+  Download,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 import { de } from "date-fns/locale"
+import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog"
 
 interface TeamMember {
   id: string
@@ -78,6 +82,17 @@ interface ActivityLogEntry {
   entity_type: string
   entity_name: string | null
   details: any
+  created_at: string
+}
+
+interface EmployeeDocument {
+  id: string
+  document_type: string
+  file_name: string
+  file_url: string
+  valid_from: string | null
+  valid_until: string | null
+  status: "pending" | "approved" | "rejected" | "expired"
   created_at: string
 }
 
@@ -113,6 +128,15 @@ const ACTION_COLORS: Record<string, string> = {
   delete: "text-red-500",
 }
 
+const EMPLOYEE_DOCUMENT_TYPES = [
+  { key: "health_insurance_card", label: "Krankenkassenkarte", required: false },
+  { key: "bank_card", label: "Bankverbindung/Karte", required: false },
+  { key: "employment_contract", label: "Arbeitsvertrag", required: false },
+  { key: "qualification_certificate", label: "Qualifikationsnachweis", required: false },
+  { key: "reference_letter", label: "Zeugnis", required: false },
+  { key: "employee_other", label: "Sonstige Mitarbeiter-Dokumente", required: false },
+]
+
 export function TeamManagement({
   companyId,
   currentUserId,
@@ -127,6 +151,12 @@ export function TeamManagement({
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [inviteForm, setInviteForm] = useState({ email: "", role: "user" })
   const [inviteLoading, setInviteLoading] = useState(false)
+  const [documentDialogOpen, setDocumentDialogOpen] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
+  const [employeeDocuments, setEmployeeDocuments] = useState<EmployeeDocument[]>([])
+  const [uploadingDocument, setUploadingDocument] = useState<string | null>(null)
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false)
+  const [detailsMember, setDetailsMember] = useState<TeamMember | null>(null)
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -317,6 +347,118 @@ export function TeamManagement({
     }
   }
 
+  const handleOpenDocumentDialog = async (member: TeamMember) => {
+    setSelectedMember(member)
+    setDocumentDialogOpen(true)
+    await loadEmployeeDocuments(member.id)
+  }
+
+  const loadEmployeeDocuments = async (profileId: string) => {
+    const { data, error } = await supabase
+      .from("documents")
+      .select("*")
+      .eq("profile_id", profileId)
+      .eq("owner_type", "employee")
+      .order("created_at", { ascending: false })
+
+    if (!error && data) {
+      setEmployeeDocuments(data)
+    }
+  }
+
+  const handleUploadDocument = async (type: string, file: File) => {
+    if (!selectedMember) return
+
+    setUploadingDocument(type)
+
+    try {
+      // Dateigröße prüfen (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("Datei ist zu groß. Maximale Größe: 10MB")
+        setUploadingDocument(null)
+        return
+      }
+
+      const fileName = `employees/${selectedMember.id}/${type}/${Date.now()}_${file.name}`
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("documents")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+        })
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError)
+        toast.error(`Fehler beim Hochladen: ${uploadError.message}`)
+        setUploadingDocument(null)
+        return
+      }
+
+      // Dokument in Datenbank speichern
+      const { error: insertError } = await supabase.from("documents").insert({
+        profile_id: selectedMember.id,
+        company_id: companyId,
+        owner_type: "employee",
+        document_type: type,
+        file_name: file.name,
+        file_url: fileName,
+        file_size: file.size,
+        mime_type: file.type,
+        status: "pending",
+      })
+
+      if (insertError) {
+        console.error("Insert error:", insertError)
+        toast.error(`Fehler beim Speichern: ${insertError.message}`)
+        // Lösche hochgeladene Datei bei Fehler
+        await supabase.storage.from("documents").remove([fileName])
+        setUploadingDocument(null)
+        return
+      }
+
+      toast.success("Dokument erfolgreich hochgeladen")
+      await loadEmployeeDocuments(selectedMember.id)
+    } catch (error: any) {
+      console.error("Error uploading document:", error)
+      toast.error(`Fehler: ${error?.message || "Unbekannter Fehler"}`)
+    } finally {
+      setUploadingDocument(null)
+    }
+  }
+
+  const handleDeleteDocument = async (documentId: string, fileUrl: string) => {
+    if (!confirm("Möchten Sie dieses Dokument wirklich löschen?")) return
+
+    const { error: deleteError } = await supabase.from("documents").delete().eq("id", documentId)
+
+    if (!deleteError) {
+      // Lösche Datei aus Storage
+      await supabase.storage.from("documents").remove([fileUrl])
+      toast.success("Dokument gelöscht")
+      if (selectedMember) {
+        await loadEmployeeDocuments(selectedMember.id)
+      }
+    } else {
+      toast.error("Fehler beim Löschen des Dokuments")
+    }
+  }
+
+  const handleDownloadDocument = async (fileUrl: string, fileName: string) => {
+    const { data, error } = await supabase.storage.from("documents").createSignedUrl(fileUrl, 3600)
+
+    if (error) {
+      toast.error("Fehler beim Erstellen des Download-Links")
+      return
+    }
+
+    window.open(data.signedUrl, "_blank")
+  }
+
+  const handleOpenDetailsDialog = (member: TeamMember) => {
+    setDetailsMember(member)
+    setDetailsDialogOpen(true)
+  }
+
   return (
     <Card className="border-border">
       <CardHeader>
@@ -458,6 +600,15 @@ export function TeamManagement({
                           Zum Benutzer machen
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleOpenDetailsDialog(member)}>
+                          <User className="w-4 h-4 mr-2" />
+                          Details anzeigen
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOpenDocumentDialog(member)}>
+                          <FileText className="w-4 h-4 mr-2" />
+                          Dokumente verwalten
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => handleRemoveMember(member.id)}
                           className="text-destructive focus:text-destructive"
@@ -572,6 +723,136 @@ export function TeamManagement({
           </TabsContent>
         </Tabs>
       </CardContent>
+
+      {/* Dokument-Upload-Dialog */}
+      <Dialog open={documentDialogOpen} onOpenChange={setDocumentDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Dokumente für {selectedMember?.full_name || selectedMember?.email}</DialogTitle>
+            <DialogDescription>
+              Verwalten Sie die Mitarbeiter-Dokumente (Krankenkassenkarte, Bankverbindung, Arbeitsvertrag, etc.)
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Dokument-Typen */}
+            <div className="space-y-2">
+              <Label>Dokument hochladen</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {EMPLOYEE_DOCUMENT_TYPES.map((docType) => (
+                  <div key={docType.key} className="space-y-2">
+                    <Label className="text-sm">{docType.label}</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            handleUploadDocument(docType.key, file)
+                          }
+                        }}
+                        disabled={uploadingDocument === docType.key}
+                        className="text-sm"
+                      />
+                      {uploadingDocument === docType.key && (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Hochgeladene Dokumente */}
+            <div className="space-y-2">
+              <Label>Hochgeladene Dokumente</Label>
+              {employeeDocuments.length > 0 ? (
+                <div className="space-y-2">
+                  {employeeDocuments.map((doc) => {
+                    const docType = EMPLOYEE_DOCUMENT_TYPES.find((dt) => dt.key === doc.document_type)
+                    return (
+                      <div
+                        key={doc.id}
+                        className="flex items-center justify-between p-3 rounded-xl border bg-muted/50"
+                      >
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-5 h-5 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">{docType?.label || doc.document_type}</p>
+                            <p className="text-xs text-muted-foreground">{doc.file_name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(doc.created_at), { addSuffix: true, locale: de })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={
+                              doc.status === "approved"
+                                ? "default"
+                                : doc.status === "rejected"
+                                  ? "destructive"
+                                  : "secondary"
+                            }
+                          >
+                            {doc.status === "approved"
+                              ? "Genehmigt"
+                              : doc.status === "rejected"
+                                ? "Abgelehnt"
+                                : "Ausstehend"}
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDownloadDocument(doc.file_url, doc.file_name)}
+                            className="h-8 w-8"
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                          {isAdmin && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteDocument(doc.id, doc.file_url)}
+                              className="h-8 w-8 text-destructive"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Noch keine Dokumente hochgeladen
+                </p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDocumentDialogOpen(false)}>
+              Schließen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Details Dialog */}
+      {detailsMember && (
+        <EmployeeDetailsDialog
+          employee={detailsMember}
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+          onEmployeeUpdated={() => {
+            onRefresh()
+            setDetailsDialogOpen(false)
+          }}
+        />
+      )}
     </Card>
   )
 }

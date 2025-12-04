@@ -22,6 +22,7 @@ import {
 import { NewInvoiceDialog } from "@/components/invoices/NewInvoiceDialog"
 import { NewQuoteDialog } from "@/components/finanzen/NewQuoteDialog"
 import { CashBookDialog } from "@/components/finanzen/CashBookDialog"
+import { QuoteDetailsDialog } from "./QuoteDetailsDialog"
 import {
   Euro,
   CheckCircle,
@@ -36,6 +37,7 @@ import {
   BookOpen,
   TrendingUp,
   TrendingDown,
+  Eye,
 } from "lucide-react"
 import { safeNumber } from "@/lib/utils/safe-number"
 
@@ -66,6 +68,7 @@ export function FinanzenPageClient({
   const [localInvoices, setLocalInvoices] = useState(invoices || [])
   const [localQuotes, setLocalQuotes] = useState(quotes || [])
   const [localCashBookEntries, setLocalCashBookEntries] = useState(cashBookEntries || [])
+  const [detailsQuote, setDetailsQuote] = useState<any>(null)
 
   const supabase = createClient()
 
@@ -492,6 +495,10 @@ export function FinanzenPageClient({
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Aktionen</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setDetailsQuote(quote)}>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Details anzeigen
+                                </DropdownMenuItem>
                                 <DropdownMenuItem>
                                   <Send className="mr-2 h-4 w-4" />
                                   Per E-Mail senden
@@ -791,6 +798,15 @@ export function FinanzenPageClient({
 
       {/* Content */}
       {renderContent()}
+
+      {/* Quote Details Dialog */}
+      {detailsQuote && (
+        <QuoteDetailsDialog
+          quote={detailsQuote}
+          open={!!detailsQuote}
+          onOpenChange={(open) => !open && setDetailsQuote(null)}
+        />
+      )}
     </div>
   )
 }

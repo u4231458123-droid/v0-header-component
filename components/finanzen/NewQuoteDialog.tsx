@@ -308,6 +308,12 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
 
       const quoteNumber = `ANG-${year}-${String((count || 0) + 1).padStart(4, "0")}`
 
+      // Setze created_by (Bearbeiter)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      const createdBy = user?.id || null
+
       const { data: quote, error: quoteError } = await supabase
         .from("quotes")
         .insert({
@@ -330,6 +336,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
           vehicle_id: selectedVehicleId || null,
           notes: notes || null,
           payment_terms: paymentTerms || null,
+          created_by: createdBy,
         })
         .select()
         .single()

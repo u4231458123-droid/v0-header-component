@@ -1780,4 +1780,261 @@ function verifyPrerequisites() {
 
 
 
-ACHTUN! Vestehe das Prinzip und führe es ab hier autonom im gleichen Schema optmiert weiter fort. 
+ACHTUN! Vestehe das Prinzip und führe es ab hier autonom im gleichen Schema optmiert weiter fort.
+
+---
+
+## 7. DSGVO-Konformität und Team-Management (KRITISCH)
+
+### 7.1 DSGVO-konforme Unternehmenstrennung (PFLICHT)
+
+**Problem**: Master-Admin-Policies erlauben Zugriff auf ALLE Unternehmen, was die DSGVO verletzt.
+
+**Lösung**:
+- **SQL-Migration 031** (`scripts/031_fix_dsgvo_company_separation.sql`):
+  - Entferne ALLE Master-Admin-Policies von ALLEN Tabellen
+  - Ersetze durch strikt company-basierte RLS-Policies
+  - Erstelle `auth_user_is_owner()` Helper-Funktion (nur für Owner des eigenen Unternehmens)
+  - Entferne `auth_is_master_admin()` Funktion (DSGVO-Verletzung)
+- **Verifizierung**: Keine Master-Admin-Policies mehr vorhanden
+- **Pflicht**: Jedes Unternehmen sieht NUR seine eigenen Daten
+
+### 7.2 Mitarbeiter-Dokumenten-System (PFLICHT)
+
+**Anforderung**: Team-Mitglieder (Disponent, Admin, etc.) müssen Dokumente hochladen können.
+
+**Lösung**:
+- **SQL-Migration 032** (`scripts/032_employee_documents.sql`):
+  - Erweitere `documents.owner_type` um `'employee'`
+  - Fuege `profile_id` zu `documents` hinzu (fuer Mitarbeiter-Zuordnung)
+  - Erweitere `document_type` um:
+    - `health_insurance_card` (Krankenkassenkarte)
+    - `bank_card` (Bankverbindung/Karte)
+    - `employment_contract` (Arbeitsvertrag)
+    - `qualification_certificate` (Qualifikationsnachweis)
+    - `reference_letter` (Zeugnis)
+    - `employee_other` (Sonstige Mitarbeiter-Dokumente)
+  - RLS-Policies: Mitarbeiter sehen eigene Dokumente, Admins sehen alle Mitarbeiter-Dokumente ihrer Firma
+- **Frontend**: `components/settings/TeamManagement.tsx`
+  - Dokument-Upload-Dialog pro Mitarbeiter
+  - Anzeige aller hochgeladenen Dokumente
+  - Download- und Lösch-Funktionalität
+
+### 7.3 Bearbeiter-Tracking (PFLICHT)
+
+**Anforderung**: In Aufträgen, Angeboten und Rechnungen muss immer der Bearbeiter (Ersteller/Letzter Bearbeiter) mit Zeitstempel vorhanden sein.
+
+**Lösung**:
+- **SQL-Migration 033** (`scripts/033_add_created_updated_by.sql`):
+  - `bookings`: `created_by UUID REFERENCES profiles(id)`, `updated_by UUID`
+  - `invoices`: `created_by UUID REFERENCES profiles(id)`, `updated_by UUID`
+  - `quotes`: `created_by UUID REFERENCES profiles(id)`, `updated_by UUID`
+  - Trigger: Automatisches Setzen von `updated_by` bei UPDATE
+  - Index auf `created_by` fuer Performance
+- **Frontend**:
+  - `components/bookings/BookingDetailsDialog.tsx`: Bearbeiter-Info anzeigen
+  - `components/invoices/InvoiceDetailsDialog.tsx`: Bearbeiter-Info anzeigen
+  - Automatisches Setzen von `created_by` bei Erstellung (via API/Client)
+
+### 7.4 Team-Management Funktionalität
+
+**Anforderung**: 
+- Team-Bereich in `/einstellungen` zeigt NUR Mitarbeiter des eigenen Unternehmens (DSGVO)
+- Mitarbeiter können Dokumente hochladen (wie Fahrer)
+- Bearbeiter-Info in allen Vorgängen (Aufträge, Angebote, Rechnungen)
+
+**Implementierung**:
+- `app/einstellungen/page.tsx`: Team-Mitglieder-Abfrage mit strikter `company_id` Filterung
+- `components/settings/TeamManagement.tsx`: Dokument-Upload-Dialog, Bearbeiter-Anzeige
+- Alle CRUD-Operationen setzen automatisch `created_by`/`updated_by`
+
+---
+
+## 8. Wichtige Hinweise
+
+### 8.1 SQL-Migrations-Reihenfolge
+1. **031_fix_dsgvo_company_separation.sql** (KRITISCH - zuerst ausfuehren)
+2. **032_employee_documents.sql**
+3. **033_add_created_updated_by.sql**
+
+### 8.2 DSGVO-Compliance
+- **NIEMALS** Master-Admin-Policies verwenden, die Zugriff auf alle Unternehmen erlauben
+- **IMMER** company-basierte RLS-Policies verwenden
+- **IMMER** `company_id` Filterung in allen Abfragen
+- **IMMER** Bearbeiter-Tracking bei allen Datenänderungen
+
+### 8.3 Testing
+- Teste, dass Benutzer verschiedener Unternehmen sich NICHT sehen können
+- Teste, dass Dokument-Upload nur für eigene Firma funktioniert
+- Teste, dass Bearbeiter-Info korrekt angezeigt wird
+
+---
+
+## 9. Mitarbeiter-Profile und Best-Practice-Optimierung
+
+### 9.1 Erweiterte Profile-Felder (PFLICHT)
+
+**Anforderung**: Team-Mitglieder (Disponent, Admin, etc.) benötigen vollständige Profile analog zu Fahrern.
+
+**Lösung**:
+- **SQL-Migration 034** (`scripts/034_extend_profiles_schema.sql`):
+  - Erweitere `profiles` Tabelle um:
+    - `salutation` (Anrede: Herr/Frau/Divers)
+    - `title` (Dr., Prof., etc.)
+    - `date_of_birth` (Geburtsdatum)
+    - `nationality` (Nationalität)
+    - `address_data` JSONB (street, house_number, postal_code, city, country)
+    - `phone_mobile` (Mobilnummer)
+    - `employment_data` JSONB (start_date, contract_type, department, position, working_hours, hourly_rate, monthly_salary)
+  - Index auf `date_of_birth` und `address_data` für Performance
+
+### 9.2 Frontend-Komponenten für Team-Mitglieder
+
+**Neue Komponenten**:
+- **`components/settings/EmployeeDetailsDialog.tsx`**:
+  - Zeigt alle erweiterten Profil-Daten
+  - Zeigt hochgeladene Dokumente
+  - Button zum Bearbeiten
+- **`components/settings/EditEmployeeDialog.tsx`**:
+  - Tabs: Persönliche Daten, Adresse, Beschäftigung
+  - Adress-Autocomplete (wie bei Fahrern)
+  - Vollständige Bearbeitung aller Profil-Felder
+
+**Aenderungen**:
+- `components/settings/TeamManagement.tsx`:
+  - "Details anzeigen" öffnet EmployeeDetailsDialog
+  - "Bearbeiten" öffnet EditEmployeeDialog
+  - "Dokumente" in DropdownMenu beibehalten
+
+### 9.3 Bearbeiter-Tracking im Frontend (PFLICHT)
+
+**Anforderung**: Bei Erstellung/Bearbeitung von Aufträgen, Rechnungen und Angeboten muss automatisch `created_by`/`updated_by` gesetzt werden.
+
+**Implementierung**:
+- **`components/bookings/CreateBookingDialog.tsx`**: Setze `created_by` bei INSERT
+- **`components/bookings/EditBookingDialog.tsx`**: Setze `updated_by` bei UPDATE
+- **`components/invoices/NewInvoiceDialog.tsx`**: Setze `created_by` bei INSERT
+- **`components/finanzen/NewQuoteDialog.tsx`**: Setze `created_by` bei INSERT
+
+**Hinweis**: `updated_by` wird automatisch via Trigger gesetzt (siehe Migration 033), aber Frontend kann es auch explizit setzen.
+
+### 9.4 QuoteDetailsDialog (fehlende Komponente)
+
+**Neue Komponente**: `components/finanzen/QuoteDetailsDialog.tsx`
+- Analog zu `components/invoices/InvoiceDetailsDialog.tsx`
+- Zeigt Angebots-Details mit Bearbeiter-Info
+- Zeigt Quote Items (Positionen)
+- PDF-Druck-Funktion
+
+**Aenderungen**:
+- `components/finanzen/FinanzenPageClient.tsx`: "Details" Button öffnet QuoteDetailsDialog
+
+---
+
+## 10. SQL-Migrations-Reihenfolge (AKTUALISIERT)
+
+1. **031_fix_dsgvo_company_separation.sql** (KRITISCH - zuerst ausführen)
+2. **032_employee_documents.sql**
+3. **033_add_created_updated_by.sql**
+4. **034_extend_profiles_schema.sql** (NEU)
+
+---
+
+## 11. Best-Practice-Checkliste
+
+### 11.1 Konsistenz zwischen Entitäten
+- [x] Fahrer haben vollständige Profile (Anrede, Adresse, Geburtsdatum, etc.)
+- [x] Mitarbeiter haben vollständige Profile (analog zu Fahrern)
+- [x] Kunden haben vollständige Profile
+- [x] Alle Entitäten haben Dokument-Upload-Funktionalität (Fahrer, Mitarbeiter)
+
+### 11.2 Bearbeiter-Tracking
+- [x] `created_by` wird bei Erstellung gesetzt (Bookings, Invoices, Quotes)
+- [x] `updated_by` wird bei Bearbeitung gesetzt (via Trigger + Frontend)
+- [x] Bearbeiter-Info wird in Detail-Dialogen angezeigt
+
+### 11.3 Detail-Dialoge
+- [x] BookingDetailsDialog zeigt Bearbeiter-Info
+- [x] InvoiceDetailsDialog zeigt Bearbeiter-Info
+- [x] QuoteDetailsDialog zeigt Bearbeiter-Info (NEU)
+- [x] EmployeeDetailsDialog zeigt alle Profil-Daten (NEU)
+- [x] DriverDetailsDialog zeigt alle Profil-Daten
+
+### 11.4 DSGVO-Compliance
+- [x] Keine Master-Admin-Policies mehr vorhanden
+- [x] Strikte company-basierte RLS-Policies
+- [x] Team-Bereich zeigt NUR Mitarbeiter des eigenen Unternehmens
+- [x] Dokument-Upload nur für eigene Firma
+
+### 11.5 Design-Validierung und Abhängigkeits-Prüfung (PFLICHT)
+- [x] DESIGN_GUIDELINES.md erstellt mit verbindlichen Vorgaben
+- [x] CI/CD Design-Validierung strikt (ohne || true)
+- [x] Pre-Commit Hook erweitert um Design-Validierung
+- [x] check-dependencies.mjs Script erstellt
+- [x] Abhängigkeits-Checkliste als Template dokumentiert
+
+---
+
+## 12. Design-Validierung und Abhängigkeits-Prüfung (PFLICHT)
+
+### 12.1 Design-Vorgaben (PFLICHT)
+
+**Dokument**: [`lib/design-system/DESIGN_GUIDELINES.md`](lib/design-system/DESIGN_GUIDELINES.md)
+
+**Verbindliche Regeln**:
+- **Farben**: NUR Design-Tokens (bg-primary, text-muted-foreground, etc.) - KEINE hardcoded Farben
+- **Rundungen**: Cards = `rounded-2xl`, Buttons = `rounded-xl`, Badges = `rounded-md`
+- **Spacing**: Standard `gap-5` (statt `gap-4`/`gap-6`)
+- **Aktive Tabs**: `bg-primary text-primary-foreground`
+- **Verbotene Begriffe**: kostenlos, gratis, free, testen, trial, etc.
+
+### 12.2 CI/CD Design-Validierung (PFLICHT)
+
+**GitHub Workflow**: [`.github/workflows/master-validation.yml`](.github/workflows/master-validation.yml)
+- Design-Validierung läuft **strikt** (ohne `|| true`)
+- Bei Fehlern: Build schlägt fehl
+
+**Pre-Commit Hook**: [`.husky/pre-commit`](.husky/pre-commit)
+- Phase 3: Design-Validierung (blockiert Commit bei Fehlern)
+- Phase 3.5: Abhängigkeits-Prüfung (Warnungen)
+
+### 12.3 Abhängigkeits-Prüfung (PFLICHT)
+
+**Script**: [`scripts/cicd/check-dependencies.mjs`](scripts/cicd/check-dependencies.mjs)
+
+**Prüft automatisch**:
+1. **Verwandte Dialoge**: Bei Änderungen an DetailsDialog prüft Konsistenz mit anderen DetailsDialogs
+2. **DB-Schema-Änderungen**: Prüft ob TypeScript-Types aktualisiert wurden
+3. **Neue Komponenten**: Prüft ob Design-Tokens verwendet werden
+4. **RLS-Policies**: Prüft ob neue Tabellen RLS aktivieren und Policies haben
+
+**Abhängigkeits-Checkliste (Template)**:
+
+| Änderung | Frontend | Backend | DB | CI/CD | TypeScript |
+|----------|----------|---------|-----|-------|------------|
+| Neue Komponente | Design-Tokens prüfen | - | - | Design-Validator | - |
+| Dialog-Änderung | Verwandte Dialoge prüfen | - | - | - | - |
+| DB-Schema | - | - | Migration | - | Types aktualisieren |
+| Neue Tabelle | - | - | RLS aktivieren | - | Types erstellen |
+
+### 12.4 Commit/Push als Abschluss (PFLICHT)
+
+**Jede Aufgabe muss mit Commit/Push abgeschlossen werden**:
+
+```bash
+git add -A
+git commit -m "feat: Beschreibung der Änderungen
+
+- Detaillierte Liste der Änderungen
+- Design-Konsistenz-Fixes
+- Abhängigkeiten berücksichtigt"
+
+git push origin main
+```
+
+**Commit-Message Format**:
+- `feat:` für neue Features
+- `fix:` für Bugfixes
+- `refactor:` für Refactorings
+- `docs:` für Dokumentation
+- `style:` für Design-Änderungen

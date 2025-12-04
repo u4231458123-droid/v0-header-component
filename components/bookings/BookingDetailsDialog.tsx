@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -36,7 +36,26 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [currentBooking, setCurrentBooking] = useState(booking)
   const [printing, setPrinting] = useState(false)
+  const [createdByProfile, setCreatedByProfile] = useState<any>(null)
+  const [updatedByProfile, setUpdatedByProfile] = useState<any>(null)
   const supabase = createClient()
+
+  // Lade Bearbeiter-Profile
+  useEffect(() => {
+    const loadBearbeiter = async () => {
+      if (currentBooking?.created_by) {
+        const { data } = await supabase.from("profiles").select("id, full_name, email").eq("id", currentBooking.created_by).single()
+        if (data) setCreatedByProfile(data)
+      }
+      if (currentBooking?.updated_by && currentBooking.updated_by !== currentBooking.created_by) {
+        const { data } = await supabase.from("profiles").select("id, full_name, email").eq("id", currentBooking.updated_by).single()
+        if (data) setUpdatedByProfile(data)
+      }
+    }
+    if (open && currentBooking) {
+      loadBearbeiter()
+    }
+  }, [open, currentBooking, supabase])
 
   if (!currentBooking) return null
 
@@ -147,6 +166,43 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
           </DialogHeader>
 
           <div className="space-y-6">
+            {/* Bearbeiter-Info */}
+            {(currentBooking?.created_by || currentBooking?.updated_by) && (
+              <>
+                <div className="space-y-2">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <UserIcon className="h-4 w-4" />
+                    Bearbeiter
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 pl-6">
+                    {createdByProfile && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Erstellt von</p>
+                        <p className="text-sm font-medium">
+                          {createdByProfile.full_name || createdByProfile.email || "Unbekannt"}
+                        </p>
+                        {createdByProfile.email && (
+                          <p className="text-xs text-muted-foreground">{createdByProfile.email}</p>
+                        )}
+                      </div>
+                    )}
+                    {updatedByProfile && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Zuletzt bearbeitet von</p>
+                        <p className="text-sm font-medium">
+                          {updatedByProfile.full_name || updatedByProfile.email || "Unbekannt"}
+                        </p>
+                        {updatedByProfile.email && (
+                          <p className="text-xs text-muted-foreground">{updatedByProfile.email}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <Separator />
+              </>
+            )}
+
             {/* ID und Eingangszeit */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">

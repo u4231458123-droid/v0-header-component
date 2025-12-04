@@ -31,8 +31,32 @@ else
   exit 1
 fi
 
-# Phase 3: Bot-Validation
-echo "📋 Phase 3: Bot-Validation..."
+# Phase 3: Design-Validierung
+echo "📋 Phase 3: Design-Validierung..."
+if ! pnpm exec node scripts/cicd/auto-design-validator.mjs 2>&1 | grep -q "success.*false\|error"; then
+  echo "✅ Design-Validierung bestanden"
+else
+  echo ""
+  echo "❌ DESIGN-VERSTÖSSE GEFUNDEN - Commit blockiert!"
+  echo "💡 Führe 'pnpm exec node scripts/cicd/auto-design-validator.mjs' aus, um die Fehler zu sehen."
+  echo "💡 Siehe lib/design-system/DESIGN_GUIDELINES.md für Vorgaben."
+  echo ""
+  exit 1
+fi
+
+# Phase 3.5: Abhängigkeits-Prüfung
+echo "📋 Phase 3.5: Abhängigkeits-Prüfung..."
+if ! pnpm exec node scripts/cicd/check-dependencies.mjs 2>&1 | grep -q "success.*false\|error"; then
+  echo "✅ Abhängigkeits-Prüfung bestanden"
+else
+  echo ""
+  echo "⚠️  ABHÄNGIGKEITS-WARNUNGEN GEFUNDEN"
+  echo "💡 Führe 'pnpm exec node scripts/cicd/check-dependencies.mjs' aus, um Details zu sehen."
+  echo ""
+fi
+
+# Phase 4: Bot-Validation
+echo "📋 Phase 4: Bot-Validation..."
 node scripts/cicd/mandatory-quality-gate.js --pre-commit
 
 # Exit-Code prüfen

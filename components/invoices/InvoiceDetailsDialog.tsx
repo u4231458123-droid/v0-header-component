@@ -22,11 +22,30 @@ interface InvoiceDetailsDialogProps {
 export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: InvoiceDetailsDialogProps) {
   const [currentInvoice, setCurrentInvoice] = useState(invoice)
   const [printing, setPrinting] = useState(false)
+  const [createdByProfile, setCreatedByProfile] = useState<any>(null)
+  const [updatedByProfile, setUpdatedByProfile] = useState<any>(null)
   const supabase = createClient()
 
   useEffect(() => {
     setCurrentInvoice(invoice)
   }, [invoice])
+
+  // Lade Bearbeiter-Profile
+  useEffect(() => {
+    const loadBearbeiter = async () => {
+      if (currentInvoice?.created_by) {
+        const { data } = await supabase.from("profiles").select("id, full_name, email").eq("id", currentInvoice.created_by).single()
+        if (data) setCreatedByProfile(data)
+      }
+      if (currentInvoice?.updated_by && currentInvoice.updated_by !== currentInvoice.created_by) {
+        const { data } = await supabase.from("profiles").select("id, full_name, email").eq("id", currentInvoice.updated_by).single()
+        if (data) setUpdatedByProfile(data)
+      }
+    }
+    if (open && currentInvoice) {
+      loadBearbeiter()
+    }
+  }, [open, currentInvoice, supabase])
 
   if (!currentInvoice) return null
 
@@ -117,6 +136,43 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
           </div>
 
           <Separator />
+
+          {/* Bearbeiter-Info */}
+          {(createdByProfile || updatedByProfile) && (
+            <>
+              <div className="space-y-2">
+                <h4 className="font-medium flex items-center gap-2">
+                  <UserIcon className="h-4 w-4" />
+                  Bearbeiter
+                </h4>
+                <div className="grid grid-cols-2 gap-4 pl-6">
+                  {createdByProfile && (
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Erstellt von</p>
+                      <p className="text-sm font-medium">
+                        {createdByProfile.full_name || createdByProfile.email || "Unbekannt"}
+                      </p>
+                      {createdByProfile.email && (
+                        <p className="text-xs text-muted-foreground">{createdByProfile.email}</p>
+                      )}
+                    </div>
+                  )}
+                  {updatedByProfile && (
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Zuletzt bearbeitet von</p>
+                      <p className="text-sm font-medium">
+                        {updatedByProfile.full_name || updatedByProfile.email || "Unbekannt"}
+                      </p>
+                      {updatedByProfile.email && (
+                        <p className="text-xs text-muted-foreground">{updatedByProfile.email}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
 
           {/* Kunde */}
           <div className="space-y-2">
