@@ -5,6 +5,7 @@ import Link from "next/link"
 import { DashboardMapWidget } from "@/components/dashboard/DashboardMapWidget"
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts"
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader"
+import { DashboardTourWrapper } from "@/components/onboarding/DashboardTourWrapper"
 import {
   ClipboardList,
   Zap,
@@ -382,14 +383,16 @@ export default async function DashboardPage() {
   return (
     <MainLayout>
       <div className="space-y-8 max-w-[1600px] mx-auto">
-        <DashboardHeader
-          userName={profile?.full_name || user.email?.split("@")[0] || "Benutzer"}
-          companyId={companyId}
-          customers={customers}
-          drivers={drivers}
-        />
+        <div data-tour="dashboard-header">
+          <DashboardHeader
+            userName={profile?.full_name || user.email?.split("@")[0] || "Benutzer"}
+            companyId={companyId}
+            customers={customers}
+            drivers={drivers}
+          />
+        </div>
 
-        <div className="grid gap-5 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 grid-cols-2 lg:grid-cols-4" data-tour="dashboard-stats">
           {/* Aufträge Heute */}
           <Link
             href="/auftraege"
@@ -723,6 +726,9 @@ export default async function DashboardPage() {
         {/* Umsatz Chart */}
         <DashboardCharts revenueData={revenueData} totalRevenue={stats.revenue30Days} />
       </div>
+
+      {/* Onboarding Components (Client-Side) */}
+      {companyId && <DashboardTourWrapper companyId={companyId} />}
     </MainLayout>
   )
   } catch (error: any) {

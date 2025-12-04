@@ -430,11 +430,21 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
           {navigationItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
             const Icon = item.icon
+            
+            // Add data-tour attributes for onboarding
+            const getTourId = (href: string) => {
+              if (href === "/fahrer") return "sidebar-drivers"
+              if (href === "/fleet") return "sidebar-fleet"
+              if (href === "/auftraege") return "sidebar-bookings"
+              return undefined
+            }
+            const tourId = getTourId(item.href)
 
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  {...(tourId ? { "data-tour": tourId } : {})}
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-lg
                     transition-colors duration-150
