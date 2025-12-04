@@ -164,7 +164,7 @@ export default function DriverDocumentsPage() {
         toast.error(`Fehler beim Speichern: ${insertError.message}`)
         // Lösche hochgeladene Datei bei Fehler
         if (supabase) {
-          await supabase.storage.from("documents").remove([fileName])
+        await supabase.storage.from("documents").remove([fileName])
         }
         setUploading(null)
         return

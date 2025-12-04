@@ -128,7 +128,7 @@ export async function validateSchemaTables(requiredTables: string[]): Promise<{
       }
     } else {
       // Verwende MCP-Ergebnisse
-      for (const table of requiredTables) {
+    for (const table of requiredTables) {
         if (tableNames.includes(table)) {
           existing.push(table)
         } else {

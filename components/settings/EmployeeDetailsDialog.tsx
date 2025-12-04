@@ -41,12 +41,24 @@ interface EmployeeDocument {
 }
 
 const EMPLOYEE_DOCUMENT_TYPES: Record<string, string> = {
-  health_insurance_card: "Krankenkassenkarte",
-  bank_card: "Bankverbindung/Karte",
+  // Persönliche Dokumente
+  id_card: "Personalausweis (Vorderseite)",
+  id_card_back: "Personalausweis (Rückseite)",
+  photo: "Passfoto",
+  // Beschäftigungsdokumente
   employment_contract: "Arbeitsvertrag",
-  qualification_certificate: "Qualifikationsnachweis",
-  reference_letter: "Zeugnis",
-  employee_other: "Sonstige Mitarbeiter-Dokumente",
+  social_security_card: "Sozialversicherungsausweis",
+  tax_id_confirmation: "Steuer-ID Bestätigung",
+  // Gesundheit/Versicherung
+  health_insurance_card: "Krankenkassenkarte",
+  health_certificate: "Gesundheitszeugnis",
+  // Qualifikationen
+  qualification_certificate: "Qualifikationsnachweise",
+  reference_letter: "Zeugnisse",
+  // Finanzen
+  bank_details: "Bankverbindung",
+  // Sonstiges
+  employee_other: "Sonstige Dokumente",
 }
 
 export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployeeUpdated }: EmployeeDetailsDialogProps) {

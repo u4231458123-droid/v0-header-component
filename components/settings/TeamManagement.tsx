@@ -63,6 +63,29 @@ interface TeamMember {
   role: string
   created_at: string
   last_sign_in_at?: string
+  // Erweiterte Felder (Migration 034)
+  salutation?: string
+  title?: string
+  date_of_birth?: string
+  nationality?: string
+  phone?: string
+  phone_mobile?: string
+  address_data?: {
+    street?: string
+    house_number?: string
+    postal_code?: string
+    city?: string
+    country?: string
+  }
+  employment_data?: {
+    start_date?: string
+    contract_type?: string
+    department?: string
+    position?: string
+    working_hours?: number
+    hourly_rate?: number
+    monthly_salary?: number
+  }
 }
 
 interface TeamInvitation {
@@ -129,12 +152,24 @@ const ACTION_COLORS: Record<string, string> = {
 }
 
 const EMPLOYEE_DOCUMENT_TYPES = [
-  { key: "health_insurance_card", label: "Krankenkassenkarte", required: false },
-  { key: "bank_card", label: "Bankverbindung/Karte", required: false },
-  { key: "employment_contract", label: "Arbeitsvertrag", required: false },
-  { key: "qualification_certificate", label: "Qualifikationsnachweis", required: false },
-  { key: "reference_letter", label: "Zeugnis", required: false },
-  { key: "employee_other", label: "Sonstige Mitarbeiter-Dokumente", required: false },
+  // Persönliche Dokumente
+  { key: "id_card", label: "Personalausweis (Vorderseite)", required: true },
+  { key: "id_card_back", label: "Personalausweis (Rückseite)", required: false },
+  { key: "photo", label: "Passfoto", required: false },
+  // Beschäftigungsdokumente
+  { key: "employment_contract", label: "Arbeitsvertrag", required: true },
+  { key: "social_security_card", label: "Sozialversicherungsausweis", required: true },
+  { key: "tax_id_confirmation", label: "Steuer-ID Bestätigung", required: false },
+  // Gesundheit/Versicherung
+  { key: "health_insurance_card", label: "Krankenkassenkarte", required: true },
+  { key: "health_certificate", label: "Gesundheitszeugnis", required: false },
+  // Qualifikationen
+  { key: "qualification_certificate", label: "Qualifikationsnachweise", required: false },
+  { key: "reference_letter", label: "Zeugnisse", required: false },
+  // Finanzen
+  { key: "bank_details", label: "Bankverbindung", required: true },
+  // Sonstiges
+  { key: "employee_other", label: "Sonstige Dokumente", required: false },
 ]
 
 export function TeamManagement({

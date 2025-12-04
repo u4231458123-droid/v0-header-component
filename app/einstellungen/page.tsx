@@ -146,11 +146,15 @@ async function renderSettingsPage(supabase: SupabaseClient, profile: Profile, us
       company = companyData
 
       if (company) {
-        // Fetch team members
+        // Fetch team members mit allen erweiterten Profil-Feldern (Migration 034)
         try {
           const { data: teamData, error: teamError } = await supabase
             .from("profiles")
-            .select("id, full_name, email, role, avatar_url, created_at")
+            .select(`
+              id, full_name, email, role, avatar_url, created_at,
+              salutation, title, date_of_birth, nationality,
+              phone, phone_mobile, address_data, employment_data
+            `)
             .eq("company_id", profile.company_id)
             .order("created_at", { ascending: true })
 

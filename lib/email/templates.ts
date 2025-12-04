@@ -34,17 +34,31 @@ export interface MyDispatchEmailData {
 /**
  * Verarbeite Handlebars Conditionals in HTML-Templates
  * Unterstützt: {{#if variable}}...{{/if}}
+ * Verarbeitet auch mehrzeilige Blöcke und verschachtelte Conditionals
  */
 function processHandlebarsConditionals(html: string, data: any): string {
   let processed = html
   
   // Regex für {{#if variable}}...{{/if}} Blöcke
-  // Unterstützt auch verschachtelte Blöcke
+  // [\s\S]*? = non-greedy match für alle Zeichen (inkl. Zeilenumbrüche)
   const conditionalRegex = /\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g
   
+  // Sammle alle Matches zuerst (um Konflikte bei gleichzeitiger Ersetzung zu vermeiden)
+  const matches: Array<{ fullMatch: string; variable: string; content: string; index: number }> = []
   let match
+  
   while ((match = conditionalRegex.exec(processed)) !== null) {
-    const [fullMatch, variable, content] = match
+    matches.push({
+      fullMatch: match[0],
+      variable: match[1],
+      content: match[2],
+      index: match.index,
+    })
+  }
+  
+  // Verarbeite Matches von hinten nach vorne (um Indizes stabil zu halten)
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const { fullMatch, variable, content } = matches[i]
     
     // Prüfe ob Variable existiert und truthy ist
     const value = data[variable]
@@ -52,18 +66,15 @@ function processHandlebarsConditionals(html: string, data: any): string {
     
     if (shouldInclude) {
       // Ersetze den gesamten Block durch den Inhalt
-      processed = processed.replace(fullMatch, content)
+      processed = processed.substring(0, matches[i].index) + content + processed.substring(matches[i].index + fullMatch.length)
     } else {
       // Entferne den gesamten Block
-      processed = processed.replace(fullMatch, "")
+      processed = processed.substring(0, matches[i].index) + processed.substring(matches[i].index + fullMatch.length)
     }
-    
-    // Setze lastIndex zurück, um alle Matches zu finden
-    conditionalRegex.lastIndex = 0
   }
   
   // Rekursiv verarbeiten für verschachtelte Conditionals
-  if (conditionalRegex.test(processed)) {
+  if (/\{\{#if\s+\w+\}\}/.test(processed)) {
     processed = processHandlebarsConditionals(processed, data)
   }
   
@@ -105,6 +116,11 @@ export function generateEmailHTML(
 
   // Ersetze Variablen im Template
   let html = template.html
+  
+  // 1. Verarbeite Handlebars Conditionals ZUERST
+  html = processHandlebarsConditionals(html, data)
+  
+  // 2. Dann Variablen ersetzen
   template.variables.forEach((variable) => {
     const value = data[variable] || ""
     html = html.replace(new RegExp(`{{${variable}}}`, "g"), value)
