@@ -40,9 +40,14 @@ DROP POLICY IF EXISTS "Master admins have full access" ON invoices;
 DROP POLICY IF EXISTS "Master admins have full quote access" ON quotes;
 DROP POLICY IF EXISTS "Master admins have full access" ON quotes;
 
--- Cash Book Entries Policies
-DROP POLICY IF EXISTS "Master admins have full cash book access" ON cash_book_entries;
-DROP POLICY IF EXISTS "Master admins have full access" ON cash_book_entries;
+-- Cash Book Entries Policies (nur ausfuehren wenn Tabelle existiert)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'cash_book_entries') THEN
+    EXECUTE 'DROP POLICY IF EXISTS "Master admins have full cash book access" ON cash_book_entries';
+    EXECUTE 'DROP POLICY IF EXISTS "Master admins have full access" ON cash_book_entries';
+  END IF;
+END $$;
 
 -- 2. Entferne Master-Admin-Funktionen
 
