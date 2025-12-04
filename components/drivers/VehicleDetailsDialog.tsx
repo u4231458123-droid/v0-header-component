@@ -57,6 +57,7 @@ export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpd
 
       if (!company) {
         toast.error("Unternehmen nicht gefunden")
+        setPrinting(false)
         return
       }
 

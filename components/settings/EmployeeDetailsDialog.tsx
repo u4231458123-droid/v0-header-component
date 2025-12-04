@@ -129,6 +129,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
 
       if (!company) {
         toast.error("Unternehmen nicht gefunden")
+        setPrinting(false)
         return
       }
 

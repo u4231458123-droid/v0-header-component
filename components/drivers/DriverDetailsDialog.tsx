@@ -87,6 +87,7 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
 
       if (!company) {
         toast.error("Unternehmen nicht gefunden")
+        setPrinting(false)
         return
       }
 
