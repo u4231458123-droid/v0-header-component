@@ -34,6 +34,20 @@ export type KnowledgeCategory =
   | "systemwide-thinking"
   | "bot-instructions"
   | "mydispatch-core"
+  | "agent-responsibility"
+  | "documentation"
+  | "legal"
+  | "compliance"
+  | "text-quality"
+  | "seo-optimization"
+  | "account-routing"
+  | "pdf-email"
+  | "partner-data"
+  | "cicd-rules"
+  | "ui-consistency-detailed"
+  | "visual-logical-validation"
+  | "quality-thinking-detailed"
+  | "functionality-rules"
 
 export interface KnowledgeBase {
   version: string
@@ -495,6 +509,96 @@ export const INITIAL_KNOWLEDGE_BASE: KnowledgeBase = {
       "ci-cd": {
         title: "CI/CD",
         description: "CI/CD Pipeline und Automatisierung",
+        entries: [],
+      },
+      "ui-consistency": {
+        title: "UI-Konsistenz",
+        description: "UI-Konsistenz-Regeln",
+        entries: [],
+      },
+      "systemwide-thinking": {
+        title: "Systemweites Denken",
+        description: "Systemweite Überlegungen und Abhängigkeiten",
+        entries: [],
+      },
+      "bot-instructions": {
+        title: "Bot-Anweisungen",
+        description: "Anweisungen für AI-Bots",
+        entries: [],
+      },
+      "mydispatch-core": {
+        title: "MyDispatch Core",
+        description: "Kern-Funktionalitäten von MyDispatch",
+        entries: [],
+      },
+      "agent-responsibility": {
+        title: "Agent-Verantwortlichkeiten",
+        description: "Verantwortlichkeiten und Aufgaben der AI-Agenten",
+        entries: [],
+      },
+      "documentation": {
+        title: "Dokumentation",
+        description: "Dokumentations-Standards und -Regeln",
+        entries: [],
+      },
+      "legal": {
+        title: "Rechtliches",
+        description: "Rechtliche Anforderungen und Compliance",
+        entries: [],
+      },
+      "compliance": {
+        title: "Compliance",
+        description: "Compliance-Anforderungen",
+        entries: [],
+      },
+      "text-quality": {
+        title: "Text-Qualität",
+        description: "Standards für Text-Qualität",
+        entries: [],
+      },
+      "seo-optimization": {
+        title: "SEO-Optimierung",
+        description: "SEO-Optimierungs-Regeln",
+        entries: [],
+      },
+      "account-routing": {
+        title: "Account-Routing",
+        description: "Routing-Regeln für verschiedene Account-Typen",
+        entries: [],
+      },
+      "pdf-email": {
+        title: "PDF & E-Mail",
+        description: "Regeln für PDF und E-Mail-Integration",
+        entries: [],
+      },
+      "partner-data": {
+        title: "Partner-Daten",
+        description: "Regeln für Partner-Daten und -Integration",
+        entries: [],
+      },
+      "cicd-rules": {
+        title: "CI/CD-Regeln",
+        description: "Detaillierte CI/CD-Regeln",
+        entries: [],
+      },
+      "ui-consistency-detailed": {
+        title: "UI-Konsistenz (Detailliert)",
+        description: "Detaillierte UI-Konsistenz-Regeln",
+        entries: [],
+      },
+      "visual-logical-validation": {
+        title: "Visuelle & Logische Validierung",
+        description: "Regeln für visuelle und logische Validierung",
+        entries: [],
+      },
+      "quality-thinking-detailed": {
+        title: "Qualitäts-Denken (Detailliert)",
+        description: "Detaillierte Qualitäts-Überlegungen",
+        entries: [],
+      },
+      "functionality-rules": {
+        title: "Funktionalitäts-Regeln",
+        description: "Regeln für Funktionalität und Features",
         entries: [],
       },
     },
