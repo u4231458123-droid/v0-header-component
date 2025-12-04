@@ -77,7 +77,6 @@ export default function DriverDocumentsPage() {
   const loadDocuments = async () => {
     try {
       const supabase = getSupabase()
-      if (!supabase) return
 
       const {
         data: { user },
@@ -118,7 +117,6 @@ export default function DriverDocumentsPage() {
 
     try {
       const supabase = getSupabase()
-      if (!supabase) return
 
       // Dateigröße prüfen (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
@@ -175,7 +173,6 @@ export default function DriverDocumentsPage() {
 
   const handleLogout = async () => {
     const supabase = getSupabase()
-    if (!supabase) return
     await supabase.auth.signOut()
     window.location.href = "/auth/login"
   }
@@ -380,7 +377,6 @@ export default function DriverDocumentsPage() {
                           onClick={async () => {
                             try {
                               const supabase = getSupabase()
-                              if (!supabase) return
 
                               // Erstelle signed URL für Download
                               const { data, error } = await supabase.storage
