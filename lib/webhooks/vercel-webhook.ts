@@ -44,6 +44,12 @@ export async function verifyVercelWebhookSignature(req: Request): Promise<boolea
     // Konvertiere beide Strings zu Uint8Array für timingSafeEqual
     const signatureBuffer = new Uint8Array(Buffer.from(signature, "utf-8"))
     const expectedBuffer = new Uint8Array(Buffer.from(expectedSignature, "utf-8"))
+    
+    // Sicherstellen, dass beide Buffer die gleiche Länge haben
+    if (signatureBuffer.length !== expectedBuffer.length) {
+      return false
+    }
+    
     const isValid = crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
 
     if (!isValid) {
