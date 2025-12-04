@@ -110,7 +110,10 @@ export default function FahrerProfilPage() {
         .single()
 
       if (driverError || !driverData) {
-        toast.error("Fahrerprofil nicht gefunden")
+        toast.error("Fahrerprofil nicht gefunden", {
+          description: "Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
+          duration: 5000,
+        })
         return
       }
 
@@ -139,7 +142,10 @@ export default function FahrerProfilPage() {
       })
     } catch (error) {
       console.error("Error loading driver profile:", error)
-      toast.error("Fehler beim Laden des Profils")
+      toast.error("Fehler beim Laden des Profils", {
+        description: "Bitte versuchen Sie es erneut oder laden Sie die Seite neu.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }
@@ -163,10 +169,16 @@ export default function FahrerProfilPage() {
 
       setDriver({ ...driver, phone: formData.phone, email: formData.email })
       setEditMode(false)
-      toast.success("Kontaktdaten aktualisiert")
+      toast.success("Kontaktdaten aktualisiert", {
+        description: "Ihre Kontaktdaten wurden erfolgreich gespeichert.",
+        duration: 4000,
+      })
     } catch (error) {
       console.error("Error updating profile:", error)
-      toast.error("Fehler beim Speichern")
+      toast.error("Fehler beim Speichern", {
+        description: "Bitte überprüfen Sie die Eingaben und versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setSaving(false)
     }

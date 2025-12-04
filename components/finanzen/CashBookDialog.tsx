@@ -99,12 +99,18 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"]
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Bitte nur Bilder (JPG, PNG, WebP) oder PDF hochladen")
+      toast.error("Bitte nur Bilder (JPG, PNG, WebP) oder PDF hochladen", {
+        description: "Unterstützte Formate: JPG, PNG, WebP oder PDF.",
+        duration: 5000,
+      })
       return
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("Datei ist zu groß (max. 10 MB)")
+      toast.error("Datei ist zu groß (max. 10 MB)", {
+        description: "Bitte wählen Sie eine kleinere Datei oder komprimieren Sie das Bild.",
+        duration: 5000,
+      })
       return
     }
 
@@ -162,12 +168,18 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
 
   const handleSubmit = async () => {
     if (!companyId) {
-      toast.error("Kein Unternehmen gefunden")
+      toast.error("Kein Unternehmen gefunden", {
+        description: "Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
       return
     }
 
     if (!description.trim()) {
-      toast.error("Bitte geben Sie einen Buchungstext ein")
+      toast.error("Bitte geben Sie einen Buchungstext ein", {
+        description: "Der Buchungstext ist ein Pflichtfeld und beschreibt die Transaktion.",
+        duration: 5000,
+      })
       return
     }
 

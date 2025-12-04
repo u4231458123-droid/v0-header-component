@@ -237,7 +237,10 @@ export function TeamManagement({
 
   const handleInviteMember = async () => {
     if (!inviteForm.email) {
-      toast.error("Bitte geben Sie eine E-Mail-Adresse ein")
+      toast.error("Bitte geben Sie eine E-Mail-Adresse ein", {
+        description: "Die E-Mail-Adresse ist erforderlich, um eine Einladung zu senden.",
+        duration: 5000,
+      })
       return
     }
 
@@ -289,13 +292,19 @@ export function TeamManagement({
         details: { role: inviteForm.role },
       })
 
-      toast.success(`Einladung an ${inviteForm.email} gesendet`)
+      toast.success(`Einladung an ${inviteForm.email} gesendet`, {
+        description: "Der Mitarbeiter erhält eine E-Mail mit einem Einladungslink.",
+        duration: 4000,
+      })
       setInviteDialogOpen(false)
       setInviteForm({ email: "", role: "user" })
       loadInvitations()
       loadActivityLog()
     } catch (error: any) {
-      toast.error(error.message || "Fehler beim Senden der Einladung")
+      toast.error(error.message || "Fehler beim Senden der Einladung", {
+        description: "Bitte überprüfen Sie die E-Mail-Adresse und versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setInviteLoading(false)
     }
@@ -305,7 +314,10 @@ export function TeamManagement({
     const { error } = await supabase.from("team_invitations").delete().eq("id", invitationId)
 
     if (!error) {
-      toast.success("Einladung zurückgezogen")
+      toast.success("Einladung zurückgezogen", {
+        description: "Die Einladung wurde gelöscht und kann nicht mehr verwendet werden.",
+        duration: 4000,
+      })
       loadInvitations()
     }
   }

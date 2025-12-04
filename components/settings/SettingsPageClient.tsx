@@ -348,7 +348,10 @@ export function SettingsPageClient({
 
   const handleSave = async () => {
     if (!company || !company.id) {
-      toast.error("Kein Unternehmen gefunden")
+      toast.error("Kein Unternehmen gefunden", {
+        description: "Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
       return
     }
 
@@ -362,7 +365,10 @@ export function SettingsPageClient({
       } = await supabase.auth.getUser()
 
       if (userError || !user) {
-        toast.error("Sie sind nicht angemeldet. Bitte melden Sie sich erneut an.")
+        toast.error("Sie sind nicht angemeldet. Bitte melden Sie sich erneut an.", {
+          description: "Ihre Sitzung ist abgelaufen. Sie werden zur Anmeldeseite weitergeleitet.",
+          duration: 5000,
+        })
         router.push("/auth/login")
         return
       }
@@ -445,12 +451,18 @@ export function SettingsPageClient({
         }
       }
 
-      toast.success("Einstellungen erfolgreich gespeichert")
+      toast.success("Einstellungen erfolgreich gespeichert", {
+        description: "Alle Änderungen wurden übernommen und sind sofort wirksam.",
+        duration: 4000,
+      })
       router.refresh()
     } catch (error: any) {
       console.error("[Settings] Error saving settings:", error)
       const errorMessage = error?.message || error?.details || "Unbekannter Fehler"
-      toast.error(`Fehler beim Speichern: ${errorMessage}`)
+      toast.error(`Fehler beim Speichern: ${errorMessage}`, {
+        description: "Bitte überprüfen Sie die Eingaben und versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }
@@ -1428,7 +1440,7 @@ export function SettingsPageClient({
                     >
                       <input ref={gewerbeanmeldungInputRef} type="file" accept=".pdf,.jpg,.jpeg" className="hidden" />
                       {company?.gewerbeanmeldung_url ? (
-                        <span className="text-sm text-green-600 flex items-center justify-center gap-2">
+                        <span className="text-sm text-success flex items-center justify-center gap-2">
                           <CheckIcon className="w-4 h-4" />
                           Hochgeladen
                         </span>
@@ -1447,7 +1459,7 @@ export function SettingsPageClient({
                     >
                       <input ref={briefpapierInputRef} type="file" accept=".pdf,.jpg,.jpeg" className="hidden" />
                       {company?.briefpapier_url ? (
-                        <span className="text-sm text-green-600 flex items-center justify-center gap-2">
+                        <span className="text-sm text-success flex items-center justify-center gap-2">
                           <CheckIcon className="w-4 h-4" />
                           Hochgeladen
                         </span>
@@ -1774,7 +1786,7 @@ export function SettingsPageClient({
                     <p className="font-medium">Aktuelle Sitzung</p>
                     <p className="text-sm text-muted-foreground">Angemeldet als {profile?.email}</p>
                   </div>
-                  <Badge variant="outline" className="text-green-600 border-green-600">
+                  <Badge variant="outline" className="text-success border-success">
                     Aktiv
                   </Badge>
                 </div>

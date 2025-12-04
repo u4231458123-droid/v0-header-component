@@ -154,13 +154,19 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
 
       if (error) throw error
 
-      toast.success("Auftrag erfolgreich aktualisiert")
+      toast.success("Auftrag erfolgreich aktualisiert", {
+        description: "Die Änderungen wurden gespeichert und sind sofort sichtbar.",
+        duration: 4000,
+      })
       onSuccess?.(updatedBooking as Booking)
       onOpenChange(false)
       router.refresh()
     } catch (error) {
       console.error("[v0] Error updating booking:", error)
-      toast.error("Fehler beim Aktualisieren des Auftrags")
+      toast.error("Fehler beim Aktualisieren des Auftrags", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

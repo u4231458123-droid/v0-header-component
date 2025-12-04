@@ -101,10 +101,10 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
 
   const bgClass =
     background === "white"
-      ? "bg-white"
+      ? "bg-card"
       : background === "orbs-light"
-        ? "bg-white relative overflow-hidden"
-        : "bg-slate-50"
+        ? "bg-card relative overflow-hidden"
+        : "bg-background"
 
   const marketingMenuItems = [
     { title: "Startseite", icon: Icons.Home, url: "/", page: "home" },
@@ -207,7 +207,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                     <Link
                       key={item.title}
                       href={item.url}
-                      className="px-3 py-1 text-xs text-muted-foreground rounded-sm hover:text-foreground hover:bg-slate-200/15 transition-colors"
+                      className="px-3 py-1 text-xs text-muted-foreground rounded-sm hover:text-foreground hover:bg-muted/50 transition-colors"
                     >
                       {item.title}
                     </Link>
@@ -287,12 +287,12 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
           {background === "orbs-light" && (
             <>
               <div
-                className="absolute top-[10%] right-[5%] w-[350px] h-[350px] bg-slate-100 rounded-full blur-2xl opacity-20 pointer-events-none animate-pulse"
+                className="absolute top-[10%] right-[5%] w-[350px] h-[350px] bg-muted rounded-full blur-2xl opacity-20 pointer-events-none animate-pulse"
                 style={{ animationDuration: "10s" }}
                 aria-hidden="true"
               />
               <div
-                className="absolute bottom-[15%] left-[5%] w-[300px] h-[300px] bg-slate-200 rounded-full blur-2xl opacity-15 pointer-events-none animate-pulse"
+                className="absolute bottom-[15%] left-[5%] w-[300px] h-[300px] bg-muted/80 rounded-full blur-2xl opacity-15 pointer-events-none animate-pulse"
                 style={{ animationDuration: "15s", animationDelay: "3s" }}
                 aria-hidden="true"
               />
@@ -441,7 +441,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                     key={item.title}
                     href={item.url}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-1 text-xs text-muted-foreground rounded-sm hover:text-foreground hover:bg-slate-200/15 transition-colors"
+                    className="px-3 py-1 text-xs text-muted-foreground rounded-sm hover:text-foreground hover:bg-muted/50 transition-colors"
                   >
                     {item.title}
                   </Link>

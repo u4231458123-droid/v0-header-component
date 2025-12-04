@@ -315,13 +315,19 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
         await supabase.from("bookings").update({ invoice_id: invoiceNumber }).eq("id", selectedBookingId)
       }
 
-      toast.success("Rechnung erfolgreich erstellt")
+      toast.success("Rechnung erfolgreich erstellt", {
+        description: "Die Rechnung wurde angelegt und kann nun versendet werden.",
+        duration: 4000,
+      })
       setOpen(false)
       resetForm()
       router.refresh()
     } catch (error) {
       console.error("Error creating invoice:", error)
-      toast.error("Fehler beim Erstellen der Rechnung")
+      toast.error("Fehler beim Erstellen der Rechnung", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

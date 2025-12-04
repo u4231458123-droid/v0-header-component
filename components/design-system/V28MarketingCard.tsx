@@ -8,7 +8,7 @@ interface V28MarketingCardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function V28MarketingCard({ children, className, ...props }: V28MarketingCardProps) {
   return (
-    <div className={cn("p-6 rounded-xl bg-white border border-slate-200 shadow-sm", className)} {...props}>
+    <div className={cn("p-6 rounded-xl bg-card border border-border shadow-sm", className)} {...props}>
       {children}
     </div>
   )

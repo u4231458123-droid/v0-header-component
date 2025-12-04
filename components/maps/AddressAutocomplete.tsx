@@ -285,12 +285,12 @@ export function AddressAutocomplete({
             onMouseEnter={() => setSelectedIndex(index)}
             className={`w-full px-3 py-2 text-left text-sm transition-colors ${
               index === selectedIndex
-                ? "bg-blue-500 text-white"
+                ? "bg-primary text-primary-foreground"
                 : "text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             }`}
           >
             <div className="font-medium">{suggestion.mainText}</div>
-            <div className={`text-xs ${index === selectedIndex ? "text-blue-100" : "text-zinc-500"}`}>
+            <div className={`text-xs ${index === selectedIndex ? "text-primary-foreground/80" : "text-zinc-500"}`}>
               {suggestion.secondaryText}
             </div>
           </button>

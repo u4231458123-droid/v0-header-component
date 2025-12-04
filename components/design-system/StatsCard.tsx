@@ -62,8 +62,8 @@ export function StatsCard({
 
   const variantStyles = {
     default: "border-border hover:border-primary/50",
-    warning: "border-amber-500/30 bg-amber-500/5",
-    success: "border-green-500/30 bg-green-500/5",
+    warning: "border-warning/30 bg-warning/5",
+    success: "border-success/30 bg-success/5",
   }
 
   return (
@@ -83,7 +83,7 @@ export function StatsCard({
             {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
             {trend && (
               <div
-                className={`flex items-center gap-1 text-xs font-medium ${trend.isPositive ? "text-green-600" : "text-red-500"}`}
+                className={`flex items-center gap-1 text-xs font-medium ${trend.isPositive ? "text-success" : "text-destructive"}`}
               >
                 <span>
                   {trend.isPositive ? "+" : ""}

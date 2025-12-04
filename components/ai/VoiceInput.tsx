@@ -101,7 +101,7 @@ export function VoiceInput({ onTranscript, placeholder = "Tippen oder Sprechen..
         disabled={isProcessing}
         className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${
           isRecording
-            ? "bg-red-500 text-white animate-pulse"
+            ? "bg-destructive text-destructive-foreground animate-pulse"
             : isProcessing
               ? "bg-gray-300 text-gray-500"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -129,8 +129,8 @@ export function VoiceInput({ onTranscript, placeholder = "Tippen oder Sprechen..
       </button>
 
       {isRecording && (
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-red-500 text-sm">
-          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-destructive text-sm">
+          <span className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
           Aufnahme...
         </div>
       )}

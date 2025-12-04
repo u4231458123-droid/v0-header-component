@@ -282,19 +282,28 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
       }
 
       if (!customerId) {
-        toast.error("Bitte wählen Sie einen Kunden aus oder erstellen Sie einen neuen")
+        toast.error("Bitte wählen Sie einen Kunden aus oder erstellen Sie einen neuen", {
+          description: "Ein Kunde ist erforderlich, um ein Angebot zu erstellen.",
+          duration: 4000,
+        })
         setLoading(false)
         return
       }
 
       if (!validUntil) {
-        toast.error("Bitte geben Sie ein Gültigkeitsdatum an")
+        toast.error("Bitte geben Sie ein Gültigkeitsdatum an", {
+          description: "Das Gültigkeitsdatum ist erforderlich.",
+          duration: 4000,
+        })
         setLoading(false)
         return
       }
 
       if (items.some((item) => !item.description || item.unitPrice <= 0)) {
-        toast.error("Bitte füllen Sie alle Positionen aus")
+        toast.error("Bitte füllen Sie alle Positionen aus", {
+          description: "Alle Positionen müssen eine Beschreibung und einen Preis haben.",
+          duration: 4000,
+        })
         setLoading(false)
         return
       }
@@ -372,13 +381,19 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
         }
       }
 
-      toast.success("Angebot erfolgreich erstellt")
+      toast.success("Angebot erfolgreich erstellt", {
+        description: "Das Angebot wurde angelegt und kann nun versendet werden.",
+        duration: 4000,
+      })
       onSuccess?.(quote)
       setOpen(false)
       resetForm()
     } catch (error) {
       console.error("Error creating quote:", error)
-      toast.error("Fehler beim Erstellen des Angebots")
+      toast.error("Fehler beim Erstellen des Angebots", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

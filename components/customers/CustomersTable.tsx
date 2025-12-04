@@ -166,12 +166,18 @@ export function CustomersTable({ customers }: CustomersTableProps) {
 
       if (error) throw error
 
-      toast.success("Kunde erfolgreich gelöscht")
+      toast.success("Kunde erfolgreich gelöscht", {
+        description: "Der Kunde wurde aus dem System entfernt.",
+        duration: 4000,
+      })
       setDeleteCustomerId(null)
       router.refresh()
     } catch (error) {
       console.error("[v0] Error deleting customer:", error)
-      toast.error("Fehler beim Löschen des Kunden")
+      toast.error("Fehler beim Löschen des Kunden", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 

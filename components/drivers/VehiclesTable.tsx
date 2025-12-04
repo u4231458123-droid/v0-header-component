@@ -116,12 +116,18 @@ export function VehiclesTable({ vehicles }: VehiclesTableProps) {
 
       if (error) throw error
 
-      toast.success("Fahrzeug erfolgreich gelöscht")
+      toast.success("Fahrzeug erfolgreich gelöscht", {
+        description: "Das Fahrzeug wurde aus dem System entfernt.",
+        duration: 4000,
+      })
       setDeleteVehicleId(null)
       router.refresh()
     } catch (error) {
       console.error("Error deleting vehicle:", error)
-      toast.error("Fehler beim Löschen des Fahrzeugs")
+      toast.error("Fehler beim Löschen des Fahrzeugs", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 

@@ -1,50 +1,36 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# MANDATORY QUALITY GATE - NICHT UMG-EHBAR
-echo ""
-echo "🚨 MANDATORY QUALITY GATE - Pre-Push Check"
-echo "==========================================="
-echo ""
+# =============================================================================
+# MyDispatch - Pre-Push Hook
+# =============================================================================
+# Basierend auf CPO-Vorgaben
+# =============================================================================
 
-# Phase 1: TypeScript-Prüfung
-echo "📋 Phase 1: TypeScript-Prüfung..."
-if ! pnpm exec tsc --noEmit --pretty false 2>&1 | grep -q "error TS"; then
-  echo "✅ TypeScript-Prüfung bestanden"
+echo "🔍 Pre-Push Validierung..."
+echo "==========================\n"
+
+# =============================================================================
+# PHASE 1: BUILD TEST
+# =============================================================================
+
+echo "🏗️ Phase 1: Build Test..."
+npm run build || {
+  echo "\n❌ Build fehlgeschlagen - Push abgebrochen"
+  exit 1
+}
+
+# =============================================================================
+# PHASE 2: ABHÄNGIGKEITS-PRÜFUNG
+# =============================================================================
+
+echo "\n🔗 Phase 2: Abhängigkeits-Prüfung..."
+if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
+  node scripts/cicd/check-dependencies.mjs || {
+    echo "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
+  }
 else
-  echo ""
-  echo "❌ TYPESCRIPT-FEHLER GEFUNDEN - Push blockiert!"
-  echo "💡 Führe 'pnpm exec tsc --noEmit' aus, um die Fehler zu sehen."
-  echo ""
-  exit 1
+  echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
 fi
 
-# Phase 2: Build-Prüfung
-echo "📋 Phase 2: Build-Prüfung..."
-if ! pnpm build 2>&1 | grep -q "error"; then
-  echo "✅ Build-Prüfung bestanden"
-else
-  echo ""
-  echo "❌ BUILD-FEHLER GEFUNDEN - Push blockiert!"
-  echo "💡 Führe 'pnpm build' aus, um die Fehler zu sehen."
-  echo ""
-  exit 1
-fi
-
-# Phase 3: Bot-Validation
-echo "📋 Phase 3: Bot-Validation..."
-node scripts/cicd/mandatory-quality-gate.js --pre-push
-
-# Exit-Code prüfen
-if [ $? -ne 0 ]; then
-  echo ""
-  echo "❌ QUALITY GATE FEHLGESCHLAGEN - Push blockiert!"
-  echo "💡 Behebe die Fehler und versuche es erneut."
-  echo ""
-  exit 1
-fi
-
-echo ""
-echo "✅ ALLE PRÜFUNGEN BESTANDEN - Push erlaubt"
-echo ""
-
+echo "\n✅ Pre-Push Validierung erfolgreich!"

@@ -3,8 +3,11 @@
 ## Farbpalette
 
 ### Primärfarben
-- **Primary**: #0066FF (Blau) - CTAs, Links, Akzente
-- **Primary Dark**: #0052CC - Hover-Zustände
+- **Primary**: #343f60 (Dunkles Navy-Blau) - CTAs, Links, Akzente
+  - HSL: `hsl(225 29.73% 29.02%)`
+  - CSS: `--color-primary: hsl(225 29.73% 29.02%)`
+  - Tailwind: `bg-primary`, `text-primary`
+- **Primary Dark**: Hover-Zustände verwenden `bg-primary/90` oder `bg-primary/80`
 
 ### Neutralfarben
 - **Background**: #FFFFFF

@@ -5,7 +5,7 @@ import type { ReactNode } from "react"
 
 const CheckIcon = () => (
   <svg
-    className="w-5 h-5 text-green-600 shrink-0 mt-0.5"
+    className="w-5 h-5 text-success shrink-0 mt-0.5"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"

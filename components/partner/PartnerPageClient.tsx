@@ -345,12 +345,18 @@ export function PartnerPageClient({
           (c.target_company_id === company?.id && c.requester_company_id === data.id),
       )
       if (existingConnection) {
-        toast.error("Verbindung existiert bereits")
+        toast.error("Verbindung existiert bereits", {
+          description: "Eine Partnerschaft mit diesem Unternehmen wurde bereits eingerichtet.",
+          duration: 5000,
+        })
       } else {
         setSearchResult(data as Company)
       }
     } else {
-      toast.error("Kein Unternehmen mit dieser MyDispatch-ID gefunden")
+      toast.error("Kein Unternehmen mit dieser MyDispatch-ID gefunden", {
+        description: "Überprüfen Sie die MyDispatch-ID und versuchen Sie es erneut.",
+        duration: 5000,
+      })
     }
     setSearching(false)
   }
@@ -376,9 +382,15 @@ export function PartnerPageClient({
       setLocalConnections((prev) => [data as Connection, ...prev])
       setSearchResult(null)
       setSearchMdId("")
-      toast.success("Partneranfrage gesendet")
+      toast.success("Partneranfrage gesendet", {
+        description: "Das Unternehmen wurde benachrichtigt und kann die Anfrage annehmen oder ablehnen.",
+        duration: 4000,
+      })
     } else {
-      toast.error("Fehler beim Senden der Anfrage")
+      toast.error("Fehler beim Senden der Anfrage", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 
@@ -422,9 +434,15 @@ export function PartnerPageClient({
       )
       setShowAcceptDialog(false)
       setSelectedPartner(null)
-      toast.success("Partnerschaft angenommen - Unternehmensdaten wurden synchronisiert")
+      toast.success("Partnerschaft angenommen - Unternehmensdaten wurden synchronisiert", {
+        description: "Sie können jetzt Fahrzeuge und Fahrer mit diesem Partner teilen.",
+        duration: 4000,
+      })
     } else {
-      toast.error("Fehler beim Annehmen der Anfrage")
+      toast.error("Fehler beim Annehmen der Anfrage", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 

@@ -136,7 +136,10 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
 
       if (error) throw error
 
-      toast.success("Angebot erfolgreich aktualisiert")
+      toast.success("Angebot erfolgreich aktualisiert", {
+        description: "Die Änderungen wurden gespeichert und sind sofort sichtbar.",
+        duration: 4000,
+      })
       onOpenChange(false)
       router.refresh()
 
@@ -145,7 +148,10 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
       }
     } catch (error) {
       console.error("Error updating quote:", error)
-      toast.error("Fehler beim Aktualisieren des Angebots")
+      toast.error("Fehler beim Aktualisieren des Angebots", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

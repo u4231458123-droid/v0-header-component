@@ -132,12 +132,18 @@ export function BookingsTable({ bookings }: BookingsTableProps) {
 
       if (error) throw error
 
-      toast.success("Auftrag erfolgreich gelöscht")
+      toast.success("Auftrag erfolgreich gelöscht", {
+        description: "Der Auftrag wurde aus dem System entfernt.",
+        duration: 4000,
+      })
       setDeleteBookingId(null)
       router.refresh()
     } catch (error) {
       console.error("[v0] Error deleting booking:", error)
-      toast.error("Fehler beim Löschen des Auftrags")
+      toast.error("Fehler beim Löschen des Auftrags", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 

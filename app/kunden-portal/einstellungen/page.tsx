@@ -60,7 +60,10 @@ export default function KundenPortalEinstellungenPage() {
 
       if (error && error.code !== "PGRST116") {
         console.error("Fehler beim Laden:", error)
-        toast.error("Daten konnten nicht geladen werden")
+        toast.error("Daten konnten nicht geladen werden", {
+          description: "Bitte versuchen Sie es erneut oder laden Sie die Seite neu.",
+          duration: 5000,
+        })
         return
       }
 
@@ -138,20 +141,29 @@ export default function KundenPortalEinstellungenPage() {
         // Sollte eigentlich nicht passieren, da Kunde beim Login erstellt wird, aber sicherheitshalber:
         // Hier müsste man company_id wissen, was schwierig ist im globalen Kontext ohne Zuordnung.
         // Wir nehmen an, der Kunde existiert bereits.
-        toast.error("Kundenprofil nicht gefunden. Bitte kontaktieren Sie den Support.")
+        toast.error("Kundenprofil nicht gefunden. Bitte kontaktieren Sie den Support.", {
+          description: "Ihr Kundenprofil konnte nicht gefunden werden. Bitte wenden Sie sich an den Support.",
+          duration: 5000,
+        })
         setSaving(false)
         return
       }
 
       if (error) throw error
 
-      toast.success("Einstellungen erfolgreich gespeichert")
+      toast.success("Einstellungen erfolgreich gespeichert", {
+        description: "Alle Änderungen wurden übernommen und sind sofort wirksam.",
+        duration: 4000,
+      })
       
       // Reload data to be sure
       loadCustomerData()
     } catch (error: any) {
       console.error("Speicherfehler:", error)
-      toast.error("Fehler beim Speichern: " + error.message)
+      toast.error("Fehler beim Speichern: " + error.message, {
+        description: "Bitte überprüfen Sie die Eingaben und versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setSaving(false)
     }

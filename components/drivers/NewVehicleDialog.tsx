@@ -274,13 +274,19 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
         }
       }
 
-      toast.success("Fahrzeug erfolgreich hinzugefuegt")
+      toast.success("Fahrzeug erfolgreich hinzugefügt", {
+        description: "Das Fahrzeug wurde in Ihr System aufgenommen und kann nun zugewiesen werden.",
+        duration: 4000,
+      })
       onSuccess?.(vehicle)
       setOpen(false)
       resetForm()
       router.refresh()
     } catch (error) {
-      toast.error("Fehler beim Hinzufuegen des Fahrzeugs")
+      toast.error("Fehler beim Hinzufügen des Fahrzeugs", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

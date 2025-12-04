@@ -86,12 +86,18 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
     }
 
     if (addressType === "business" && !companyName.trim()) {
-      toast.error("Bitte geben Sie einen Firmenname ein")
+      toast.error("Bitte geben Sie einen Firmenname ein", {
+        description: "Bei Geschäftskunden ist der Firmenname erforderlich.",
+        duration: 4000,
+      })
       return
     }
 
     if (!companyId) {
-      toast.error("Keine Firma zugeordnet")
+      toast.error("Keine Firma zugeordnet", {
+        description: "Bitte wählen Sie eine Firma aus.",
+        duration: 4000,
+      })
       return
     }
 
@@ -121,13 +127,19 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
 
       if (error) throw error
 
-      toast.success("Kunde erfolgreich hinzugefuegt")
+      toast.success("Kunde erfolgreich hinzugefügt", {
+        description: "Der Kunde wurde in Ihr System aufgenommen und kann nun zugewiesen werden.",
+        duration: 4000,
+      })
       onCustomerCreated?.(data)
       setOpen(false)
       resetForm()
       router.refresh()
     } catch (error: any) {
-      toast.error(error?.message || "Fehler beim Hinzufuegen des Kunden")
+      toast.error(error?.message || "Fehler beim Hinzufügen des Kunden", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

@@ -98,7 +98,10 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
         console.error("[EditCustomerDialog] Fetch error:", fetchError)
       }
 
-      toast.success("Kunde erfolgreich aktualisiert")
+      toast.success("Kunde erfolgreich aktualisiert", {
+        description: "Die Änderungen wurden gespeichert und sind sofort sichtbar.",
+        duration: 4000,
+      })
       
       // Callback aufrufen wenn vorhanden
       if (onSuccess && updatedCustomer) {
@@ -109,7 +112,10 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
       router.refresh()
     } catch (error) {
       console.error("[v0] Error updating customer:", error)
-      toast.error("Fehler beim Aktualisieren des Kunden")
+      toast.error("Fehler beim Aktualisieren des Kunden", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

@@ -250,22 +250,34 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
 
   const handleSubmit = async () => {
     if (!companyId) {
-      toast.error("Keine Firma zugeordnet")
+      toast.error("Keine Firma zugeordnet", {
+        description: "Bitte wählen Sie eine Firma aus.",
+        duration: 4000,
+      })
       return
     }
 
     if (!formData.first_name || !formData.last_name) {
-      toast.error("Bitte Vor- und Nachnamen eingeben")
+      toast.error("Bitte Vor- und Nachnamen eingeben", {
+        description: "Beide Felder sind erforderlich.",
+        duration: 4000,
+      })
       return
     }
 
     if (!formData.license_number) {
-      toast.error("Bitte geben Sie die Fuehrerscheinnummer ein")
+      toast.error("Bitte geben Sie die Fuehrerscheinnummer ein", {
+        description: "Dieses Feld ist erforderlich.",
+        duration: 4000,
+      })
       return
     }
 
     if (!formData.license_expiry) {
-      toast.error("Bitte geben Sie das Fuehrerschein-Ablaufdatum ein")
+      toast.error("Bitte geben Sie das Fuehrerschein-Ablaufdatum ein", {
+        description: "Dieses Feld ist erforderlich.",
+        duration: 4000,
+      })
       return
     }
 
@@ -295,7 +307,10 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
             // Bei bereits existierender E-Mail: Fahrer trotzdem anlegen, aber ohne Auth
             if (credentialData.error?.includes("already") || credentialData.error?.includes("existiert")) {
               // Zeige Warnung, aber fahre fort mit der Fahrer-Erstellung
-              toast.warning("E-Mail bereits registriert - Fahrer wird ohne Zugangsdaten angelegt")
+              toast.warning("E-Mail bereits registriert - Fahrer wird ohne Zugangsdaten angelegt", {
+                description: "Der Fahrer kann später manuell Zugangsdaten erhalten.",
+                duration: 4000,
+              })
               credentialsCreated = false
               // Nicht return - wir legen den Fahrer trotzdem an!
             } else {
@@ -309,7 +324,10 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
           const errorMessage = credError instanceof Error ? credError.message : "Unbekannter Fehler"
           if (errorMessage.includes("already") || errorMessage.includes("existiert")) {
             // Zeige Warnung, aber fahre fort
-            toast.warning("E-Mail bereits registriert - Fahrer wird ohne Zugangsdaten angelegt")
+            toast.warning("E-Mail bereits registriert - Fahrer wird ohne Zugangsdaten angelegt", {
+              description: "Der Fahrer kann später manuell Zugangsdaten erhalten.",
+              duration: 4000,
+            })
             credentialsCreated = false
           } else {
             throw credError

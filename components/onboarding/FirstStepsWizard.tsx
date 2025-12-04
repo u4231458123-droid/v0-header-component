@@ -313,7 +313,7 @@ export function FirstStepsWizard({ onComplete, companyId }: FirstStepsWizardProp
                   animate={{ opacity: 1, scale: 1 }}
                   className="mt-3"
                 >
-                  <Badge className="bg-green-500 text-white">
+                  <Badge className="bg-success text-success-foreground">
                     <CheckCircle2 className="mr-1 h-3 w-3" />
                     Alle Schritte abgeschlossen! 🎉
                   </Badge>
@@ -335,7 +335,7 @@ export function FirstStepsWizard({ onComplete, companyId }: FirstStepsWizardProp
                       onClick={() => handleStepClick(step)}
                       className={`w-full flex items-start gap-3 p-3 rounded-lg border-2 transition-all ${
                         step.completed
-                          ? "border-green-500/20 bg-green-500/5"
+                          ? "border-success/20 bg-success/5"
                           : "border-border hover:border-primary/30 hover:bg-muted/50"
                       }`}
                     >

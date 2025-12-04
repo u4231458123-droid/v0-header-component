@@ -630,7 +630,7 @@ export default function CustomerPortalPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-50">
+      <header className="bg-card border-b sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -710,9 +710,9 @@ export default function CustomerPortalPage() {
             {bookings.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <CarIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500">Noch keine Fahrten</p>
-                  <p className="text-sm text-slate-400 mt-1">Buchen Sie Ihre erste Fahrt über einen unserer Partner.</p>
+                  <CarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Noch keine Fahrten</p>
+                  <p className="text-sm text-muted-foreground/80 mt-1">Buchen Sie Ihre erste Fahrt über einen unserer Partner.</p>
                 </CardContent>
               </Card>
             ) : (
@@ -791,8 +791,8 @@ export default function CustomerPortalPage() {
             {invoices.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <FileTextIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500">Keine Rechnungen</p>
+                  <FileTextIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Keine Rechnungen</p>
                 </CardContent>
               </Card>
             ) : (
@@ -899,7 +899,7 @@ export default function CustomerPortalPage() {
 
                 <div>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <CreditCardIcon className="h-5 w-5 text-slate-400" />
+                    <CreditCardIcon className="h-5 w-5 text-muted-foreground" />
                     Bevorzugte Zahlungsart
                   </p>
                   <p className="font-medium">
@@ -929,10 +929,10 @@ export default function CustomerPortalPage() {
                   className="flex items-center justify-between p-4 hover:bg-background transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <CreditCardIcon className="h-5 w-5 text-slate-400" />
+                    <CreditCardIcon className="h-5 w-5 text-muted-foreground" />
                     <span>Zahlungsmethoden verwalten</span>
                   </div>
-                  <ChevronRightIcon className="h-5 w-5 text-slate-400" />
+                  <ChevronRightIcon className="h-5 w-5 text-muted-foreground" />
                 </Link>
                 <Separator />
                 <Link
@@ -940,10 +940,10 @@ export default function CustomerPortalPage() {
                   className="flex items-center justify-between p-4 hover:bg-background transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <MessageSquareIcon className="h-5 w-5 text-slate-400" />
+                    <MessageSquareIcon className="h-5 w-5 text-muted-foreground" />
                     <span>Benachrichtigungen</span>
                   </div>
-                  <ChevronRightIcon className="h-5 w-5 text-slate-400" />
+                  <ChevronRightIcon className="h-5 w-5 text-muted-foreground" />
                 </Link>
                 <Separator />
                 <Link
@@ -951,10 +951,10 @@ export default function CustomerPortalPage() {
                   className="flex items-center justify-between p-4 hover:bg-background transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <FileTextIcon className="h-5 w-5 text-slate-400" />
+                    <FileTextIcon className="h-5 w-5 text-muted-foreground" />
                     <span>Datenschutz</span>
                   </div>
-                  <ChevronRightIcon className="h-5 w-5 text-slate-400" />
+                  <ChevronRightIcon className="h-5 w-5 text-muted-foreground" />
                 </Link>
               </CardContent>
             </Card>

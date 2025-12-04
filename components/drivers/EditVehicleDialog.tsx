@@ -85,7 +85,10 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
         status,
       }
 
-      toast.success("Fahrzeug erfolgreich aktualisiert")
+      toast.success("Fahrzeug erfolgreich aktualisiert", {
+        description: "Die Änderungen wurden gespeichert und sind sofort sichtbar.",
+        duration: 4000,
+      })
       onOpenChange(false)
       router.refresh()
       if (onSuccess) {
@@ -93,7 +96,10 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
       }
     } catch (error) {
       console.error("Error updating vehicle:", error)
-      toast.error("Fehler beim Aktualisieren des Fahrzeugs")
+      toast.error("Fehler beim Aktualisieren des Fahrzeugs", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setIsSubmitting(false)
     }

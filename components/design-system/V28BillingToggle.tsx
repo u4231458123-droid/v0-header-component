@@ -29,7 +29,7 @@ export function V28BillingToggle({ billingPeriod, onToggle, discountText }: V28B
       >
         Jährlich
         {discountText && (
-          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded">{discountText}</span>
+          <span className="px-2 py-0.5 bg-success/20 text-success text-xs font-bold rounded">{discountText}</span>
         )}
       </button>
     </div>

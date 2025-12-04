@@ -213,7 +213,7 @@ function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
+    <header className="bg-card/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center">
           <Image
@@ -250,7 +250,7 @@ function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-border px-4 py-6 animate-fade-in">
+        <div className="md:hidden bg-card border-t border-border px-4 py-6 animate-fade-in">
           <nav className="flex flex-col gap-2">
             {/* Entfernt: Preise, FAQ, Kontakt */}
             <hr className="border-border my-2" />
@@ -399,7 +399,7 @@ function Footer() {
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false)
   return (
-    <div className="border border-border rounded-2xl bg-white overflow-hidden hover:border-primary/30 transition-colors">
+    <div className="border border-border rounded-2xl bg-card overflow-hidden hover:border-primary/30 transition-colors">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-muted/50 transition-colors"
@@ -574,7 +574,7 @@ export default function HomePage() {
             {/* Subtiler Schatten-Effekt */}
             <div className="absolute -inset-4 bg-linear-to-r from-primary/10 via-primary/5 to-primary/10 rounded-3xl blur-3xl opacity-50" />
 
-            <div className="relative rounded-2xl lg:rounded-3xl shadow-2xl border border-border overflow-hidden bg-white">
+            <div className="relative rounded-2xl lg:rounded-3xl shadow-2xl border border-border overflow-hidden bg-card">
               <Image
                 src="/images/mydispatch-dashboard-hero.png"
                 alt="MyDispatch Dashboard - Professionelle Dispositionssoftware"
@@ -661,7 +661,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/auth/sign-up"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary font-semibold rounded-xl hover:bg-white/90 transition-all shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-card text-primary font-semibold rounded-xl hover:bg-card/90 transition-all shadow-lg hover:shadow-xl"
           >
             Jetzt starten
             <ArrowRightIcon className="w-5 h-5" />

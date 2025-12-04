@@ -160,7 +160,7 @@ export function MobileHeader() {
                   router.push("/einstellungen")
                   setShowMenu(false)
                 }}
-                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-slate-100 rounded-md transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-muted rounded-md transition-colors"
               >
                 <SettingsIcon className="h-5 w-5" />
                 <span>Einstellungen</span>
@@ -171,7 +171,7 @@ export function MobileHeader() {
                   router.push("/einstellungen?tab=account")
                   setShowMenu(false)
                 }}
-                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-slate-100 rounded-md transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-muted rounded-md transition-colors"
               >
                 <UserIcon className="h-5 w-5" />
                 <span>Profil</span>
@@ -181,7 +181,7 @@ export function MobileHeader() {
 
               <button
                 onClick={logout}
-                className="flex items-center gap-3 w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-left text-destructive hover:bg-destructive/10 rounded-md transition-colors"
               >
                 <LogOutIcon className="h-5 w-5" />
                 <span>Abmelden</span>

@@ -35,7 +35,7 @@ interface AuthPageLayoutProps {
 
 export function AuthPageLayout({ children, companyName = "MyDispatch", logoUrl }: AuthPageLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header - Fixed Top (z-30) */}
       <AuthHeader companyName={companyName} logoUrl={logoUrl} />
 

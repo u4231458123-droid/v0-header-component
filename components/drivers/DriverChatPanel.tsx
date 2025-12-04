@@ -100,7 +100,7 @@ export function DriverChatPanel({ companyId, selectedDriverId, onSelectDriver }:
       </CardHeader>
       <div className="flex flex-1 overflow-hidden">
         {/* Driver List */}
-        <div className="w-64 border-r bg-slate-50 overflow-y-auto">
+        <div className="w-64 border-r bg-muted/30 overflow-y-auto">
           {drivers.length === 0 ? (
             <div className="p-4 text-center text-sm text-muted-foreground">Keine Fahrer vorhanden</div>
           ) : (
@@ -108,8 +108,8 @@ export function DriverChatPanel({ companyId, selectedDriverId, onSelectDriver }:
               <button
                 key={driver.id}
                 onClick={() => handleSelectDriver(driver.id)}
-                className={`w-full p-3 text-left border-b border-slate-100 hover:bg-slate-100 transition-colors ${
-                  activeDriverId === driver.id ? "bg-slate-100" : ""
+                className={`w-full p-3 text-left border-b border-border hover:bg-muted transition-colors ${
+                  activeDriverId === driver.id ? "bg-muted" : ""
                 }`}
               >
                 <div className="flex items-center gap-3">

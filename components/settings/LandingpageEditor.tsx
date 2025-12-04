@@ -196,7 +196,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
 
   return (
     <div
-      className="overflow-auto bg-white text-gray-900 rounded-lg"
+      className="overflow-auto bg-card text-foreground rounded-lg"
       style={{
         ...previewStyle,
         ["--preview-primary" as any]: primary_color || "#323D5E",
@@ -329,7 +329,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+                        className={`w-4 h-4 ${i < testimonial.rating ? "text-warning fill-warning" : "text-muted-foreground"}`}
                       />
                     ))}
                   </div>

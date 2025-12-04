@@ -264,7 +264,10 @@ export function NewEmployeeDialog({
     e.preventDefault()
 
     if (!validateForm()) {
-      toast.error("Bitte füllen Sie alle erforderlichen Felder aus")
+      toast.error("Bitte füllen Sie alle erforderlichen Felder aus", {
+        description: "Überprüfen Sie alle markierten Pflichtfelder und versuchen Sie es erneut.",
+        duration: 5000,
+      })
       return
     }
 
@@ -333,7 +336,10 @@ export function NewEmployeeDialog({
 
             // Erstelle Einladung
             await createInvitation(updatedProfile.id, email.toLowerCase(), role)
-            toast.success("Mitarbeiter erfolgreich eingeladen")
+            toast.success("Mitarbeiter erfolgreich eingeladen", {
+              description: "Eine Einladungs-E-Mail wurde an den Mitarbeiter gesendet.",
+              duration: 4000,
+            })
             setDialogOpen(false)
             resetForm()
             if (onSuccess) onSuccess(updatedProfile)
@@ -357,14 +363,20 @@ export function NewEmployeeDialog({
         details: { role, email },
       })
 
-      toast.success("Mitarbeiter erfolgreich eingeladen")
+      toast.success("Mitarbeiter erfolgreich eingeladen", {
+        description: "Eine Einladungs-E-Mail wurde an den Mitarbeiter gesendet.",
+        duration: 4000,
+      })
       setDialogOpen(false)
       resetForm()
       if (onSuccess) onSuccess(profile)
       router.refresh()
     } catch (error: any) {
       console.error("Error creating employee:", error)
-      toast.error(error.message || "Fehler beim Erstellen des Mitarbeiters")
+      toast.error(error.message || "Fehler beim Erstellen des Mitarbeiters", {
+        description: "Bitte überprüfen Sie die Eingaben und versuchen Sie es erneut.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }
@@ -836,7 +848,7 @@ export function NewEmployeeDialog({
                       <p className="text-sm text-destructive">Passwort muss mindestens 8 Zeichen haben</p>
                     )}
                     {!errors.password && password && password.length >= 8 && (
-                      <p className="text-sm text-green-600 flex items-center gap-1">
+                      <p className="text-sm text-success flex items-center gap-1">
                         <CheckCircle2 className="h-3 w-3" /> Passwort ist ausreichend lang
                       </p>
                     )}
@@ -856,7 +868,7 @@ export function NewEmployeeDialog({
                       <p className="text-sm text-destructive">Passwörter stimmen nicht überein</p>
                     )}
                     {!errors.passwordConfirm && passwordConfirm && password === passwordConfirm && password.length >= 8 && (
-                      <p className="text-sm text-green-600 flex items-center gap-1">
+                      <p className="text-sm text-success flex items-center gap-1">
                         <CheckCircle2 className="h-3 w-3" /> Passwörter stimmen überein
                       </p>
                     )}

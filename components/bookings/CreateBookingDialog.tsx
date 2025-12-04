@@ -176,7 +176,10 @@ export function CreateBookingDialog({
       }
 
       if (!customerId) {
-        toast.error("Bitte waehlen Sie einen Kunden aus oder erstellen Sie einen neuen")
+        toast.error("Bitte wählen Sie einen Kunden aus oder erstellen Sie einen neuen", {
+          description: "Ein Kunde ist erforderlich, um einen Auftrag zu erstellen.",
+          duration: 4000,
+        })
         setLoading(false)
         return
       }
@@ -222,12 +225,18 @@ export function CreateBookingDialog({
 
       if (bookingError) throw bookingError
 
-      toast.success("Auftrag erfolgreich erstellt")
+      toast.success("Auftrag erfolgreich erstellt", {
+        description: "Der Auftrag wurde angelegt und kann nun zugewiesen werden.",
+        duration: 4000,
+      })
       onOpenChange(false)
       resetForm()
       router.refresh()
     } catch (error: any) {
-      toast.error(error?.message || "Fehler beim Erstellen des Auftrags")
+      toast.error(error?.message || "Fehler beim Erstellen des Auftrags", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

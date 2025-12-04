@@ -805,16 +805,16 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <UserCheck className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <UserCheck className="w-8 h-8 text-success mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Verfügbar</p>
-                <p className="text-2xl font-bold text-green-600">{safeNumber(data.drivers?.available)}</p>
+                <p className="text-2xl font-bold text-success">{safeNumber(data.drivers?.available)}</p>
               </CardContent>
             </Card>
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <Car className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                <Car className="w-8 h-8 text-info mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Im Einsatz</p>
-                <p className="text-2xl font-bold text-blue-600">{safeNumber(data.drivers?.busy)}</p>
+                <p className="text-2xl font-bold text-info">{safeNumber(data.drivers?.busy)}</p>
               </CardContent>
             </Card>
             <Card className="rounded-2xl border shadow-sm">
@@ -826,7 +826,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
             </Card>
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <Star className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+                <Star className="w-8 h-8 text-warning mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Ø Bewertung</p>
                 <p className="text-2xl font-bold">{safeNumber(data.drivers?.avgRating).toFixed(1)}</p>
               </CardContent>
@@ -868,7 +868,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
                           <span>{formatCurrency(driver.revenue)}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 text-yellow-500">
+                      <div className="flex items-center gap-1 text-warning">
                         <Star className="w-4 h-4 fill-current" />
                         <span className="text-sm font-medium">{safeNumber(driver.avgRating).toFixed(1)}</span>
                       </div>
@@ -914,30 +914,30 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <Car className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <Car className="w-8 h-8 text-success mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Verfügbar</p>
-                <p className="text-2xl font-bold text-green-600">{safeNumber(data.vehicles?.available)}</p>
+                <p className="text-2xl font-bold text-success">{safeNumber(data.vehicles?.available)}</p>
               </CardContent>
             </Card>
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <Truck className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                <Truck className="w-8 h-8 text-info mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Im Einsatz</p>
-                <p className="text-2xl font-bold text-blue-600">{safeNumber(data.vehicles?.busy)}</p>
+                <p className="text-2xl font-bold text-info">{safeNumber(data.vehicles?.busy)}</p>
               </CardContent>
             </Card>
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <Settings className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                <Settings className="w-8 h-8 text-warning mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Wartung</p>
-                <p className="text-2xl font-bold text-orange-600">{safeNumber(data.vehicles?.maintenance)}</p>
+                <p className="text-2xl font-bold text-warning">{safeNumber(data.vehicles?.maintenance)}</p>
               </CardContent>
             </Card>
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
-                <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <AlertTriangle className="w-8 h-8 text-destructive mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground">Warnungen</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-2xl font-bold text-destructive">
                   {safeNumber(data.vehicles?.tuevExpiring) + safeNumber(data.vehicles?.insuranceExpiring)}
                 </p>
               </CardContent>

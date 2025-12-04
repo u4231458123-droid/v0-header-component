@@ -102,16 +102,25 @@ export function ContactRequestsManager({ contactRequests: initialRequests }: Con
         prev.map((req) => (req.id === requestId ? { ...req, status: newStatus, updated_at: new Date().toISOString() } : req)),
       )
 
-      toast.success("Status erfolgreich aktualisiert")
+      toast.success("Status erfolgreich aktualisiert", {
+        description: "Der Status der Kontaktanfrage wurde geändert.",
+        duration: 4000,
+      })
     } catch (error) {
       console.error("Error updating status:", error)
-      toast.error("Fehler beim Aktualisieren des Status")
+      toast.error("Fehler beim Aktualisieren des Status", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 
   const handleSendResponse = async () => {
     if (!selectedRequest || !responseText.trim()) {
-      toast.error("Bitte geben Sie eine Antwort ein")
+      toast.error("Bitte geben Sie eine Antwort ein", {
+        description: "Die Antwort ist erforderlich, um auf die Kontaktanfrage zu antworten.",
+        duration: 5000,
+      })
       return
     }
 

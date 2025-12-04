@@ -76,7 +76,10 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
       setPrinting(false)
     } catch (error: any) {
       console.error("Fehler beim PDF-Druck:", error)
-      toast.error("Fehler beim Erstellen des PDFs")
+      toast.error("Fehler beim Erstellen des PDFs", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
       setPrinting(false)
     }
   }

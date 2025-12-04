@@ -17,11 +17,11 @@ interface DashboardChartsProps {
 
 function useChartColors() {
   const [colors, setColors] = useState({
-    primary: "#323D5E",
-    border: "#e5e7eb",
-    mutedForeground: "#6b7280",
-    card: "#ffffff",
-    foreground: "#1f2937",
+    primary: "hsl(225 30% 29%)", // #343f60
+    border: "hsl(225 15% 88%)", // Design-Token
+    mutedForeground: "hsl(225 10% 45%)", // Design-Token
+    card: "hsl(0 0% 100%)", // Design-Token
+    foreground: "hsl(240 10% 10%)", // Design-Token
   })
 
   useEffect(() => {
@@ -39,11 +39,11 @@ function useChartColors() {
     }
 
     setColors({
-      primary: getColor("--primary", "#323D5E"),
-      border: getColor("--border", "#e5e7eb"),
-      mutedForeground: getColor("--muted-foreground", "#6b7280"),
-      card: getColor("--card", "#ffffff"),
-      foreground: getColor("--foreground", "#1f2937"),
+      primary: getColor("--primary", "hsl(225 30% 29%)"), // #343f60
+      border: getColor("--border", "hsl(225 15% 88%)"), // Design-Token
+      mutedForeground: getColor("--muted-foreground", "hsl(225 10% 45%)"), // Design-Token
+      card: getColor("--card", "hsl(0 0% 100%)"), // Design-Token
+      foreground: getColor("--foreground", "hsl(240 10% 10%)"), // Design-Token
     })
   }, [])
 

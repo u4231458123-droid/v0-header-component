@@ -178,12 +178,18 @@ export function InvoicesTable({ invoices }: InvoicesTableProps) {
 
       if (error) throw error
 
-      toast.success("Rechnung erfolgreich gelöscht")
+      toast.success("Rechnung erfolgreich gelöscht", {
+        description: "Die Rechnung wurde aus dem System entfernt.",
+        duration: 4000,
+      })
       setDeleteInvoiceId(null)
       router.refresh()
     } catch (error) {
       console.error("Error deleting invoice:", error)
-      toast.error("Fehler beim Löschen der Rechnung")
+      toast.error("Fehler beim Löschen der Rechnung", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     }
   }
 

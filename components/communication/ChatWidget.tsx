@@ -183,7 +183,10 @@ export function ChatWidget({
       if (data) setMessages(data)
     } catch (error) {
       console.error("Error loading messages:", error)
-      toast.error("Fehler beim Laden der Nachrichten")
+      toast.error("Fehler beim Laden der Nachrichten", {
+        description: "Bitte versuchen Sie es erneut oder laden Sie die Seite neu.",
+        duration: 5000,
+      })
     }
   }
 
@@ -197,7 +200,10 @@ export function ChatWidget({
 
     // Max 10MB
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("Datei ist zu groß (max. 10MB)")
+      toast.error("Datei ist zu groß (max. 10MB)", {
+        description: "Bitte wählen Sie eine kleinere Datei oder komprimieren Sie das Bild.",
+        duration: 5000,
+      })
       return
     }
 
@@ -225,7 +231,10 @@ export function ChatWidget({
       return publicUrl
     } catch (error) {
       console.error("Error uploading file:", error)
-      toast.error("Fehler beim Hochladen der Datei")
+      toast.error("Fehler beim Hochladen der Datei", {
+        description: "Bitte überprüfen Sie die Datei und versuchen Sie es erneut.",
+        duration: 5000,
+      })
       return null
     } finally {
       setUploading(false)

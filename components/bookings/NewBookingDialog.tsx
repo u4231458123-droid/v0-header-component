@@ -107,7 +107,10 @@ export function NewBookingDialog({ companyId }: NewBookingDialogProps) {
 
       if (error) throw error
 
-      toast.success("Auftrag erfolgreich erstellt")
+      toast.success("Auftrag erfolgreich erstellt", {
+        description: "Der Auftrag wurde angelegt und kann nun zugewiesen werden.",
+        duration: 4000,
+      })
       setOpen(false)
       setPickupAddress("")
       setDropoffAddress("")
@@ -117,7 +120,10 @@ export function NewBookingDialog({ companyId }: NewBookingDialogProps) {
       router.refresh()
     } catch (error) {
       console.error("[v0] Error creating booking:", error)
-      toast.error("Fehler beim Erstellen des Auftrags")
+      toast.error("Fehler beim Erstellen des Auftrags", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setLoading(false)
     }

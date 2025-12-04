@@ -56,7 +56,10 @@ export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpd
         .single()
 
       if (!company) {
-        toast.error("Unternehmen nicht gefunden")
+        toast.error("Unternehmen nicht gefunden", {
+          description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+          duration: 4000,
+        })
         setPrinting(false)
         return
       }
@@ -77,7 +80,10 @@ export function VehicleDetailsDialog({ vehicle, open, onOpenChange, onVehicleUpd
       setPrinting(false)
     } catch (error: any) {
       console.error("Fehler beim PDF-Druck:", error)
-      toast.error("Fehler beim Erstellen des PDFs")
+      toast.error("Fehler beim Erstellen des PDFs", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 4000,
+      })
       setPrinting(false)
     }
   }

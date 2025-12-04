@@ -9,13 +9,13 @@ interface V28IconBoxProps {
 
 export function V28IconBox({ icon, variant = "slate", className }: V28IconBoxProps) {
   const variants = {
-    slate: "bg-slate-100 text-slate-700",
-    primary: "bg-slate-700 text-white",
-    blue: "bg-blue-100 text-blue-700",
+    slate: "bg-muted text-muted-foreground",
+    primary: "bg-primary text-primary-foreground",
+    blue: "bg-info/20 text-info",
   }
 
   return (
-    <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", variants[variant], className)}>
+    <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", variants[variant], className)}>
       {icon}
     </div>
   )

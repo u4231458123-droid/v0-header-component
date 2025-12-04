@@ -151,12 +151,18 @@ export function DriversTable({ drivers }: DriversTableProps) {
 
       if (error) throw error
 
-      toast.success("Fahrer erfolgreich gelöscht")
+      toast.success("Fahrer erfolgreich gelöscht", {
+        description: "Der Fahrer wurde aus dem System entfernt.",
+        duration: 4000,
+      })
       setDeleteDriverId(null)
       router.refresh()
     } catch (error) {
       console.error("Error deleting driver:", error)
-      toast.error("Fehler beim Löschen des Fahrers")
+      toast.error("Fehler beim Löschen des Fahrers", {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 4000,
+      })
     }
   }
 

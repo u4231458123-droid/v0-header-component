@@ -132,8 +132,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
         <Card className="rounded-2xl border shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="p-2 rounded-xl bg-green-500/10">
-                <Euro className="w-5 h-5 text-green-600" />
+              <div className="p-2 rounded-xl bg-success/10">
+                <Euro className="w-5 h-5 text-success" />
               </div>
               <Badge variant={changes.revenue >= 0 ? "default" : "destructive"} className="rounded-lg">
                 {changes.revenue >= 0 ? (
@@ -156,8 +156,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
         <Card className="rounded-2xl border shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="p-2 rounded-xl bg-blue-500/10">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="p-2 rounded-xl bg-info/10">
+                <Users className="w-5 h-5 text-info" />
               </div>
               <Badge variant={changes.customers >= 0 ? "default" : "destructive"} className="rounded-lg">
                 {changes.customers >= 0 ? (
@@ -178,8 +178,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
         <Card className="rounded-2xl border shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="p-2 rounded-xl bg-orange-500/10">
-                <TrendingUp className="w-5 h-5 text-orange-600" />
+              <div className="p-2 rounded-xl bg-warning/10">
+                <TrendingUp className="w-5 h-5 text-warning" />
               </div>
               <Badge variant={changes.averageValue >= 0 ? "default" : "destructive"} className="rounded-lg">
                 {changes.averageValue >= 0 ? (
@@ -305,21 +305,21 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                 </div>
                 <div className="grid grid-cols-3 gap-4 mt-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <div className="w-3 h-3 rounded-full bg-success" />
                     <div>
                       <p className="text-xs text-muted-foreground">Abgeschlossen</p>
                       <p className="text-sm font-medium">{data.bookingsByStatus.completed}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-orange-500" />
+                    <div className="w-3 h-3 rounded-full bg-warning" />
                     <div>
                       <p className="text-xs text-muted-foreground">Ausstehend</p>
                       <p className="text-sm font-medium">{data.bookingsByStatus.pending}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <div className="w-3 h-3 rounded-full bg-destructive" />
                     <div>
                       <p className="text-xs text-muted-foreground">Storniert</p>
                       <p className="text-sm font-medium">{data.bookingsByStatus.cancelled}</p>
@@ -348,8 +348,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-green-500/10">
-                    <Users className="w-6 h-6 text-green-600" />
+                  <div className="p-3 rounded-xl bg-success/10">
+                    <Users className="w-6 h-6 text-success" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Fahrer aktiv</p>
@@ -362,8 +362,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-blue-500/10">
-                    <Clock className="w-6 h-6 text-blue-600" />
+                  <div className="p-3 rounded-xl bg-info/10">
+                    <Clock className="w-6 h-6 text-info" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Ø Wartezeit</p>
@@ -444,7 +444,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-foreground truncate">{driver.name}</p>
-                        <div className="flex items-center gap-1 text-yellow-500">
+                        <div className="flex items-center gap-1 text-warning">
                           <Star className="w-4 h-4 fill-current" />
                           <span className="text-sm">{safeNumber(driver.rating).toFixed(1)}</span>
                         </div>
@@ -473,8 +473,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                     <p className="text-sm text-muted-foreground">Kundenbindung</p>
                     <p className="text-2xl font-bold text-foreground">{data.customerRetention}%</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-green-500/10">
-                    <Users className="w-6 h-6 text-green-600" />
+                  <div className="p-3 rounded-xl bg-success/10">
+                    <Users className="w-6 h-6 text-success" />
                   </div>
                 </div>
                 <Progress value={data.customerRetention} className="h-2 rounded-full" />
@@ -489,8 +489,8 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                     <p className="text-sm text-muted-foreground">Neukunden (30 Tage)</p>
                     <p className="text-2xl font-bold text-foreground">+{Math.floor(data.totalCustomers * 0.12)}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-blue-500/10">
-                    <TrendingUp className="w-6 h-6 text-blue-600" />
+                  <div className="p-3 rounded-xl bg-info/10">
+                    <TrendingUp className="w-6 h-6 text-info" />
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -510,13 +510,13 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
               <CardDescription>Basierend auf Bewertungen der letzten 30 Tage</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-5">
                 <div className="flex items-center gap-2">
                   <div className="flex">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        className={`w-6 h-6 ${star <= 4 ? "text-yellow-400 fill-yellow-400" : "text-muted"}`}
+                        className={`w-6 h-6 ${star <= 4 ? "text-warning fill-warning" : "text-muted"}`}
                       />
                     ))}
                   </div>
@@ -528,7 +528,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                       <span className="text-xs w-3">{rating}</span>
                       <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-yellow-400 rounded-full"
+                          className="h-full bg-warning rounded-full"
                           style={{
                             width:
                               rating === 5

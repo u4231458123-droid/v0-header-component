@@ -220,7 +220,7 @@ export function DriversPageClient({
             title="Ablaufende Lizenzen"
             value={expiringLicenses.length}
             subtitle="In den naechsten 30 Tagen"
-            icon={<AlertTriangle className="h-5 w-5 text-amber-500" />}
+            icon={<AlertTriangle className="h-5 w-5 text-warning" />}
             variant="warning"
           />
         ) : (
@@ -228,7 +228,7 @@ export function DriversPageClient({
             title="Lizenz-Status"
             value="OK"
             subtitle="Keine ablaufenden Lizenzen"
-            icon={<CheckCircle className="h-5 w-5 text-green-500" />}
+            icon={<CheckCircle className="h-5 w-5 text-success" />}
             variant="success"
           />
         )}

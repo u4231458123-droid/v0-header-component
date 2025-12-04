@@ -1,0 +1,48 @@
+name: Auto-Fix Issues
+
+on:
+  pull_request:
+  schedule:
+    - cron: "0 2 * * *" # Täglich um 2 Uhr
+
+jobs:
+  auto-fix:
+    name: Auto-Fix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      
+      - run: npm ci
+      
+      # Automatisches Dependency-Update
+      - name: Update Dependencies
+        run: |
+          npx npm-check-updates -u || true
+          npm install || npm run self-heal:deps
+          npm audit fix || true
+      
+      # Automatisches Code-Formatting
+      - name: Format Code
+        run: |
+          npm run lint -- --fix || true
+      
+      # Automatisches Refactoring (Design-Tokens)
+      - name: Design Token Validation
+        run: |
+          npm run validate:design || true
+      
+      # Commit & Push wenn Änderungen vorhanden
+      - name: Commit Changes
+        run: |
+          git config user.name "AI Agent"
+          git config user.email "ai-agent@mydispatch.de"
+          git add .
+          git diff --staged --quiet || git commit -m "chore: automated fixes and updates"
+          git push || true

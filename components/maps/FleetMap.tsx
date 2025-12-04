@@ -64,12 +64,12 @@ function MapFallback({
                   <span
                     className={`w-2 h-2 rounded-full ${
                       vehicle.status === "available"
-                        ? "bg-green-500"
+                        ? "bg-success"
                         : vehicle.status === "busy"
-                          ? "bg-amber-500"
+                          ? "bg-warning"
                           : vehicle.status === "maintenance"
-                            ? "bg-red-500"
-                            : "bg-gray-400"
+                            ? "bg-destructive"
+                            : "bg-muted-foreground"
                     }`}
                   />
                   <span className="text-xs text-muted-foreground capitalize">
@@ -98,19 +98,19 @@ function MapFallback({
       <div className="p-3 border-t border-border bg-muted/20">
         <div className="flex items-center justify-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="w-2 h-2 rounded-full bg-success" />
             <span>Frei</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="w-2 h-2 rounded-full bg-warning" />
             <span>Besetzt</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-gray-400" />
+            <span className="w-2 h-2 rounded-full bg-muted-foreground" />
             <span>Offline</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-red-500" />
+            <span className="w-2 h-2 rounded-full bg-destructive" />
             <span>Wartung</span>
           </div>
         </div>
