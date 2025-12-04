@@ -41,10 +41,10 @@ export async function verifyVercelWebhookSignature(req: Request): Promise<boolea
       .digest("hex")
 
     // Vergleiche Signaturen (timing-safe comparison)
-    const isValid = crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
+    // Konvertiere beide Strings zu Uint8Array für timingSafeEqual
+    const signatureBuffer = new Uint8Array(Buffer.from(signature, "utf-8"))
+    const expectedBuffer = new Uint8Array(Buffer.from(expectedSignature, "utf-8"))
+    const isValid = crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
 
     if (!isValid) {
       console.error("Webhook-Signatur-Verifizierung fehlgeschlagen")

@@ -287,18 +287,22 @@ ${work.qualityCheck?.violations.length ? `\nVerstöße: ${work.qualityCheck.viol
   /**
    * Lade alle Fehler und Lösungen
    */
-  async getAllErrorsAndSolutions(): Promise<Array<{ work: WorkEntry; error: WorkEntry["errors"][0]; solution: WorkEntry["solutions"][0] }>> {
+  async getAllErrorsAndSolutions(): Promise<Array<{ work: WorkEntry; error: NonNullable<WorkEntry["errors"]>[0]; solution: NonNullable<WorkEntry["solutions"]>[0] }>> {
     const allWork = await this.loadAllWork()
-    const result: Array<{ work: WorkEntry; error: WorkEntry["errors"][0]; solution: WorkEntry["solutions"][0] }> = []
+    const result: Array<{ work: WorkEntry; error: NonNullable<WorkEntry["errors"]>[0]; solution: NonNullable<WorkEntry["solutions"]>[0] }> = []
 
     for (const work of allWork) {
-      if (work.errors && work.solutions) {
+      if (work.errors && work.solutions && work.errors.length > 0 && work.solutions.length > 0) {
         for (let i = 0; i < Math.min(work.errors.length, work.solutions.length); i++) {
-          result.push({
-            work,
-            error: work.errors[i],
-            solution: work.solutions[i],
-          })
+          const error = work.errors[i]
+          const solution = work.solutions[i]
+          if (error && solution) {
+            result.push({
+              work,
+              error,
+              solution,
+            })
+          }
         }
       }
     }

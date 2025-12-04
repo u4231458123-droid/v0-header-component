@@ -80,7 +80,7 @@ export class DocumentationStore {
       throw new Error(`Fehler beim Laden der Dokumentationen: ${error.message}`)
     }
 
-    return (data || []).map((row) => this.mapToDocumentation(row))
+    return (data || []).map((row: any) => this.mapToDocumentation(row))
   }
 
   /**
@@ -96,7 +96,7 @@ export class DocumentationStore {
       throw new Error(`Fehler beim Laden der Dokumentationen: ${error.message}`)
     }
 
-    return (data || []).map((row) => this.mapToDocumentation(row))
+    return (data || []).map((row: any) => this.mapToDocumentation(row))
   }
 
   /**
@@ -118,7 +118,7 @@ export class DocumentationStore {
       throw new Error(`Fehler bei der Suche: ${error.message}`)
     }
 
-    return (data || []).map((row) => this.mapToDocumentation(row))
+    return (data || []).map((row: any) => this.mapToDocumentation(row))
   }
 
   /**

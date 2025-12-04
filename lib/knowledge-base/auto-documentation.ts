@@ -34,6 +34,7 @@ export interface DocumentationQuality {
 export class AutoDocumentationEngine {
   private qualityHistory: Map<string, DocumentationQuality[]> = new Map()
   private patterns: Map<string, number> = new Map() // Pattern-Learning
+  private documentationStore = documentationStore
 
   /**
    * Generiert eine Zusammenfassung mit Hugging Face
@@ -135,7 +136,7 @@ export class AutoDocumentationEngine {
     // Struktur prüfen
     const hasSections = (doc.content.content.match(/##/g) || []).length >= 2
     const hasReferences = doc.content.references.length > 0
-    structure = (hasSections ? 50 : 0) + (hasReferences ? 25 : 0) + (hasMetadata.category ? 25 : 0)
+    structure = (hasSections ? 50 : 0) + (hasReferences ? 25 : 0) + (doc.metadata.category ? 25 : 0)
 
     if (!hasSections) issues.push("Zu wenige Abschnitte")
     if (!hasReferences && doc.metadata.category !== "change-log") {
@@ -179,7 +180,7 @@ export class AutoDocumentationEngine {
    * Optimiert Dokumentation basierend auf Qualitätshistorie
    */
   async optimizeDocumentation(docId: string): Promise<Documentation | null> {
-    const doc = this.documentationStore.get(docId)
+    const doc = await this.documentationStore.getById(docId)
     if (!doc) return null
 
     const qualityHistory = this.qualityHistory.get(docId)

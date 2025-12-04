@@ -419,7 +419,7 @@ export async function getPartnerStatistics() {
     .eq("source_company_id", profile.company_id)
     .eq("partner_status", "abgeschlossen")
 
-  const totalCommission = commissions?.reduce((sum, b) => sum + (b.commission_amount || 0), 0) || 0
+  const totalCommission = commissions?.reduce((sum: number, b: { commission_amount?: number | null }) => sum + (b.commission_amount || 0), 0) || 0
 
   return {
     success: true,

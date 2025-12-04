@@ -37,6 +37,8 @@ export interface WorkDocumentation {
   }
   signedBy?: string // Bot der abgenommen hat
   signedAt?: string // Zeitpunkt der Abnahme
+  filePath?: string // Dateipfad der geänderten Datei
+  status?: string // Status der Arbeit
 }
 
 /**

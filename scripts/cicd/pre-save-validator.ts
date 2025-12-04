@@ -158,5 +158,3 @@ if (require.main === module) {
     })
 }
 
-export { validateBeforeSave }
-

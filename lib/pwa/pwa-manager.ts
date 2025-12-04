@@ -120,7 +120,7 @@ export function getPWAManager(): PWAManager {
       subscribe: () => () => {},
       isInstalled: () => false,
       isIOS: () => false,
-    } as PWAManager
+    } as unknown as PWAManager
   }
 
   if (!pwaManagerInstance) {

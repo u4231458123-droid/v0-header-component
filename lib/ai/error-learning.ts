@@ -8,7 +8,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server"
-import { logError } from "@/lib/cicd/error-logger"
+import { logError, type ErrorLogEntry } from "@/lib/cicd/error-logger"
 
 export interface ErrorPattern {
   id: string
@@ -79,11 +79,14 @@ class ErrorLearningSystem implements ErrorLearning {
         }
 
         // Logge Fehler
+        const errorType = error.type === "typescript" || error.type === "linter" ? "error" : (error.type || "error") as ErrorLogEntry["type"]
         await logError({
+          type: errorType,
+          category: "error-learning",
           message: `Wiederholter Fehler: ${error.message}`,
           context: error.context || "",
           filePath: error.filePath || "",
-          lineNumber: error.lineNumber,
+          line: error.lineNumber,
           severity: error.severity,
         })
       } else {
@@ -103,7 +106,7 @@ class ErrorLearningSystem implements ErrorLearning {
             pattern: error.pattern,
             message: error.message,
             file_path: error.filePath,
-            line_number: error.lineNumber,
+            line_number: error.lineNumber, // Database field name stays as line_number
             context: error.context,
             fix: error.fix,
             occurrences: error.occurrences,
@@ -114,11 +117,14 @@ class ErrorLearningSystem implements ErrorLearning {
         }
 
         // Logge Fehler
+        const errorType = error.type === "typescript" || error.type === "linter" ? "error" : (error.type || "error") as ErrorLogEntry["type"]
         await logError({
+          type: errorType,
+          category: "error-learning",
           message: `Neuer Fehler erkannt: ${error.message}`,
           context: error.context || "",
           filePath: error.filePath || "",
-          lineNumber: error.lineNumber,
+          line: error.lineNumber,
           severity: error.severity,
         })
       }

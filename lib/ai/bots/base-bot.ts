@@ -41,6 +41,7 @@ export interface BotResponse {
   errors?: string[]
   warnings?: string[]
   documentation?: string | WorkDocumentation
+  changes?: any[]
 }
 
 export abstract class BaseBot {
