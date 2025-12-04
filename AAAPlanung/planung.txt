@@ -2038,3 +2038,114 @@ git push origin main
 - `refactor:` für Refactorings
 - `docs:` für Dokumentation
 - `style:` für Design-Änderungen
+
+---
+
+## 13. SQL-Validierung und Agent-Fehlervermeidung (PFLICHT)
+
+### 13.1 Problem
+
+**KRITISCHER FEHLER**: AI-Agent oder MCP-Tool hat versucht, eine TypeScript-Datei (`.tsx`) als SQL auszuführen:
+
+```
+ERROR: 42601: syntax error at or near ""use client""
+LINE 1: "use client"
+```
+
+**Ursache**: Dateipfade werden verwechselt oder der Agent behandelt fälschlicherweise eine Komponenten-Datei als SQL-Migration.
+
+### 13.2 Lösung: SQL-Validierungs-System
+
+**Implementierung**: [`lib/utils/sql-validator.ts`](lib/utils/sql-validator.ts)
+
+**Funktionen**:
+- `isValidSQLFile(filePath)` - Prüft Dateiendung (muss `.sql` sein)
+- `isValidSQLContent(content)` - Prüft ob Inhalt SQL ist (keine JS/TS-Syntax)
+- `validateSQLBeforeExecution(query, filePath?)` - Kombinierte Validierung vor jeder SQL-Ausführung
+
+**Validierungsregeln**:
+1. **Dateiendung**: MUSS `.sql` sein
+2. **Verbotene Syntax**: Inhalt darf NICHT mit folgenden beginnen:
+   - `"use client"`, `"use server"`
+   - `import`, `export`
+   - `const`, `let`, `var`
+   - `function`, `interface`, `type`, `class`
+3. **SQL-Keywords**: Inhalt MUSS mindestens ein SQL-Keyword enthalten:
+   - `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `ALTER`, `DROP`, etc.
+
+### 13.3 MCP-Integration absichern
+
+**Datei**: [`lib/ai/bots/mcp-integration.ts`](lib/ai/bots/mcp-integration.ts)
+
+**Änderungen**:
+- Import von `validateSQLBeforeExecution`
+- Validierung in `applyMigrationWithValidation()` als **erste Prüfung** (vor Projekt- und Schema-Validierung)
+- Bei Validierungsfehler: Klare Fehlermeldung + sofortiger Abbruch
+
+**Wichtig**: SQL-Validierung ist **KRITISCH** und wird **IMMER** zuerst ausgeführt, um zu verhindern, dass TypeScript/JavaScript-Dateien als SQL ausgeführt werden.
+
+### 13.4 Pre-Commit Hook erweitert
+
+**Datei**: [`.husky/pre-commit`](.husky/pre-commit)
+
+**Neue Phase 3.6**: "SQL-Dateien-Validierung"
+- Prüft alle `.sql`-Dateien im `scripts/` Ordner
+- Stellt sicher, dass keine `.tsx`/`.ts`-Dateien versehentlich als SQL markiert wurden
+- Script: [`scripts/cicd/validate-sql-files.mjs`](scripts/cicd/validate-sql-files.mjs)
+
+### 13.5 Agent-Anweisungen (PFLICHT)
+
+**Regel 1**: NIEMALS TypeScript/JavaScript-Dateien als SQL ausführen
+- Prüfe IMMER den Dateipfad vor SQL-Ausführung
+- Nur Dateien mit `.sql` Endung sind erlaubt
+
+**Regel 2**: VOR jeder SQL-Ausführung Validierung durchführen
+- Verwende IMMER `validateSQLBeforeExecution()` aus `lib/utils/sql-validator.ts`
+- Bei Validierungsfehler: SOFORT abbrechen, keine SQL-Ausführung
+
+**Regel 3**: Bei SQL-Fehlern mit "syntax error" IMMER zuerst Dateityp prüfen
+- Fehler wie `syntax error at or near ""use client""` deuten auf falsche Datei
+- Prüfe: Ist die Datei wirklich eine `.sql`-Datei?
+- Prüfe: Enthält der Inhalt TypeScript/JavaScript-Syntax?
+
+**Regel 4**: Automatische Fehlerkorrektur bei falschen Dateiverweisen
+- Wenn SQL-Fehler auftritt, prüfe automatisch:
+  1. Ist der Dateipfad korrekt?
+  2. Ist die Dateiendung `.sql`?
+  3. Enthält der Inhalt SQL-Keywords?
+- Wenn nicht: Korrigiere den Dateipfad automatisch oder breche mit klarer Fehlermeldung ab
+
+**Regel 5**: Checkliste bei SQL-Fehlern
+- [ ] Dateipfad geprüft (ist es wirklich eine `.sql`-Datei?)
+- [ ] Inhalt geprüft (enthält es SQL-Keywords?)
+- [ ] Keine TypeScript/JavaScript-Syntax gefunden
+- [ ] Validierung durchgeführt (`validateSQLBeforeExecution()`)
+
+### 13.6 Verwendung
+
+**In MCP-Integration**:
+```typescript
+import { validateSQLBeforeExecution } from "@/lib/utils/sql-validator"
+
+// VOR jeder SQL-Ausführung:
+const validation = validateSQLBeforeExecution(query, filePath)
+if (!validation.valid) {
+  // ABBRECHEN - keine SQL-Ausführung!
+  return { success: false, errors: validation.errors }
+}
+```
+
+**In Pre-Commit Hook**:
+```bash
+# Phase 3.6: SQL-Validierung
+pnpm exec node scripts/cicd/validate-sql-files.mjs
+```
+
+### 13.7 Erwartetes Ergebnis
+
+Nach Implementierung:
+- ✅ SQL-Ausführung wird automatisch validiert
+- ✅ TypeScript-Dateien werden sofort erkannt und blockiert
+- ✅ Klare Fehlermeldung bei falschen Dateiverweisen
+- ✅ AI-Agent kann solche Fehler selbstständig erkennen und korrigieren
+- ✅ Pre-Commit Hook verhindert fehlerhafte SQL-Dateien im Repository

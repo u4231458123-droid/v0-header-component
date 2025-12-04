@@ -55,6 +55,19 @@ else
   echo ""
 fi
 
+# Phase 3.6: SQL-Validierung
+echo "📋 Phase 3.6: SQL-Dateien-Validierung..."
+if ! pnpm exec node scripts/cicd/validate-sql-files.mjs 2>&1 | grep -q "success.*false\|error"; then
+  echo "✅ SQL-Validierung bestanden"
+else
+  echo ""
+  echo "❌ SQL-VALIDIERUNGS-FEHLER GEFUNDEN - Commit blockiert!"
+  echo "💡 Führe 'pnpm exec node scripts/cicd/validate-sql-files.mjs' aus, um die Fehler zu sehen."
+  echo "💡 Prüfe ob TypeScript/JavaScript-Dateien versehentlich als SQL markiert wurden."
+  echo ""
+  exit 1
+fi
+
 # Phase 4: Bot-Validation
 echo "📋 Phase 4: Bot-Validation..."
 node scripts/cicd/mandatory-quality-gate.js --pre-commit

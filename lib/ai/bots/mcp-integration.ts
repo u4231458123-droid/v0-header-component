@@ -5,6 +5,8 @@
  * Ermöglicht direkten Zugriff auf Supabase-Datenbank
  */
 
+import { validateSQLBeforeExecution } from "@/lib/utils/sql-validator"
+
 /**
  * Validiert Supabase-Projekt-Konfiguration
  * MUSS von allen Bots vor Datenbank-Operationen aufgerufen werden
@@ -96,7 +98,8 @@ export async function validateSchemaTables(requiredTables: string[]): Promise<{
 export async function applyMigrationWithValidation(
   name: string,
   query: string,
-  requiredTables: string[] = []
+  requiredTables: string[] = [],
+  filePath?: string
 ): Promise<{
   success: boolean
   errors: string[]
@@ -106,6 +109,18 @@ export async function applyMigrationWithValidation(
   const warnings: string[] = []
   
   try {
+    // 0. SQL-Validierung (KRITISCH - verhindert Ausführung von TS/JS-Dateien)
+    const sqlValidation = validateSQLBeforeExecution(query, filePath)
+    if (!sqlValidation.valid) {
+      errors.push(...sqlValidation.errors)
+      errors.push(
+        "❌ KRITISCHER FEHLER: Es wurde versucht, eine TypeScript/JavaScript-Datei als SQL auszuführen!"
+      )
+      errors.push("💡 Bitte prüfe den Dateipfad und stelle sicher, dass nur .sql-Dateien ausgeführt werden.")
+      return { success: false, errors, warnings: [...warnings, ...sqlValidation.warnings] }
+    }
+    warnings.push(...sqlValidation.warnings)
+    
     // 1. Projekt validieren
     const projectValidation = await validateSupabaseProject()
     if (!projectValidation.valid) {
