@@ -27,18 +27,23 @@ jobs:
           npx npm-check-updates -u || {
             echo "⚠️ npm-check-updates fehlgeschlagen - fahre mit bestehenden Dependencies fort"
           }
-          npm install || {
+          if ! npm install; then
             echo "❌ npm install fehlgeschlagen - versuche self-heal"
-            npm run self-heal:deps || {
+            if ! npm run self-heal:deps; then
               echo "❌ Self-heal fehlgeschlagen - Workflow abgebrochen"
               exit 1
-            }
-          }
-          npm audit fix || {
+            fi
+            # Nach self-heal erneut npm install versuchen
+            if ! npm install; then
+              echo "❌ npm install fehlgeschlagen auch nach self-heal - Workflow abgebrochen"
+              exit 1
+            fi
+          fi
+          if ! npm audit fix; then
             echo "❌ npm audit fix fehlgeschlagen - Sicherheitslücken bleiben ungefixt"
             echo "⚠️ Workflow wird abgebrochen, da Sicherheitslücken nicht automatisch behoben werden konnten"
             exit 1
-          }
+          fi
       
       # Automatisches Code-Formatting
       - name: Format Code
