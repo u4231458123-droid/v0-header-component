@@ -35,10 +35,18 @@ jobs:
             }
           }
           npm audit fix || {
+<<<<<<< Current (Your changes)
             echo "⚠️ npm audit fix hat Probleme gefunden - prüfe manuell"
             # Audit-Fehler sind nicht kritisch, aber sollten dokumentiert werden
           }
 
+=======
+            echo "❌ npm audit fix fehlgeschlagen - Sicherheitslücken bleiben ungefixt"
+            echo "⚠️ Workflow wird abgebrochen, da Sicherheitslücken nicht automatisch behoben werden konnten"
+            exit 1
+          }
+      
+>>>>>>> Incoming (Background Agent changes)
       # Automatisches Code-Formatting
       - name: Format Code
         run: |

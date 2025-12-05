@@ -69,6 +69,7 @@ if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
   timeout 30 node scripts/cicd/check-dependencies.mjs
   EXIT_CODE=$?
   
+<<<<<<< Current (Your changes)
   if [ $EXIT_CODE -eq 124 ]; then
     echo -e "\n⚠️ Abhängigkeits-Prüfung hat Timeout (30s) - überspringe"
   elif [ $EXIT_CODE -eq 1 ]; then
@@ -78,6 +79,21 @@ if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
     echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
   else
     echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
+=======
+  # Explizite Behandlung aller möglichen Exit-Codes
+  if [ $EXIT_CODE -eq 0 ]; then
+    echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
+  elif [ $EXIT_CODE -eq 124 ]; then
+    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Timeout (30s) - überspringe"
+    # Timeout ist nicht blockierend, Hook läuft weiter
+  elif [ $EXIT_CODE -eq 1 ]; then
+    echo -e "\n❌ Abhängigkeits-Prüfung: Kritische Fehler gefunden - Commit abgebrochen"
+    exit 1
+  else
+    # Unbekannte Exit-Codes (2+) werden als kritische Fehler behandelt
+    echo -e "\n❌ Abhängigkeits-Prüfung: Unerwarteter Fehler (Exit-Code: $EXIT_CODE) - Commit abgebrochen"
+    exit 1
+>>>>>>> Incoming (Background Agent changes)
   fi
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
