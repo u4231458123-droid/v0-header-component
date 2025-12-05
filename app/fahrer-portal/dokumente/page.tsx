@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { format, differenceInDays } from "date-fns"
 import { de } from "date-fns/locale"
 import Link from "next/link"
-import { toast } from "sonner"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
 import {
   ArrowLeft,
   Upload,
@@ -119,14 +119,14 @@ export default function DriverDocumentsPage() {
     try {
       const supabase = getSupabase()
       if (!supabase) {
-        toast.error("Fehler: Supabase-Client nicht verfügbar")
+        toastError("Fehler: Supabase-Client nicht verfügbar")
         setUploading(null)
         return
       }
 
       // Dateigröße prüfen (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        toast.error("Datei ist zu groß. Maximale Größe: 10MB")
+        toastError("Datei ist zu groß. Maximale Größe: 10MB")
         setUploading(null)
         return
       }
@@ -139,7 +139,7 @@ export default function DriverDocumentsPage() {
 
       if (uploadError) {
         console.error("Upload error:", uploadError)
-        toast.error(`Fehler beim Hochladen: ${uploadError.message}`)
+        toastError(`Fehler beim Hochladen: ${uploadError.message}`)
         setUploading(null)
         return
       }
@@ -160,7 +160,7 @@ export default function DriverDocumentsPage() {
 
       if (insertError) {
         console.error("Insert error:", insertError)
-        toast.error(`Fehler beim Speichern: ${insertError.message}`)
+        toastError(`Fehler beim Speichern: ${insertError.message}`)
         // Lösche hochgeladene Datei bei Fehler
         if (supabase) {
         await supabase.storage.from("documents").remove([fileName])
@@ -169,11 +169,13 @@ export default function DriverDocumentsPage() {
         return
       }
 
-      toast.success("Dokument erfolgreich hochgeladen")
+      toastSuccess("Dokument erfolgreich hochgeladen", {
+        description: "Das Dokument wird nun von Ihrem Arbeitgeber geprüft.",
+      })
       loadDocuments()
     } catch (error: any) {
       console.error("Error uploading document:", error)
-      toast.error(`Fehler: ${error?.message || "Unbekannter Fehler"}`)
+      toastError(`Fehler: ${error?.message || "Unbekannter Fehler"}`)
     } finally {
       setUploading(null)
     }
@@ -293,7 +295,7 @@ export default function DriverDocumentsPage() {
       {/* Content */}
       <main className="flex-1 max-w-5xl mx-auto px-4 py-6 w-full">
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-5 mb-6">
           <Card className="bg-card border-border">
             <CardContent className="p-4 text-center">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
@@ -400,7 +402,7 @@ export default function DriverDocumentsPage() {
                               }
                             } catch (error: any) {
                               console.error("Error downloading document:", error)
-                              toast.error("Fehler beim Öffnen des Dokuments")
+                              toastError("Fehler beim Öffnen des Dokuments")
                             }
                           }}
                         >

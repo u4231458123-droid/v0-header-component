@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Settings, User, Bell, Shield, Loader2, Save } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import { toast } from "sonner"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
 
 // Supabase Client Helper
 function getSupabaseClient() {
@@ -60,9 +60,8 @@ export default function KundenPortalEinstellungenPage() {
 
       if (error && error.code !== "PGRST116") {
         console.error("Fehler beim Laden:", error)
-        toast.error("Daten konnten nicht geladen werden", {
+        toastError("Daten konnten nicht geladen werden", {
           description: "Bitte versuchen Sie es erneut oder laden Sie die Seite neu.",
-          duration: 5000,
         })
         return
       }
@@ -151,18 +150,16 @@ export default function KundenPortalEinstellungenPage() {
 
       if (error) throw error
 
-      toast.success("Einstellungen erfolgreich gespeichert", {
+      toastSuccess("Einstellungen erfolgreich gespeichert", {
         description: "Alle Änderungen wurden übernommen und sind sofort wirksam.",
-        duration: 4000,
       })
       
       // Reload data to be sure
       loadCustomerData()
     } catch (error: any) {
       console.error("Speicherfehler:", error)
-      toast.error("Fehler beim Speichern: " + error.message, {
+      toastError("Fehler beim Speichern: " + error.message, {
         description: "Bitte überprüfen Sie die Eingaben und versuchen Sie es erneut.",
-        duration: 5000,
       })
     } finally {
       setSaving(false)

@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
 import { format, differenceInMinutes } from "date-fns"
 import { de } from "date-fns/locale"
 import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
@@ -276,16 +276,14 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(data)
-        toast.success("Schicht erfolgreich gestartet", {
+        toastSuccess("Schicht erfolgreich gestartet", {
           description: "Sie können jetzt Fahrten annehmen.",
-          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error starting shift:", error)
-      toast.error("Fehler beim Starten der Schicht", {
+      toastError("Fehler beim Starten der Schicht", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     } finally {
       setShowStartShiftDialog(false)
@@ -312,16 +310,14 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(data)
-        toast.success("Pause gestartet", {
+        toastSuccess("Pause gestartet", {
           description: "Vergessen Sie nicht, die Pause zu beenden.",
-          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error starting break:", error)
-      toast.error("Fehler beim Starten der Pause", {
+      toastError("Fehler beim Starten der Pause", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     } finally {
       setShowStartBreakDialog(false)
@@ -359,16 +355,14 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(data)
-        toast.success("Pause beendet", {
+        toastSuccess("Pause beendet", {
           description: "Willkommen zurück! Sie können wieder Fahrten annehmen.",
-          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error ending break:", error)
-      toast.error("Fehler beim Beenden der Pause", {
+      toastError("Fehler beim Beenden der Pause", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     } finally {
       setShowEndBreakDialog(false)
@@ -411,16 +405,14 @@ export default function FahrerPortalPage() {
 
       if (data) {
         setCurrentShift(null)
-        toast.success("Schicht erfolgreich beendet", {
+        toastSuccess("Schicht erfolgreich beendet", {
           description: "Ihre Arbeitszeit wurde protokolliert. Gute Erholung!",
-          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error ending shift:", error)
-      toast.error("Fehler beim Beenden der Schicht", {
+      toastError("Fehler beim Beenden der Schicht", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     } finally {
       setShowEndShiftDialog(false)
@@ -433,9 +425,8 @@ export default function FahrerPortalPage() {
     if (bookingToAccept) {
       setPendingBookings((prev) => prev.filter((b) => b.id !== bookingId))
       setActiveBooking({ ...bookingToAccept, status: "in_progress" })
-      toast.success("Fahrt angenommen", {
+      toastSuccess("Fahrt angenommen", {
         description: "Navigation wird geladen...",
-        duration: 3000,
       })
     }
 
@@ -447,9 +438,8 @@ export default function FahrerPortalPage() {
         setPendingBookings((prev) => [...prev, bookingToAccept])
         setActiveBooking(null)
       }
-      toast.error("Fehler beim Annehmen der Fahrt", {
+      toastError("Fehler beim Annehmen der Fahrt", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     }
   }
@@ -458,9 +448,8 @@ export default function FahrerPortalPage() {
     // Optimistic UI: Sofortige Entfernung aus der Liste
     const bookingToDecline = pendingBookings.find((b) => b.id === bookingId)
     setPendingBookings((prev) => prev.filter((b) => b.id !== bookingId))
-    toast.success("Fahrt abgelehnt", {
+    toastSuccess("Fahrt abgelehnt", {
       description: "Die Fahrt wird einem anderen Fahrer zugewiesen.",
-      duration: 3000,
     })
 
     const { error } = await supabase
@@ -473,9 +462,8 @@ export default function FahrerPortalPage() {
       if (bookingToDecline) {
         setPendingBookings((prev) => [...prev, bookingToDecline])
       }
-      toast.error("Fehler beim Ablehnen der Fahrt", {
+      toastError("Fehler beim Ablehnen der Fahrt", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     }
   }
@@ -484,9 +472,8 @@ export default function FahrerPortalPage() {
     // Optimistic UI: Sofortige Status-Änderung
     const previousActiveBooking = activeBooking
     setActiveBooking(null)
-    toast.success("Fahrt abgeschlossen", {
+    toastSuccess("Fahrt abgeschlossen", {
       description: "Vielen Dank! Die Fahrt wurde erfolgreich beendet.",
-      duration: 4000,
     })
 
     const { error } = await supabase
@@ -500,9 +487,8 @@ export default function FahrerPortalPage() {
     if (error) {
       // Rollback bei Fehler
       setActiveBooking(previousActiveBooking)
-      toast.error("Fehler beim Abschließen der Fahrt", {
+      toastError("Fehler beim Abschließen der Fahrt", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     } else {
       // Daten neu laden für Fahrtenverlauf

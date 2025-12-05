@@ -13,7 +13,7 @@ import { de } from "date-fns/locale"
 import Link from "next/link"
 import { CustomerHelpBot } from "@/components/ai/CustomerHelpBot"
 import { safeNumber } from "@/lib/utils/safe-number"
-import { toast } from "sonner"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
 
 export const dynamic = "force-dynamic"
 
@@ -396,9 +396,8 @@ export default function CustomerPortalPage() {
   // PDF-Beleg für eine Buchung generieren und herunterladen
   const handleDownloadReceipt = async (booking: Booking) => {
     try {
-      toast.success("Beleg wird erstellt...", {
+      toastSuccess("Beleg wird erstellt...", {
         description: "Das Dokument öffnet sich in einem neuen Fenster.",
-        duration: 3000,
       })
       
       // Erzeuge ein einfaches HTML-Dokument für den Beleg
@@ -487,16 +486,14 @@ export default function CustomerPortalPage() {
           printWindow.print()
         }, 250)
       } else {
-        toast.error("Popup-Blocker aktiv", {
+        toastError("Popup-Blocker aktiv", {
           description: "Bitte erlauben Sie Popups für diese Seite.",
-          duration: 5000,
         })
       }
     } catch (error) {
       console.error("Error generating receipt:", error)
-      toast.error("Fehler beim Erstellen des Belegs", {
+      toastError("Fehler beim Erstellen des Belegs", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     }
   }
@@ -504,9 +501,8 @@ export default function CustomerPortalPage() {
   // PDF-Rechnung herunterladen
   const handleDownloadInvoice = async (invoice: Invoice) => {
     try {
-      toast.success("Rechnung wird geladen...", {
+      toastSuccess("Rechnung wird geladen...", {
         description: "Das Dokument öffnet sich in einem neuen Fenster.",
-        duration: 3000,
       })
       
       // Erzeuge ein einfaches HTML-Dokument für die Rechnung
@@ -580,16 +576,14 @@ export default function CustomerPortalPage() {
           printWindow.print()
         }, 250)
       } else {
-        toast.error("Popup-Blocker aktiv", {
+        toastError("Popup-Blocker aktiv", {
           description: "Bitte erlauben Sie Popups für diese Seite.",
-          duration: 5000,
         })
       }
     } catch (error) {
       console.error("Error generating invoice PDF:", error)
-      toast.error("Fehler beim Laden der Rechnung", {
+      toastError("Fehler beim Laden der Rechnung", {
         description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
       })
     }
   }

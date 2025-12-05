@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { toast } from "sonner"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
 import { format, differenceInDays } from "date-fns"
 import { de } from "date-fns/locale"
 import Link from "next/link"
@@ -110,7 +110,7 @@ export default function FahrerProfilPage() {
         .single()
 
       if (driverError || !driverData) {
-        toast.error("Fahrerprofil nicht gefunden")
+        toastError("Fahrerprofil nicht gefunden")
         return
       }
 
@@ -139,7 +139,7 @@ export default function FahrerProfilPage() {
       })
     } catch (error) {
       console.error("Error loading driver profile:", error)
-      toast.error("Fehler beim Laden des Profils")
+      toastError("Fehler beim Laden des Profils")
     } finally {
       setLoading(false)
     }
@@ -163,10 +163,12 @@ export default function FahrerProfilPage() {
 
       setDriver({ ...driver, phone: formData.phone, email: formData.email })
       setEditMode(false)
-      toast.success("Kontaktdaten aktualisiert")
+      toastSuccess("Kontaktdaten aktualisiert", {
+        description: "Ihre Kontaktdaten wurden erfolgreich gespeichert.",
+      })
     } catch (error) {
       console.error("Error updating profile:", error)
-      toast.error("Fehler beim Speichern")
+      toastError("Fehler beim Speichern")
     } finally {
       setSaving(false)
     }
@@ -294,7 +296,7 @@ export default function FahrerProfilPage() {
         {/* Profil Header */}
         <Card className="bg-card border-border">
           <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
               <Avatar className="w-20 h-20">
                 <AvatarFallback className="text-2xl bg-primary/10 text-primary">
                   {driver.first_name?.[0]}
@@ -316,7 +318,7 @@ export default function FahrerProfilPage() {
                   <Badge
                     className={
                       driver.status === "available" || driver.status === "active"
-                        ? "bg-emerald-500 text-white"
+                        ? "bg-success text-success-foreground"
                         : "bg-muted text-muted-foreground"
                     }
                   >
@@ -334,7 +336,7 @@ export default function FahrerProfilPage() {
                 </div>
               </div>
               {stats && (
-                <div className="grid grid-cols-2 gap-4 text-center">
+                <div className="grid grid-cols-2 gap-5 text-center">
                   <div className="p-3 bg-muted rounded-xl">
                     <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
                       <Car className="h-4 w-4" />
@@ -375,7 +377,7 @@ export default function FahrerProfilPage() {
             )}
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2">
               <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
                 <Mail className="w-5 h-5 text-muted-foreground" />
                 {editMode ? (
@@ -483,7 +485,7 @@ export default function FahrerProfilPage() {
               <CardTitle className="text-lg text-foreground">Arbeitsverhältnis</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-3">
                 <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
                   <Calendar className="w-5 h-5 text-muted-foreground" />
                   <div>

@@ -1,6 +1,6 @@
 # IDE-Konfiguration für MyDispatch
 
-**Datum:** $(date)
+**Datum:** 26.12.2024
 **Status:** ✅ **Konfiguriert und optimiert**
 
 ---
@@ -155,5 +155,5 @@ Diese Dokumentation beschreibt die IDE-Konfiguration für das MyDispatch-Projekt
 
 ---
 
-**Erstellt:** $(date)
+**Erstellt:** 26.12.2024
 **Status:** ✅ Konfiguration optimiert und dokumentiert
