@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         node: ['18', '20', '22']
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -50,7 +50,7 @@ jobs:
     name: Bundle Analyzer
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -80,7 +80,7 @@ jobs:
     name: Lighthouse CI
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -115,7 +115,7 @@ jobs:
     name: Dependency Updates Check
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -145,7 +145,7 @@ jobs:
     name: Continuous Prompt Optimization
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

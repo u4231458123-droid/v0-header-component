@@ -48,7 +48,7 @@ function saveLogEntry(entry) {
 async function selfHealDependencies() {
   console.log("🔧 Self-healing dependency issues...")
   console.log("=====================================\n")
-  
+
   const logEntry = {
     action: "self-heal-dependencies",
     attempts: [],
@@ -80,6 +80,8 @@ async function selfHealDependencies() {
 
   try {
     // Versuch 2: Legacy Peer Deps (nur für npm)
+    const method2 = packageManager === "npm" ? "legacy-peer-deps" : "no-frozen-lockfile"
+    logEntry.attempts.push({ attempt: 2, method: method2, status: "started" })
     if (packageManager === "npm") {
       console.log("📦 Versuch 2: npm install --legacy-peer-deps...")
       execSync("npm install --legacy-peer-deps", { stdio: "inherit", shell: true })
@@ -88,8 +90,6 @@ async function selfHealDependencies() {
       execSync("pnpm install --no-frozen-lockfile", { stdio: "inherit", shell: true })
     }
     // Package.json updaten (nur für npm)
-    const method2 = packageManager === "npm" ? "legacy-peer-deps" : "no-frozen-lockfile"
-    logEntry.attempts.push({ attempt: 2, method: method2, status: "started" })
     if (packageManager === "npm") {
       const pkgPath = path.join(process.cwd(), "package.json")
       const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
@@ -119,7 +119,7 @@ async function selfHealDependencies() {
     const nodeModulesPath = path.join(process.cwd(), "node_modules")
     const packageLockPath = path.join(process.cwd(), "package-lock.json")
     const pnpmLockPath = path.join(process.cwd(), "pnpm-lock.yaml")
-    
+
     if (fs.existsSync(nodeModulesPath)) {
       fs.rmSync(nodeModulesPath, { recursive: true, force: true })
     }
@@ -129,7 +129,7 @@ async function selfHealDependencies() {
     if (fs.existsSync(pnpmLockPath)) {
       fs.unlinkSync(pnpmLockPath)
     }
-    
+
     // Cross-platform cache clean
     if (packageManager === "pnpm") {
       execSync("pnpm store prune", { stdio: "inherit", shell: true })

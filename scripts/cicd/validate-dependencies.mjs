@@ -6,9 +6,8 @@
  */
 
 import { existsSync } from 'fs'
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -88,7 +87,7 @@ try {
   const { readFile } = await import('fs/promises')
   const packageJsonContent = await readFile(join(rootDir, 'package.json'), 'utf-8')
   const packageJson = JSON.parse(packageJsonContent)
-  
+
   const requiredPackageScripts = [
     'validate:design',
     'validate:sql',
@@ -96,7 +95,7 @@ try {
     'type-check',
     'build',
   ]
-  
+
   const missingPackageScripts = []
   for (const script of requiredPackageScripts) {
     if (!packageJson.scripts || !packageJson.scripts[script]) {
@@ -106,7 +105,7 @@ try {
       console.log(`✅ Script "${script}" found`)
     }
   }
-  
+
   if (missingPackageScripts.length > 0) {
     console.warn(`\n⚠️  ${missingPackageScripts.length} package script(s) missing (non-blocking)`)
   }

@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: github.event_name != 'schedule' || github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: code-quality
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: code-quality
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -198,7 +198,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: code-quality
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -250,7 +250,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [layout-design, frontend-validation, backend-api-validation]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -315,7 +315,7 @@ jobs:
     timeout-minutes: 15
     needs: integration-tests
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

@@ -47,8 +47,8 @@ async function selfHealTests() {
         // Cache clear (cross-platform)
         console.log("🧹 Clearing test cache...")
         try {
-          const clearCacheCommand = packageManager === "pnpm" 
-            ? "pnpm run test -- --clearCache" 
+          const clearCacheCommand = packageManager === "pnpm"
+            ? "pnpm run test -- --clearCache"
             : "npm run test -- --clearCache"
           execSync(clearCacheCommand, { stdio: "inherit", shell: true })
         } catch {

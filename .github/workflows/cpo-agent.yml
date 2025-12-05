@@ -20,45 +20,45 @@ jobs:
     name: CPO AI Agent - Code-Analyse & Auto-Fix
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-      
+
       - run: pnpm install --frozen-lockfile
-      
+
       # CPO Agent - Design-Token-Validierung
       - name: Design-Token-Validierung
         run: |
           pnpm run validate:design
-      
+
       # CPO Agent - Code-Qualität-Validierung
       - name: Code-Qualität-Validierung
         run: |
           pnpm run lint
           pnpm run type-check
-      
+
       # CPO Agent - DSGVO-Compliance-Validierung
       - name: DSGVO-Compliance-Validierung
         run: |
           pnpm run validate:sql
-      
+
       # CPO Agent - Auto-Fix (nur bei bestimmten Fehlern)
       - name: Auto-Fix Design-Verstöße
         if: failure()
         run: |
           echo "CPO Agent: Automatische Fixes werden durchgeführt..."
           # Hier würde der CPO Agent automatische Fixes durchführen
-      
+
       # CPO Agent - Dokumentation aktualisieren
       - name: Dokumentation aktualisieren
         run: |
