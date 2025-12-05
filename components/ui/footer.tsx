@@ -7,8 +7,8 @@
 
 "use client"
 
-import { Logo } from "./logo"
 import { cn } from "@/lib/utils"
+import { Logo } from "./logo"
 
 export interface FooterProps {
   className?: string
@@ -28,7 +28,7 @@ export function Footer({ className, variant = "default" }: FooterProps) {
           <Logo />
           <div className="text-sm text-muted-foreground">
             <p>MyDispatch - Professionelle Fahrdienst-Software</p>
-            <p>Einfach. Übersichtlich. Vollständig. Günstig.</p>
+            <p>Einfach. Übersichtlich. Vollständig. Wirtschaftlich.</p>
           </div>
         </div>
       </div>

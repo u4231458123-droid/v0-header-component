@@ -27,10 +27,25 @@ npm run build || {
 echo -e "\n🔗 Phase 2: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
   node scripts/cicd/check-dependencies.mjs || {
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
+    echo -e "\n❌ Abhängigkeits-Prüfung fehlgeschlagen - Push abgebrochen"
+    exit 1
   }
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
+fi
+
+# =============================================================================
+# PHASE 3: MANDATORY QUALITY GATE
+# =============================================================================
+
+echo -e "\n🛡️ Phase 3: Mandatory Quality Gate..."
+if [ -f "scripts/cicd/mandatory-quality-gate.js" ]; then
+  node scripts/cicd/mandatory-quality-gate.js || {
+    echo -e "\n❌ Quality Gate Validierung fehlgeschlagen - Push abgebrochen"
+    exit 1
+  }
+else
+  echo "⚠️ Mandatory Quality Gate Script nicht gefunden - überspringe"
 fi
 
 echo -e "\n✅ Pre-Push Validierung erfolgreich!"

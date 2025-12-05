@@ -51,7 +51,8 @@ fi
 echo -e "\n🔗 Phase 3.5: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
   node scripts/cicd/check-dependencies.mjs || {
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
+    echo -e "\n❌ Abhängigkeits-Prüfung fehlgeschlagen - Commit abgebrochen"
+    exit 1
   }
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
@@ -79,7 +80,7 @@ echo -e "\n🤖 Phase 3.7: CPO Agent Validierung..."
 if [ -f "lib/ai/cpo-agent-integration.ts" ]; then
   # Hole geänderte Dateien
   CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(tsx?|jsx?)$' || true)
-  
+
   if [ -n "$CHANGED_FILES" ]; then
     echo "📝 Geänderte Dateien gefunden - CPO Agent wird validieren..."
     # CPO Agent Validierung wird in CI/CD Pipeline ausgeführt
