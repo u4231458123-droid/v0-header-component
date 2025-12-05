@@ -28,11 +28,12 @@ echo -e "\n🔗 Phase 2: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
   node scripts/cicd/check-dependencies.mjs
   EXIT_CODE=$?
-  if [ $EXIT_CODE -eq 1 ]; then
-    echo -e "\n❌ Abhängigkeits-Prüfung hat kritische Fehler gefunden - Push abgebrochen"
-    exit 1
-  elif [ $EXIT_CODE -eq 0 ]; then
+  if [ $EXIT_CODE -eq 0 ]; then
     echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
+  else
+    # Alle Exit-Codes außer 0 werden als Fehler behandelt
+    echo -e "\n❌ Abhängigkeits-Prüfung fehlgeschlagen (Exit-Code: $EXIT_CODE) - Push abgebrochen"
+    exit 1
   fi
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
