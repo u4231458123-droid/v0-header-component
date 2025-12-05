@@ -258,8 +258,8 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
                       <div className="font-sans text-xs text-foreground">Mainframe-03 → Cloud-EU-West</div>
                     </div>
                   </div>
-                  <div className="px-2 py-1 rounded-xl bg-green-100 border border-success">
-                    <span className="font-sans text-xs font-bold text-green-700">Erledigt</span>
+                  <div className="px-2 py-1 rounded-xl bg-success/10 border border-success">
+                    <span className="font-sans text-xs font-bold text-success">Erledigt</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pl-9 pt-3">
@@ -285,8 +285,8 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
                       <div className="font-sans text-xs text-foreground">Security-Patch 2024-10</div>
                     </div>
                   </div>
-                  <div className="px-2 py-1 rounded-xl bg-blue-100 border border-info">
-                    <span className="font-sans text-xs font-bold text-blue-700">Live</span>
+                  <div className="px-2 py-1 rounded-xl bg-info/10 border border-info">
+                    <span className="font-sans text-xs font-bold text-info">Live</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pl-9 pt-3">

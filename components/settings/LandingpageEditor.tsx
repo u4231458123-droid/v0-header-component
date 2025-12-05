@@ -1,48 +1,48 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Textarea } from "@/components/ui/textarea"
 import {
-  Globe,
-  Palette,
-  Layout,
-  FileText,
-  Phone,
-  Plus,
-  Trash2,
-  Star,
-  Users,
-  Car,
-  Clock,
-  HelpCircle,
-  ExternalLink,
-  Eye,
-  EyeOff,
-  Monitor,
-  Tablet,
-  Smartphone,
-  Facebook,
-  Instagram,
-  Twitter,
-  Linkedin,
-  Briefcase,
-  Shield,
-  Zap,
-  Heart,
-  Award,
-  CheckCircle,
-  Sparkles,
+    Award,
+    Briefcase,
+    Car,
+    CheckCircle,
+    Clock,
+    ExternalLink,
+    Eye,
+    EyeOff,
+    Facebook,
+    FileText,
+    Globe,
+    Heart,
+    HelpCircle,
+    Instagram,
+    Layout,
+    Linkedin,
+    Monitor,
+    Palette,
+    Phone,
+    Plus,
+    Shield,
+    Smartphone,
+    Sparkles,
+    Star,
+    Tablet,
+    Trash2,
+    Twitter,
+    Users,
+    Zap,
 } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 // Constants
 const VEHICLE_CATEGORIES = [
@@ -408,7 +408,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-gray-800 text-center text-sm text-muted-foreground">
+          <div className="mt-8 pt-6 border-t border-border text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} {companyName || "Ihr Unternehmen"}. Alle Rechte vorbehalten.
           </div>
         </div>

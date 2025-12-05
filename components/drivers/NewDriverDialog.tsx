@@ -1,27 +1,27 @@
 "use client"
 
-import type React from "react"
-import { useState, useRef } from "react"
+import { AddressAutocomplete } from "@/components/maps/AddressAutocomplete"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 import { SALUTATION_OPTIONS, formatPhoneNumber } from "@/lib/form-constants"
-import { AddressAutocomplete } from "@/components/maps/AddressAutocomplete"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Key, AlertCircle, CheckCircle2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Key } from "lucide-react"
+import { useRouter } from "next/navigation"
+import type React from "react"
+import { useRef, useState } from "react"
+import { toast } from "sonner"
 import { LicenseClassSelector } from "./LicenseClassSelector"
 
 interface NewDriverDialogProps {
@@ -760,7 +760,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                     setCreateCredentials(e.target.checked)
                     setCredentialError(null)
                   }}
-                  className="h-4 w-4 rounded border-gray-300"
+                  className="h-4 w-4 rounded border-border"
                 />
                 <Label htmlFor="createCredentials" className="flex items-center gap-2">
                   <Key className="h-4 w-4" />

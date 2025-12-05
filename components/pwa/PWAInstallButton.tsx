@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -59,17 +59,17 @@ export function PWAInstallButton({
 
     // Listen for beforeinstallprompt - WICHTIG: preventDefault() verhindert automatischen Prompt
     const handleBeforeInstallPrompt = (e: Event) => {
-      console.log("[PWA] beforeinstallprompt event received!")
+      if (process.env.NODE_ENV === 'development') console.log("[PWA] beforeinstallprompt event received!")
       e.preventDefault() // Verhindert automatischen Browser-Prompt
       const promptEvent = e as BeforeInstallPromptEvent
       window.deferredPWAPrompt = promptEvent
       setPrompt(promptEvent)
-      console.log("[PWA] Prompt stored and ready to use")
+      if (process.env.NODE_ENV === 'development') console.log("[PWA] Prompt stored and ready to use")
     }
 
     // Listen for app installed
     const handleAppInstalled = () => {
-      console.log("[PWA] App installed")
+      if (process.env.NODE_ENV === 'development') console.log("[PWA] App installed")
       setIsInstalled(true)
       setPrompt(null)
       window.deferredPWAPrompt = null
@@ -85,43 +85,45 @@ export function PWAInstallButton({
   }, [])
 
   const handleInstallClick = useCallback(async () => {
-    console.log("[PWA] Button clicked")
-    
+    if (process.env.NODE_ENV === 'development') console.log("[PWA] Button clicked")
+
     if (typeof window === "undefined") return
 
     // iOS: Show modal with instructions (iOS hat keinen beforeinstallprompt)
     if (isIOS) {
-      console.log("[PWA] iOS detected - showing modal")
+      if (process.env.NODE_ENV === 'development') console.log("[PWA] iOS detected - showing modal")
       setShowModal(true)
       return
     }
 
     // Get prompt - prüfe zuerst window, dann state
     const currentPrompt = window.deferredPWAPrompt || prompt
-    
-    console.log("[PWA] Current prompt:", currentPrompt)
-    console.log("[PWA] window.deferredPWAPrompt:", window.deferredPWAPrompt)
-    console.log("[PWA] state prompt:", prompt)
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[PWA] Current prompt:", currentPrompt)
+      console.log("[PWA] window.deferredPWAPrompt:", window.deferredPWAPrompt)
+      console.log("[PWA] state prompt:", prompt)
+    }
 
     // WICHTIG: Wenn Prompt verfügbar ist, direkt aufrufen - KEIN Modal!
     if (currentPrompt) {
-      console.log("[PWA] Triggering prompt directly...")
+      if (process.env.NODE_ENV === 'development') console.log("[PWA] Triggering prompt directly...")
       setIsInstalling(true)
       try {
         // Direkter Aufruf des Browser-Install-Prompts
         await currentPrompt.prompt()
-        console.log("[PWA] Prompt shown, waiting for user choice...")
-        
+        if (process.env.NODE_ENV === 'development') console.log("[PWA] Prompt shown, waiting for user choice...")
+
         const { outcome } = await currentPrompt.userChoice
-        console.log("[PWA] User choice:", outcome)
-        
+        if (process.env.NODE_ENV === 'development') console.log("[PWA] User choice:", outcome)
+
         if (outcome === "accepted") {
-          console.log("[PWA] Installation accepted")
+          if (process.env.NODE_ENV === 'development') console.log("[PWA] Installation accepted")
           setPrompt(null)
           window.deferredPWAPrompt = null
           setIsInstalled(true)
         } else {
-          console.log("[PWA] Installation dismissed")
+          if (process.env.NODE_ENV === 'development') console.log("[PWA] Installation dismissed")
         }
       } catch (error) {
         console.error("[PWA] Error triggering prompt:", error)
@@ -142,7 +144,7 @@ export function PWAInstallButton({
     // 2. Browser unterstützt kein PWA
     // 3. beforeinstallprompt Event noch nicht gefeuert wurde
     // 4. Entwicklungsumgebung ohne HTTPS
-    console.warn("[PWA] No prompt available - showing modal with instructions")
+    if (process.env.NODE_ENV === 'development') console.warn("[PWA] No prompt available - showing modal with instructions")
     setShowModal(true)
   }, [prompt, isIOS])
 
@@ -227,8 +229,8 @@ export function PWAInstallButton({
               </ol>
             </div>
             <div className="p-3 bg-warning/10 border border-warning rounded-xl text-sm">
-              <p className="font-medium text-amber-900">Hinweis</p>
-              <p className="text-amber-800 mt-1">
+              <p className="font-medium text-warning">Hinweis</p>
+              <p className="text-warning/80 mt-1">
                 Die Installation ist nur auf der Live-Website (my-dispatch.de) möglich. In der Vorschau-Umgebung ist diese Funktion nicht verfügbar.
               </p>
             </div>

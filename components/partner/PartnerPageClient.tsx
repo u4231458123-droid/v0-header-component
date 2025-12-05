@@ -1,56 +1,56 @@
 "use client"
 
-import { useState, useMemo, useEffect, useRef } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { PageHeader } from "@/components/design-system/PageHeader"
 import { StatsCard } from "@/components/design-system/StatsCard"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
-  Users,
-  Send,
-  Download,
-  Search,
-  UserPlus,
-  Check,
-  X,
-  MoreHorizontal,
-  MessageSquare,
-  Building2,
-  Copy,
-  ExternalLink,
-  Clock,
-  Car,
-  UserCog,
-  Share2,
-  ArrowRightLeft,
-  Eye,
-  Truck,
-} from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { createClient } from "@/lib/supabase/client"
+import {
+    ArrowRightLeft,
+    Building2,
+    Car,
+    Check,
+    Clock,
+    Copy,
+    Download,
+    ExternalLink,
+    Eye,
+    MessageSquare,
+    MoreHorizontal,
+    Search,
+    Send,
+    Share2,
+    Truck,
+    UserCog,
+    UserPlus,
+    Users,
+    X,
+} from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 
 interface Company {
@@ -1068,7 +1068,7 @@ export function PartnerPageClient({
                                 )}
                               </Badge>
                               {!isSent && (
-                                <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">
+                                <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20">
                                   <Truck className="w-3 h-3 mr-1" />
                                   Fremdauftrag
                                 </Badge>

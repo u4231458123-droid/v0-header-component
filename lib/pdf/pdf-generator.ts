@@ -246,7 +246,7 @@ export function generatePDFHTML(data: PDFData): string {
     </head>
     <body>
       ${hasLetterhead ? `<div class="letterhead-container"><img src="${letterheadUrl}" class="letterhead-image" alt="Briefpapier" /></div>` : ""}
-      
+
       <div class="logo-container">
         <img src="${logoUrl}" class="logo" alt="${data.company.name} Logo" />
       </div>
@@ -293,7 +293,7 @@ function getDocumentTitle(type: string): string {
 
 function generateInvoiceContent(data: PDFData, formatDate: (s: string) => string, formatCurrency: (n: number) => string): string {
   const invoice = data.content
-  
+
   // Status-Badge Farben
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -341,7 +341,7 @@ function generateInvoiceContent(data: PDFData, formatDate: (s: string) => string
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Rechnungszeitraum -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
@@ -496,7 +496,7 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Auftragszeitpunkt -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
     <div class="meta-grid">
@@ -522,12 +522,12 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
             ${booking.customer?.phone ? `<br/><span style="color: #4a5568;">${booking.customer.phone}</span>` : ""}
           </div>
         ` : ""}
-        
+
         ${showField("pickup") ? `
           <div class="label" style="margin-top: 20px;">Abhol-Adresse</div>
           <div class="value">${booking.pickup_address || "-"}</div>
         ` : ""}
-        
+
         ${showField("dropoff") ? `
           <div class="label" style="margin-top: 20px;">Ziel-Adresse</div>
           <div class="value">${booking.dropoff_address || "-"}</div>
@@ -539,12 +539,12 @@ function generateBookingContent(data: PDFData, formatDateTime: (s: string) => st
           <div class="label">Passagiere</div>
           <div class="value">${booking.passengers || 1} Person(en)</div>
         ` : ""}
-        
+
         ${showField("passenger_names") && booking.passenger_name ? `
           <div class="label" style="margin-top: 20px;">Passagier-Name(n)</div>
           <div class="value">${booking.passenger_name}</div>
         ` : ""}
-        
+
         ${showField("vehicle_category") ? `
           <div class="label" style="margin-top: 20px;">Fahrzeugkategorie</div>
           <div class="value">${booking.vehicle_category || "Standard"}</div>
@@ -701,7 +701,7 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Gültigkeit und Datum -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
@@ -747,7 +747,7 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
         </div>
       </div>
     ` : ""}
-    
+
     <!-- Strecke -->
     ${(quote.pickup_address || quote.dropoff_address || booking) ? `
       <div style="margin-top: 24px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 8px;">
@@ -764,7 +764,7 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
         </div>
       </div>
     ` : ""}
-    
+
     <!-- Positionen -->
     ${items.length > 0 ? `
       <div style="margin-top: 24px;">
@@ -811,7 +811,7 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
         </div>
       </div>
     </div>
-    
+
     <!-- Notizen -->
     ${quote.notes ? `
       <div style="margin-top: 24px; padding: 16px; background: #fefce8; border-left: 4px solid #eab308; border-radius: 4px;">
@@ -823,7 +823,7 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
     <!-- Gültigkeits-Hinweis -->
     <div style="margin-top: 30px; padding: 16px; background: #f1f5f9; border-radius: 8px; font-size: 9pt;">
       <div style="font-weight: 600; margin-bottom: 8px;">Hinweise zum Angebot</div>
-      <div>Dieses Angebot ist freibleibend und unverbindlich. Bei Annahme bitten wir um schriftliche Bestätigung.</div>
+      <div>Dieses Angebot gilt vorbehaltlich unserer Kapazitäten. Bei Annahme bitten wir um schriftliche Bestätigung.</div>
     </div>
 
     <!-- Kleinunternehmer-Hinweis -->
@@ -837,7 +837,7 @@ function generateQuoteContent(data: PDFData, formatDate: (s: string) => string, 
 
 function generateDriverContent(data: PDFData, formatDate: (s: string) => string): string {
   const driver = data.content
-  
+
   // Status-Badge Farben
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -881,7 +881,7 @@ function generateDriverContent(data: PDFData, formatDate: (s: string) => string)
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Persönliche Daten -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
       <div style="font-weight: 600; margin-bottom: 12px;">Persönliche Daten</div>
@@ -1009,7 +1009,7 @@ function generateDriverContent(data: PDFData, formatDate: (s: string) => string)
 
 function generateVehicleContent(data: PDFData, formatDate: (s: string) => string): string {
   const vehicle = data.content
-  
+
   // Status-Badge Farben
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -1053,7 +1053,7 @@ function generateVehicleContent(data: PDFData, formatDate: (s: string) => string
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Fahrzeugdaten -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
       <div style="font-weight: 600; margin-bottom: 12px;">Fahrzeugdaten</div>
@@ -1178,7 +1178,7 @@ function generateVehicleContent(data: PDFData, formatDate: (s: string) => string
 
 function generateCustomerContent(data: PDFData, formatDate: (s: string) => string): string {
   const customer = data.content
-  
+
   // Status-Badge Farben
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -1222,7 +1222,7 @@ function generateCustomerContent(data: PDFData, formatDate: (s: string) => strin
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Persönliche Daten -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
       <div style="font-weight: 600; margin-bottom: 12px;">Persönliche Daten</div>
@@ -1331,7 +1331,7 @@ function generateCustomerContent(data: PDFData, formatDate: (s: string) => strin
 
 function generateEmployeeContent(data: PDFData, formatDate: (s: string) => string): string {
   const employee = data.content
-  
+
   // Status-Badge Farben
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -1386,7 +1386,7 @@ function generateEmployeeContent(data: PDFData, formatDate: (s: string) => strin
         ${data.company.phone ? `<div>${data.company.phone}</div>` : ""}
       </div>
     </div>
-    
+
     <!-- Persönliche Daten -->
     <div style="margin-top: 30px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
       <div style="font-weight: 600; margin-bottom: 12px;">Persönliche Daten</div>

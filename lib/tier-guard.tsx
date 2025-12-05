@@ -1,11 +1,11 @@
 "use client"
 
-import { createClient } from "@/lib/supabase/client"
-import { useEffect, useState, type ReactNode } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SubscriptionTier } from "@/lib/subscription"
+import { createClient } from "@/lib/supabase/client"
+import Link from "next/link"
+import { useEffect, useState, type ReactNode } from "react"
 
 // Inline SVG Icons
 function LockIcon({ className }: { className?: string }) {
@@ -128,8 +128,8 @@ export function TierGuard({ children, requiredFeature, fallback }: TierGuardProp
       <Card className="bg-muted border-border">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-600/20 rounded-xl">
-              <LockIcon className="h-5 w-5 text-yellow-400" />
+            <div className="p-2 bg-warning/20 rounded-xl">
+              <LockIcon className="h-5 w-5 text-warning" />
             </div>
             <div>
               <CardTitle className="text-foreground text-lg">Upgrade erforderlich</CardTitle>

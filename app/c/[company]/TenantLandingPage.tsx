@@ -1,39 +1,39 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock,
-  Shield,
-  Star,
-  Check,
-  Users,
-  Car,
-  Calendar,
-  Menu,
-  X,
-  LogIn,
-  Plane,
-  Building2,
-  Heart,
-  Award,
-  ThumbsUp,
-  ChevronDown,
-  ChevronRight,
-  MessageCircle,
-  Sparkles,
+    Award,
+    Building2,
+    Calendar,
+    Car,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    Clock,
+    Heart,
+    LogIn,
+    Mail,
+    MapPin,
+    Menu,
+    MessageCircle,
+    Phone,
+    Plane,
+    Shield,
+    Sparkles,
+    Star,
+    ThumbsUp,
+    Users,
+    X,
 } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import type React from "react"
+import { useState } from "react"
 
 // =============================================================================
 // TYPES - Simplified and Safe
@@ -240,7 +240,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
   return (
     <div className="min-h-screen bg-card">
       {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link href={`/c/${company.company_slug}`} className="flex items-center gap-3 group">
@@ -512,7 +512,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                 />
               </div>
               {/* Schwebende Statistik-Karte */}
-              <div className="absolute -bottom-8 -left-8 bg-card rounded-2xl shadow-2xl p-6 border border-gray-100">
+              <div className="absolute -bottom-8 -left-8 bg-card rounded-2xl shadow-2xl p-6 border border-border">
                 <div className="flex items-center gap-5">
                   <div
                     className="w-14 h-14 rounded-xl flex items-center justify-center"
@@ -527,7 +527,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                 </div>
               </div>
               {/* Zweite schwebende Karte */}
-              <div className="absolute -top-6 -right-6 bg-card rounded-2xl shadow-2xl p-4 border border-gray-100">
+              <div className="absolute -top-6 -right-6 bg-card rounded-2xl shadow-2xl p-4 border border-border">
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <CIStarIcon key={i} className="h-5 w-5" />
@@ -612,7 +612,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
             {(faqs as Array<{ id: string; question: string; answer: string }>).map((faq) => (
               <div
                 key={faq.id}
-                className="bg-card rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}

@@ -1,14 +1,14 @@
 "use client"
 
-import type React from "react"
-import type { ReactNode } from "react"
-import { SEOHead } from "@/components/shared/SEOHead"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { V28Button } from "@/components/design-system/V28Button"
-import { Input } from "@/lib/compat"
+import { SEOHead } from "@/components/shared/SEOHead"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/lib/compat"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
+import type React from "react"
+import type { ReactNode } from "react"
 
 // Inline SVG Icons
 function SearchIcon({ className }: { className?: string }) {
@@ -191,7 +191,7 @@ export function StandardPageLayout({
               </span>
             </div>
 
-            <Badge variant="outline" className="bg-success/10 text-green-700 border-success">
+            <Badge variant="outline" className="bg-success/10 text-success border-success">
               <ActivityIcon className="h-3 w-3 mr-1.5" />
               System Online
             </Badge>
