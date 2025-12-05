@@ -17,6 +17,7 @@ jobs:
   lint:
     name: Linting
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -58,6 +59,7 @@ jobs:
   test-unit:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -99,6 +101,7 @@ jobs:
   validate-sql:
     name: SQL Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -118,6 +121,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint, type-check]
     steps:
       - uses: actions/checkout@v4
@@ -146,6 +150,7 @@ jobs:
   check-bundle:
     name: Bundle Size Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [build]
     steps:
       - uses: actions/checkout@v4
