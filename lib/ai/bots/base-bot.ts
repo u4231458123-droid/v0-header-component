@@ -24,6 +24,7 @@ import { getGitProtocol, type GitProtocolResult } from "./git-protocol"
 import { logError } from "@/lib/cicd/error-logger"
 import { promises as fs } from "fs"
 import path from "path"
+import type { BotContext, KnowledgeEntry, InformationSources } from "./types"
 
 export interface BotTask {
   id: string
@@ -31,7 +32,7 @@ export interface BotTask {
   description: string
   area: string
   filePath?: string
-  context?: any
+  context?: BotContext
 }
 
 export interface BotResponse {
@@ -41,20 +42,16 @@ export interface BotResponse {
   errors?: string[]
   warnings?: string[]
   documentation?: string | WorkDocumentation
-  changes?: any[]
+  changes?: string[]
 }
 
 export abstract class BaseBot {
   protected botName: string
   protected area: string
-  protected knowledgeBase: any
-  protected documentation: any[] = []
-  protected aiClient: any
-  protected informationSources: {
-    codebase: any
-    planung: string
-    documentation: any[]
-  } | null = null
+  protected knowledgeBase: KnowledgeEntry[]
+  protected documentation: WorkDocumentation[] = []
+  protected aiClient: any // External lib - behalten mit Kommentar
+  protected informationSources: InformationSources | null = null
   protected istAnalysisCompleted: Record<string, boolean> = {}
 
   constructor(botName: string, area: string) {
@@ -298,7 +295,7 @@ export abstract class BaseBot {
    */
   protected async askForHelp(
     question: string,
-    context: any = {},
+    context: BotContext = {},
     priority: "low" | "medium" | "high" | "critical" = "medium"
   ): Promise<BotAnswer> {
     // Workflow: Dokumentation → Master-Bot → User-Chat
@@ -333,7 +330,7 @@ export abstract class BaseBot {
   protected async checkUncertaintyAndGetHelp(
     task: BotTask,
     uncertainty: string,
-    context: any = {}
+    context: BotContext = {}
   ): Promise<BotAnswer | null> {
     // Prüfe ob Unsicherheit besteht
     if (!uncertainty || uncertainty.trim() === "") {
@@ -378,9 +375,9 @@ export abstract class BaseBot {
   protected async performMandatoryISTAnalysis(task: BotTask): Promise<{
     valid: boolean
     missing: string[]
-    results: Record<string, any>
+    results: Record<string, unknown>
   }> {
-    const results: Record<string, any> = {}
+    const results: Record<string, unknown> = {}
 
     // 1. Bestandsprüfung
     try {
@@ -495,7 +492,7 @@ export abstract class BaseBot {
     fixedCode?: string
   }> {
     // 1. HuggingFace für erste Analyse
-    let hfResult: any
+    let hfResult: string | null = null
     try {
       const hfPrompt = `Analysiere folgenden Code auf Fehler und Verbesserungen:\n\n${code}`
       hfResult = await this.generateWithAI(hfPrompt, "code-analysis")
@@ -505,7 +502,7 @@ export abstract class BaseBot {
     }
 
     // 2. Copilot für Code-Review
-    let copilotResult: any
+    let copilotResult: { passed: boolean; issues: Array<{ severity: string; message: string; line?: number }>; fixes?: Array<{ oldCode: string; newCode: string }> } = { passed: false, issues: [] }
     try {
       const { CopilotQualityBot } = await import("./copilot-quality-bot")
       const copilotBot = new CopilotQualityBot()
@@ -580,19 +577,20 @@ export abstract class BaseBot {
       }
 
       return result
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
       await logError({
         type: "git-protocol",
         severity: "critical",
         category: this.botName,
-        message: `Git-Protokoll Fehler: ${error.message}`,
+        message: `Git-Protokoll Fehler: ${errorMessage}`,
         context: { taskId: task.id },
         botId: this.botName,
       })
 
       return {
         success: false,
-        errors: [error.message],
+        errors: [errorMessage],
       }
     }
   }
@@ -732,7 +730,7 @@ export abstract class BaseBot {
         }).catch((err) => perfLogger.warn("Fehler bei Metriken-Erfassung:", err))
 
         return result
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Terminal-Fehler behandeln
         const errorHandling = await this.handleTerminalError(error, { task })
         if (errorHandling.shouldStop) {
