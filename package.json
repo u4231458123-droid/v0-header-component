@@ -45,6 +45,8 @@
     "test:bots": "node scripts/cicd/test-all-bots.mjs",
     "monitor:bots": "node scripts/cicd/monitor-bots.mjs",
     "fix:design": "node scripts/cicd/fix-design-violations.mjs",
+    "fix:all": "node scripts/cicd/fix-all.mjs",
+    "fix:all:dry": "node scripts/cicd/fix-all.mjs --dry-run",
     "optimize:performance": "node scripts/cicd/optimize-performance.mjs",
     "optimize:all": "node scripts/cicd/fix-design-violations.mjs && node scripts/cicd/optimize-performance.mjs",
     "test:e2e": "playwright test",

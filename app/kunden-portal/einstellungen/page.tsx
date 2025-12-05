@@ -1,15 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { createBrowserClient } from "@supabase/ssr"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Settings, User, Bell, Shield, Loader2, Save } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Link from "next/link"
 import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { createBrowserClient } from "@supabase/ssr"
+import { Loader2, Save, Shield, User } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 // Supabase Client Helper
 function getSupabaseClient() {
@@ -24,7 +24,7 @@ export default function KundenPortalEinstellungenPage() {
   const [saving, setSaving] = useState(false)
   const [customer, setCustomer] = useState<any>(null)
   const [userId, setUserId] = useState<string | null>(null)
-  
+
   // Form State
   const [formData, setFormData] = useState({
     salutation: "",
@@ -43,12 +43,12 @@ export default function KundenPortalEinstellungenPage() {
     try {
       const supabase = getSupabaseClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         window.location.href = "/auth/login"
         return
       }
-      
+
       setUserId(user.id)
 
       // Lade Kundendaten
@@ -100,7 +100,7 @@ export default function KundenPortalEinstellungenPage() {
 
     try {
       const supabase = getSupabaseClient()
-      
+
       // Update customers Tabelle
       const customerData = {
         first_name: formData.firstName,
@@ -118,7 +118,7 @@ export default function KundenPortalEinstellungenPage() {
         .maybeSingle()
 
       let error
-      
+
       if (customer) {
         const { error: updateError } = await supabase
           .from("customers")
@@ -153,7 +153,7 @@ export default function KundenPortalEinstellungenPage() {
       toastSuccess("Einstellungen erfolgreich gespeichert", {
         description: "Alle Änderungen wurden übernommen und sind sofort wirksam.",
       })
-      
+
       // Reload data to be sure
       loadCustomerData()
     } catch (error: any) {
@@ -247,28 +247,28 @@ export default function KundenPortalEinstellungenPage() {
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Vorname</Label>
-                  <Input 
-                    id="firstName" 
+                  <Input
+                    id="firstName"
                     value={formData.firstName}
                     onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                    placeholder="Max" 
+                    placeholder="Max"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Nachname</Label>
-                  <Input 
-                    id="lastName" 
+                  <Input
+                    id="lastName"
                     value={formData.lastName}
                     onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                    placeholder="Mustermann" 
+                    placeholder="Mustermann"
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-Mail</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
+                <Input
+                  id="email"
+                  type="email"
                   value={formData.email}
                   disabled // E-Mail ändern ist komplexer (Auth)
                   className="bg-muted"
@@ -277,12 +277,12 @@ export default function KundenPortalEinstellungenPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefon</Label>
-                <Input 
-                  id="phone" 
-                  type="tel" 
+                <Input
+                  id="phone"
+                  type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  placeholder="+49 123 456789" 
+                  placeholder="+49 123 456789"
                 />
               </div>
               <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">

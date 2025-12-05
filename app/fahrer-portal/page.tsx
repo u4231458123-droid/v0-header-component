@@ -1,51 +1,51 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { toastError, toastSuccess } from "@/lib/utils/toast"
-import { format, differenceInMinutes } from "date-fns"
-import { de } from "date-fns/locale"
 import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
-import { safeNumber } from "@/lib/utils/safe-number"
-import Link from "next/link"
 import {
-  Play,
-  Square,
-  Clock,
-  MapPin,
-  Phone,
-  MessageSquare,
-  Car,
-  User,
-  Calendar,
-  Euro,
-  Settings,
-  FileText,
-  Coffee,
-  Navigation,
-  CheckCircle2,
-  XCircle,
-  LogOut,
-  Send,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { createClient } from "@/lib/supabase/client"
+import { safeNumber } from "@/lib/utils/safe-number"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { differenceInMinutes, format } from "date-fns"
+import { de } from "date-fns/locale"
+import {
+    Calendar,
+    Car,
+    CheckCircle2,
+    Clock,
+    Coffee,
+    Euro,
+    FileText,
+    LogOut,
+    MapPin,
+    MessageSquare,
+    Navigation,
+    Phone,
+    Play,
+    Send,
+    Settings,
+    Square,
+    User,
+    XCircle,
 } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 interface DriverShift {
   id: string
@@ -1094,9 +1094,9 @@ export default function FahrerPortalPage() {
                   <CardTitle>Fahrtenverlauf</CardTitle>
                   <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={loadCompletedBookings}
                   disabled={loadingHistory}
                   className="bg-transparent"
