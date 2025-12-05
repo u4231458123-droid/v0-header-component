@@ -10,9 +10,51 @@ const { execSync } = require("child_process")
 const fs = require("fs")
 const path = require("path")
 
+// Logging-System
+const logDir = path.join(process.cwd(), ".cicd")
+const logFile = path.join(logDir, "self-heal-deps-log.json")
+
+function ensureLogDir() {
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true })
+  }
+}
+
+function loadLogHistory() {
+  ensureLogDir()
+  if (fs.existsSync(logFile)) {
+    try {
+      return JSON.parse(fs.readFileSync(logFile, "utf8"))
+    } catch {
+      return { history: [] }
+    }
+  }
+  return { history: [] }
+}
+
+function saveLogEntry(entry) {
+  const log = loadLogHistory()
+  log.history.push({
+    ...entry,
+    timestamp: new Date().toISOString(),
+  })
+  // Behalte nur die letzten 100 Einträge
+  if (log.history.length > 100) {
+    log.history = log.history.slice(-100)
+  }
+  fs.writeFileSync(logFile, JSON.stringify(log, null, 2))
+}
+
 async function selfHealDependencies() {
   console.log("🔧 Self-healing dependency issues...")
   console.log("=====================================\n")
+  
+  const logEntry = {
+    action: "self-heal-dependencies",
+    attempts: [],
+    result: null,
+    error: null,
+  }
 
   // Detect package manager (cross-platform)
   const hasPnpmLock = fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"))
@@ -24,11 +66,16 @@ async function selfHealDependencies() {
   try {
     // Versuch 1: Standard Install
     console.log(`📦 Versuch 1: Standard ${packageManager} install...`)
+    logEntry.attempts.push({ attempt: 1, method: "standard-install", status: "started" })
     execSync(installCommand, { stdio: "inherit", shell: true })
     console.log("✅ Dependencies installed successfully\n")
+    logEntry.attempts[0].status = "success"
+    logEntry.result = "success"
+    saveLogEntry(logEntry)
     return
   } catch (error) {
     console.log("❌ Standard install failed, trying fixes...\n")
+    logEntry.attempts[0] = { attempt: 1, method: "standard-install", status: "failed", error: error.message }
   }
 
   try {
