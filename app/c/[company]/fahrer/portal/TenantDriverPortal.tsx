@@ -118,6 +118,10 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
         setDriverStatus(previousStatus)
         console.error("Failed to update driver status:", error)
       }
+    } catch (err) {
+      // Netzwerkfehler oder unerwartete Exceptions abfangen
+      setDriverStatus(previousStatus)
+      console.error("Network error updating driver status:", err)
     } finally {
       setIsUpdatingStatus(false)
     }

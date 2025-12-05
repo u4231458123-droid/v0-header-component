@@ -49,7 +49,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 // Lazy Loading für AI-Komponente
-const DriverHelpBot = dynamic(() => import("@/components/ai/DriverHelpBot").then((mod) => ({ default: mod.DriverHelpBot })), {
+const DriverHelpBot = dynamic(() => import("@/components/ai/DriverHelpBot"), {
   ssr: false,
 })
 
