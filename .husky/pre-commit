@@ -104,7 +104,9 @@ fi
 
 echo -e "\n✨ Phase 4: Auto-Formatierung..."
 npx lint-staged || {
-  echo -e "\n⚠️ Lint-staged hat Warnungen (nicht blockierend)"
+  echo -e "\n❌ Lint-staged fehlgeschlagen - Commit abgebrochen"
+  echo -e "Formatierungsfehler müssen behoben werden bevor der Commit durchgeführt werden kann"
+  exit 1
 }
 
 echo -e "\n✅ Pre-Commit Validierung erfolgreich!"
