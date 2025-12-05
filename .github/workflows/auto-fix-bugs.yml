@@ -43,6 +43,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Pre-Flight Dependency Validation
+        run: pnpm exec node scripts/cicd/validate-dependencies.mjs
+        continue-on-error: true
+
       - name: Prepare Bots & Knowledge Base
         run: |
           echo "Preparing AI-Bots and Knowledge Base..."

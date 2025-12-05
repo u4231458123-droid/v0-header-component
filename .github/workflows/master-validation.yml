@@ -48,6 +48,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Pre-Flight Dependency Validation
+        run: pnpm exec node scripts/cicd/validate-dependencies.mjs
+        continue-on-error: true
+
       - name: TypeScript Check (Strict)
         run: pnpm exec tsc --noEmit --strict --pretty false
         continue-on-error: false
