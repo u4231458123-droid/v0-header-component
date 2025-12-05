@@ -15,13 +15,8 @@ echo -e "==========================\n"
 # =============================================================================
 
 echo "🏗️ Phase 1: Build Test..."
-timeout 300 npm run build || {
-  EXIT_CODE=$?
-  if [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n❌ Build hat Timeout (300s) - Push abgebrochen"
-  else
-    echo -e "\n❌ Build fehlgeschlagen - Push abgebrochen"
-  fi
+npm run build || {
+  echo -e "\n❌ Build fehlgeschlagen - Push abgebrochen"
   exit 1
 }
 
@@ -31,35 +26,13 @@ timeout 300 npm run build || {
 
 echo -e "\n🔗 Phase 2: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
-  # Timeout: 30 Sekunden, dann abbrechen
-  timeout 30 node scripts/cicd/check-dependencies.mjs
+  node scripts/cicd/check-dependencies.mjs
   EXIT_CODE=$?
-  
-<<<<<<< Current (Your changes)
-  if [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Timeout (30s) - überspringe"
-  elif [ $EXIT_CODE -eq 1 ]; then
-    echo -e "\n❌ Abhängigkeits-Prüfung: Kritische Fehler gefunden - Push abgebrochen"
+  if [ $EXIT_CODE -eq 1 ]; then
+    echo -e "\n❌ Abhängigkeits-Prüfung hat kritische Fehler gefunden - Push abgebrochen"
     exit 1
   elif [ $EXIT_CODE -eq 0 ]; then
     echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
-  else
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
-=======
-  # Explizite Behandlung aller möglichen Exit-Codes
-  if [ $EXIT_CODE -eq 0 ]; then
-    echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
-  elif [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Timeout (30s) - überspringe"
-    # Timeout ist nicht blockierend, Hook läuft weiter
-  elif [ $EXIT_CODE -eq 1 ]; then
-    echo -e "\n❌ Abhängigkeits-Prüfung: Kritische Fehler gefunden - Push abgebrochen"
-    exit 1
-  else
-    # Unbekannte Exit-Codes (2+) werden als kritische Fehler behandelt
-    echo -e "\n❌ Abhängigkeits-Prüfung: Unerwarteter Fehler (Exit-Code: $EXIT_CODE) - Push abgebrochen"
-    exit 1
->>>>>>> Incoming (Background Agent changes)
   fi
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"

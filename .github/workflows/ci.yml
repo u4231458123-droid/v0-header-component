@@ -50,7 +50,10 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: npm ci
-      - run: npm run test:unit -- --coverage --passWithNoTests
+      - run: npm run test:unit -- --coverage --passWithNoTests || {
+          echo "❌ Unit Tests fehlgeschlagen - Workflow abgebrochen"
+          exit 1
+        }
 
   # =============================================================================
   # JOB 4: DESIGN-VALIDIERUNG (Parallel)

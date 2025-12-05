@@ -13,14 +13,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
-
+      
       - run: npm ci
-
+      
       # Automatisches Dependency-Update
       - name: Update Dependencies
         run: |
@@ -35,18 +35,11 @@ jobs:
             }
           }
           npm audit fix || {
-<<<<<<< Current (Your changes)
-            echo "⚠️ npm audit fix hat Probleme gefunden - prüfe manuell"
-            # Audit-Fehler sind nicht kritisch, aber sollten dokumentiert werden
-          }
-
-=======
             echo "❌ npm audit fix fehlgeschlagen - Sicherheitslücken bleiben ungefixt"
             echo "⚠️ Workflow wird abgebrochen, da Sicherheitslücken nicht automatisch behoben werden konnten"
             exit 1
           }
       
->>>>>>> Incoming (Background Agent changes)
       # Automatisches Code-Formatting
       - name: Format Code
         run: |
@@ -54,7 +47,7 @@ jobs:
             echo "❌ Linting fehlgeschlagen - Workflow abgebrochen"
             exit 1
           }
-
+      
       # Automatisches Refactoring (Design-Tokens)
       - name: Design Token Validation
         run: |
@@ -62,22 +55,15 @@ jobs:
             echo "❌ Design-Validierung fehlgeschlagen - Workflow abgebrochen"
             exit 1
           }
-
+      
       # Commit & Push wenn Änderungen vorhanden
       - name: Commit Changes
         run: |
           git config user.name "AI Agent"
           git config user.email "ai-agent@mydispatch.de"
           git add .
-          if ! git diff --staged --quiet; then
-            git commit -m "chore: automated fixes and updates" || {
-              echo "❌ Commit fehlgeschlagen - Workflow abgebrochen"
-              exit 1
-            }
-            git push || {
-              echo "❌ Push fehlgeschlagen - Workflow abgebrochen"
-              exit 1
-            }
-          else
-            echo "✅ Keine Änderungen zum Committen vorhanden"
-          fi
+          git diff --staged --quiet || git commit -m "chore: automated fixes and updates"
+          git push || {
+            echo "❌ Git push fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }

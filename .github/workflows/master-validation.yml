@@ -98,19 +98,19 @@ jobs:
         run: |
           echo "Preparing AI-Bots and Knowledge Base..."
           pnpm exec node scripts/cicd/prepare-bots.js || {
-            echo "⚠️ Bot-Vorbereitung fehlgeschlagen - fahre fort (nicht kritisch für Deployment)"
+            echo "❌ Prepare Bots fehlgeschlagen - Workflow abgebrochen"
+            exit 1
           }
         env:
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
-        continue-on-error: true
 
       - name: Validate Complete System
         run: |
           echo "Validating complete system..."
           pnpm cicd:validate-system || {
-            echo "⚠️ System-Validierung hat Warnungen (nicht blockierend für Deployment)"
+            echo "❌ System-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
           }
-        continue-on-error: true
 
       - name: Design System Validation (Strict)
         run: |
@@ -121,6 +121,7 @@ jobs:
       - name: Mobile Responsiveness Check
         run: |
           echo "Checking mobile responsiveness..."
+          # Add mobile validation script here
           pnpm exec node scripts/validate-mobile.js || {
             echo "❌ Mobile-Validierung fehlgeschlagen - Workflow abgebrochen"
             exit 1
@@ -217,6 +218,7 @@ jobs:
       - name: API Endpoints Validation
         run: |
           echo "Validating API endpoints..."
+          # Add API validation script here
           pnpm exec node scripts/validate-api.js || {
             echo "❌ API-Validierung fehlgeschlagen - Workflow abgebrochen"
             exit 1
@@ -225,6 +227,7 @@ jobs:
       - name: API Security Check
         run: |
           echo "Checking API security..."
+          # Add security validation script here
           pnpm exec node scripts/validate-security.js || {
             echo "❌ Security-Validierung fehlgeschlagen - Workflow abgebrochen"
             exit 1
@@ -281,11 +284,11 @@ jobs:
         run: |
           echo "Running final validation checks with AI-Bots..."
           pnpm exec node scripts/validate-final.js || {
-            echo "⚠️ Final-Validierung hat Warnungen (nicht blockierend für Deployment)"
+            echo "❌ Finale Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
           }
         env:
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
-        continue-on-error: true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v5

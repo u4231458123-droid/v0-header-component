@@ -15,13 +15,8 @@ echo -e "============================\n"
 # =============================================================================
 
 echo "🧹 Phase 1: Linting..."
-timeout 120 npm run lint || {
-  EXIT_CODE=$?
-  if [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n❌ Linting hat Timeout (120s) - Commit abgebrochen"
-  else
-    echo -e "\n❌ Linting fehlgeschlagen - Commit abgebrochen"
-  fi
+npm run lint || {
+  echo -e "\n❌ Linting fehlgeschlagen - Commit abgebrochen"
   exit 1
 }
 
@@ -30,13 +25,8 @@ timeout 120 npm run lint || {
 # =============================================================================
 
 echo -e "\n📘 Phase 2: Type Checking..."
-timeout 120 npm run type-check || {
-  EXIT_CODE=$?
-  if [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n❌ Type Checking hat Timeout (120s) - Commit abgebrochen"
-  else
-    echo -e "\n❌ Type Checking fehlgeschlagen - Commit abgebrochen"
-  fi
+npm run type-check || {
+  echo -e "\n❌ Type Checking fehlgeschlagen - Commit abgebrochen"
   exit 1
 }
 
@@ -46,13 +36,8 @@ timeout 120 npm run type-check || {
 
 echo -e "\n🎨 Phase 3: Design-Validierung..."
 if [ -f "scripts/cicd/validate-design.mjs" ]; then
-  timeout 60 node scripts/cicd/validate-design.mjs || {
-    EXIT_CODE=$?
-    if [ $EXIT_CODE -eq 124 ]; then
-      echo -e "\n❌ Design-Validierung hat Timeout (60s) - Commit abgebrochen"
-    else
-      echo -e "\n❌ Design-Validierung fehlgeschlagen - Commit abgebrochen"
-    fi
+  node scripts/cicd/validate-design.mjs || {
+    echo -e "\n❌ Design-Validierung fehlgeschlagen - Commit abgebrochen"
     exit 1
   }
 else
@@ -63,37 +48,15 @@ fi
 # PHASE 3.5: ABHÄNGIGKEITS-PRÜFUNG
 # =============================================================================
 
-echo -e "\n🔗 Phase 3.5: Abhängigungs-Prüfung..."
+echo -e "\n🔗 Phase 3.5: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
-  # Timeout: 30 Sekunden, dann abbrechen
-  timeout 30 node scripts/cicd/check-dependencies.mjs
+  node scripts/cicd/check-dependencies.mjs
   EXIT_CODE=$?
-  
-<<<<<<< Current (Your changes)
-  if [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Timeout (30s) - überspringe"
-  elif [ $EXIT_CODE -eq 1 ]; then
-    echo -e "\n❌ Abhängigkeits-Prüfung: Kritische Fehler gefunden - Commit abgebrochen"
+  if [ $EXIT_CODE -eq 1 ]; then
+    echo -e "\n❌ Abhängigkeits-Prüfung hat kritische Fehler gefunden - Commit abgebrochen"
     exit 1
   elif [ $EXIT_CODE -eq 0 ]; then
     echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
-  else
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
-=======
-  # Explizite Behandlung aller möglichen Exit-Codes
-  if [ $EXIT_CODE -eq 0 ]; then
-    echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
-  elif [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Timeout (30s) - überspringe"
-    # Timeout ist nicht blockierend, Hook läuft weiter
-  elif [ $EXIT_CODE -eq 1 ]; then
-    echo -e "\n❌ Abhängigkeits-Prüfung: Kritische Fehler gefunden - Commit abgebrochen"
-    exit 1
-  else
-    # Unbekannte Exit-Codes (2+) werden als kritische Fehler behandelt
-    echo -e "\n❌ Abhängigkeits-Prüfung: Unerwarteter Fehler (Exit-Code: $EXIT_CODE) - Commit abgebrochen"
-    exit 1
->>>>>>> Incoming (Background Agent changes)
   fi
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
@@ -105,13 +68,8 @@ fi
 
 echo -e "\n🗄️ Phase 3.6: SQL-Dateien-Validierung..."
 if [ -f "scripts/cicd/validate-sql-files.mjs" ]; then
-  timeout 60 node scripts/cicd/validate-sql-files.mjs || {
-    EXIT_CODE=$?
-    if [ $EXIT_CODE -eq 124 ]; then
-      echo -e "\n❌ SQL-Validierung hat Timeout (60s) - Commit abgebrochen"
-    else
-      echo -e "\n❌ SQL-Validierung fehlgeschlagen - Commit abgebrochen"
-    fi
+  node scripts/cicd/validate-sql-files.mjs || {
+    echo -e "\n❌ SQL-Validierung fehlgeschlagen - Commit abgebrochen"
     exit 1
   }
 else
@@ -144,13 +102,8 @@ fi
 # =============================================================================
 
 echo -e "\n✨ Phase 4: Auto-Formatierung..."
-timeout 60 npx lint-staged || {
-  EXIT_CODE=$?
-  if [ $EXIT_CODE -eq 124 ]; then
-    echo -e "\n⚠️ Lint-staged hat Timeout (60s) - überspringe"
-  else
-    echo -e "\n⚠️ Lint-staged hat Warnungen (nicht blockierend)"
-  fi
+npx lint-staged || {
+  echo -e "\n⚠️ Lint-staged hat Warnungen (nicht blockierend)"
 }
 
 echo -e "\n✅ Pre-Commit Validierung erfolgreich!"
