@@ -11,14 +11,16 @@ import { safeNumber } from "@/lib/utils/safe-number"
 import { CalendarIcon, UserIcon, CreditCardIcon, Printer, MapPinIcon, PencilIcon, FileTextIcon } from "lucide-react"
 import { downloadPDF } from "@/lib/pdf/pdf-generator"
 import { createClient } from "@/lib/supabase/client"
+import { ErrorHandler } from "@/lib/utils/error-handler"
 import { EditQuoteDialog } from "./EditQuoteDialog"
+import type { Quote, QuoteItem } from "@/types/entities"
 import { toast } from "sonner"
 
 interface QuoteDetailsDialogProps {
-  quote: any
+  quote: Quote
   open: boolean
   onOpenChange: (open: boolean) => void
-  onUpdate?: (updatedQuote: any) => void
+  onUpdate?: (updatedQuote: Quote) => void
 }
 
 export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: QuoteDetailsDialogProps) {
@@ -26,7 +28,7 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
   const [printing, setPrinting] = useState(false)
   const [createdByProfile, setCreatedByProfile] = useState<any>(null)
   const [updatedByProfile, setUpdatedByProfile] = useState<any>(null)
-  const [quoteItems, setQuoteItems] = useState<any[]>([])
+  const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([])
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const supabase = createClient()
 
@@ -139,12 +141,8 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
       })
 
       setPrinting(false)
-    } catch (error: any) {
-      console.error("Fehler beim PDF-Druck:", error)
-      toast.error("Fehler beim Erstellen des PDFs", {
-        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
-        duration: 5000,
-      })
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "QuoteDetailsDialog", action: "printPDF" }, "Fehler beim Erstellen des PDFs")
       setPrinting(false)
     }
   }
@@ -362,12 +360,12 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
           )}
         </div>
 
-        <DialogFooter className="flex items-center justify-between">
-          <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2">
+          <Button variant="outline" onClick={handlePrintPDF} disabled={printing} className="w-full sm:w-auto">
             <Printer className="h-4 w-4 mr-2" />
             {printing ? "Wird erstellt..." : "PDF drucken"}
           </Button>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => setEditDialogOpen(true)}

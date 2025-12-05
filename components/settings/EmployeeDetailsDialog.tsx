@@ -22,11 +22,13 @@ import {
 import { EditEmployeeDialog } from "./EditEmployeeDialog"
 import { createClient } from "@/lib/supabase/client"
 import { downloadPDF } from "@/lib/pdf/pdf-generator"
+import { ErrorHandler } from "@/lib/utils/error-handler"
 import { Printer } from "lucide-react"
+import type { Employee } from "@/types/entities"
 import { toast } from "sonner"
 
 interface EmployeeDetailsDialogProps {
-  employee: any
+  employee: Employee
   open: boolean
   onOpenChange: (open: boolean) => void
   onEmployeeUpdated?: () => void
@@ -101,7 +103,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
         setDocuments(data)
       }
     } catch (error) {
-      console.error("Error loading documents:", error)
+      ErrorHandler.handleSilent(error, { component: "EmployeeDetailsDialog", action: "loadDocuments" })
     } finally {
       setLoadingDocuments(false)
     }
@@ -111,7 +113,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
     const { data, error } = await supabase.storage.from("documents").createSignedUrl(fileUrl, 3600)
 
     if (error) {
-      console.error("Error creating signed URL:", error)
+      ErrorHandler.showToast(error, { component: "EmployeeDetailsDialog", action: "createSignedUrl" }, "Fehler beim Öffnen des Dokuments")
       return
     }
 
@@ -147,9 +149,8 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
       })
 
       setPrinting(false)
-    } catch (error: any) {
-      console.error("Fehler beim PDF-Druck:", error)
-      toast.error("Fehler beim Erstellen des PDFs")
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "EmployeeDetailsDialog", action: "printPDF" }, "Fehler beim Erstellen des PDFs")
       setPrinting(false)
     }
   }
@@ -179,7 +180,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
     }
   }
 
-  const handleEditSuccess = (updatedEmployee: any) => {
+  const handleEditSuccess = (updatedEmployee: Employee) => {
     setLocalEmployee(updatedEmployee)
     setShowEditDialog(false)
     onEmployeeUpdated?.()
@@ -379,15 +380,15 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
             </div>
           </div>
 
-          <DialogFooter className="mt-6 flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <DialogFooter className="mt-6 flex flex-wrap gap-2 sm:justify-end">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1 sm:flex-initial">
               Schließen
             </Button>
-            <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+            <Button variant="outline" onClick={handlePrintPDF} disabled={printing} className="flex-1 sm:flex-initial">
               <Printer className="h-4 w-4 mr-2" />
               {printing ? "Wird erstellt..." : "PDF Drucken"}
             </Button>
-            <Button onClick={() => setShowEditDialog(true)} className="gap-2">
+            <Button onClick={() => setShowEditDialog(true)} className="flex-1 sm:flex-initial gap-2">
               <PencilIcon className="h-4 w-4" />
               Bearbeiten
             </Button>

@@ -103,7 +103,7 @@ export function CookieBanner() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-3">
-              {/* Essential Cookies - bg-background -> bg-muted/50, bg-slate-400 -> bg-muted-foreground */}
+              {/* Essential Cookies - verwendet Design-Tokens */}
               <div className="p-4 border rounded-xl bg-muted/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-sm">Technisch notwendig</span>

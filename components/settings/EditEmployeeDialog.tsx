@@ -19,36 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddressAutocomplete } from "@/components/maps/AddressAutocomplete"
 import { SALUTATION_OPTIONS, formatPhoneNumber } from "@/lib/form-constants"
-
-interface Employee {
-  id: string
-  company_id?: string
-  email: string
-  full_name?: string
-  role?: string
-  phone?: string
-  phone_mobile?: string
-  salutation?: string
-  title?: string
-  date_of_birth?: string
-  nationality?: string
-  address_data?: {
-    street?: string
-    house_number?: string
-    postal_code?: string
-    city?: string
-    country?: string
-  }
-  employment_data?: {
-    start_date?: string
-    contract_type?: string
-    department?: string
-    position?: string
-    working_hours?: number
-    hourly_rate?: number
-    monthly_salary?: number
-  }
-}
+import type { Employee } from "@/types/entities"
 
 interface EditEmployeeDialogProps {
   employee: Employee
@@ -116,7 +87,24 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
     setIsSubmitting(true)
 
     try {
-      const updateData: any = {
+      const updateData: Partial<Employee> & {
+        address_data?: {
+          street?: string
+          house_number?: string
+          postal_code?: string
+          city?: string
+          country?: string
+        }
+        employment_data?: {
+          start_date?: string | null
+          contract_type?: string
+          department?: string
+          position?: string
+          working_hours?: number | null
+          hourly_rate?: number | null
+          monthly_salary?: number | null
+        }
+      } = {
         salutation: salutation || null,
         title: title || null,
         full_name: fullName || null,
@@ -155,9 +143,11 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
       if (onSuccess && data) {
         onSuccess(data)
       }
-    } catch (error: any) {
+    } catch (error) {
+      const { ErrorHandler } = await import("@/lib/utils/error-handler")
+      const errorMessage = ErrorHandler.toError(error).message || "Fehler beim Aktualisieren des Mitarbeiters"
       console.error("Error updating employee:", error)
-      toast.error(error.message || "Fehler beim Aktualisieren des Mitarbeiters")
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

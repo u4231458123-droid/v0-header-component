@@ -118,7 +118,7 @@ export function TierGuard({ children, requiredFeature, fallback }: TierGuardProp
   }
 
   if (hasAccess === null) {
-    return <div className="animate-pulse h-32 bg-muted rounded-lg"></div>
+    return <div className="animate-pulse h-32 bg-muted rounded-xl"></div>
   }
 
   if (!hasAccess) {
@@ -128,7 +128,7 @@ export function TierGuard({ children, requiredFeature, fallback }: TierGuardProp
       <Card className="bg-muted border-border">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-600/20 rounded-lg">
+            <div className="p-2 bg-yellow-600/20 rounded-xl">
               <LockIcon className="h-5 w-5 text-yellow-400" />
             </div>
             <div>

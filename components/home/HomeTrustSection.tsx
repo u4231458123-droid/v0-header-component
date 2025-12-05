@@ -70,28 +70,28 @@ export const HomeTrustSection = () => {
             <ShieldIcon className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
           </div>
           <h3 className="text-sm md:text-base font-semibold text-primary-foreground mb-1">ISO 27001</h3>
-          <p className="text-xs md:text-sm text-slate-300">Zertifiziert</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Zertifiziert</p>
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="w-12 h-12 md:w-14 md:h-14 bg-card/10 rounded-xl flex items-center justify-center mb-3">
             <LockIcon className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
           </div>
           <h3 className="text-sm md:text-base font-semibold text-primary-foreground mb-1">DSGVO</h3>
-          <p className="text-xs md:text-sm text-slate-300">100% Konform</p>
+          <p className="text-xs md:text-sm text-muted-foreground">100% Konform</p>
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="w-12 h-12 md:w-14 md:h-14 bg-card/10 rounded-xl flex items-center justify-center mb-3">
             <CheckCircle2Icon className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
           </div>
           <h3 className="text-sm md:text-base font-semibold text-primary-foreground mb-1">GoBD</h3>
-          <p className="text-xs md:text-sm text-slate-300">Zertifiziert</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Zertifiziert</p>
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="w-12 h-12 md:w-14 md:h-14 bg-card/10 rounded-xl flex items-center justify-center mb-3">
             <AwardIcon className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
           </div>
           <h3 className="text-sm md:text-base font-semibold text-primary-foreground mb-1">Made in DE</h3>
-          <p className="text-xs md:text-sm text-slate-300">Server in Deutschland</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Server in Deutschland</p>
         </div>
       </div>
     </V28MarketingSection>

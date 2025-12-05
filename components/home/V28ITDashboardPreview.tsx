@@ -157,11 +157,11 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
     <div className="hidden lg:block animate-fade-in" style={{ animationDelay }}>
       <V28BrowserMockup title="support.nexify.nl/dashboard">
         {/* Dashboard Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-background">
+        <div className="px-6 py-4 border-b border-border bg-background">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-muted ring-1 ring-slate-200">
-                <MonitorIcon className="h-5 w-5 text-slate-700" />
+              <div className="p-2 rounded-xl bg-muted ring-1 ring-border">
+                <MonitorIcon className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
                 <h3 className="font-sans text-base font-bold text-foreground">NeXify IT-Control</h3>
@@ -180,11 +180,11 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
           {/* KPI Cards Grid */}
           <div className="grid grid-cols-2 gap-5">
             {/* Server Uptime Card */}
-            <div className="p-4 rounded-xl bg-card border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-200">
+            <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-foreground">Server Uptime</span>
                 <div className="p-1.5 rounded-xl bg-background">
-                  <ServerIcon className="w-4 h-4 text-slate-700" />
+                  <ServerIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="font-sans text-2xl font-bold text-foreground">99.97%</div>
@@ -195,11 +195,11 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
             </div>
 
             {/* Open Tickets Card */}
-            <div className="p-4 rounded-xl bg-card border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-200">
+            <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-foreground">Open Tickets</span>
                 <div className="p-1.5 rounded-xl bg-background">
-                  <HeadphonesIcon className="w-4 h-4 text-slate-700" />
+                  <HeadphonesIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="font-sans text-2xl font-bold text-foreground">12</div>
@@ -210,11 +210,11 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
             </div>
 
             {/* Response Time Card */}
-            <div className="p-4 rounded-xl bg-card border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-200">
+            <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-foreground">Avg. Response</span>
                 <div className="p-1.5 rounded-xl bg-background">
-                  <ClockIcon className="w-4 h-4 text-slate-700" />
+                  <ClockIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="font-sans text-2xl font-bold text-foreground">45 Min</div>
@@ -225,11 +225,11 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
             </div>
 
             {/* Active Monitors Card */}
-            <div className="p-4 rounded-xl bg-card border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-200">
+            <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-foreground">Active Monitors</span>
                 <div className="p-1.5 rounded-xl bg-background">
-                  <ShieldIcon className="w-4 h-4 text-slate-700" />
+                  <ShieldIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="font-sans text-2xl font-bold text-foreground">87</div>
@@ -310,8 +310,8 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
                       <div className="font-sans text-xs text-foreground">All Servers + Databases</div>
                     </div>
                   </div>
-                  <div className="px-2 py-1 rounded-xl border border-slate-300">
-                    <span className="font-sans text-xs font-semibold text-slate-700">14:00 Uhr</span>
+                  <div className="px-2 py-1 rounded-xl border border-border">
+                    <span className="font-sans text-xs font-semibold text-muted-foreground">14:00 Uhr</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pl-9 pt-3">

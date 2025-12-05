@@ -177,7 +177,19 @@ export default function FahrerProfilPage() {
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    window.location.href = "/auth/login"
+    // Redirect zur Landingpage des Unternehmens, falls verfügbar
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      const { data: driver } = await supabase.from("drivers").select("company_id, companies(company_slug)").eq("user_id", user.id).single()
+      if (driver?.companies?.company_slug) {
+        window.location.href = `/c/${driver.companies.company_slug}`
+        return
+      }
+    }
+    // Fallback: Zur MyDispatch Landingpage
+    window.location.href = "/"
   }
 
   const getDaysUntilExpiry = (date: string | null) => {

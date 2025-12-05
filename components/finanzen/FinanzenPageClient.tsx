@@ -41,13 +41,26 @@ import {
 } from "lucide-react"
 import { safeNumber } from "@/lib/utils/safe-number"
 
+import type { Invoice, Quote, Customer, Booking, Company } from "@/types/entities"
+
+interface CashBookEntry {
+  id: string
+  company_id: string
+  date: string
+  description: string
+  amount: number
+  type: "income" | "expense"
+  category: string | null
+  created_at: string
+}
+
 interface FinanzenPageClientProps {
-  invoices?: any[]
-  quotes?: any[]
-  cashBookEntries?: any[]
-  customers?: any[]
-  bookings?: any[]
-  company?: any
+  invoices?: Invoice[]
+  quotes?: Quote[]
+  cashBookEntries?: CashBookEntry[]
+  customers?: Customer[]
+  bookings?: Booking[]
+  company?: Company
   companyId?: string | null
 }
 
@@ -68,7 +81,7 @@ export function FinanzenPageClient({
   const [localInvoices, setLocalInvoices] = useState(invoices || [])
   const [localQuotes, setLocalQuotes] = useState(quotes || [])
   const [localCashBookEntries, setLocalCashBookEntries] = useState(cashBookEntries || [])
-  const [detailsQuote, setDetailsQuote] = useState<any>(null)
+  const [detailsQuote, setDetailsQuote] = useState<Quote | null>(null)
 
   const supabase = createClient()
 
@@ -198,7 +211,7 @@ export function FinanzenPageClient({
   const hasActiveFilters = searchQuery !== "" || statusFilter !== "all"
 
   // Status Badge - Using only design system colors
-  const getInvoiceStatusBadge = (invoice: any) => {
+  const getInvoiceStatusBadge = (invoice: Invoice) => {
     const isOverdue = invoice.status === "pending" && new Date(invoice.due_date) < new Date()
     if (isOverdue) {
       return <Badge variant="destructive">Überfällig</Badge>

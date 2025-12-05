@@ -1,9 +1,9 @@
 export const designTokens = {
   colors: {
     primary: {
-      DEFAULT: "#475569",
-      light: "#64748b",
-      dark: "#334155",
+      DEFAULT: "#343f60",
+      light: "#475569",
+      dark: "#2a3447",
     },
     slate: {
       50: "#f8fafc",

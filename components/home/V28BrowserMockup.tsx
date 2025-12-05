@@ -17,14 +17,14 @@ interface V28BrowserMockupProps {
 
 export function V28BrowserMockup({ children, title = "MyDispatch Dashboard" }: V28BrowserMockupProps) {
   return (
-    <div className="relative rounded-2xl border border-slate-200 shadow-2xl overflow-hidden bg-card">
+    <div className="relative rounded-2xl border border-border shadow-2xl overflow-hidden bg-card">
       {/* Premium Glow Effect - Tailwind-native */}
-      <div className="absolute inset-0 bg-slate-300 blur-xl opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-muted blur-xl opacity-20 pointer-events-none" />
 
       {/* Browser Window Container */}
       <div className="relative z-10">
         {/* Traffic Lights + Address Bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-muted">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted">
           {/* macOS Traffic Lights - SVG for Pixel-Perfect Rendering */}
           <div className="flex items-center gap-2">
             <svg width="12" height="12" viewBox="0 0 12 12" className="text-red-400">

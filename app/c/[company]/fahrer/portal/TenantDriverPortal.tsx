@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { ErrorHandler } from "@/lib/utils/error-handler"
 import { createBrowserClient } from "@supabase/ssr"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -109,8 +110,6 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   const handleLogout = async () => {
     const supabase = getSupabaseClient()
     await supabase.auth.signOut()
-    // Redirect zurück zur Unternehmens-Landingpage
-    window.location.href = `/c/${company.company_slug}`
     // Redirect zur Login-Seite des Unternehmens
     window.location.href = `/c/${company.company_slug}/login`
   }
@@ -159,10 +158,12 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
               {company.logo_url ? (
                 <Image
                   src={company.logo_url || "/placeholder.svg"}
-                  alt={company.name}
+                  alt={`${company.name} Logo`}
                   width={40}
                   height={40}
                   className="h-10 w-auto object-contain"
+                  loading="lazy"
+                  sizes="40px"
                 />
               ) : (
                 <div
@@ -179,16 +180,16 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
             </Link>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="relative" aria-label={`Benachrichtigungen${todayBookings.length > 0 ? ` (${todayBookings.length} neue)` : ""}`}>
+                <Bell className="h-5 w-5" aria-hidden="true" />
                 {todayBookings.length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center" aria-label={`${todayBookings.length} neue Benachrichtigungen`}>
                     {todayBookings.length}
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Abmelden">
+                <LogOut className="h-5 w-5" aria-hidden="true" />
               </Button>
             </div>
           </div>

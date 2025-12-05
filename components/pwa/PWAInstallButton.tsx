@@ -89,7 +89,7 @@ export function PWAInstallButton({
     
     if (typeof window === "undefined") return
 
-    // iOS: Show modal with instructions
+    // iOS: Show modal with instructions (iOS hat keinen beforeinstallprompt)
     if (isIOS) {
       console.log("[PWA] iOS detected - showing modal")
       setShowModal(true)
@@ -103,12 +103,12 @@ export function PWAInstallButton({
     console.log("[PWA] window.deferredPWAPrompt:", window.deferredPWAPrompt)
     console.log("[PWA] state prompt:", prompt)
 
-    // If prompt available, trigger it immediately
+    // WICHTIG: Wenn Prompt verfügbar ist, direkt aufrufen - KEIN Modal!
     if (currentPrompt) {
-      console.log("[PWA] Triggering prompt...")
+      console.log("[PWA] Triggering prompt directly...")
       setIsInstalling(true)
       try {
-        // WICHTIG: prompt() muss aufgerufen werden, um den Browser-Dialog zu öffnen
+        // Direkter Aufruf des Browser-Install-Prompts
         await currentPrompt.prompt()
         console.log("[PWA] Prompt shown, waiting for user choice...")
         
@@ -128,6 +128,7 @@ export function PWAInstallButton({
         // Prompt might be invalid - clear it
         setPrompt(null)
         window.deferredPWAPrompt = null
+        // Nur bei Fehler Modal zeigen
         setShowModal(true)
       } finally {
         setIsInstalling(false)
@@ -135,13 +136,13 @@ export function PWAInstallButton({
       return
     }
 
-    // No prompt available - show modal
-    console.warn("[PWA] No prompt available - showing modal")
-    console.warn("[PWA] Possible reasons:")
-    console.warn("[PWA] 1. PWA already installed")
-    console.warn("[PWA] 2. Browser doesn't support PWA")
-    console.warn("[PWA] 3. beforeinstallprompt event not fired (needs HTTPS + valid manifest + service worker)")
-    console.warn("[PWA] 4. Running in preview/development environment")
+    // Kein Prompt verfügbar - nur dann Modal zeigen
+    // Dies passiert nur wenn:
+    // 1. PWA bereits installiert ist
+    // 2. Browser unterstützt kein PWA
+    // 3. beforeinstallprompt Event noch nicht gefeuert wurde
+    // 4. Entwicklungsumgebung ohne HTTPS
+    console.warn("[PWA] No prompt available - showing modal with instructions")
     setShowModal(true)
   }, [prompt, isIOS])
 

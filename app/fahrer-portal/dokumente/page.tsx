@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { format, differenceInDays } from "date-fns"
 import { de } from "date-fns/locale"
 import Link from "next/link"
-import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { toast } from "sonner"
 import {
   ArrowLeft,
   Upload,
@@ -119,7 +119,7 @@ export default function DriverDocumentsPage() {
     try {
       const supabase = getSupabase()
       if (!supabase) {
-        toastError("Fehler: Supabase-Client nicht verfügbar", {
+        toast.error("Fehler: Supabase-Client nicht verfügbar", {
           description: "Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
           duration: 5000,
         })
@@ -129,7 +129,7 @@ export default function DriverDocumentsPage() {
 
       // Dateigröße prüfen (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        toastError("Datei ist zu groß. Maximale Größe: 10MB", {
+        toast.error("Datei ist zu groß. Maximale Größe: 10MB", {
           description: "Bitte wählen Sie eine kleinere Datei oder komprimieren Sie das Bild.",
           duration: 5000,
         })
@@ -145,7 +145,7 @@ export default function DriverDocumentsPage() {
 
       if (uploadError) {
         console.error("Upload error:", uploadError)
-        toastError(`Fehler beim Hochladen: ${uploadError.message}`, {
+        toast.error(`Fehler beim Hochladen: ${uploadError.message}`, {
           description: "Bitte überprüfen Sie die Datei und versuchen Sie es erneut.",
           duration: 5000,
         })
@@ -169,7 +169,7 @@ export default function DriverDocumentsPage() {
 
       if (insertError) {
         console.error("Insert error:", insertError)
-        toastError(`Fehler beim Speichern: ${insertError.message}`, {
+        toast.error(`Fehler beim Speichern: ${insertError.message}`, {
           description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
           duration: 5000,
         })
@@ -181,14 +181,16 @@ export default function DriverDocumentsPage() {
         return
       }
 
-      toastSuccess("Dokument erfolgreich hochgeladen", {
+      toast.success("Dokument erfolgreich hochgeladen", {
         description: "Das Dokument wurde hochgeladen und wartet auf Freigabe.",
         duration: 4000,
       })
       loadDocuments()
-    } catch (error: any) {
+    } catch (error) {
+      const { ErrorHandler } = await import("@/lib/utils/error-handler")
+      const errorMessage = ErrorHandler.toError(error).message || "Unbekannter Fehler"
       console.error("Error uploading document:", error)
-      toastError(`Fehler: ${error?.message || "Unbekannter Fehler"}`, {
+      toast.error(`Fehler: ${errorMessage}`, {
         description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
         duration: 5000,
       })
@@ -201,7 +203,13 @@ export default function DriverDocumentsPage() {
     const supabase = getSupabase()
     if (!supabase) return
     await supabase.auth.signOut()
-    window.location.href = "/auth/login"
+    // Redirect zur Landingpage des Unternehmens, falls verfügbar
+    if (company?.company_slug) {
+      window.location.href = `/c/${company.company_slug}`
+      return
+    }
+    // Fallback: Zur MyDispatch Landingpage
+    window.location.href = "/"
   }
 
   const getStatusBadge = (doc: Document) => {
@@ -286,13 +294,13 @@ export default function DriverDocumentsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Link href="/fahrer-portal">
-                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
-                  <Home className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground" aria-label="Zur Startseite">
+                  <Home className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </Link>
               <Link href="/fahrer-portal/profil">
-                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
-                  <User className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground" aria-label="Profil öffnen">
+                  <User className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </Link>
               <Button
@@ -300,8 +308,9 @@ export default function DriverDocumentsPage() {
                 size="icon"
                 className="rounded-full text-muted-foreground hover:text-foreground"
                 onClick={handleLogout}
+                aria-label="Abmelden"
               >
-                <LogOut className="h-5 w-5" />
+                <LogOut className="h-5 w-5" aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -416,9 +425,11 @@ export default function DriverDocumentsPage() {
                               if (data?.signedUrl) {
                                 window.open(data.signedUrl, "_blank")
                               }
-                            } catch (error: any) {
+                            } catch (error) {
+                              const { ErrorHandler } = await import("@/lib/utils/error-handler")
+                              ErrorHandler.handleSilent(error, { component: "DocumentDownload", action: "download" })
                               console.error("Error downloading document:", error)
-                              toastError("Fehler beim Öffnen des Dokuments", {
+                              toast.error("Fehler beim Öffnen des Dokuments", {
                                 description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
                                 duration: 5000,
                               })
