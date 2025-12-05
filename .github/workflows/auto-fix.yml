@@ -5,21 +5,31 @@ on:
   schedule:
     - cron: "0 2 * * *" # Täglich um 2 Uhr
 
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
 jobs:
   auto-fix:
     name: Auto-Fix
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
       
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
       
       # Automatisches Dependency-Update
       - name: Update Dependencies
@@ -27,20 +37,22 @@ jobs:
           npx npm-check-updates -u || {
             echo "⚠️ npm-check-updates fehlgeschlagen - fahre mit bestehenden Dependencies fort"
           }
-          if ! npm install; then
-            echo "❌ npm install fehlgeschlagen - versuche self-heal"
-            if ! npm run self-heal:deps; then
+          # Nach npm-check-updates muss pnpm install (nicht --frozen-lockfile) verwendet werden
+          # um das Lockfile zu aktualisieren
+          if ! pnpm install; then
+            echo "❌ pnpm install fehlgeschlagen - versuche self-heal"
+            if ! pnpm run self-heal:deps; then
               echo "❌ Self-heal fehlgeschlagen - Workflow abgebrochen"
               exit 1
             fi
-            # Nach self-heal erneut npm install versuchen
-            if ! npm install; then
-              echo "❌ npm install fehlgeschlagen auch nach self-heal - Workflow abgebrochen"
+            # Nach self-heal erneut pnpm install versuchen
+            if ! pnpm install; then
+              echo "❌ pnpm install fehlgeschlagen auch nach self-heal - Workflow abgebrochen"
               exit 1
             fi
           fi
-          if ! npm audit fix; then
-            echo "❌ npm audit fix fehlgeschlagen - Sicherheitslücken bleiben ungefixt"
+          if ! pnpm audit --fix; then
+            echo "❌ pnpm audit fix fehlgeschlagen - Sicherheitslücken bleiben ungefixt"
             echo "⚠️ Workflow wird abgebrochen, da Sicherheitslücken nicht automatisch behoben werden konnten"
             exit 1
           fi
@@ -48,7 +60,7 @@ jobs:
       # Automatisches Code-Formatting
       - name: Format Code
         run: |
-          npm run lint -- --fix || {
+          pnpm run lint -- --fix || {
             echo "❌ Linting fehlgeschlagen - Workflow abgebrochen"
             exit 1
           }
@@ -56,7 +68,7 @@ jobs:
       # Automatisches Refactoring (Design-Tokens)
       - name: Design Token Validation
         run: |
-          npm run validate:design || {
+          pnpm run validate:design || {
             echo "❌ Design-Validierung fehlgeschlagen - Workflow abgebrochen"
             exit 1
           }
@@ -68,7 +80,10 @@ jobs:
           git config user.email "ai-agent@mydispatch.de"
           git add .
           git diff --staged --quiet || git commit -m "chore: automated fixes and updates"
-          git push || {
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push origin HEAD:${{ github.ref }} || {
             echo "❌ Git push fehlgeschlagen - Workflow abgebrochen"
             exit 1
           }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

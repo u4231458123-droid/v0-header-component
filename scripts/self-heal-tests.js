@@ -15,10 +15,18 @@ async function selfHealTests() {
   let attempts = 0
   const MAX_ATTEMPTS = 3
 
+  // Detect package manager (cross-platform)
+  const fs = require("fs")
+  const path = require("path")
+  const hasPnpmLock = fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"))
+  const hasNpmLock = fs.existsSync(path.join(process.cwd(), "package-lock.json"))
+  const packageManager = hasPnpmLock ? "pnpm" : hasNpmLock ? "npm" : "npm"
+  const testCommand = packageManager === "pnpm" ? "pnpm run test" : "npm run test"
+
   while (attempts < MAX_ATTEMPTS) {
     try {
       console.log(`📝 Versuch ${attempts + 1}/${MAX_ATTEMPTS}...`)
-      execSync("npm run test", { stdio: "inherit" })
+      execSync(testCommand, { stdio: "inherit", shell: true })
       console.log("✅ All tests passed\n")
       return
     } catch (error) {
@@ -36,10 +44,13 @@ async function selfHealTests() {
           continue
         }
 
-        // Cache clear
+        // Cache clear (cross-platform)
         console.log("🧹 Clearing test cache...")
         try {
-          execSync("npm run test -- --clearCache", { stdio: "inherit" })
+          const clearCacheCommand = packageManager === "pnpm" 
+            ? "pnpm run test -- --clearCache" 
+            : "npm run test -- --clearCache"
+          execSync(clearCacheCommand, { stdio: "inherit", shell: true })
         } catch {
           // Ignore if clearCache not supported
         }

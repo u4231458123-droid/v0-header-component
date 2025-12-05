@@ -14,10 +14,17 @@ async function selfHealDependencies() {
   console.log("🔧 Self-healing dependency issues...")
   console.log("=====================================\n")
 
+  // Detect package manager (cross-platform)
+  const hasPnpmLock = fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"))
+  const hasNpmLock = fs.existsSync(path.join(process.cwd(), "package-lock.json"))
+  const packageManager = hasPnpmLock ? "pnpm" : hasNpmLock ? "npm" : "pnpm" // Default to pnpm
+  const installCommand = packageManager === "pnpm" ? "pnpm install" : "npm install"
+  const installFrozenCommand = packageManager === "pnpm" ? "pnpm install --frozen-lockfile" : "npm ci"
+
   try {
     // Versuch 1: Standard Install
-    console.log("📦 Versuch 1: Standard npm install...")
-    execSync("npm install", { stdio: "inherit" })
+    console.log(`📦 Versuch 1: Standard ${packageManager} install...`)
+    execSync(installCommand, { stdio: "inherit", shell: true })
     console.log("✅ Dependencies installed successfully\n")
     return
   } catch (error) {
@@ -25,30 +32,57 @@ async function selfHealDependencies() {
   }
 
   try {
-    // Versuch 2: Legacy Peer Deps
-    console.log("📦 Versuch 2: npm install --legacy-peer-deps...")
-    execSync("npm install --legacy-peer-deps", { stdio: "inherit" })
+    // Versuch 2: Legacy Peer Deps (nur für npm)
+    if (packageManager === "npm") {
+      console.log("📦 Versuch 2: npm install --legacy-peer-deps...")
+      execSync("npm install --legacy-peer-deps", { stdio: "inherit", shell: true })
+    } else {
+      console.log("📦 Versuch 2: pnpm install --no-frozen-lockfile...")
+      execSync("pnpm install --no-frozen-lockfile", { stdio: "inherit", shell: true })
+    }
 
-    // Package.json updaten
-    const pkgPath = path.join(process.cwd(), "package.json")
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
-    pkg.config = pkg.config || {}
-    pkg.config.legacyPeerDeps = true
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n")
-
-    console.log("✅ Installed with legacy peer deps\n")
-    console.log("📝 package.json updated with legacyPeerDeps config\n")
+    // Package.json updaten (nur für npm)
+    if (packageManager === "npm") {
+      const pkgPath = path.join(process.cwd(), "package.json")
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
+      pkg.config = pkg.config || {}
+      pkg.config.legacyPeerDeps = true
+      fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n")
+      console.log("✅ Installed with legacy peer deps\n")
+      console.log("📝 package.json updated with legacyPeerDeps config\n")
+    } else {
+      console.log("✅ Installed successfully\n")
+    }
     return
   } catch (error) {
-    console.log("❌ Legacy peer deps failed, trying clean install...\n")
+    console.log("❌ Install failed, trying clean install...\n")
   }
 
   try {
     // Versuch 3: Clean Install
     console.log("📦 Versuch 3: Clean install...")
-    execSync("rm -rf node_modules package-lock.json", { stdio: "inherit" })
-    execSync("npm cache clean --force", { stdio: "inherit" })
-    execSync("npm install", { stdio: "inherit" })
+    // Cross-platform file removal
+    const nodeModulesPath = path.join(process.cwd(), "node_modules")
+    const packageLockPath = path.join(process.cwd(), "package-lock.json")
+    const pnpmLockPath = path.join(process.cwd(), "pnpm-lock.yaml")
+    
+    if (fs.existsSync(nodeModulesPath)) {
+      fs.rmSync(nodeModulesPath, { recursive: true, force: true })
+    }
+    if (fs.existsSync(packageLockPath)) {
+      fs.unlinkSync(packageLockPath)
+    }
+    if (fs.existsSync(pnpmLockPath)) {
+      fs.unlinkSync(pnpmLockPath)
+    }
+    
+    // Cross-platform cache clean
+    if (packageManager === "pnpm") {
+      execSync("pnpm store prune", { stdio: "inherit", shell: true })
+    } else {
+      execSync("npm cache clean --force", { stdio: "inherit", shell: true })
+    }
+    execSync(installCommand, { stdio: "inherit", shell: true })
     console.log("✅ Clean install successful\n")
     return
   } catch (error) {

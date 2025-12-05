@@ -3,13 +3,17 @@ name: CPO AI Agent - Automatische Code-Optimierung
 on:
   push:
     branches: [main, develop]
-  paths:
-    - "app/**/*.tsx"
-    - "app/**/*.ts"
-    - "components/**/*.tsx"
-    - "components/**/*.ts"
+    paths:
+      - "app/**/*.tsx"
+      - "app/**/*.ts"
+      - "components/**/*.tsx"
+      - "components/**/*.ts"
   pull_request:
     branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
 
 jobs:
   cpo-agent:
@@ -19,28 +23,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
       
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
       
       # CPO Agent - Design-Token-Validierung
       - name: Design-Token-Validierung
         run: |
-          npm run validate:design || true
+          pnpm run validate:design
       
       # CPO Agent - Code-Qualität-Validierung
       - name: Code-Qualität-Validierung
         run: |
-          npm run lint || true
-          npm run type-check || true
+          pnpm run lint
+          pnpm run type-check
       
       # CPO Agent - DSGVO-Compliance-Validierung
       - name: DSGVO-Compliance-Validierung
         run: |
-          npm run validate:sql || true
+          pnpm run validate:sql
       
       # CPO Agent - Auto-Fix (nur bei bestimmten Fehlern)
       - name: Auto-Fix Design-Verstöße

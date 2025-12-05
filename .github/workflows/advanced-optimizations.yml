@@ -73,7 +73,8 @@ jobs:
         run: |
           echo "Analyzing bundle size..."
           pnpm build
-          pnpm exec node scripts/analyze-bundle.js || true
+          pnpm exec node scripts/analyze-bundle.js
+        continue-on-error: ${{ github.event_name == 'schedule' }}
 
   lighthouse-ci:
     name: Lighthouse CI
@@ -107,7 +108,8 @@ jobs:
       - name: Run Lighthouse CI
         run: |
           echo "Running Lighthouse CI..."
-          pnpm exec node scripts/lighthouse-ci.js || true
+          pnpm exec node scripts/lighthouse-ci.js
+        continue-on-error: ${{ github.event_name == 'schedule' }}
 
   dependency-updates:
     name: Dependency Updates Check
