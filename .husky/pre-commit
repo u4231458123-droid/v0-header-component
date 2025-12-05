@@ -11,11 +11,21 @@ echo "🔍 Pre-Commit Validierung..."
 echo -e "============================\n"
 
 # =============================================================================
+# PRE-FLIGHT: PNPM VERFÜGBARKEIT
+# =============================================================================
+
+if ! command -v pnpm > /dev/null 2>&1; then
+  echo "❌ pnpm ist nicht installiert oder nicht im PATH"
+  echo "Bitte installiere pnpm: npm install -g pnpm"
+  exit 1
+fi
+
+# =============================================================================
 # PHASE 1: LINTING
 # =============================================================================
 
 echo "🧹 Phase 1: Linting..."
-npm run lint || {
+pnpm run lint || {
   echo -e "\n❌ Linting fehlgeschlagen - Commit abgebrochen"
   exit 1
 }
@@ -25,7 +35,7 @@ npm run lint || {
 # =============================================================================
 
 echo -e "\n📘 Phase 2: Type Checking..."
-npm run type-check || {
+pnpm run type-check || {
   echo -e "\n❌ Type Checking fehlgeschlagen - Commit abgebrochen"
   exit 1
 }

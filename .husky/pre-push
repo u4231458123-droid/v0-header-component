@@ -11,11 +11,21 @@ echo "🔍 Pre-Push Validierung..."
 echo -e "==========================\n"
 
 # =============================================================================
+# PRE-FLIGHT: PNPM VERFÜGBARKEIT
+# =============================================================================
+
+if ! command -v pnpm > /dev/null 2>&1; then
+  echo "❌ pnpm ist nicht installiert oder nicht im PATH"
+  echo "Bitte installiere pnpm: npm install -g pnpm"
+  exit 1
+fi
+
+# =============================================================================
 # PHASE 1: BUILD TEST
 # =============================================================================
 
 echo "🏗️ Phase 1: Build Test..."
-npm run build || {
+pnpm run build || {
   echo -e "\n❌ Build fehlgeschlagen - Push abgebrochen"
   exit 1
 }
