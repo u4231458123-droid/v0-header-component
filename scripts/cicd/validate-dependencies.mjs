@@ -83,6 +83,7 @@ if (missingScripts.length > 0) {
 
 // Prüfe package.json Scripts
 console.log('\n📋 Checking package.json scripts...')
+let missingPackageScripts = []
 try {
   const { readFile } = await import('fs/promises')
   const packageJsonContent = await readFile(join(rootDir, 'package.json'), 'utf-8')
@@ -96,7 +97,6 @@ try {
     'build',
   ]
 
-  const missingPackageScripts = []
   for (const script of requiredPackageScripts) {
     if (!packageJson.scripts || !packageJson.scripts[script]) {
       missingPackageScripts.push(script)
@@ -119,9 +119,15 @@ console.log('\n' + '='.repeat(40))
 if (hasErrors) {
   console.error('❌ Pre-flight validation failed with errors')
   process.exit(1)
-} else if (missingScripts.length > 0) {
+} else if (missingScripts.length > 0 || missingPackageScripts.length > 0) {
   console.warn('⚠️  Pre-flight validation completed with warnings')
-  console.warn('   Some scripts are missing but workflow will continue')
+  if (missingScripts.length > 0) {
+    console.warn(`   ${missingScripts.length} external script(s) missing`)
+  }
+  if (missingPackageScripts.length > 0) {
+    console.warn(`   ${missingPackageScripts.length} package.json script(s) missing`)
+  }
+  console.warn('   Workflow will continue')
   process.exit(0)
 } else {
   console.log('✅ Pre-flight validation passed')

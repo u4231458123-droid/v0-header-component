@@ -1,6 +1,13 @@
 # Cursor IDE Rules für MyDispatch
 # =================================
-# Diese Datei konfiguriert das Verhalten von Cursor IDE für dieses Projekt
+# Diese Datei enthält Basis-Regeln für Cursor IDE.
+# Vollständige Regeln befinden sich in: .cursor/rules/mydispatch.mdc
+
+## Verweis
+
+Für detaillierte Cursor-Rules siehe:
+- **Haupt-Regeln**: `.cursor/rules/mydispatch.mdc` (alwaysApply: true)
+- **Dokumentation**: `docs/09_VORGABEN_UND_ANLEITUNGEN/`
 
 ## Git & Commits
 

@@ -107,8 +107,15 @@ async function selfHealDependencies() {
     return
   } catch (error) {
     console.log("❌ Install failed, trying clean install...\n")
-    const method2 = packageManager === "npm" ? "legacy-peer-deps" : "no-frozen-lockfile"
-    logEntry.attempts.push({ attempt: 2, method: method2, status: "failed", error: error.message })
+    // Update existing attempt 2 entry instead of pushing new one
+    const attempt2Index = logEntry.attempts.findIndex(a => a.attempt === 2)
+    if (attempt2Index >= 0) {
+      logEntry.attempts[attempt2Index].status = "failed"
+      logEntry.attempts[attempt2Index].error = error.message
+    } else {
+      const method2 = packageManager === "npm" ? "legacy-peer-deps" : "no-frozen-lockfile"
+      logEntry.attempts.push({ attempt: 2, method: method2, status: "failed", error: error.message })
+    }
   }
 
   try {
@@ -138,7 +145,8 @@ async function selfHealDependencies() {
     }
     execSync(installCommand, { stdio: "inherit", shell: true })
     console.log("✅ Clean install successful\n")
-    logEntry.attempts[2].status = "success"
+    // Update the correct attempt 3 entry (last in array)
+    logEntry.attempts[logEntry.attempts.length - 1].status = "success"
     logEntry.result = "success"
     saveLogEntry(logEntry)
     return
@@ -146,7 +154,12 @@ async function selfHealDependencies() {
     console.log("❌ Clean install failed\n")
     console.error("❌ All dependency resolution attempts failed")
     console.error("Please check the error messages above and resolve manually")
-    logEntry.attempts[2] = { attempt: 3, method: "clean-install", status: "failed", error: error.message }
+    // Update existing attempt 3 entry instead of replacing
+    const attempt3Index = logEntry.attempts.findIndex(a => a.attempt === 3)
+    if (attempt3Index >= 0) {
+      logEntry.attempts[attempt3Index].status = "failed"
+      logEntry.attempts[attempt3Index].error = error.message
+    }
     logEntry.result = "failed"
     logEntry.error = error.message
     saveLogEntry(logEntry)

@@ -1,0 +1,78 @@
+# Auto-Format Workflow
+# Formatiert Code automatisch bei Push auf non-main Branches
+# Self-Healing-Feature für konsistente Code-Formatierung
+
+name: Auto-Format on Push
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  auto-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run Prettier
+        run: |
+          if npm run format 2>/dev/null; then
+            echo "✅ Prettier formatting complete"
+          else
+            echo "⚠️ No format script found, using npx prettier"
+            npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
+          fi
+
+      - name: Run ESLint Auto-Fix
+        run: |
+          if npm run lint -- --fix 2>/dev/null; then
+            echo "✅ ESLint auto-fix complete"
+          elif npm run lint:fix 2>/dev/null; then
+            echo "✅ ESLint auto-fix complete (lint:fix script)"
+          else
+            echo "⚠️ No lint script found, using npx eslint"
+            npx eslint --fix "src/**/*.{js,jsx,ts,tsx}" --no-error-on-unmatched-pattern || true
+          fi
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "📝 No formatting changes needed"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📝 Formatting changes detected"
+            git diff --stat
+          fi
+
+      - name: Commit and Push Changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "AI Agent"
+          git config user.email "ai-agent@mydispatch.de"
+
+          git add .
+          git commit -m "style: auto-format code [skip ci]"
+          git push
+
+          echo "✅ Auto-formatting changes committed and pushed"
