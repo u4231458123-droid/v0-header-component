@@ -154,7 +154,7 @@ export function InvoicesPageClient({
       {/* Overdue Warning */}
       {stats.overdueCount > 0 && (
         <Card className="rounded-2xl border-destructive/30 bg-destructive/5">
-          <CardContent className="flex items-center gap-4 py-4">
+          <CardContent className="flex items-center gap-5 py-4">
             <div className="p-2 bg-destructive/10 rounded-xl">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>

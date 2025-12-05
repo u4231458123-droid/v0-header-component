@@ -129,7 +129,7 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
                 <UserIcon className="h-4 w-4" />
                 Persoenliche Daten
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Name</p>
                   <p className="text-sm font-medium">
@@ -181,7 +181,7 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
                     <p className="text-sm text-muted-foreground">Adresse</p>
                     <p className="text-sm font-medium">{localCustomer.address || "-"}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">PLZ</p>
                       <p className="text-sm font-medium">{localCustomer.postal_code || "-"}</p>
@@ -194,7 +194,7 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
                 </TabsContent>
 
                 <TabsContent value="business" className="space-y-2 mt-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <BuildingIcon className="h-3 w-3" />
@@ -211,7 +211,7 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
                     <p className="text-sm text-muted-foreground">Adresse</p>
                     <p className="text-sm font-medium">{localCustomer.business_address || "-"}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">PLZ</p>
                       <p className="text-sm font-medium">{localCustomer.business_postal_code || "-"}</p>
@@ -233,7 +233,7 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
                 <CalendarIcon className="h-4 w-4" />
                 Statistik
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Anzahl Buchungen</p>
                   <p className="text-sm font-medium">{localCustomer.booking_count || 0}</p>

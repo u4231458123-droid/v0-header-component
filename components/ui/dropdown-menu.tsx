@@ -78,7 +78,7 @@ function DropdownMenuContent({
     <div
       ref={ref}
       className={cn(
-        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+        "absolute z-50 min-w-[8rem] overflow-hidden rounded-xl border bg-popover p-1 text-popover-foreground shadow-md",
         "animate-in fade-in-0 zoom-in-95",
         align === "start" && "left-0",
         align === "center" && "left-1/2 -translate-x-1/2",
@@ -200,7 +200,7 @@ function DropdownMenuSub({ children }: { children: React.ReactNode }) {
 }
 
 function DropdownMenuSubContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1", className)} {...props} />
+  return <div className={cn("min-w-[8rem] overflow-hidden rounded-xl border bg-popover p-1", className)} {...props} />
 }
 
 function DropdownMenuSubTrigger({

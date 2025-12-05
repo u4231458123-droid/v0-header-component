@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 <p className="text-sm text-muted-foreground mb-6">Bitte überprüfen Sie auch Ihren Spam-Ordner.</p>
                 <Link
                   href="/auth/login"
-                  className="inline-block w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 text-center transition-colors"
+                  className="inline-block w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 text-center transition-colors"
                 >
                   Zurück zur Anmeldung
                 </Link>
@@ -117,12 +117,12 @@ export default function ForgotPasswordPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
+                      className="w-full px-4 py-3 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
                     />
                   </div>
 
                   {error && (
-                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
                       <p className="text-sm text-destructive">{error}</p>
                     </div>
                   )}
@@ -130,7 +130,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {isLoading ? "Wird gesendet..." : "Link anfordern"}
                   </button>
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
             </Link>
           </p>
 
-          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground">
+          <div className="mt-8 flex items-center justify-center gap-5 text-sm text-muted-foreground">
             <Link href="/impressum" className="hover:text-foreground">
               Impressum
             </Link>

@@ -212,7 +212,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
                 <UserIcon className="h-4 w-4" />
                 Persönliche Daten
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Name</p>
                   <p className="text-sm font-medium">
@@ -289,7 +289,7 @@ export function EmployeeDetailsDialog({ employee, open, onOpenChange, onEmployee
                     <BriefcaseIcon className="h-4 w-4" />
                     Beschäftigung
                   </h4>
-                  <div className="grid grid-cols-2 gap-4 pl-6">
+                  <div className="grid grid-cols-2 gap-5 pl-6">
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Vertragsart</p>
                       <p className="text-sm font-medium">

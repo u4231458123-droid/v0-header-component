@@ -180,7 +180,7 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
           <DialogDescription>Ändern Sie die Auftragsdaten</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             <div className="grid gap-2">
               <Label htmlFor="status">Status</Label>
               <Select value={status} onValueChange={setStatus}>
@@ -215,7 +215,7 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="pickup_time">Abholzeit</Label>
                 <Input
@@ -243,7 +243,7 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Fahrzeug-Kategorie</Label>
                 <Select value={vehicleCategory} onValueChange={setVehicleCategory}>
@@ -277,7 +277,7 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
             </div>
 
             {/* Fahrer- und Fahrzeugauswahl */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Fahrer (optional)</Label>
                 <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
@@ -317,7 +317,7 @@ export function EditBookingDialog({ booking, open, onOpenChange, onSuccess }: Ed
 
             <div className="border-t pt-4 mt-2">
               <p className="text-sm font-medium mb-3">Abholung von Flughafen / Bahnhof (optional)</p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label>Flug- / Zugnummer</Label>
                   <Input

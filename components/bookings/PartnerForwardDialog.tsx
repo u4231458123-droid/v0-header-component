@@ -231,7 +231,7 @@ export function PartnerForwardDialog({
             <CardContent>
               <div className="grid gap-3">
                 {AVAILABLE_FIELDS.map((field) => (
-                  <div key={field.id} className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-accent/30 transition-colors">
+                  <div key={field.id} className="flex items-start gap-3 p-3 rounded-xl border border-border hover:bg-accent/30 transition-colors">
                     <Checkbox
                       id={`field-${field.id}`}
                       checked={selectedFields.includes(field.id)}

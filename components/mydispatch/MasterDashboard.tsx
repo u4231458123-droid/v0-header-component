@@ -338,7 +338,7 @@ function TechnicalDashboard({
               .sort((a, b) => b.revenue - a.revenue)
               .slice(0, 10)
               .map((item) => (
-                <div key={item.companyId} className="flex items-center justify-between p-3 rounded-lg bg-muted">
+                <div key={item.companyId} className="flex items-center justify-between p-3 rounded-xl bg-muted">
                   <div>
                     <p className="font-medium">{item.companyName}</p>
                     <p className="text-sm text-muted-foreground">{item.invoiceCount} Rechnungen</p>
@@ -487,7 +487,7 @@ function OperatorDashboard({
             {revenuePerCompany
               .sort((a, b) => b.revenue - a.revenue)
               .map((item) => (
-                <div key={item.companyId} className="flex items-center justify-between p-4 rounded-lg border border-border">
+                <div key={item.companyId} className="flex items-center justify-between p-4 rounded-xl border border-border">
                   <div className="flex-1">
                     <p className="font-semibold text-lg">{item.companyName}</p>
                     <p className="text-sm text-muted-foreground mt-1">

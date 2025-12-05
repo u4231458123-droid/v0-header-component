@@ -446,7 +446,7 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
                   href={item.href}
                   {...(tourId ? { "data-tour": tourId } : {})}
                   className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-lg
+                    flex items-center gap-3 px-3 py-2.5 rounded-xl
                     transition-colors duration-150
                     ${
                       isActive
@@ -482,7 +482,7 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
               className={`
-                flex items-center gap-3 w-full px-3 py-2.5 rounded-lg
+                flex items-center gap-3 w-full px-3 py-2.5 rounded-xl
                 hover:bg-sidebar-accent/50 transition-colors
                 ${isCollapsed ? "justify-center" : ""}
               `}
@@ -513,14 +513,14 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
             {showUserMenu && (
               <div
                 className={`
-                  absolute bottom-full mb-2 bg-popover border border-border rounded-lg shadow-lg
+                  absolute bottom-full mb-2 bg-popover border border-border rounded-xl shadow-lg
                   ${isCollapsed ? "left-full ml-2 w-48" : "left-0 right-0"}
                 `}
               >
                 <div className="p-1">
                   <Link
                     href="/einstellungen"
-                    className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent"
+                    className="flex items-center gap-2 px-3 py-2 text-sm rounded-xl hover:bg-accent"
                     onClick={() => setShowUserMenu(false)}
                   >
                     <SettingsIcon />
@@ -528,7 +528,7 @@ export function AppSidebar({ isCollapsed = false, onToggle }: AppSidebarProps) {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded-md hover:bg-accent text-destructive"
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded-xl hover:bg-accent text-destructive"
                   >
                     <LogoutIcon />
                     <span>Abmelden</span>

@@ -146,7 +146,7 @@ export default function DocsPage() {
             return (
               <V28MarketingCard key={section.title} className="h-full">
                 <div className="p-6 sm:p-8 h-full flex flex-col">
-                  <div className="flex items-center gap-3 sm:gap-4 mb-4">
+                  <div className="flex items-center gap-3 sm:gap-5 mb-4">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                       <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     </div>
@@ -179,7 +179,7 @@ export default function DocsPage() {
               Unser Support-Team steht Ihnen bei Fragen zur Seite. Professional- und Enterprise-Kunden haben Zugang zu
               Prioritäts-Support und dediziertem Account Management.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <a
                 href="/kontakt"
                 className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors text-sm sm:text-base"

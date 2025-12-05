@@ -71,7 +71,7 @@ export function InstallPrompt() {
   if (isIOS && showInstallBanner) {
     return (
       <div className="fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground p-4 shadow-lg z-50 animate-in slide-in-from-bottom">
-        <div className="max-w-7xl mx-auto flex items-start gap-4">
+        <div className="max-w-7xl mx-auto flex items-start gap-5">
           <div className="flex-1">
             <p className="font-semibold mb-1">MyDispatch installieren</p>
             <p className="text-sm text-primary-foreground/70">
@@ -102,9 +102,9 @@ export function InstallPrompt() {
   if (deferredPrompt && showInstallBanner) {
     return (
       <div className="fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground p-4 shadow-lg z-50 animate-in slide-in-from-bottom">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
+        <div className="max-w-7xl mx-auto flex items-center gap-5">
           <div className="shrink-0">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center">
               <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -128,7 +128,7 @@ export function InstallPrompt() {
             </button>
             <button
               onClick={handleInstallClick}
-              className="px-4 py-2 bg-white text-primary rounded-xl font-medium hover:bg-gray-100"
+              className="px-4 py-2 bg-card text-primary rounded-xl font-medium hover:bg-muted"
             >
               Installieren
             </button>

@@ -191,14 +191,14 @@ export function PWAInstallButton({
       onClick={() => setShowModal(false)}
     >
       <div
-        className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl"
+        className="bg-card rounded-2xl p-6 max-w-md w-full shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-foreground">App installieren</h3>
           <button
             onClick={() => setShowModal(false)}
-            className="p-1 rounded-lg hover:bg-muted transition-colors"
+            className="p-1 rounded-xl hover:bg-muted transition-colors"
           >
             <CloseIcon />
           </button>
@@ -206,7 +206,7 @@ export function PWAInstallButton({
 
         {isIOS ? (
           <div className="space-y-4">
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-xl">
               <p className="font-medium mb-2">Für iOS (iPhone/iPad):</p>
               <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
                 <li>Tippen Sie auf das Teilen-Symbol</li>
@@ -217,7 +217,7 @@ export function PWAInstallButton({
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-xl">
               <p className="font-medium mb-2">Für Android/Desktop:</p>
               <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
                 <li>Tippen Sie auf das Menü (3 Punkte)</li>
@@ -225,7 +225,7 @@ export function PWAInstallButton({
                 <li>Bestätigen Sie die Installation</li>
               </ol>
             </div>
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm">
+            <div className="p-3 bg-warning/10 border border-warning rounded-xl text-sm">
               <p className="font-medium text-amber-900">Hinweis</p>
               <p className="text-amber-800 mt-1">
                 Die Installation ist nur auf der Live-Website (my-dispatch.de) möglich. In der Vorschau-Umgebung ist diese Funktion nicht verfügbar.

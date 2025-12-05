@@ -129,7 +129,7 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
           <DialogDescription>Ändern Sie die Kundendaten</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             <div className="grid gap-2">
               <Label htmlFor="status">Status</Label>
               <Select value={status} onValueChange={setStatus}>
@@ -143,7 +143,7 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="first_name">Vorname</Label>
                 <Input id="first_name" name="first_name" defaultValue={customer.first_name} required />
@@ -153,7 +153,7 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
                 <Input id="last_name" name="last_name" defaultValue={customer.last_name} required />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="email">E-Mail</Label>
                 <Input id="email" name="email" type="email" defaultValue={customer.email || ""} />
@@ -173,7 +173,7 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
                 placeholder="Strasse und Hausnummer"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="postal_code">PLZ</Label>
                 <Input id="postal_code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />

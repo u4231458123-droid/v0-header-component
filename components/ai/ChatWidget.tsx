@@ -254,7 +254,7 @@ export function ChatWidget({
                       key={i}
                       onClick={() => handleQuickAction(action)}
                       disabled={isLoading}
-                      className="w-full rounded-lg border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-accent disabled:opacity-50"
+                      className="w-full rounded-xl border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-accent disabled:opacity-50"
                     >
                       {action}
                     </button>

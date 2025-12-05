@@ -227,7 +227,7 @@ export default function CustomerRegistrationPage() {
 
         {/* Benefits */}
         {step === 1 && (
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-5 mb-8">
             <div className="text-center">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
                 <CarIcon className="h-5 w-5 text-primary" />
@@ -253,13 +253,13 @@ export default function CustomerRegistrationPage() {
         {step < 3 && (
           <div className="flex items-center justify-center mb-8">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 1 ? "bg-primary" : "bg-slate-700"} text-primary-foreground text-sm font-medium`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 1 ? "bg-primary" : "bg-muted"} text-primary-foreground text-sm font-medium`}
             >
               {step > 1 ? <CheckIcon className="h-4 w-4" /> : "1"}
             </div>
-            <div className={`w-16 h-1 ${step >= 2 ? "bg-primary" : "bg-slate-700"}`}></div>
+            <div className={`w-16 h-1 ${step >= 2 ? "bg-primary" : "bg-muted"}`}></div>
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 2 ? "bg-primary" : "bg-slate-700"} text-primary-foreground text-sm font-medium`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 2 ? "bg-primary" : "bg-muted"} text-primary-foreground text-sm font-medium`}
             >
               {step > 2 ? <CheckIcon className="h-4 w-4" /> : "2"}
             </div>
@@ -274,7 +274,7 @@ export default function CustomerRegistrationPage() {
                 <CardDescription>Ihre Kontaktdaten und Zugangsdaten</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-foreground">Anrede *</Label>
                     <Select value={formData.salutation} onValueChange={(v) => updateField("salutation", v)}>
@@ -304,7 +304,7 @@ export default function CustomerRegistrationPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-foreground">Vorname *</Label>
                     <Input
@@ -347,7 +347,7 @@ export default function CustomerRegistrationPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-foreground">Passwort *</Label>
                     <Input
@@ -370,7 +370,7 @@ export default function CustomerRegistrationPage() {
                   </div>
                 </div>
 
-                {error && <p className="text-red-400 text-sm">{error}</p>}
+                {error && <p className="text-destructive text-sm">{error}</p>}
 
                 <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => validateStep1() && setStep(2)}>
                   Weiter
@@ -387,7 +387,7 @@ export default function CustomerRegistrationPage() {
                 <CardDescription>Optional: Ihre Adresse für schnellere Buchungen</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-5">
                   <div className="col-span-2 space-y-2">
                     <Label className="text-foreground">Straße</Label>
                     <Input
@@ -408,7 +408,7 @@ export default function CustomerRegistrationPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-foreground">PLZ</Label>
                     <Input
@@ -485,7 +485,7 @@ export default function CustomerRegistrationPage() {
                   </div>
                 </div>
 
-                {error && <p className="text-red-400 text-sm">{error}</p>}
+                {error && <p className="text-destructive text-sm">{error}</p>}
 
                 <div className="flex gap-3">
                   <Button variant="outline" className="flex-1 border-border bg-transparent" onClick={() => setStep(1)}>

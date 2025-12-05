@@ -264,7 +264,7 @@ export default function CustomerRegistrationPage() {
                 className="h-12 w-auto"
               />
             ) : (
-              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
+              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold">
                 {company?.name?.charAt(0) || "?"}
               </div>
             )}
@@ -285,7 +285,7 @@ export default function CustomerRegistrationPage() {
               {/* Personal Info */}
               <div className="space-y-4">
                 <h3 className="font-medium">Persönliche Daten</h3>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="salutation">Anrede *</Label>
                     <Select value={form.salutation} onValueChange={(v) => setForm({ ...form, salutation: v })}>
@@ -321,7 +321,7 @@ export default function CustomerRegistrationPage() {
                     </Select>
                   </div>
                 </div>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">Vorname *</Label>
                     <Input
@@ -356,7 +356,7 @@ export default function CustomerRegistrationPage() {
                     required
                   />
                 </div>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefon</Label>
                     <Input
@@ -387,7 +387,7 @@ export default function CustomerRegistrationPage() {
               {/* Address */}
               <div className="space-y-4">
                 <h3 className="font-medium">Adresse</h3>
-                <div className="grid sm:grid-cols-3 gap-4">
+                <div className="grid sm:grid-cols-3 gap-5">
                   <div className="sm:col-span-2 space-y-2">
                     <Label htmlFor="street">Straße *</Label>
                     <Input
@@ -407,7 +407,7 @@ export default function CustomerRegistrationPage() {
                     />
                   </div>
                 </div>
-                <div className="grid sm:grid-cols-3 gap-4">
+                <div className="grid sm:grid-cols-3 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="postalCode">PLZ *</Label>
                     <Input
@@ -437,7 +437,7 @@ export default function CustomerRegistrationPage() {
               {/* Password */}
               <div className="space-y-4">
                 <h3 className="font-medium">Passwort</h3>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="password">Passwort *</Label>
                     <Input
@@ -494,7 +494,7 @@ export default function CustomerRegistrationPage() {
                 </div>
               </div>
 
-              {error && <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
+              {error && <div className="p-3 rounded-xl bg-destructive/10 text-destructive text-sm">{error}</div>}
 
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting ? "Wird registriert..." : "Registrieren"}

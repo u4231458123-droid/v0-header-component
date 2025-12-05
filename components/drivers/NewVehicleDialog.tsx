@@ -316,7 +316,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
     <div className="space-y-2">
       <Label>{label}</Label>
       <div
-        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${
           file ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
         }`}
         onClick={() => inputRef.current?.click()}
@@ -401,7 +401,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* Hersteller & Modell */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="make">Hersteller *</Label>
                       <Input id="make" name="make" placeholder="z.B. Mercedes-Benz" required />
@@ -430,7 +430,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* Schluesselnummern HSN/TSN */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="hsn">Schluesselnr. 1 (HSN)</Label>
                       <Input
@@ -458,7 +458,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* KW/PS */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="kw">KW-Leistung</Label>
                       <Input
@@ -488,7 +488,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* Farbe, Baujahr, Erstzulassung */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="color">Farbe</Label>
                       <Input id="color" name="color" placeholder="Schwarz" />
@@ -510,7 +510,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* Fahrzeugkategorie & Sitze */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="category">Fahrzeugkategorie *</Label>
                       <Select name="category" defaultValue="business">
@@ -608,7 +608,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Versicherungsname & Nummer */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="insurance_name">Versicherungsname</Label>
                       <Input id="insurance_name" name="insurance_name" placeholder="z.B. Allianz" />
@@ -620,7 +620,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* SF-Klassen */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="sf_class_liability">SF-Klasse Haftpflicht</Label>
                       <Select name="sf_class_liability">
@@ -654,7 +654,7 @@ export function NewVehicleDialog({ companyId, open: controlledOpen, onOpenChange
                   </div>
 
                   {/* Selbstbeteiligung */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="deductible_partial">SB Teilkasko</Label>
                       <Select name="deductible_partial">

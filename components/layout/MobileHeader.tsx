@@ -95,7 +95,7 @@ export function MobileHeader() {
                 const event = new CustomEvent("open-global-search")
                 window.dispatchEvent(event)
               }}
-              className="h-10 w-10 p-0 text-white hover:bg-white/10 rounded-md transition-colors"
+              className="h-10 w-10 p-0 text-primary-foreground hover:bg-card/10 rounded-xl transition-colors"
               aria-label="Suche"
             >
               <SearchIcon className="h-5 w-5 mx-auto" />
@@ -106,7 +106,7 @@ export function MobileHeader() {
                 const event = new CustomEvent("open-ai-chat")
                 window.dispatchEvent(event)
               }}
-              className="h-10 w-10 p-0 text-white hover:bg-white/10 rounded-md transition-colors"
+              className="h-10 w-10 p-0 text-primary-foreground hover:bg-card/10 rounded-xl transition-colors"
               aria-label="AI-Support"
             >
               <BotIcon className="h-5 w-5 mx-auto" />
@@ -114,7 +114,7 @@ export function MobileHeader() {
 
             <button
               onClick={() => setShowMenu(true)}
-              className="h-10 w-10 p-0 text-white hover:bg-white/10 rounded-md transition-colors"
+              className="h-10 w-10 p-0 text-primary-foreground hover:bg-card/10 rounded-xl transition-colors"
               aria-label="Menü öffnen"
             >
               <MenuIcon className="h-5 w-5 mx-auto" />
@@ -129,8 +129,8 @@ export function MobileHeader() {
             <SheetTitle>Menü</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 flex flex-col gap-6">
-            <div className="flex items-center gap-4">
+          <div className="mt-6 flex flex-col gap-5">
+            <div className="flex items-center gap-5">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={profile?.avatar_url || undefined} />
                 <AvatarFallback
@@ -160,7 +160,7 @@ export function MobileHeader() {
                   router.push("/einstellungen")
                   setShowMenu(false)
                 }}
-                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-muted rounded-md transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-muted rounded-xl transition-colors"
               >
                 <SettingsIcon className="h-5 w-5" />
                 <span>Einstellungen</span>
@@ -171,7 +171,7 @@ export function MobileHeader() {
                   router.push("/einstellungen?tab=account")
                   setShowMenu(false)
                 }}
-                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-muted rounded-md transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-muted rounded-xl transition-colors"
               >
                 <UserIcon className="h-5 w-5" />
                 <span>Profil</span>
@@ -181,7 +181,7 @@ export function MobileHeader() {
 
               <button
                 onClick={logout}
-                className="flex items-center gap-3 w-full px-4 py-2 text-left text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-left text-destructive hover:bg-destructive/10 rounded-xl transition-colors"
               >
                 <LogOutIcon className="h-5 w-5" />
                 <span>Abmelden</span>

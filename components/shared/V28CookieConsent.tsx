@@ -54,7 +54,7 @@ export function V28CookieConsent() {
         <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
           {!showDetails ? (
             <div className="p-6">
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-5">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                   <Cookie className="w-6 h-6 text-primary" />
                 </div>
@@ -121,7 +121,7 @@ export function V28CookieConsent() {
                       <span className="font-semibold text-foreground">Technisch notwendig</span>
                     </div>
                     <div className="w-10 h-6 bg-primary rounded-full relative cursor-not-allowed">
-                      <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow" />
+                      <div className="absolute right-1 top-1 w-4 h-4 bg-card rounded-full shadow" />
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -141,7 +141,7 @@ export function V28CookieConsent() {
                       }`}
                     >
                       <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                        className={`absolute top-1 w-4 h-4 bg-card rounded-full shadow transition-all ${
                           settings.analytics ? "right-1" : "left-1"
                         }`}
                       />
@@ -164,7 +164,7 @@ export function V28CookieConsent() {
                       }`}
                     >
                       <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                        className={`absolute top-1 w-4 h-4 bg-card rounded-full shadow transition-all ${
                           settings.marketing ? "right-1" : "left-1"
                         }`}
                       />

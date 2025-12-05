@@ -143,7 +143,7 @@ export function CompanySettingsForm({ company }: CompanySettingsFormProps) {
         </TabsList>
 
         <TabsContent value="basic" className="space-y-4 pt-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Unternehmensname *</Label>
               <Input

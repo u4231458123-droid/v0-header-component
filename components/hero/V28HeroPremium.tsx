@@ -56,7 +56,7 @@ export function V28HeroPremium({
             </button>
 
             {businessMetrics && (
-              <div className="grid grid-cols-3 gap-6 mt-12">
+              <div className="grid grid-cols-3 gap-5 mt-12">
                 {businessMetrics.map((metric, idx) => (
                   <div key={idx}>
                     <div className="text-3xl font-bold text-foreground">{metric.value}</div>

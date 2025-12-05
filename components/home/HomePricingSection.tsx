@@ -77,7 +77,7 @@ export const HomePricingSection = () => {
   }
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-white">
+    <section className="py-12 md:py-16 lg:py-20 bg-card">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
@@ -92,7 +92,7 @@ export const HomePricingSection = () => {
           <V28BillingToggle billingPeriod={billingPeriod} onToggle={setBillingPeriod} discountText="-20%" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10 md:items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8 lg:gap-10 md:items-start">
           {ALL_TARIFFS.map((tariff) => {
             const includedFeatures = tariff.features.filter((f) => f.included)
             const displayLimit = tariff.highlighted ? 8 : 5

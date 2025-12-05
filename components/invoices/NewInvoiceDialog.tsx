@@ -391,7 +391,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
                 </div>
 
                 {searchTerm && (
-                  <div className="max-h-48 overflow-y-auto rounded-md border">
+                  <div className="max-h-48 overflow-y-auto rounded-xl border">
                     {filteredCustomers.length === 0 ? (
                       <div className="p-4 text-center text-muted-foreground">
                         Kein Kunde gefunden. Erstellen Sie einen neuen Kunden.
@@ -476,7 +476,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
               {/* Neuer Kunde - Formular */}
               <TabsContent value="new" className="space-y-4 pt-4">
                 {/* Persoenliche Daten */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-5">
                   <div className="grid gap-2">
                     <Label>Anrede *</Label>
                     <Select name="customer_salutation" required={customerMode === "new"}>
@@ -507,7 +507,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
                   <Label>E-Mail</Label>
                   <Input name="customer_email" type="email" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="grid gap-2">
                     <Label>Mobil Nummer</Label>
                     <Input name="customer_mobile" type="tel" maxLength={20} />
@@ -534,7 +534,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
                         placeholder="Strasse und Hausnummer"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-5">
                       <div className="grid gap-2">
                         <Label>PLZ</Label>
                         <Input name="customer_postal_code" maxLength={5} />
@@ -563,7 +563,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
                         placeholder="Strasse und Hausnummer"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-5">
                       <div className="grid gap-2">
                         <Label>PLZ</Label>
                         <Input name="customer_postal_code" maxLength={5} />
@@ -589,7 +589,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
             </h3>
 
             {/* Datum und Uhrzeit */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Datum *</Label>
                 <Input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} required />
@@ -601,7 +601,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
             </div>
 
             {/* Adressen */}
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               <div className="grid gap-2">
                 <Label>Adresse VON *</Label>
                 <AddressAutocomplete
@@ -623,7 +623,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
             </div>
 
             {/* Fahrer- und Fahrzeugauswahl */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Fahrer (optional)</Label>
                 <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
@@ -662,7 +662,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
             </div>
 
             {/* Fahrzeug und Passagiere */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Fahrzeug Klasse *</Label>
                 <Select value={vehicleClass} onValueChange={setVehicleClass} required>
@@ -706,7 +706,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
             </div>
 
             {/* Zusatzangaben */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Kostenstelle</Label>
                 <Input
@@ -763,7 +763,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
 
             {isAirportPickup && (
               <div className="space-y-4 pl-4 border-l-2 border-primary/20">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-5">
                   <div className="grid gap-2">
                     <Label>Abholungsart</Label>
                     <Select value={pickupType} onValueChange={setPickupType}>
@@ -814,7 +814,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
               Rechnungsdaten
             </h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Rechnungsdatum</Label>
                 <Input name="issue_date" type="date" defaultValue={format(new Date(), "yyyy-MM-dd")} required />
@@ -830,7 +830,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Nettobetrag (€)</Label>
                 <Input
@@ -858,7 +858,7 @@ export function NewInvoiceDialog({ companyId }: NewInvoiceDialogProps) {
             </div>
 
             {/* Summen */}
-            <div className="rounded-md border p-4 bg-muted">
+            <div className="rounded-xl border p-4 bg-muted">
               <div className="flex justify-between mb-2">
                 <span className="text-sm">Nettobetrag:</span>
                 <span className="text-sm font-medium">{safeNumber(netAmount).toFixed(2)} €</span>

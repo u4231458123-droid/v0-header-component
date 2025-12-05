@@ -36,13 +36,13 @@ export default function DashboardError({
         </div>
 
         {error.digest && (
-          <p className="text-xs text-muted-foreground font-mono bg-muted px-3 py-2 rounded-lg inline-block">
+          <p className="text-xs text-muted-foreground font-mono bg-muted px-3 py-2 rounded-xl inline-block">
             Fehler-ID: {error.digest}
           </p>
         )}
 
         {error.message && (
-          <p className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded-lg">
+          <p className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded-xl">
             {error.message}
           </p>
         )}
@@ -53,14 +53,14 @@ export default function DashboardError({
               reset()
               router.refresh()
             }}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Erneut versuchen
           </button>
           <button
             onClick={() => router.push("/auth/login")}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-xl hover:bg-muted transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Zum Login

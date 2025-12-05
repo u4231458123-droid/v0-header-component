@@ -143,7 +143,7 @@ export function NewBookingDialog({ companyId }: NewBookingDialogProps) {
           <DialogDescription>Erfassen Sie einen neuen Fahrauftrag</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             <div className="grid gap-2">
               <Label htmlFor="customer">Kunde</Label>
               <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId} required>
@@ -179,7 +179,7 @@ export function NewBookingDialog({ companyId }: NewBookingDialogProps) {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="pickup_time">Abholzeit</Label>
                 <Input id="pickup_time" name="pickup_time" type="datetime-local" required />

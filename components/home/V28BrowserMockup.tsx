@@ -17,14 +17,14 @@ interface V28BrowserMockupProps {
 
 export function V28BrowserMockup({ children, title = "MyDispatch Dashboard" }: V28BrowserMockupProps) {
   return (
-    <div className="relative rounded-2xl border border-slate-200 shadow-2xl overflow-hidden bg-white">
+    <div className="relative rounded-2xl border border-slate-200 shadow-2xl overflow-hidden bg-card">
       {/* Premium Glow Effect - Tailwind-native */}
       <div className="absolute inset-0 bg-slate-300 blur-xl opacity-20 pointer-events-none" />
 
       {/* Browser Window Container */}
       <div className="relative z-10">
         {/* Traffic Lights + Address Bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-100">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-muted">
           {/* macOS Traffic Lights - SVG for Pixel-Perfect Rendering */}
           <div className="flex items-center gap-2">
             <svg width="12" height="12" viewBox="0 0 12 12" className="text-red-400">
@@ -39,7 +39,7 @@ export function V28BrowserMockup({ children, title = "MyDispatch Dashboard" }: V
           </div>
 
           {/* Address Bar */}
-          <div className="flex-1 mx-4 px-3 py-1.5 rounded-lg bg-white text-sm font-mono text-slate-600 text-center antialiased">
+          <div className="flex-1 mx-4 px-3 py-1.5 rounded-xl bg-card text-sm font-mono text-foreground text-center antialiased">
             {title}
           </div>
 
@@ -48,7 +48,7 @@ export function V28BrowserMockup({ children, title = "MyDispatch Dashboard" }: V
         </div>
 
         {/* Dashboard Content */}
-        <div className="relative bg-white">{children}</div>
+        <div className="relative bg-card">{children}</div>
       </div>
     </div>
   )

@@ -664,7 +664,7 @@ export default function CustomerPortalPage() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-5">
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-foreground">{safeNumber(totalSpent).toFixed(0)}€</p>
@@ -751,7 +751,7 @@ export default function CustomerPortalPage() {
                         <Separator className="my-3" />
 
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-5 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <UserIcon className="h-3 w-3" />
                               {booking.passengers}
@@ -841,7 +841,7 @@ export default function CustomerPortalPage() {
                 <CardTitle className="text-lg">Persönliche Daten</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div>
                     <p className="text-sm text-muted-foreground">Anrede</p>
                     <p className="font-medium">{customer.salutation || "Nicht angegeben"}</p>
@@ -851,7 +851,7 @@ export default function CustomerPortalPage() {
                     <p className="font-medium">{customer.title || "Kein Titel"}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div>
                     <p className="text-sm text-muted-foreground">Vorname</p>
                     <p className="font-medium">{customer.first_name}</p>

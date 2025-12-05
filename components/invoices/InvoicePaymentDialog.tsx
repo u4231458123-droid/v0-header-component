@@ -126,7 +126,7 @@ export function InvoicePaymentDialog({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <CheckCircle2Icon className="h-16 w-16 text-green-500" />
+            <CheckCircle2Icon className="h-16 w-16 text-success" />
             <h3 className="text-2xl font-semibold">Zahlung erfolgreich!</h3>
             <p className="text-muted-foreground">Die Rechnung wurde erfolgreich bezahlt.</p>
           </div>

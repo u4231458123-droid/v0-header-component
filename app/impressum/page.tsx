@@ -37,7 +37,7 @@ export default function ImpressumPage() {
               <p className="text-lg text-muted-foreground">Angaben gemäß § 5 TMG und § 55 Abs. 2 RStV</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <div className="grid md:grid-cols-2 gap-5 mb-12">
               <Card className="rounded-2xl border-border">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
@@ -199,7 +199,7 @@ export default function ImpressumPage() {
               </Card>
             </div>
 
-            <div className="mt-12 grid sm:grid-cols-3 gap-4">
+            <div className="mt-12 grid sm:grid-cols-3 gap-5">
               <Link
                 href="/datenschutz"
                 className="p-4 rounded-2xl border border-border text-center hover:border-primary/50 transition-colors"

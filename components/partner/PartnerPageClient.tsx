@@ -612,7 +612,7 @@ export function PartnerPageClient({
       </PageHeader>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
         <StatsCard title="Aktive Partner" value={stats.activePartners} icon={<Users className="w-5 h-5" />} />
         <StatsCard title="Gesendete Auftraege" value={stats.sentBookings} icon={<Send className="w-5 h-5" />} />
         <StatsCard title="Erhaltene Auftraege" value={stats.receivedBookings} icon={<Download className="w-5 h-5" />} />
@@ -657,7 +657,7 @@ export function PartnerPageClient({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between p-4 bg-background rounded-lg border-2 border-primary/30">
+                <div className="flex items-center justify-between p-4 bg-background rounded-xl border-2 border-primary/30">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                       <Building2 className="w-6 h-6 text-primary" />
@@ -701,7 +701,7 @@ export function PartnerPageClient({
               </div>
 
               {searchResult && (
-                <div className="mt-4 p-4 border rounded-lg flex items-center justify-between">
+                <div className="mt-4 p-4 border rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                       <Building2 className="w-5 h-5 text-primary" />
@@ -883,7 +883,7 @@ export function PartnerPageClient({
               ) : (
                 <div className="space-y-4">
                   {pendingRequests.map((connection) => (
-                    <div key={connection.id} className="p-4 border rounded-lg flex items-center justify-between">
+                    <div key={connection.id} className="p-4 border rounded-xl flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                           <Building2 className="w-6 h-6 text-primary" />
@@ -939,7 +939,7 @@ export function PartnerPageClient({
               ) : (
                 <div className="space-y-6">
                   {partnerResources.map((resource) => (
-                    <div key={resource.partnerId} className="border rounded-lg p-4 space-y-4">
+                    <div key={resource.partnerId} className="border rounded-xl p-4 space-y-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                           <Building2 className="w-5 h-5 text-primary" />
@@ -954,7 +954,7 @@ export function PartnerPageClient({
                         </Badge>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-4">
+                      <div className="grid md:grid-cols-2 gap-5">
                         {/* Partner-Fahrzeuge */}
                         {resource.vehicles.length > 0 && (
                           <div className="space-y-2">
@@ -1124,7 +1124,7 @@ export function PartnerPageClient({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center justify-between p-3 border rounded-xl">
               <div className="flex items-center gap-3">
                 <Car className="w-5 h-5 text-muted-foreground" />
                 <div>
@@ -1138,7 +1138,7 @@ export function PartnerPageClient({
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center justify-between p-3 border rounded-xl">
               <div className="flex items-center gap-3">
                 <UserCog className="w-5 h-5 text-muted-foreground" />
                 <div>
@@ -1152,7 +1152,7 @@ export function PartnerPageClient({
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center justify-between p-3 border rounded-xl">
               <div className="flex items-center gap-3">
                 <Send className="w-5 h-5 text-muted-foreground" />
                 <div>
@@ -1226,7 +1226,7 @@ export function PartnerPageClient({
                 Auftragsdaten (anklicken zum Aktivieren/Deaktivieren)
               </h4>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {BOOKING_FIELDS.map((field) => (
                   <div
                     key={field.key}
@@ -1548,7 +1548,7 @@ export function PartnerPageClient({
                 const partner = getPartnerCompany(selectedPartner)
                 return (
                   <>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-5">
                       <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                         <Building2 className="w-8 h-8 text-primary" />
                       </div>
@@ -1558,7 +1558,7 @@ export function PartnerPageClient({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-2 gap-5 text-sm">
                       {partner?.email && (
                         <div>
                           <p className="text-muted-foreground">E-Mail</p>

@@ -21,7 +21,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
   if (selectedCount === 0) return null
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-background border border-border rounded-lg px-4 py-3 shadow-lg">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-background border border-border rounded-xl px-4 py-3 shadow-lg">
       <span className="text-sm font-medium text-muted-foreground">
         {selectedCount} ausgewählt
       </span>

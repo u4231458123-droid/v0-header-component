@@ -130,8 +130,8 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
   return (
     <div className="space-y-5">
       {/* Header mit Tab-Switcher */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-5">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Fuhrpark</h1>
             <p className="text-sm text-muted-foreground mt-1">Verwalten Sie Ihre Fahrer und Fahrzeugflotte</p>
@@ -143,7 +143,7 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
           <div className="flex items-center bg-muted rounded-xl p-1 gap-1">
             <button
               onClick={() => setActiveTab("drivers")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === "drivers"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -151,7 +151,7 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
             >
               <Users className="w-4 h-4" />
               <span>Fahrer</span>
-              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-xl ${
                 activeTab === "drivers"
                   ? "bg-primary-foreground/20 text-primary-foreground"
                   : "bg-primary/10 text-primary"
@@ -159,7 +159,7 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
             </button>
             <button
               onClick={() => setActiveTab("vehicles")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === "vehicles"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -167,7 +167,7 @@ export function FleetPageClient({ initialDrivers = [], initialVehicles = [], com
             >
               <Car className="w-4 h-4" />
               <span>Fahrzeuge</span>
-              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-xl ${
                 activeTab === "vehicles"
                   ? "bg-primary-foreground/20 text-primary-foreground"
                   : "bg-primary/10 text-primary"

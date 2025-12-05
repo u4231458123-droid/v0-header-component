@@ -442,7 +442,7 @@ export function NewEmployeeDialog({
 
             {/* Tab 1: Persönliche Daten */}
             <TabsContent value="personal" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="salutation">
                     Anrede <span className="text-destructive">*</span>
@@ -502,7 +502,7 @@ export function NewEmployeeDialog({
                 {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="dateOfBirth">Geburtsdatum</Label>
                   <Input
@@ -527,7 +527,7 @@ export function NewEmployeeDialog({
 
             {/* Tab 2: Kontakt */}
             <TabsContent value="contact" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="phone">Telefon</Label>
                   <Input
@@ -574,7 +574,7 @@ export function NewEmployeeDialog({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="postalCode">Postleitzahl</Label>
                   <Input
@@ -609,7 +609,7 @@ export function NewEmployeeDialog({
 
             {/* Tab 4: Beschäftigung */}
             <TabsContent value="employment" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="role">
                     Rolle <span className="text-destructive">*</span>
@@ -659,7 +659,7 @@ export function NewEmployeeDialog({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="department">Abteilung</Label>
                   <Input
@@ -681,7 +681,7 @@ export function NewEmployeeDialog({
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="workingHours">Arbeitsstunden/Woche</Label>
                   <Input
@@ -725,7 +725,7 @@ export function NewEmployeeDialog({
                 Laden Sie die erforderlichen Dokumente des Mitarbeiters hoch. Alle Dokumente werden sicher gespeichert.
               </p>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <FileUploadField
                   label="Personalausweis Vorderseite"
                   file={idFrontFile}
@@ -747,7 +747,7 @@ export function NewEmployeeDialog({
                 inputRef={contractRef}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <FileUploadField
                   label="Sozialversicherungsausweis"
                   file={socialSecurityFile}
@@ -762,7 +762,7 @@ export function NewEmployeeDialog({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <FileUploadField
                   label="Krankenkassenkarte"
                   file={healthInsuranceFile}

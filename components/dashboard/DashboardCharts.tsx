@@ -63,7 +63,7 @@ export function DashboardCharts({ revenueData = [], totalRevenue = 0 }: Dashboar
       <div className="px-5 py-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-primary" />
             </div>
             <div>
@@ -82,21 +82,21 @@ export function DashboardCharts({ revenueData = [], totalRevenue = 0 }: Dashboar
 
       <div className="p-5">
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-muted/30 rounded-lg p-3">
+        <div className="grid grid-cols-3 gap-5 mb-6">
+          <div className="bg-muted/30 rounded-xl p-3">
             <p className="text-xs text-muted-foreground mb-1">Durchschnitt/Tag</p>
             <p className="text-lg font-semibold">
               {avgRevenue.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR
             </p>
           </div>
-          <div className="bg-muted/30 rounded-lg p-3">
+          <div className="bg-muted/30 rounded-xl p-3">
             <p className="text-xs text-muted-foreground mb-1">Bester Tag</p>
             <p className="text-lg font-semibold">
               {maxRevenue.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR
             </p>
             {bestDay && <p className="text-[10px] text-muted-foreground">{bestDay.label}</p>}
           </div>
-          <div className="bg-muted/30 rounded-lg p-3">
+          <div className="bg-muted/30 rounded-xl p-3">
             <p className="text-xs text-muted-foreground mb-1">Tage mit Umsatz</p>
             <p className="text-lg font-semibold">{revenueData.filter((d) => d.amount > 0).length} / 30</p>
           </div>

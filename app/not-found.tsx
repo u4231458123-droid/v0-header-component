@@ -47,7 +47,7 @@ export default function NotFound() {
         {/* Quick Links */}
         <div className="pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground mb-4">Hilfreiche Links:</p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
+          <div className="flex flex-wrap justify-center gap-5 text-sm">
             <Link href="/fragen" className="text-primary hover:underline">
               FAQ
             </Link>

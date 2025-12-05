@@ -44,7 +44,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
         title="Admin Dashboard"
         description="Master-Administrator Übersicht - Alle MyDispatch-Unternehmen und Systemstatus"
       >
-        <Badge variant="default" className="bg-amber-500/20 text-amber-600 border-amber-500/30">
+        <Badge variant="default" className="bg-warning/20 text-warning border-warning/30">
           <Crown className="w-3 h-3 mr-1" />
           Master Admin
         </Badge>
@@ -57,21 +57,21 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Unternehmen</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.companies}</p>
+                <p className="text-3xl font-bold text-info">{stats.companies}</p>
               </div>
-              <Building2 className="w-10 h-10 text-blue-500/50" />
+              <Building2 className="w-10 h-10 text-info/50" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-success/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Aktive Abos</p>
-                <p className="text-3xl font-bold text-green-600">{stats.activeSubscriptions}</p>
+                <p className="text-3xl font-bold text-success">{stats.activeSubscriptions}</p>
               </div>
-              <CreditCard className="w-10 h-10 text-green-500/50" />
+              <CreditCard className="w-10 h-10 text-success/50" />
             </div>
           </CardContent>
         </Card>
@@ -105,9 +105,9 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Fahrzeuge</p>
-                <p className="text-3xl font-bold text-orange-600">{stats.totalVehicles}</p>
+                <p className="text-3xl font-bold text-warning">{stats.totalVehicles}</p>
               </div>
-              <Car className="w-10 h-10 text-orange-500/50" />
+              <Car className="w-10 h-10 text-warning/50" />
             </div>
           </CardContent>
         </Card>
@@ -140,7 +140,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
                         variant={company.subscription_status === "active" ? "default" : "secondary"}
                         className={
                           company.subscription_status === "active"
-                            ? "bg-green-500/20 text-green-600 border-green-500/30"
+                            ? "bg-success/20 text-success border-success/30"
                             : ""
                         }
                       >
@@ -172,40 +172,40 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
             <div className="grid grid-cols-1 gap-3">
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">Datenbank</span>
                 </div>
-                <Badge variant="outline" className="text-green-600 border-green-600">
+                <Badge variant="outline" className="text-success border-green-600">
                   Online
                 </Badge>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">Stripe Zahlungen</span>
                 </div>
-                <Badge variant="outline" className="text-green-600 border-green-600">
+                <Badge variant="outline" className="text-success border-green-600">
                   Online
                 </Badge>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">E-Mail-Dienst</span>
                 </div>
-                <Badge variant="outline" className="text-green-600 border-green-600">
+                <Badge variant="outline" className="text-success border-green-600">
                   Online
                 </Badge>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">Google Maps API</span>
                 </div>
-                <Badge variant="outline" className="text-green-600 border-green-600">
+                <Badge variant="outline" className="text-success border-green-600">
                   Online
                 </Badge>
               </div>
@@ -219,14 +219,14 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <CheckCircle className="w-4 h-4 text-success" />
                     <span>Backup erstellt</span>
                   </div>
                   <span className="text-muted-foreground">vor 6 Stunden</span>
                 </div>
                 <div className="flex items-center justify-between p-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-green-500" />
+                    <Shield className="w-4 h-4 text-success" />
                     <span>SSL-Zertifikat gültig</span>
                   </div>
                   <span className="text-muted-foreground">noch 89 Tage</span>

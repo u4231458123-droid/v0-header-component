@@ -261,14 +261,14 @@ export function DashboardMapWidget({ companyId, initialVehicles = [] }: Dashboar
   return (
     <div className="space-y-4">
       {error && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+        <div className="flex items-center gap-2 px-4 py-2 bg-destructive/10 border border-destructive/20 rounded-xl text-sm text-destructive">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <div className="flex items-center gap-2 px-3 py-1.5 bg-success/10 rounded-full">
             <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
             <span className="text-xs font-medium text-success">{onlineVehicles.length} Online</span>
@@ -280,7 +280,7 @@ export function DashboardMapWidget({ companyId, initialVehicles = [] }: Dashboar
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3">
         <div className="lg:col-span-2 bg-background rounded-xl border border-border overflow-hidden">
           <div className="px-4 py-3 border-b border-border bg-muted/30">
             <h3 className="text-sm font-medium flex items-center gap-2">
@@ -297,7 +297,7 @@ export function DashboardMapWidget({ companyId, initialVehicles = [] }: Dashboar
           />
         </div>
 
-        <div className="flex flex-col gap-4" style={{ height: `${mapHeight + 52}px` }}>
+        <div className="flex flex-col gap-5" style={{ height: `${mapHeight + 52}px` }}>
           <WeatherWidget city="Berlin" compact={true} className="w-full shrink-0" />
 
           <div className="bg-background rounded-xl border border-border overflow-hidden shrink-0">
@@ -397,7 +397,7 @@ export function DashboardMapWidget({ companyId, initialVehicles = [] }: Dashboar
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Car className="w-5 h-5 text-primary" />
                 </div>
                 <div>
@@ -411,7 +411,7 @@ export function DashboardMapWidget({ companyId, initialVehicles = [] }: Dashboar
               </div>
               <button
                 onClick={() => setSelectedVehicle(null)}
-                className="p-1.5 hover:bg-accent rounded-lg transition-smooth"
+                className="p-1.5 hover:bg-accent rounded-xl transition-smooth"
               >
                 <X className="w-4 h-4" />
               </button>

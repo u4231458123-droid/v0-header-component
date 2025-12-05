@@ -161,7 +161,7 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
 
         <div className="space-y-6">
           {/* Angebotsnummer und Datum */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Angebotsnummer</p>
               <p className="font-mono text-sm font-medium">{currentQuote.quote_number || "-"}</p>
@@ -185,7 +185,7 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
                   <UserIcon className="h-4 w-4" />
                   Bearbeiter
                 </h4>
-                <div className="grid grid-cols-2 gap-4 pl-6">
+                <div className="grid grid-cols-2 gap-5 pl-6">
                   {createdByProfile && (
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Erstellt von</p>
@@ -308,7 +308,7 @@ export function QuoteDetailsDialog({ quote, open, onOpenChange, onUpdate }: Quot
 
           {/* Angebotsdetails */}
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Gültig bis</p>
                 <p className="text-sm font-medium">

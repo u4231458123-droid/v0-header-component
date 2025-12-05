@@ -185,7 +185,7 @@ export default function KundenPortalEinstellungenPage() {
           <Link href="/kunden-portal" className="text-xl font-bold text-primary">
             MyDispatch Kundenportal
           </Link>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-5">
             <Link href="/kunden-portal" className="text-sm text-muted-foreground hover:text-foreground">
               Übersicht
             </Link>
@@ -212,7 +212,7 @@ export default function KundenPortalEinstellungenPage() {
               <CardDescription>Aktualisieren Sie Ihre persönlichen Informationen</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="salutation">Anrede</Label>
                   <Select
@@ -247,7 +247,7 @@ export default function KundenPortalEinstellungenPage() {
                   </Select>
                 </div>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Vorname</Label>
                   <Input 

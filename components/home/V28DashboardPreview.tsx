@@ -124,7 +124,7 @@ export function V28DashboardPreview({
         <div className="px-6 py-4 border-b border-border bg-muted/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-muted ring-1 ring-border">
+              <div className="p-2 rounded-xl bg-muted ring-1 ring-border">
                 <TrendingUpIcon className="w-5 h-5 text-muted-foreground" />
               </div>
               <div>
@@ -132,7 +132,7 @@ export function V28DashboardPreview({
                 <p className="font-sans text-xs text-muted-foreground">Echtzeit-Übersicht</p>
               </div>
             </div>
-            <div className="px-2 py-1 rounded-lg bg-green-100 ring-1 ring-green-200">
+            <div className="px-2 py-1 rounded-xl bg-green-100 ring-1 ring-green-200">
               <span className="font-sans text-xs font-bold text-green-700">Live</span>
             </div>
           </div>
@@ -141,39 +141,39 @@ export function V28DashboardPreview({
         {/* Dashboard Content */}
         <div className="p-6 bg-card space-y-6">
           {/* KPI Cards Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-muted-foreground">Aufträge</span>
-                <div className="p-1.5 rounded-lg bg-muted">
+                <div className="p-1.5 rounded-xl bg-muted">
                   <FileTextIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="font-sans text-2xl font-bold text-foreground">142</div>
               <div className="flex items-center gap-1 mt-1">
-                <TrendingUpIcon className="w-3 h-3 text-green-600" />
-                <span className="font-sans text-xs font-semibold text-green-600">+12%</span>
+                <TrendingUpIcon className="w-3 h-3 text-success" />
+                <span className="font-sans text-xs font-semibold text-success">+12%</span>
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-muted-foreground">Umsatz</span>
-                <div className="p-1.5 rounded-lg bg-muted">
+                <div className="p-1.5 rounded-xl bg-muted">
                   <EuroIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="font-sans text-2xl font-bold text-foreground">12.5k</div>
               <div className="flex items-center gap-1 mt-1">
-                <TrendingUpIcon className="w-3 h-3 text-green-600" />
-                <span className="font-sans text-xs font-semibold text-green-600">+8%</span>
+                <TrendingUpIcon className="w-3 h-3 text-success" />
+                <span className="font-sans text-xs font-semibold text-success">+8%</span>
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-muted-foreground">Fahrer</span>
-                <div className="p-1.5 rounded-lg bg-muted">
+                <div className="p-1.5 rounded-xl bg-muted">
                   <UsersIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
@@ -184,7 +184,7 @@ export function V28DashboardPreview({
             <div className="p-4 rounded-xl bg-card border border-border shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-sans text-xs font-medium text-muted-foreground">Fahrzeuge</span>
-                <div className="p-1.5 rounded-lg bg-muted">
+                <div className="p-1.5 rounded-xl bg-muted">
                   <CarIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
@@ -203,10 +203,10 @@ export function V28DashboardPreview({
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border"
+                className="flex items-center justify-between p-3 bg-muted/50 rounded-xl border border-border"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-lg bg-card border border-border">
+                  <div className="p-1.5 rounded-xl bg-card border border-border">
                     <ClockIcon className="w-3 h-3 text-muted-foreground" />
                   </div>
                   <div>

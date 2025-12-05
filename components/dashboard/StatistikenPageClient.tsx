@@ -86,7 +86,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Statistiken</h1>
           <p className="text-muted-foreground mt-1">Umfassende Analysen und Berichte für Ihr Unternehmen</p>
@@ -113,7 +113,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
               <div className="p-2 rounded-xl bg-primary/10">
                 <BarChart3 className="w-5 h-5 text-primary" />
               </div>
-              <Badge variant={changes.bookings >= 0 ? "default" : "destructive"} className="rounded-lg">
+              <Badge variant={changes.bookings >= 0 ? "default" : "destructive"} className="rounded-xl">
                 {changes.bookings >= 0 ? (
                   <ArrowUpRight className="w-3 h-3 mr-1" />
                 ) : (
@@ -135,7 +135,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
               <div className="p-2 rounded-xl bg-success/10">
                 <Euro className="w-5 h-5 text-success" />
               </div>
-              <Badge variant={changes.revenue >= 0 ? "default" : "destructive"} className="rounded-lg">
+              <Badge variant={changes.revenue >= 0 ? "default" : "destructive"} className="rounded-xl">
                 {changes.revenue >= 0 ? (
                   <ArrowUpRight className="w-3 h-3 mr-1" />
                 ) : (
@@ -159,7 +159,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
               <div className="p-2 rounded-xl bg-info/10">
                 <Users className="w-5 h-5 text-info" />
               </div>
-              <Badge variant={changes.customers >= 0 ? "default" : "destructive"} className="rounded-lg">
+              <Badge variant={changes.customers >= 0 ? "default" : "destructive"} className="rounded-xl">
                 {changes.customers >= 0 ? (
                   <ArrowUpRight className="w-3 h-3 mr-1" />
                 ) : (
@@ -181,7 +181,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
               <div className="p-2 rounded-xl bg-warning/10">
                 <TrendingUp className="w-5 h-5 text-warning" />
               </div>
-              <Badge variant={changes.averageValue >= 0 ? "default" : "destructive"} className="rounded-lg">
+              <Badge variant={changes.averageValue >= 0 ? "default" : "destructive"} className="rounded-xl">
                 {changes.averageValue >= 0 ? (
                   <ArrowUpRight className="w-3 h-3 mr-1" />
                 ) : (
@@ -203,16 +203,16 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
         <TabsList className="rounded-xl bg-muted/50 p-1">
-          <TabsTrigger value="overview" className="rounded-lg">
+          <TabsTrigger value="overview" className="rounded-xl">
             Übersicht
           </TabsTrigger>
-          <TabsTrigger value="bookings" className="rounded-lg">
+          <TabsTrigger value="bookings" className="rounded-xl">
             Buchungen
           </TabsTrigger>
-          <TabsTrigger value="drivers" className="rounded-lg">
+          <TabsTrigger value="drivers" className="rounded-xl">
             Fahrer
           </TabsTrigger>
-          <TabsTrigger value="customers" className="rounded-lg">
+          <TabsTrigger value="customers" className="rounded-xl">
             Kunden
           </TabsTrigger>
         </TabsList>
@@ -303,7 +303,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4 mt-4">
+                <div className="grid grid-cols-3 gap-5 mt-4">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-success" />
                     <div>
@@ -333,7 +333,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div className="p-3 rounded-xl bg-primary/10">
                     <Car className="w-6 h-6 text-primary" />
                   </div>
@@ -347,7 +347,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
 
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div className="p-3 rounded-xl bg-success/10">
                     <Users className="w-6 h-6 text-success" />
                   </div>
@@ -361,7 +361,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
 
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div className="p-3 rounded-xl bg-info/10">
                     <Clock className="w-6 h-6 text-info" />
                   </div>
@@ -436,7 +436,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                 {data.topDrivers.map((driver, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-5 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold">
                       {idx + 1}
@@ -494,7 +494,7 @@ export function StatistikenPageClient({ data }: StatistikenPageClientProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="rounded-lg">
+                  <Badge variant="secondary" className="rounded-xl">
                     <ArrowUpRight className="w-3 h-3 mr-1" />
                     15% mehr
                   </Badge>

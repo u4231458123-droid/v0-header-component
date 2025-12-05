@@ -242,7 +242,7 @@ export const HomeFeaturesSection = () => {
       description="Alles, was Sie für moderne Taxi- und Mietwagenflotten benötigen – in einer zentralen Plattform."
     >
       <div className="max-w-7xl mx-auto relative">
-        <div ref={featuresRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref={featuresRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((feature, idx) => (
             <Link
               key={idx}
@@ -251,7 +251,7 @@ export const HomeFeaturesSection = () => {
               style={{ animationDelay: `${idx * 100}ms` }}
             >
               <V28MarketingCard className="relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer h-full">
-                <div className="absolute inset-0 bg-linear-to-br from-muted via-muted/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                <div className="absolute inset-0 bg-linear-to-br from-muted via-muted/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
 
                 <div className="relative z-10">
                   <V28IconBox

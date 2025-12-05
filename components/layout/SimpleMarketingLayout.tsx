@@ -82,15 +82,15 @@ export function SimpleMarketingLayout({ children, currentPage = "" }: SimpleMark
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-card">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md hover:bg-muted"
+              className="md:hidden p-2 rounded-xl hover:bg-muted"
             >
               {mobileMenuOpen ? <Icons.X /> : <Icons.Menu />}
             </button>
@@ -106,7 +106,7 @@ export function SimpleMarketingLayout({ children, currentPage = "" }: SimpleMark
             />
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-5">
               {menuItems.map((item) => (
                 <Link
                   key={item.title}
@@ -140,7 +140,7 @@ export function SimpleMarketingLayout({ children, currentPage = "" }: SimpleMark
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-white">
+          <div className="md:hidden border-t border-border bg-card">
             <nav className="px-4 py-4 space-y-2">
               {menuItems.map((item) => {
                 const IconComponent = item.icon
@@ -169,9 +169,9 @@ export function SimpleMarketingLayout({ children, currentPage = "" }: SimpleMark
       {/* Footer */}
       <footer className="bg-muted/30 border-t border-border py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-5">
             <p className="text-sm text-muted-foreground">© 2025 my-dispatch.de by RideHub Solutions</p>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-5">
               <Link href="/impressum" className="text-sm text-muted-foreground hover:text-foreground">
                 Impressum
               </Link>

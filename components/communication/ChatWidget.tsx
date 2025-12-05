@@ -460,7 +460,7 @@ export function ChatWidget({
 
                   {msg.message_type === "image" && msg.attachment_url && (
                     <div className="space-y-2">
-                      <img src={msg.attachment_url} alt={msg.attachment_name || "Bild"} className="max-w-full rounded-lg" />
+                      <img src={msg.attachment_url} alt={msg.attachment_name || "Bild"} className="max-w-full rounded-xl" />
                       <p className="text-xs opacity-70">{msg.message}</p>
                     </div>
                   )}
@@ -629,7 +629,7 @@ function AudioPlayer({ audioUrl, duration }: { audioUrl: string; duration: numbe
   }
 
   return (
-    <div className="flex items-center gap-2 bg-background/50 rounded-lg px-3 py-2">
+    <div className="flex items-center gap-2 bg-background/50 rounded-xl px-3 py-2">
       <Button type="button" variant="ghost" size="icon" onClick={togglePlay} className="h-8 w-8">
         {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </Button>

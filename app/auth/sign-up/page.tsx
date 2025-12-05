@@ -284,7 +284,7 @@ export default function SignUpPage() {
             <p className="text-center text-xs sm:text-sm font-medium tracking-widest text-muted-foreground mb-6">
               SCHRITT {step} VON {totalSteps}
             </p>
-            <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="flex items-center justify-center gap-2 sm:gap-5">
               {stepTitles.map((_, index) => {
                 const stepNum = index + 1
                 const isActive = stepNum === step
@@ -326,7 +326,7 @@ export default function SignUpPage() {
             </div>
 
             {error && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg mb-4">
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl mb-4">
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}
@@ -346,7 +346,7 @@ export default function SignUpPage() {
                       required
                       value={formData.email}
                       onChange={(e) => updateForm("email", e.target.value)}
-                      className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                     />
                   </div>
 
@@ -362,7 +362,7 @@ export default function SignUpPage() {
                         required
                         value={formData.password}
                         onChange={(e) => updateForm("password", e.target.value)}
-                        className="w-full px-3 py-2.5 pr-10 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                        className="w-full px-3 py-2.5 pr-10 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                       />
                       <button
                         type="button"
@@ -386,7 +386,7 @@ export default function SignUpPage() {
                         required
                         value={formData.confirmPassword}
                         onChange={(e) => updateForm("confirmPassword", e.target.value)}
-                        className="w-full px-3 py-2.5 pr-10 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                        className="w-full px-3 py-2.5 pr-10 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                       />
                       <button
                         type="button"
@@ -403,7 +403,7 @@ export default function SignUpPage() {
               {/* Step 2: Persönliche Daten */}
               {step === 2 && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div>
                       <label htmlFor="salutation" className="block text-sm font-medium text-foreground mb-1.5">
                         Anrede *
@@ -448,7 +448,7 @@ export default function SignUpPage() {
                       required
                       value={formData.firstName}
                       onChange={(e) => updateForm("firstName", e.target.value)}
-                      className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                     />
                   </div>
 
@@ -463,7 +463,7 @@ export default function SignUpPage() {
                       required
                       value={formData.lastName}
                       onChange={(e) => updateForm("lastName", e.target.value)}
-                      className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                     />
                   </div>
                 </div>
@@ -483,7 +483,7 @@ export default function SignUpPage() {
                       required
                       value={formData.companyName}
                       onChange={(e) => updateForm("companyName", e.target.value)}
-                      className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                     />
                   </div>
 
@@ -498,11 +498,11 @@ export default function SignUpPage() {
                       required
                       value={formData.address}
                       onChange={(e) => updateForm("address", e.target.value)}
-                      className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-5">
                     <div>
                       <label htmlFor="zip" className="block text-sm font-medium text-foreground mb-1.5">
                         PLZ *
@@ -514,7 +514,7 @@ export default function SignUpPage() {
                         required
                         value={formData.zip}
                         onChange={(e) => updateForm("zip", e.target.value)}
-                        className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                        className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -528,7 +528,7 @@ export default function SignUpPage() {
                         required
                         value={formData.city}
                         onChange={(e) => updateForm("city", e.target.value)}
-                        className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                        className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                       />
                     </div>
                   </div>
@@ -559,7 +559,7 @@ export default function SignUpPage() {
                       placeholder="DE123456789"
                       value={formData.vatId}
                       onChange={(e) => updateForm("vatId", e.target.value.toUpperCase())}
-                      className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                      className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                     />
                   </div>
 
@@ -580,11 +580,11 @@ export default function SignUpPage() {
               {step === 4 && (
                 <div className="space-y-4">
                   {/* Billing Interval */}
-                  <div className="flex gap-2 p-1 bg-muted rounded-lg">
+                  <div className="flex gap-2 p-1 bg-muted rounded-xl">
                     <button
                       type="button"
                       onClick={() => updateForm("billingInterval", "monthly")}
-                      className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                      className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
                         formData.billingInterval === "monthly"
                           ? "bg-background shadow text-foreground"
                           : "text-muted-foreground hover:text-foreground"
@@ -595,7 +595,7 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => updateForm("billingInterval", "yearly")}
-                      className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                      className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
                         formData.billingInterval === "yearly"
                           ? "bg-background shadow text-foreground"
                           : "text-muted-foreground hover:text-foreground"
@@ -674,7 +674,7 @@ export default function SignUpPage() {
                             type="button"
                             onClick={() => updateForm("addOnQuantity", Math.max(0, formData.addOnQuantity - 1))}
                             disabled={formData.addOnQuantity === 0}
-                            className="h-8 w-8 rounded-md border border-input bg-background flex items-center justify-center hover:bg-muted disabled:opacity-50"
+                            className="h-8 w-8 rounded-xl border border-input bg-background flex items-center justify-center hover:bg-muted disabled:opacity-50"
                           >
                             <Minus className="h-4 w-4" />
                           </button>
@@ -682,7 +682,7 @@ export default function SignUpPage() {
                           <button
                             type="button"
                             onClick={() => updateForm("addOnQuantity", formData.addOnQuantity + 1)}
-                            className="h-8 w-8 rounded-md border border-input bg-background flex items-center justify-center hover:bg-muted"
+                            className="h-8 w-8 rounded-xl border border-input bg-background flex items-center justify-center hover:bg-muted"
                           >
                             <Plus className="h-4 w-4" />
                           </button>
@@ -753,7 +753,7 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={handlePrev}
-                    className="flex-1 py-2.5 px-4 border border-input rounded-lg font-medium hover:bg-muted transition-colors text-sm flex items-center justify-center"
+                    className="flex-1 py-2.5 px-4 border border-input rounded-xl font-medium hover:bg-muted transition-colors text-sm flex items-center justify-center"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Zurück
@@ -763,7 +763,7 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="flex-1 py-2.5 px-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors text-sm flex items-center justify-center"
+                    className="flex-1 py-2.5 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors text-sm flex items-center justify-center"
                   >
                     Weiter
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -772,7 +772,7 @@ export default function SignUpPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="flex-1 py-2.5 px-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center justify-center"
+                    className="flex-1 py-2.5 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center justify-center"
                   >
                     {isLoading ? (
                       <>
@@ -795,7 +795,7 @@ export default function SignUpPage() {
             </Link>
           </p>
 
-          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
+          <div className="mt-6 flex items-center justify-center gap-5 text-xs text-muted-foreground">
             <Link href="/impressum" className="hover:text-foreground">
               Impressum
             </Link>

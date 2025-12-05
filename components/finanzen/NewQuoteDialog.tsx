@@ -455,7 +455,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                 </div>
 
                 {searchTerm && (
-                  <div className="max-h-48 overflow-y-auto rounded-md border">
+                  <div className="max-h-48 overflow-y-auto rounded-xl border">
                     {filteredCustomers.length === 0 ? (
                       <div className="p-4 text-center text-muted-foreground">
                         Kein Kunde gefunden. Erstellen Sie einen neuen Kunden.
@@ -514,7 +514,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
               {/* Neuer Kunde - Formular */}
               <TabsContent value="new" className="space-y-4 pt-4">
                 {/* Persoenliche Daten */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-5">
                   <div className="grid gap-2">
                     <Label>Anrede *</Label>
                     <Select name="customer_salutation" required={customerMode === "new"}>
@@ -545,7 +545,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                   <Label>E-Mail</Label>
                   <Input name="customer_email" type="email" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="grid gap-2">
                     <Label>Mobil Nummer</Label>
                     <Input name="customer_mobile" type="tel" maxLength={20} />
@@ -572,7 +572,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                         placeholder="Strasse und Hausnummer"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-5">
                       <div className="grid gap-2">
                         <Label>PLZ</Label>
                         <Input name="customer_postal_code" maxLength={5} />
@@ -601,7 +601,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
                         placeholder="Strasse und Hausnummer"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-5">
                       <div className="grid gap-2">
                         <Label>PLZ</Label>
                         <Input name="customer_postal_code" maxLength={5} />
@@ -633,7 +633,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             </div>
 
             {/* Datum und Uhrzeit */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Datum *</Label>
                 <Input type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} required />
@@ -645,7 +645,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             </div>
 
             {/* Adressen */}
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               <div className="grid gap-2">
                 <Label>Adresse VON *</Label>
                 <AddressAutocomplete
@@ -667,11 +667,11 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             </div>
 
             {/* Fahrzeug und Passagiere */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Fahrzeug Klasse *</Label>
                 {vehicles.length === 0 ? (
-                  <div className="text-sm text-muted-foreground p-2 border border-warning/30 rounded-lg bg-warning/5">
+                  <div className="text-sm text-muted-foreground p-2 border border-warning/30 rounded-xl bg-warning/5">
                     ⚠️ Keine Fahrzeuge im Fleet vorhanden. Bitte zuerst Fahrzeuge anlegen.
                   </div>
                 ) : (
@@ -707,7 +707,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             </div>
 
             {/* Fahrer- und Fahrzeugauswahl */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Fahrer (optional)</Label>
                 <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
@@ -756,7 +756,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             </div>
 
             {/* Zusatzangaben */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label>Kostenstelle</Label>
                 <Input
@@ -813,7 +813,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
 
             {isAirportPickup && (
               <div className="space-y-4 pl-4 border-l-2 border-primary/20">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-5">
                   <div className="grid gap-2">
                     <Label>Abholungsart</Label>
                     <Select value={pickupType} onValueChange={setPickupType}>
@@ -872,7 +872,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             </div>
 
             {items.map((item) => (
-              <div key={item.id} className="grid grid-cols-12 gap-3 items-end p-3 border rounded-md">
+              <div key={item.id} className="grid grid-cols-12 gap-3 items-end p-3 border rounded-xl">
                 <div className="col-span-5 grid gap-2">
                   <Label className="text-xs">Beschreibung</Label>
                   <Input
@@ -934,7 +934,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
             ))}
 
             {/* MwSt. Einstellungen */}
-            <div className="grid grid-cols-2 gap-4 pt-3 border-t">
+            <div className="grid grid-cols-2 gap-5 pt-3 border-t">
               <div className="grid gap-2">
                 <Label>MwSt. Satz</Label>
                 <Select value={String(taxRate)} onValueChange={(v) => setTaxRate(Number.parseFloat(v))}>
@@ -982,7 +982,7 @@ export function NewQuoteDialog({ companyId, customers = [], onSuccess }: NewQuot
           </div>
 
           {/* Notizen */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="grid gap-2">
               <Label>Notizen (optional)</Label>
               <Textarea

@@ -61,7 +61,7 @@ export function ContentArea<T = any>({
   // Table View
   if (type === "table" && columns && columns.length > 0) {
     return (
-      <div className="rounded-md border">
+      <div className="rounded-xl border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -103,7 +103,7 @@ export function ContentArea<T = any>({
   // Grid View (3 Columns auf Desktop)
   if (type === "grid" && renderItem) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {data.map((item, i) => (
           <div key={i}>{renderItem(item, i)}</div>
         ))}
@@ -125,7 +125,7 @@ export function ContentArea<T = any>({
   // Widgets View (Dashboard Grid)
   if (type === "widgets" && renderItem) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {data.map((item, i) => (
           <div key={i}>{renderItem(item, i)}</div>
         ))}
@@ -137,7 +137,7 @@ export function ContentArea<T = any>({
   return (
     <div className="space-y-2">
       {data.map((item, i) => (
-        <div key={i} className="p-4 rounded-lg border border-border bg-card">
+        <div key={i} className="p-4 rounded-xl border border-border bg-card">
           {JSON.stringify(item)}
         </div>
       ))}

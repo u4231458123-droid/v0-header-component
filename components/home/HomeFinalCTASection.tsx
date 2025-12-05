@@ -63,7 +63,7 @@ export const HomeFinalCTASection = () => {
             Starten Sie noch heute und erleben Sie, wie einfach professionelle Flottenverwaltung sein kann.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <V28Button
               onClick={() => router.push("/auth/sign-up")}
               variant="primary"

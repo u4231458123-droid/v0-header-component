@@ -24,7 +24,7 @@ export default async function TenantDatenschutzPage({
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
+        <div className="container mx-auto px-4 py-4 flex items-center gap-5">
           <Link href={`/c/${companySlug}`}>
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />

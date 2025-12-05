@@ -1,4 +1,4 @@
-export function AlertTriangleIcon({ className = "h-8 w-8 text-red-500" }: { className?: string }) {
+export function AlertTriangleIcon({ className = "h-8 w-8 text-destructive" }: { className?: string }) {
   return (
     <svg
       className={className}

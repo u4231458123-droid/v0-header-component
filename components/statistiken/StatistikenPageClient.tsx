@@ -322,7 +322,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
         <div>
           <h1 className="text-2xl font-bold">Statistiken & Analysen</h1>
           <p className="text-muted-foreground">Vollständige Übersicht aller Unternehmensdaten</p>
@@ -491,7 +491,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
           </div>
 
           {/* Charts */}
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             {/* Umsatzentwicklung */}
             <Card className="rounded-2xl border">
               <CardHeader>
@@ -647,7 +647,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
             />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             {/* Zahlungsmethoden */}
             <Card className="rounded-2xl border">
               <CardHeader>
@@ -802,7 +802,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
         {/* FAHRER TAB */}
         <TabsContent value="drivers" className="space-y-5 mt-4">
           {/* Fahrer Status */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
                 <UserCheck className="w-8 h-8 text-success mx-auto mb-2" />
@@ -886,7 +886,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
           </Card>
 
           {/* Durchschnitte */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4">
                 <p className="text-xs text-muted-foreground mb-1">Ø Buchungen/Fahrer</p>
@@ -911,7 +911,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
         {/* FAHRZEUGE TAB */}
         <TabsContent value="vehicles" className="space-y-5 mt-4">
           {/* Fahrzeug Status */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-4 text-center">
                 <Car className="w-8 h-8 text-success mx-auto mb-2" />
@@ -1171,7 +1171,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
                 <CardTitle className="text-base">Aktivitäten</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="p-4 rounded-xl bg-muted/30 text-center">
                     <p className="text-2xl font-bold">{safeNumber(data.shifts?.totalHours).toFixed(0)} h</p>
                     <p className="text-xs text-muted-foreground">Schichtstunden</p>
@@ -1234,7 +1234,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
             />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             {/* Fahrzeugkategorien */}
             <Card className="rounded-2xl border">
               <CardHeader>
@@ -1316,7 +1316,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
             <CardContent>
               <div className="space-y-4">
                 {(data.drivers?.topDrivers || []).slice(0, 5).map((driver, index) => (
-                  <div key={driver.id} className="flex items-center gap-4">
+                  <div key={driver.id} className="flex items-center gap-5">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
                       {index + 1}
                     </div>
@@ -1380,7 +1380,7 @@ export function StatistikenPageClient({ data }: { data: StatisticsData }) {
             <CardContent>
               <div className="space-y-4">
                 {(data.customers?.topCustomers || []).slice(0, 10).map((customer, index) => (
-                  <div key={customer.id} className="flex items-center gap-4">
+                  <div key={customer.id} className="flex items-center gap-5">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
                       {index + 1}
                     </div>

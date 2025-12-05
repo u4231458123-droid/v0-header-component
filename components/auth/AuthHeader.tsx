@@ -17,13 +17,13 @@ export function AuthHeader({ companyName, logoUrl }: AuthHeaderProps = {}) {
         {logoUrl && <img src={logoUrl || "/placeholder.svg"} alt={displayName} className="h-8 w-8 object-contain" />}
         <span className="text-xl font-bold text-primary">{displayName}</span>
       </Link>
-      <nav className="flex items-center gap-4">
+      <nav className="flex items-center gap-5">
         <Link href="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">
           Anmelden
         </Link>
         <Link
           href="/auth/sign-up"
-          className="text-sm bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+          className="text-sm bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90"
         >
           Starten
         </Link>

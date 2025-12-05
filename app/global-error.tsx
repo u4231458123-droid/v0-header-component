@@ -34,7 +34,7 @@ export default function GlobalError({
           </div>
 
           {error.digest && (
-            <p className="text-xs text-muted-foreground font-mono bg-muted px-3 py-2 rounded-lg">
+            <p className="text-xs text-muted-foreground font-mono bg-muted px-3 py-2 rounded-xl">
               Fehler-ID: {error.digest}
             </p>
           )}
@@ -42,14 +42,14 @@ export default function GlobalError({
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={reset}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
               Erneut versuchen
             </button>
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-xl hover:bg-muted transition-colors"
             >
               <Home className="w-4 h-4" />
               Zur Startseite

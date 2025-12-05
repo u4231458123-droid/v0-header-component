@@ -101,7 +101,7 @@ export const HomeHeroSection = () => {
           </div>
 
           {/* CTA Buttons - slate-800 -> primary */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 pt-2 sm:pt-4">
             <Link href="/auth/sign-up" className="w-full sm:w-auto">
               <Button
                 size="lg"
@@ -121,7 +121,7 @@ export const HomeHeroSection = () => {
             </Link>
           </div>
 
-          <div className="pt-6 sm:pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-sm border-t border-border">
+          <div className="pt-6 sm:pt-8 grid grid-cols-2 sm:grid-cols-4 gap-5 sm:gap-5 text-sm border-t border-border">
             <div className="flex flex-col">
               <span className="font-bold text-xl sm:text-2xl text-foreground">24/7</span>
               <span className="text-xs sm:text-sm text-muted-foreground">Immer verfuegbar</span>
@@ -144,7 +144,7 @@ export const HomeHeroSection = () => {
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
             <div className="flex items-center gap-0.5 shrink-0">
               <span className="inline-block w-3 h-2 bg-black rounded-sm" />
-              <span className="inline-block w-3 h-2 bg-red-600 rounded-sm" />
+              <span className="inline-block w-3 h-2 bg-destructive rounded-sm" />
               <span className="inline-block w-3 h-2 bg-yellow-400 rounded-sm" />
             </div>
             <span className="text-xs sm:text-sm">Made in Germany - Entwickelt und gehostet in Deutschland</span>
@@ -169,7 +169,7 @@ export const HomeHeroSection = () => {
           <div className="absolute -bottom-4 sm:-bottom-6 -left-4 sm:-left-6 bg-card p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-xl border border-border hidden md:block">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+                <div className="h-2 w-2 bg-success rounded-full animate-pulse" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Aktive Aufträge</p>

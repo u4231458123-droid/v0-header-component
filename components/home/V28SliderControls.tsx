@@ -87,12 +87,12 @@ export function V28SliderControls({
   onTogglePause,
 }: V28SliderControlsProps) {
   return (
-    <div className="flex items-center justify-center gap-4 mt-8">
+    <div className="flex items-center justify-center gap-5 mt-8">
       {/* WCAG FIX: Pause/Play Button */}
       {onTogglePause && (
         <button
           onClick={onTogglePause}
-          className="p-2 rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:shadow-md hover:scale-[1.02] shadow-sm"
+          className="p-2 rounded-xl border border-slate-200 bg-card transition-all duration-300 hover:shadow-md hover:scale-[1.02] shadow-sm"
           style={{ color: designTokens.colors.primary.DEFAULT }}
           aria-label={isPaused ? "Automatische Wiedergabe starten" : "Automatische Wiedergabe pausieren"}
         >
@@ -103,7 +103,7 @@ export function V28SliderControls({
       {/* Previous Button */}
       <button
         onClick={onPrevious}
-        className="p-2 rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:shadow-md hover:scale-[1.02] shadow-sm"
+        className="p-2 rounded-xl border border-slate-200 bg-card transition-all duration-300 hover:shadow-md hover:scale-[1.02] shadow-sm"
         style={{ color: designTokens.colors.primary.DEFAULT }}
         aria-label="Vorheriges Testimonial"
       >
@@ -130,7 +130,7 @@ export function V28SliderControls({
       {/* Next Button */}
       <button
         onClick={onNext}
-        className="p-2 rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:shadow-md hover:scale-[1.02] shadow-sm"
+        className="p-2 rounded-xl border border-slate-200 bg-card transition-all duration-300 hover:shadow-md hover:scale-[1.02] shadow-sm"
         style={{ color: designTokens.colors.primary.DEFAULT }}
         aria-label="Nächstes Testimonial"
       >

@@ -339,7 +339,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                  className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                 />
               </div>
 
@@ -358,12 +358,12 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+                  className="w-full px-3 py-2.5 border border-input rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
                 />
               </div>
 
               {error && (
-                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
                   <p className="text-sm text-destructive">{error}</p>
                   {showResendConfirmation && (
                     <button
@@ -379,7 +379,7 @@ export default function LoginPage() {
               )}
 
               {resendSuccess && (
-                <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl">
                   <p className="text-sm text-primary">
                     Die Bestätigungs-E-Mail wurde erneut versendet. Bitte prüfen Sie Ihr Postfach.
                   </p>
@@ -389,7 +389,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2.5 px-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                className="w-full py-2.5 px-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 {isLoading ? "Wird angemeldet..." : "Anmelden"}
               </button>
@@ -403,7 +403,7 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
+          <div className="mt-6 flex items-center justify-center gap-5 text-xs text-muted-foreground">
             <Link href="/impressum" className="hover:text-foreground">
               Impressum
             </Link>

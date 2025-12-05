@@ -70,7 +70,7 @@ export const HomeTestimonialsSection = () => {
       description="Professionelle Unternehmen vertrauen auf MyDispatch"
     >
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {testimonials
             .slice(currentSlide * testimonialsPerPage, (currentSlide + 1) * testimonialsPerPage)
             .map((testimonial, idx) => (

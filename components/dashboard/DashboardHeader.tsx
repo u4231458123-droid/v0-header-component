@@ -18,15 +18,15 @@ export function DashboardHeader({ userName, companyId, customers = [], drivers =
   return (
     <>
       {/* Header mit mehr Abstand zwischen Elementen */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Willkommen, {userName}</p>
         </div>
-        <div className="flex items-center gap-4" data-tour="quick-actions">
+        <div className="flex items-center gap-5" data-tour="quick-actions">
           <Button
             onClick={() => setShowCreateDialog(true)}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-smooth shadow-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-smooth shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Neuer Auftrag

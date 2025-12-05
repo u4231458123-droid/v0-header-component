@@ -175,7 +175,7 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
           <DialogDescription>Erfassen Sie die Basisdaten des Kunden</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             {/* Adresstyp */}
             <div className="grid gap-2">
               <Label>Kundentyp</Label>
@@ -208,7 +208,7 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
             )}
 
             {/* Anrede, Vorname, Nachname */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-5">
               <div className="grid gap-2">
                 <Label>Anrede *</Label>
                 <Select value={salutation} onValueChange={setSalutation} required>
@@ -241,7 +241,7 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
             </div>
 
             {/* Telefon, Mobil und E-Mail */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="phone">Telefon *</Label>
                 <Input
@@ -287,7 +287,7 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="postal_code">PLZ</Label>
                 <Input

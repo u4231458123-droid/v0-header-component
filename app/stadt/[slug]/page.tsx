@@ -293,7 +293,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
+      <header className="bg-card/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Image
@@ -316,7 +316,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               Kontakt
             </Link>
           </nav>
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-5">
             <Link href="/auth/login" className="text-muted-foreground hover:text-primary font-medium transition-colors">
               Anmelden
             </Link>
@@ -376,7 +376,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-5">
                 <Link
                   href="/auth/sign-up"
                   className="px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl inline-flex items-center justify-center gap-2"
@@ -425,7 +425,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                 <h3 className="font-semibold text-foreground mb-3">Besonderheiten</h3>
                 <div className="flex flex-wrap gap-2">
                   {city.besonderheiten.map((item) => (
-                    <span key={item} className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-medium">
+                    <span key={item} className="px-3 py-1.5 bg-primary/10 text-primary rounded-xl text-sm font-medium">
                       {item}
                     </span>
                   ))}
@@ -448,7 +448,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8">
             {features.map((feature) => {
               const IconComponent = feature.icon
               return (
@@ -480,7 +480,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 gap-5 lg:gap-8">
             {/* Starter */}
             <div className="bg-card rounded-2xl border border-border p-6 lg:p-8 hover:border-primary/30 transition-colors">
               <h3 className="text-2xl font-bold text-foreground mb-2">Starter</h3>
@@ -550,14 +550,14 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               <p className="text-lg text-muted-foreground">Auch verfügbar in weiteren Städten rund um {city.name}</p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
               {nearbyFromUmland.map((nearbyCity) => (
                 <Link
                   key={nearbyCity.slug}
                   href={`/stadt/${nearbyCity.slug}`}
                   className="bg-card rounded-xl border border-border p-4 text-center hover:border-primary/30 hover:shadow-md transition-all group"
                 >
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/15 transition-colors">
+                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/15 transition-colors">
                     <MapPinIcon className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-semibold text-foreground text-sm">{nearbyCity.name}</h3>
@@ -580,10 +580,10 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           <p className="text-lg text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
             Digitalisieren Sie Ihren Taxi- oder Mietwagenbetrieb in {city.name} mit MyDispatch.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center">
             <Link
               href="/auth/sign-up"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary font-semibold rounded-xl hover:bg-white/90 transition-all shadow-lg"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-card text-primary font-semibold rounded-xl hover:bg-card/90 transition-all shadow-lg"
             >
               Jetzt registrieren
               <ArrowRightIcon className="w-5 h-5" />
@@ -602,8 +602,8 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-5">
+            <div className="flex items-center gap-5">
               <Image
                 src="/images/my-dispatch-logo.png"
                 alt="MyDispatch"
@@ -613,7 +613,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               />
               <span className="text-primary-foreground/60 text-sm">Taxi & Mietwagen Software für {city.name}</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-primary-foreground/70">
+            <div className="flex items-center gap-5 text-sm text-primary-foreground/70">
               <Link href="/impressum" className="hover:text-primary-foreground transition-colors">
                 Impressum
               </Link>

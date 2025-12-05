@@ -228,7 +228,7 @@ function Header() {
 
         {/* Desktop Navigation - Entfernt: Preise, FAQ, Kontakt */}
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-5">
           <Link href="/auth/login" className="text-muted-foreground hover:text-primary font-medium transition-colors">
             Anmelden
           </Link>
@@ -241,7 +241,7 @@ function Header() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+          className="md:hidden p-2 rounded-xl hover:bg-muted transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <XIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
@@ -256,7 +256,7 @@ function Header() {
             <hr className="border-border my-2" />
             <Link
               href="/auth/login"
-              className="text-foreground hover:text-primary font-medium py-3 px-4 rounded-lg hover:bg-muted transition-colors"
+              className="text-foreground hover:text-primary font-medium py-3 px-4 rounded-xl hover:bg-muted transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Anmelden
@@ -370,7 +370,7 @@ function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-primary-foreground/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-primary-foreground/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-5">
           <p className="text-sm text-primary-foreground/60">
             © {new Date().getFullYear()} MyDispatch. Alle Rechte vorbehalten.
           </p>
@@ -439,14 +439,14 @@ function CitiesSection() {
         </div>
 
         {/* Städte Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-5">
           {visibleCities.map((city) => (
             <Link
               key={city.slug}
               href={`/stadt/${city.slug}`}
               className="bg-card rounded-xl border border-border p-3 sm:p-4 text-center hover:border-primary/30 hover:shadow-md transition-all group"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:bg-primary/15 transition-colors">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:bg-primary/15 transition-colors">
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 text-primary"
                   viewBox="0 0 24 24"
@@ -550,7 +550,7 @@ export default function HomePage() {
               Verwalten Sie Ihre Flotte, Buchungen und Kunden in einer modernen Cloud-Lösung. Made in Germany.
               DSGVO-konform. GoBD-zertifiziert.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
               <Link
                 href="/auth/sign-up"
                 className="px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl inline-flex items-center justify-center gap-2"
@@ -624,7 +624,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-8">
             {features.map((feature) => {
               const IconComponent = feature.icon
               return (

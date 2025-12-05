@@ -328,16 +328,16 @@ export function CustomersPageClient({
 
           <Tabs defaultValue="private" className="mt-4">
             <TabsList className="grid w-full grid-cols-2 rounded-xl">
-              <TabsTrigger value="private" className="rounded-lg">
+              <TabsTrigger value="private" className="rounded-xl">
                 Privat
               </TabsTrigger>
-              <TabsTrigger value="business" className="rounded-lg">
+              <TabsTrigger value="business" className="rounded-xl">
                 Geschaeftlich
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="private" className="space-y-4 mt-4">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-5 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label>Anrede</Label>
                   <Select
@@ -374,7 +374,7 @@ export function CustomersPageClient({
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>E-Mail</Label>
                   <Input
@@ -404,7 +404,7 @@ export function CustomersPageClient({
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>PLZ</Label>
                   <Input
@@ -450,7 +450,7 @@ export function CustomersPageClient({
                   className="rounded-xl"
                 />
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>PLZ</Label>
                   <Input

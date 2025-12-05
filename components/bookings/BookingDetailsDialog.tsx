@@ -174,7 +174,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
                     <UserIcon className="h-4 w-4" />
                     Bearbeiter
                   </h4>
-                  <div className="grid grid-cols-2 gap-4 pl-6">
+                  <div className="grid grid-cols-2 gap-5 pl-6">
                     {createdByProfile && (
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground">Erstellt von</p>
@@ -204,7 +204,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
             )}
 
             {/* ID und Eingangszeit */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Auftrags-ID</p>
                 <p className="font-mono text-sm font-medium">{currentBooking.id?.substring(0, 8).toUpperCase()}</p>
@@ -228,7 +228,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
                 <CalendarIcon className="h-4 w-4" />
                 Auftrag Zeitpunkt
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Datum</p>
                   <p className="text-sm font-medium">
@@ -294,7 +294,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
                 <UsersIcon className="h-4 w-4" />
                 Passagiere
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Anzahl (Max. 8)</p>
                   <p className="text-sm font-medium">{currentBooking.passengers || 1}</p>
@@ -318,7 +318,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
                 <CarIcon className="h-4 w-4" />
                 Fahrzeug
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Kategorie</p>
                   <p className="text-sm font-medium">{currentBooking.vehicle_category || "-"}</p>
@@ -339,7 +339,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
                     <PlaneIcon className="h-4 w-4" />
                     Flug-/Zug-Abholung
                   </h4>
-                  <div className="grid grid-cols-2 gap-4 pl-6">
+                  <div className="grid grid-cols-2 gap-5 pl-6">
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Flug-/Zug-Nummer</p>
                       <p className="text-sm font-medium font-mono">{currentBooking.flight_train_number || "-"}</p>
@@ -356,7 +356,7 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, onUpdate }: 
             <Separator />
 
             {/* Fahrer und Preis - Use correct nested driver fields */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Fahrer</p>
                 <p className="text-sm font-medium">

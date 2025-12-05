@@ -99,12 +99,12 @@ export function VoiceInput({ onTranscript, placeholder = "Tippen oder Sprechen..
         type="button"
         onClick={isRecording ? stopRecording : startRecording}
         disabled={isProcessing}
-        className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${
+        className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${
           isRecording
             ? "bg-destructive text-destructive-foreground animate-pulse"
             : isProcessing
-              ? "bg-gray-300 text-gray-500"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-gray-300 text-muted-foreground"
+              : "bg-muted text-foreground hover:bg-border"
         }`}
       >
         {isProcessing ? (

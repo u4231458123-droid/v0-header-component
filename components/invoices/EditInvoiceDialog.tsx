@@ -155,7 +155,7 @@ export function EditInvoiceDialog({ invoice, open, onOpenChange, onSuccess }: Ed
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Kunde (nur Anzeige) */}
           {invoice.customer && (
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-xl">
               <Label className="text-xs text-muted-foreground">Kunde</Label>
               <p className="font-medium">
                 {invoice.customer.first_name} {invoice.customer.last_name}
@@ -196,7 +196,7 @@ export function EditInvoiceDialog({ invoice, open, onOpenChange, onSuccess }: Ed
           </div>
 
           {/* Beträge */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="grid gap-2">
               <Label htmlFor="netAmount">Nettobetrag (€)</Label>
               <Input
@@ -227,7 +227,7 @@ export function EditInvoiceDialog({ invoice, open, onOpenChange, onSuccess }: Ed
           </div>
 
           {/* Summen-Anzeige */}
-          <div className="rounded-md border p-4 bg-muted">
+          <div className="rounded-xl border p-4 bg-muted">
             <div className="flex justify-between mb-2">
               <span className="text-sm">Nettobetrag:</span>
               <span className="text-sm font-medium">{safeNumber(netAmount).toFixed(2)} €</span>

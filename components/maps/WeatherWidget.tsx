@@ -195,7 +195,7 @@ export function WeatherWidget({ lat, lng, city = "Berlin", className = "", compa
   if (loading) {
     return (
       <div className={`bg-card border border-border rounded-xl p-4 ${className}`}>
-        <div className="animate-pulse flex items-center gap-4">
+        <div className="animate-pulse flex items-center gap-5">
           <div className="w-12 h-12 bg-muted rounded-full" />
           <div className="space-y-2">
             <div className="h-6 w-20 bg-muted rounded" />
@@ -264,7 +264,7 @@ export function WeatherWidget({ lat, lng, city = "Berlin", className = "", compa
       </div>
 
       {/* Main weather display */}
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-5 mb-4">
         {weatherIcons[weather.icon] || weatherIcons["03d"]}
         <div>
           <div className="text-4xl font-bold text-foreground">{weather.temperature}°C</div>
@@ -273,7 +273,7 @@ export function WeatherWidget({ lat, lng, city = "Berlin", className = "", compa
       </div>
 
       {/* Additional info */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+      <div className="grid grid-cols-2 gap-5 pt-4 border-t border-border">
         <div className="flex items-center gap-2">
           <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path

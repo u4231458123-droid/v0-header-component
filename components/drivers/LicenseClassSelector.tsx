@@ -49,7 +49,7 @@ export function LicenseClassSelector({ selectedClasses, onChange, disabled = fal
           <div
             key={cls.value}
             className={`
-              flex items-center justify-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors
+              flex items-center justify-center gap-2 p-2 rounded-xl border cursor-pointer transition-colors
               ${
                 selectedClasses.includes(cls.value)
                   ? "bg-primary text-primary-foreground border-primary"

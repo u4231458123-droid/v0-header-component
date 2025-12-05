@@ -180,7 +180,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
             </TabsList>
 
             <TabsContent value="personal" className="space-y-4 mt-4">
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="salutation">Anrede</Label>
                   <Select value={salutation} onValueChange={setSalutation}>
@@ -217,7 +217,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="email">E-Mail Adresse</Label>
                   <Input
@@ -244,7 +244,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="phone">Telefon Nummer</Label>
                   <Input
@@ -269,7 +269,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="dateOfBirth">Geburtsdatum</Label>
                   <Input
@@ -312,7 +312,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
                   placeholder="Straße und Hausnummer eingeben"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-5">
                 <div className="grid gap-2 col-span-1">
                   <Label htmlFor="houseNumber">Hausnummer</Label>
                   <Input
@@ -348,7 +348,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
             </TabsContent>
 
             <TabsContent value="employment" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="contractType">Vertragsart</Label>
                   <Select value={contractType} onValueChange={setContractType}>
@@ -375,7 +375,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="department">Abteilung</Label>
                   <Input
@@ -398,7 +398,7 @@ export function EditEmployeeDialog({ employee, open, onOpenChange, onSuccess }: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="workingHours">Arbeitsstunden/Woche</Label>
                   <Input

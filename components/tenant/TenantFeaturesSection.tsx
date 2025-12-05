@@ -76,7 +76,7 @@ interface FeatureBoxProps {
 
 function FeatureBox({ icon, title, description }: FeatureBoxProps) {
   return (
-    <div className="flex flex-col items-center text-center p-6 rounded-lg bg-card border">
+    <div className="flex flex-col items-center text-center p-6 rounded-xl bg-card border">
       <div className="mb-4 p-3 rounded-full bg-primary/10 text-primary">{icon}</div>
       <h3 className="font-semibold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground">{description}</p>

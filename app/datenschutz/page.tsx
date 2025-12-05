@@ -323,7 +323,7 @@ export default function DatenschutzPage() {
               ))}
             </div>
 
-            <div className="mt-12 grid sm:grid-cols-3 gap-4">
+            <div className="mt-12 grid sm:grid-cols-3 gap-5">
               <Link
                 href="/impressum"
                 className="p-4 rounded-2xl border border-border text-center hover:border-primary/50 transition-colors"

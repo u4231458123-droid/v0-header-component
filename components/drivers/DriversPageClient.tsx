@@ -262,10 +262,10 @@ export function DriversPageClient({
 
       <Tabs defaultValue="drivers" className="space-y-5">
         <TabsList className="bg-muted rounded-xl p-1">
-          <TabsTrigger value="drivers" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="drivers" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Fahrer ({filteredDrivers.length})
           </TabsTrigger>
-          <TabsTrigger value="vehicles" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="vehicles" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Fahrzeuge ({filteredVehicles.length})
           </TabsTrigger>
         </TabsList>

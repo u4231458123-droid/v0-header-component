@@ -139,9 +139,9 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   const getDriverStatusColor = () => {
     switch (driverStatus) {
       case "available":
-        return "bg-emerald-500"
+        return "bg-success"
       case "busy":
-        return "bg-amber-500"
+        return "bg-warning"
       case "offline":
         return "bg-muted"
       default:
@@ -150,9 +150,9 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link href={`/c/${company.company_slug}`} className="flex items-center gap-3">
@@ -166,15 +166,15 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                 />
               ) : (
                 <div
-                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold"
+                  className="h-10 w-10 rounded-xl flex items-center justify-center text-primary-foreground font-bold"
                   style={{ backgroundColor: primaryColor }}
                 >
                   {company.name.charAt(0)}
                 </div>
               )}
               <div>
-                <span className="font-semibold text-slate-900 block">{company.name}</span>
-                <span className="text-xs text-slate-500">Fahrer-Portal</span>
+                <span className="font-semibold text-foreground block">{company.name}</span>
+                <span className="text-xs text-muted-foreground">Fahrer-Portal</span>
               </div>
             </Link>
 
@@ -182,7 +182,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 {todayBookings.length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
                     {todayBookings.length}
                   </span>
                 )}
@@ -200,24 +200,24 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <div className="relative">
                   <div
-                    className="h-14 w-14 rounded-full flex items-center justify-center text-white text-xl font-semibold"
+                    className="h-14 w-14 rounded-full flex items-center justify-center text-primary-foreground text-xl font-semibold"
                     style={{ backgroundColor: primaryColor }}
                   >
                     {driver.first_name.charAt(0)}
                     {driver.last_name.charAt(0)}
                   </div>
                   <span
-                    className={`absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white ${getDriverStatusColor()}`}
+                    className={`absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-card ${getDriverStatusColor()}`}
                   />
                 </div>
                 <div>
                   <h2 className="font-semibold text-lg">
                     {driver.first_name} {driver.last_name}
                   </h2>
-                  <p className="text-sm text-slate-500">{driver.phone}</p>
+                  <p className="text-sm text-muted-foreground">{driver.phone}</p>
                 </div>
               </div>
 
@@ -245,13 +245,13 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
         </Card>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-5">
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold" style={{ color: primaryColor }}>
                 {todayBookings.length}
               </div>
-              <div className="text-xs text-slate-500">Heute</div>
+              <div className="text-xs text-muted-foreground">Heute</div>
             </CardContent>
           </Card>
           <Card>
@@ -259,7 +259,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
               <div className="text-2xl font-bold" style={{ color: primaryColor }}>
                 {upcomingBookings.length}
               </div>
-              <div className="text-xs text-slate-500">Anstehend</div>
+              <div className="text-xs text-muted-foreground">Anstehend</div>
             </CardContent>
           </Card>
           <Card>
@@ -267,7 +267,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
               <div className="text-2xl font-bold" style={{ color: primaryColor }}>
                 {completedBookings.length}
               </div>
-              <div className="text-xs text-slate-500">Abgeschlossen</div>
+              <div className="text-xs text-muted-foreground">Abgeschlossen</div>
             </CardContent>
           </Card>
         </div>
@@ -295,7 +295,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                         <div className="p-4">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-slate-400" />
+                              <Clock className="h-4 w-4 text-muted-foreground" />
                               <span className="font-semibold">
                                 {format(new Date(booking.pickup_time), "HH:mm", { locale: de })} Uhr
                               </span>
@@ -309,30 +309,30 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                                 <div className="h-2 w-2 rounded-full" style={{ backgroundColor: primaryColor }} />
                               </div>
                               <div>
-                                <p className="text-xs text-slate-500">Abholung</p>
+                                <p className="text-xs text-muted-foreground">Abholung</p>
                                 <p className="text-sm">{booking.pickup_address}</p>
                               </div>
                             </div>
                             <div className="flex items-start gap-2">
                               <div className="mt-1">
-                                <div className="h-2 w-2 rounded-full bg-slate-400" />
+                                <div className="h-2 w-2 rounded-full bg-muted" />
                               </div>
                               <div>
-                                <p className="text-xs text-slate-500">Ziel</p>
+                                <p className="text-xs text-muted-foreground">Ziel</p>
                                 <p className="text-sm">{booking.destination_address}</p>
                               </div>
                             </div>
                           </div>
 
                           <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <div className="flex items-center gap-2 text-sm text-foreground">
                               <User className="h-4 w-4" />
                               {booking.customer_name}
                               {booking.passenger_count > 1 && (
-                                <span className="text-slate-400">(+{booking.passenger_count - 1})</span>
+                                <span className="text-muted-foreground">(+{booking.passenger_count - 1})</span>
                               )}
                             </div>
-                            <Button size="sm" style={{ backgroundColor: primaryColor }} className="text-white">
+                            <Button size="sm" style={{ backgroundColor: primaryColor }} className="text-primary-foreground">
                               <Navigation className="h-4 w-4 mr-1" />
                               Navigation
                             </Button>
@@ -360,12 +360,12 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                             <p className="font-medium">
                               {format(new Date(booking.pickup_time), "dd.MM.yyyy", { locale: de })}
                             </p>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-muted-foreground">
                               {format(new Date(booking.pickup_time), "HH:mm", { locale: de })} Uhr -{" "}
                               {booking.pickup_address.substring(0, 30)}...
                             </p>
                           </div>
-                          <ChevronRight className="h-5 w-5 text-slate-400" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
                         </div>
                       </CardContent>
                     </Card>
@@ -377,8 +377,8 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
             {todayBookings.length === 0 && upcomingBookings.length === 0 && (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <Car className="h-12 w-12 mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500">Keine Auftraege vorhanden</p>
+                  <Car className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Keine Auftraege vorhanden</p>
                 </CardContent>
               </Card>
             )}
@@ -396,7 +396,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                           <p className="font-medium">
                             {format(new Date(shift.start_time), "dd.MM.yyyy", { locale: de })}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-muted-foreground">
                             {format(new Date(shift.start_time), "HH:mm", { locale: de })} -{" "}
                             {format(new Date(shift.end_time), "HH:mm", { locale: de })} Uhr
                           </p>
@@ -412,8 +412,8 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <Clock className="h-12 w-12 mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500">Keine Schichten geplant</p>
+                  <Clock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Keine Schichten geplant</p>
                 </CardContent>
               </Card>
             )}
@@ -426,30 +426,30 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                 <CardTitle>Persoenliche Daten</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <p className="text-xs text-slate-500">Vorname</p>
+                    <p className="text-xs text-muted-foreground">Vorname</p>
                     <p className="font-medium">{driver.first_name}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500">Nachname</p>
+                    <p className="text-xs text-muted-foreground">Nachname</p>
                     <p className="font-medium">{driver.last_name}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
                   <Phone className="h-5 w-5" style={{ color: primaryColor }} />
                   <div>
-                    <p className="text-xs text-slate-500">Telefon</p>
+                    <p className="text-xs text-muted-foreground">Telefon</p>
                     <p className="font-medium">{driver.phone}</p>
                   </div>
                 </div>
 
                 {driver.email && (
-                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                  <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
                     <Mail className="h-5 w-5" style={{ color: primaryColor }} />
                     <div>
-                      <p className="text-xs text-slate-500">E-Mail</p>
+                      <p className="text-xs text-muted-foreground">E-Mail</p>
                       <p className="font-medium">{driver.email}</p>
                     </div>
                   </div>
@@ -463,12 +463,12 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-xs text-slate-500">Fuehrerscheinnummer</p>
+                  <p className="text-xs text-muted-foreground">Fuehrerscheinnummer</p>
                   <p className="font-medium">{driver.license_number}</p>
                 </div>
                 {driver.license_expiry && (
                   <div>
-                    <p className="text-xs text-slate-500">Gueltig bis</p>
+                    <p className="text-xs text-muted-foreground">Gueltig bis</p>
                     <p className="font-medium">
                       {format(new Date(driver.license_expiry), "dd.MM.yyyy", { locale: de })}
                     </p>

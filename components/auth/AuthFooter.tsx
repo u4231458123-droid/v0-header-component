@@ -9,12 +9,12 @@ export function AuthFooter() {
   return (
     <footer className="py-6 px-4 border-t border-border bg-background">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-5">
           <p className="text-sm text-muted-foreground">
             &copy; {currentYear} {COMPANY.name}. Alle Rechte vorbehalten.
           </p>
 
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-5">
             <Link href="/impressum" className="text-sm text-muted-foreground hover:text-foreground">
               Impressum
             </Link>

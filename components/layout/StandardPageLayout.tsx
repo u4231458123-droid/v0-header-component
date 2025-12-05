@@ -162,7 +162,7 @@ export function StandardPageLayout({
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{title}</h1>
             {subtitle && <p className="text-sm sm:text-base text-muted-foreground mt-1">{subtitle}</p>}
@@ -183,7 +183,7 @@ export function StandardPageLayout({
             )}
           </div>
 
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-5">
             <div className="flex flex-col items-end">
               <span className="text-xl font-bold tabular-nums text-foreground">{format(new Date(), "HH:mm:ss")}</span>
               <span className="text-xs font-semibold text-muted-foreground">
@@ -191,7 +191,7 @@ export function StandardPageLayout({
               </span>
             </div>
 
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="bg-success/10 text-green-700 border-success">
               <ActivityIcon className="h-3 w-3 mr-1.5" />
               System Online
             </Badge>
@@ -201,7 +201,7 @@ export function StandardPageLayout({
         </div>
 
         {stats && stats.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {stats.map((stat, index) => (
               <Card key={index}>
                 <CardContent className="pt-6">

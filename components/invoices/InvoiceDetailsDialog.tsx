@@ -119,7 +119,7 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
 
         <div className="space-y-6">
           {/* Rechnungsnummer und Datum */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Rechnungsnummer</p>
               <p className="font-mono text-sm font-medium">{currentInvoice.invoice_number || "-"}</p>
@@ -143,7 +143,7 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
                   <UserIcon className="h-4 w-4" />
                   Bearbeiter
                 </h4>
-                <div className="grid grid-cols-2 gap-4 pl-6">
+                <div className="grid grid-cols-2 gap-5 pl-6">
                   {createdByProfile && (
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Erstellt von</p>
@@ -195,7 +195,7 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
 
           {/* Rechnungsdetails */}
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Fälligkeitsdatum</p>
                 <p className="text-sm font-medium">

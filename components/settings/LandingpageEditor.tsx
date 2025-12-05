@@ -196,7 +196,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
 
   return (
     <div
-      className="overflow-auto bg-card text-foreground rounded-lg"
+      className="overflow-auto bg-card text-foreground rounded-xl"
       style={{
         ...previewStyle,
         ["--preview-primary" as any]: primary_color || "#323D5E",
@@ -213,17 +213,17 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
           {logoUrl ? (
             <img src={logoUrl || "/placeholder.svg"} alt={companyName} className="h-8 w-auto" />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">{companyName?.charAt(0) || "M"}</span>
+            <div className="h-8 w-8 rounded-full bg-card/20 flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">{companyName?.charAt(0) || "M"}</span>
             </div>
           )}
-          <span className="text-white font-semibold text-sm">{companyName || "Ihr Unternehmen"}</span>
+          <span className="text-primary-foreground font-semibold text-sm">{companyName || "Ihr Unternehmen"}</span>
         </div>
-        <nav className="hidden md:flex items-center gap-4">
-          {sections.services_enabled && <span className="text-white/80 text-xs">Services</span>}
-          {sections.about_enabled && <span className="text-white/80 text-xs">Über uns</span>}
-          {sections.vehicles_enabled && <span className="text-white/80 text-xs">Fahrzeuge</span>}
-          <span className="text-white/80 text-xs">Kontakt</span>
+        <nav className="hidden md:flex items-center gap-5">
+          {sections.services_enabled && <span className="text-primary-foreground/80 text-xs">Services</span>}
+          {sections.about_enabled && <span className="text-primary-foreground/80 text-xs">Über uns</span>}
+          {sections.vehicles_enabled && <span className="text-primary-foreground/80 text-xs">Fahrzeuge</span>}
+          <span className="text-primary-foreground/80 text-xs">Kontakt</span>
         </nav>
       </header>
 
@@ -235,12 +235,12 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
         }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{formData.title || "Willkommen"}</h1>
-          <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{formData.title || "Willkommen"}</h1>
+          <p className="text-primary-foreground/80 text-lg mb-8 max-w-xl mx-auto">
             {formData.subtitle || "Ihr zuverlässiger Partner für erstklassige Fahrdienstleistungen"}
           </p>
           <button
-            className="px-8 py-3 rounded-lg text-sm font-medium text-white transition-all hover:opacity-90"
+            className="px-8 py-3 rounded-xl text-sm font-medium text-primary-foreground transition-all hover:opacity-90"
             style={{ backgroundColor: accent_color || "#F59E0B" }}
           >
             {sections.cta_button_text || "Jetzt buchen"}
@@ -255,11 +255,11 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
             <h2 className="text-2xl font-bold text-center mb-8" style={{ color: primary_color }}>
               {sections.services_title || "Unsere Services"}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {sections.services.slice(0, 6).map((service) => {
                 const IconComponent = SERVICE_ICONS.find((ic) => ic.value === service.icon)?.icon || Car
                 return (
-                  <div key={service.id} className="bg-white p-6 rounded-xl shadow-sm border">
+                  <div key={service.id} className="bg-card p-6 rounded-xl shadow-sm border">
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
                       style={{ backgroundColor: `${primary_color}15` }}
@@ -267,7 +267,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
                       <IconComponent className="w-6 h-6" style={{ color: primary_color }} />
                     </div>
                     <h3 className="font-semibold text-base mb-2">{service.title}</h3>
-                    <p className="text-sm text-gray-600">{service.description}</p>
+                    <p className="text-sm text-foreground">{service.description}</p>
                   </div>
                 )
               })}
@@ -283,7 +283,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
             <h2 className="text-2xl font-bold mb-4" style={{ color: primary_color }}>
               {sections.about_title || "Über uns"}
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-foreground max-w-2xl mx-auto">
               {sections.about_text || "Beschreibung Ihres Unternehmens..."}
             </p>
           </div>
@@ -292,19 +292,19 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
 
       {/* Vehicles Section */}
       {sections.vehicles_enabled && sections.vehicles.length > 0 && (
-        <section className="py-12 px-6 bg-gray-50">
+        <section className="py-12 px-6 bg-background">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-8" style={{ color: primary_color }}>
               {sections.vehicles_title || "Unsere Fahrzeuge"}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {sections.vehicles.slice(0, 6).map((vehicle) => (
-                <div key={vehicle.id} className="bg-white p-6 rounded-xl shadow-sm border text-center">
-                  <div className="w-16 h-16 rounded-full bg-gray-100 mx-auto mb-4 flex items-center justify-center">
-                    <Car className="w-8 h-8 text-gray-400" />
+                <div key={vehicle.id} className="bg-card p-6 rounded-xl shadow-sm border text-center">
+                  <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center">
+                    <Car className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <h3 className="font-semibold">{vehicle.name}</h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {VEHICLE_CATEGORIES.find((c) => c.value === vehicle.category)?.label} • {vehicle.passengers}{" "}
                     Passagiere
                   </p>
@@ -322,9 +322,9 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
             <h2 className="text-2xl font-bold text-center mb-8" style={{ color: primary_color }}>
               {sections.testimonials_title || "Kundenbewertungen"}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {sections.testimonials.slice(0, 4).map((testimonial) => (
-                <div key={testimonial.id} className="bg-gray-50 p-6 rounded-xl">
+                <div key={testimonial.id} className="bg-background p-6 rounded-xl">
                   <div className="flex gap-1 mb-3">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -333,7 +333,7 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-gray-600 mb-3 italic">"{testimonial.text}"</p>
+                  <p className="text-sm text-foreground mb-3 italic">"{testimonial.text}"</p>
                   <p className="text-sm font-medium">{testimonial.name}</p>
                 </div>
               ))}
@@ -344,16 +344,16 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
 
       {/* FAQ Section */}
       {sections.faq_enabled && sections.faqs.length > 0 && (
-        <section className="py-12 px-6 bg-gray-50">
+        <section className="py-12 px-6 bg-background">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-8" style={{ color: primary_color }}>
               {sections.faq_title || "Häufige Fragen"}
             </h2>
             <div className="space-y-4">
               {sections.faqs.map((faq) => (
-                <div key={faq.id} className="bg-white p-4 rounded-lg border">
+                <div key={faq.id} className="bg-card p-4 rounded-xl border">
                   <h4 className="font-medium mb-2">{faq.question}</h4>
-                  <p className="text-sm text-gray-600">{faq.answer}</p>
+                  <p className="text-sm text-foreground">{faq.answer}</p>
                 </div>
               ))}
             </div>
@@ -370,10 +370,10 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
           }}
         >
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-2xl font-bold text-white mb-3">{sections.cta_title || "Jetzt buchen"}</h2>
-            <p className="text-white/80 mb-6">{sections.cta_text || "Kontaktieren Sie uns für Ihre nächste Fahrt"}</p>
+            <h2 className="text-2xl font-bold text-primary-foreground mb-3">{sections.cta_title || "Jetzt buchen"}</h2>
+            <p className="text-primary-foreground/80 mb-6">{sections.cta_text || "Kontaktieren Sie uns für Ihre nächste Fahrt"}</p>
             <button
-              className="px-8 py-3 rounded-lg text-sm font-medium text-white transition-all hover:opacity-90"
+              className="px-8 py-3 rounded-xl text-sm font-medium text-primary-foreground transition-all hover:opacity-90"
               style={{ backgroundColor: accent_color || "#F59E0B" }}
             >
               {sections.cta_button_text || "Kontakt aufnehmen"}
@@ -383,16 +383,16 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
       )}
 
       {/* Footer */}
-      <footer className="py-8 px-6 bg-gray-900 text-white">
+      <footer className="py-8 px-6 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h4 className="font-semibold mb-3">{companyName || "Ihr Unternehmen"}</h4>
-              <p className="text-sm text-gray-400">{formData.description || "Ihr zuverlässiger Partner"}</p>
+              <p className="text-sm text-muted-foreground">{formData.description || "Ihr zuverlässiger Partner"}</p>
             </div>
             <div>
               <h4 className="font-semibold mb-3">Kontakt</h4>
-              <div className="space-y-2 text-sm text-gray-400">
+              <div className="space-y-2 text-sm text-muted-foreground">
                 {sections.contact_phone && <p>{sections.contact_phone}</p>}
                 {sections.contact_email && <p>{sections.contact_email}</p>}
                 {sections.contact_address && <p>{sections.contact_address}</p>}
@@ -401,14 +401,14 @@ function LandingpagePreview({ formData, sections, companyName, logoUrl, previewD
             <div>
               <h4 className="font-semibold mb-3">Folgen Sie uns</h4>
               <div className="flex gap-3">
-                {sections.social_facebook && <Facebook className="w-5 h-5 text-gray-400" />}
-                {sections.social_instagram && <Instagram className="w-5 h-5 text-gray-400" />}
-                {sections.social_twitter && <Twitter className="w-5 h-5 text-gray-400" />}
-                {sections.social_linkedin && <Linkedin className="w-5 h-5 text-gray-400" />}
+                {sections.social_facebook && <Facebook className="w-5 h-5 text-muted-foreground" />}
+                {sections.social_instagram && <Instagram className="w-5 h-5 text-muted-foreground" />}
+                {sections.social_twitter && <Twitter className="w-5 h-5 text-muted-foreground" />}
+                {sections.social_linkedin && <Linkedin className="w-5 h-5 text-muted-foreground" />}
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-gray-800 text-center text-sm text-gray-500">
+          <div className="mt-8 pt-6 border-t border-gray-800 text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} {companyName || "Ihr Unternehmen"}. Alle Rechte vorbehalten.
           </div>
         </div>
@@ -503,7 +503,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
+            <div className="p-2 rounded-xl bg-primary/10">
               <Globe className="w-5 h-5 text-primary" />
             </div>
             <div>
@@ -548,12 +548,12 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
         </div>
 
         {formData.landingpage_enabled && (
-          <div className={showPreview ? "grid grid-cols-1 xl:grid-cols-2 gap-6" : ""}>
+          <div className={showPreview ? "grid grid-cols-1 xl:grid-cols-2 gap-5" : ""}>
             {/* Editor Panel */}
             <div className="space-y-6">
               {/* Device selector wenn Vorschau aktiv */}
               {showPreview && (
-                <div className="flex items-center justify-center gap-2 p-2 bg-muted rounded-lg xl:hidden">
+                <div className="flex items-center justify-center gap-2 p-2 bg-muted rounded-xl xl:hidden">
                   <Button
                     variant={previewDevice === "desktop" ? "default" : "ghost"}
                     size="sm"
@@ -654,7 +654,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                 <TabsContent value="sektionen" className="space-y-4 mt-4">
                   <Accordion type="multiple" className="space-y-2">
                     {/* Services */}
-                    <AccordionItem value="services" className="border rounded-lg px-4">
+                    <AccordionItem value="services" className="border rounded-xl px-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
                           <Briefcase className="w-4 h-4 text-primary" />
@@ -689,7 +689,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                             </Button>
                           </div>
                           {sections.services.map((service) => (
-                            <div key={service.id} className="p-3 border rounded-lg space-y-2 bg-muted/30">
+                            <div key={service.id} className="p-3 border rounded-xl space-y-2 bg-muted/30">
                               <div className="flex items-center gap-2">
                                 <Select
                                   value={service.icon}
@@ -732,7 +732,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                     </AccordionItem>
 
                     {/* About */}
-                    <AccordionItem value="about" className="border rounded-lg px-4">
+                    <AccordionItem value="about" className="border rounded-xl px-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
                           <Users className="w-4 h-4 text-primary" />
@@ -771,7 +771,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                     </AccordionItem>
 
                     {/* Vehicles */}
-                    <AccordionItem value="vehicles" className="border rounded-lg px-4">
+                    <AccordionItem value="vehicles" className="border rounded-xl px-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
                           <Car className="w-4 h-4 text-primary" />
@@ -806,7 +806,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                             </Button>
                           </div>
                           {sections.vehicles.map((vehicle) => (
-                            <div key={vehicle.id} className="p-3 border rounded-lg space-y-2 bg-muted/30">
+                            <div key={vehicle.id} className="p-3 border rounded-xl space-y-2 bg-muted/30">
                               <div className="flex items-center gap-2">
                                 <Input
                                   value={vehicle.name}
@@ -852,7 +852,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                     </AccordionItem>
 
                     {/* Testimonials */}
-                    <AccordionItem value="testimonials" className="border rounded-lg px-4">
+                    <AccordionItem value="testimonials" className="border rounded-xl px-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
                           <Star className="w-4 h-4 text-primary" />
@@ -892,7 +892,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                             </Button>
                           </div>
                           {sections.testimonials.map((testimonial) => (
-                            <div key={testimonial.id} className="p-3 border rounded-lg space-y-2 bg-muted/30">
+                            <div key={testimonial.id} className="p-3 border rounded-xl space-y-2 bg-muted/30">
                               <div className="flex items-center gap-2">
                                 <Input
                                   value={testimonial.name}
@@ -934,7 +934,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                     </AccordionItem>
 
                     {/* FAQ */}
-                    <AccordionItem value="faq" className="border rounded-lg px-4">
+                    <AccordionItem value="faq" className="border rounded-xl px-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
                           <HelpCircle className="w-4 h-4 text-primary" />
@@ -969,7 +969,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                             </Button>
                           </div>
                           {sections.faqs.map((faq) => (
-                            <div key={faq.id} className="p-3 border rounded-lg space-y-2 bg-muted/30">
+                            <div key={faq.id} className="p-3 border rounded-xl space-y-2 bg-muted/30">
                               <div className="flex items-center gap-2">
                                 <Input
                                   value={faq.question}
@@ -994,7 +994,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                     </AccordionItem>
 
                     {/* CTA */}
-                    <AccordionItem value="cta" className="border rounded-lg px-4">
+                    <AccordionItem value="cta" className="border rounded-xl px-4">
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-3">
                           <Zap className="w-4 h-4 text-primary" />
@@ -1048,7 +1048,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                       <Phone className="w-4 h-4" />
                       Kontaktdaten
                     </h4>
-                    <div className="grid gap-4">
+                    <div className="grid gap-5">
                       <div className="space-y-2">
                         <Label>Telefon</Label>
                         <Input
@@ -1082,7 +1082,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                       <Users className="w-4 h-4" />
                       Social Media
                     </h4>
-                    <div className="grid gap-4">
+                    <div className="grid gap-5">
                       <div className="space-y-2">
                         <Label className="flex items-center gap-2">
                           <Facebook className="w-4 h-4" />
@@ -1142,7 +1142,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                       {COLOR_PRESETS.map((preset) => (
                         <button
                           key={preset.name}
-                          className="p-3 border rounded-lg hover:border-primary transition-colors text-left"
+                          className="p-3 border rounded-xl hover:border-primary transition-colors text-left"
                           onClick={() =>
                             setFormData({
                               ...formData,
@@ -1165,7 +1165,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
 
                   <div className="space-y-4 pt-4 border-t">
                     <h4 className="font-medium">Eigene Farben</h4>
-                    <div className="grid gap-4">
+                    <div className="grid gap-5">
                       <div className="space-y-2">
                         <Label>Primärfarbe</Label>
                         <div className="flex gap-2">
@@ -1259,7 +1259,7 @@ export function LandingpageEditor({ formData, setFormData, companyName, logoUrl 
                       </Button>
                     </div>
                   </div>
-                  <div className="bg-gray-100 rounded-lg p-4 overflow-auto max-h-[calc(100vh-200px)]">
+                  <div className="bg-muted rounded-xl p-4 overflow-auto max-h-[calc(100vh-200px)]">
                     <LandingpagePreview
                       formData={formData}
                       sections={sections}

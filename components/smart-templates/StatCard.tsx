@@ -23,7 +23,7 @@ export function StatCard({ label, value, icon: Icon, trend, className = "" }: St
             <p className="text-xs text-muted-foreground uppercase tracking-wide">{label}</p>
             <p className="text-2xl font-bold text-foreground">{value}</p>
             {trend && (
-              <p className={`text-xs ${trend.isPositive ? "text-green-500" : "text-red-500"}`}>
+              <p className={`text-xs ${trend.isPositive ? "text-success" : "text-destructive"}`}>
                 {trend.isPositive ? "+" : ""}{trend.value}%
               </p>
             )}

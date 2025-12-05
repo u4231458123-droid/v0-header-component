@@ -334,7 +334,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
             </TabsList>
 
             <TabsContent value="personal" className="space-y-4 mt-4">
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="salutation">Anrede</Label>
                   <Select value={salutation} onValueChange={setSalutation}>
@@ -382,7 +382,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="email">E-Mail Adresse</Label>
                   <Input
@@ -407,7 +407,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="mobile">Mobil Nummer</Label>
                   <Input
@@ -431,7 +431,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="nationality">Nationalitaet</Label>
                   <Input
@@ -477,7 +477,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                   placeholder="Strasse und Hausnummer eingeben"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-5">
                 <div className="grid gap-2 col-span-1">
                   <Label htmlFor="postalCode">PLZ</Label>
                   <Input
@@ -503,7 +503,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
             </TabsContent>
 
             <TabsContent value="license" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="licenseNumber">Fuehrerscheinnummer</Label>
                   <Input
@@ -525,7 +525,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="licenseIssueDate">Ausgestellt am</Label>
                   <Input
@@ -559,7 +559,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
             </TabsContent>
 
             <TabsContent value="pbef" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="pbefNumber">P-Schein Nummer</Label>
                   <Input
@@ -581,7 +581,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="pbefIssueDate">P-Schein Erteilt (Datum)</Label>
                   <Input
@@ -628,7 +628,7 @@ export function EditDriverDialog({ driver, open, onOpenChange, onSuccess }: Edit
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="employmentStart">Beschaeftigt seit</Label>
                   <Input

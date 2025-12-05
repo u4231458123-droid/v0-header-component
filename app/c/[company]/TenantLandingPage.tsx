@@ -298,7 +298,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                 </Button>
               </Link>
               <button
-                className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+                className="lg:hidden p-2 rounded-xl hover:bg-muted transition-colors"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -308,7 +308,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <nav className="lg:hidden mt-4 pb-4 border-t pt-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
+            <nav className="lg:hidden mt-4 pb-4 border-t pt-4 flex flex-col gap-5 animate-in slide-in-from-top-2">
               {["Leistungen", "Ueber uns", "Kontakt", "FAQ"].map((item) => (
                 <a
                   key={item}
@@ -368,7 +368,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
               {company.landingpage_description ||
                 "Exzellente Personenbefoerderung mit hoechstem Komfort und Zuverlaessigkeit - fuer jeden Anlass."}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <a href="#kontakt">
                 <Button
                   size="lg"
@@ -391,7 +391,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
             </div>
 
             {/* Trust Badges */}
-            <div className="mt-14 flex flex-wrap justify-center gap-4">
+            <div className="mt-14 flex flex-wrap justify-center gap-5">
               {[
                 { icon: Clock, text: "24/7 Erreichbar" },
                 { icon: Shield, text: "Lizenziert & Versichert" },
@@ -438,7 +438,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
               Von zuverlaessigen Flughafentransfers bis hin zu eleganten Eventfahrten - wir sind fuer Sie da.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {(services as Array<{ id: string; title: string; description: string; icon: string }>).map((service) => {
               const IconComponent = getIcon(service.icon)
               return (
@@ -491,7 +491,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                   { icon: Users, text: "Geschulte & erfahrene Fahrer" },
                   { icon: Car, text: "Gepflegte Premium-Fahrzeuge" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4 bg-card p-4 rounded-xl shadow-sm">
+                  <div key={i} className="flex items-center gap-5 bg-card p-4 rounded-xl shadow-sm">
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${primaryColor}12` }}
@@ -514,7 +514,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
               </div>
               {/* Schwebende Statistik-Karte */}
               <div className="absolute -bottom-8 -left-8 bg-card rounded-2xl shadow-2xl p-6 border border-gray-100">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div
                     className="w-14 h-14 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: primaryColor }}
@@ -574,7 +574,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                     <p className="text-foreground mb-6 italic text-lg leading-relaxed">
                       &ldquo;{testimonial.text}&rdquo;
                     </p>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-5">
                       <div
                         className="w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg"
                         style={{ backgroundColor: primaryColor }}
@@ -660,11 +660,11 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
             <Card className="border-0 bg-muted shadow-lg">
               <CardContent className="p-8">
                 <h3 className="text-xl font-bold mb-6 text-foreground">So erreichen Sie uns</h3>
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid sm:grid-cols-2 gap-5">
                   {company.phone && (
                     <a
                       href={`tel:${company.phone}`}
-                      className="flex items-start gap-4 group p-4 bg-card rounded-xl hover:shadow-md transition-all"
+                      className="flex items-start gap-5 group p-4 bg-card rounded-xl hover:shadow-md transition-all"
                     >
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -681,7 +681,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                   {company.email && (
                     <a
                       href={`mailto:${company.email}`}
-                      className="flex items-start gap-4 group p-4 bg-card rounded-xl hover:shadow-md transition-all"
+                      className="flex items-start gap-5 group p-4 bg-card rounded-xl hover:shadow-md transition-all"
                     >
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -696,7 +696,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                     </a>
                   )}
                   {company.address && (
-                    <div className="flex items-start gap-4 p-4 bg-card rounded-xl">
+                    <div className="flex items-start gap-5 p-4 bg-card rounded-xl">
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `${primaryColor}12` }}
@@ -709,7 +709,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                       </div>
                     </div>
                   )}
-                  <div className="flex items-start gap-4 p-4 bg-card rounded-xl">
+                  <div className="flex items-start gap-5 p-4 bg-card rounded-xl">
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${primaryColor}12` }}
@@ -743,7 +743,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                   </div>
                 ) : (
                   <form onSubmit={handleContactSubmit} className="space-y-5">
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-5">
                       <div>
                         <Label htmlFor="name" className="text-foreground font-medium">
                           Name *
@@ -783,7 +783,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                         onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
                         placeholder="+49 123 456789"
                         required
-                        className="mt-1.5 bg-white"
+                        className="mt-1.5 bg-card"
                       />
                     </div>
                     <div>
@@ -797,7 +797,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                         required
                         placeholder="Beschreiben Sie Ihren Fahrtwunsch oder stellen Sie Ihre Frage..."
                         rows={5}
-                        className="mt-1.5 bg-white resize-none"
+                        className="mt-1.5 bg-card resize-none"
                       />
                     </div>
                     <Button
@@ -830,7 +830,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                 Kontaktieren Sie uns jetzt fuer ein unverbindliches Angebot. Wir freuen uns, Sie bald an Bord zu haben!
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-5">
               {company.phone && (
                 <a href={`tel:${company.phone}`}>
                   <Button
@@ -926,7 +926,7 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
                   { href: `/c/${company.company_slug}/agb`, text: "AGB" },
                 ].map((item) => (
                   <li key={item.text}>
-                    <Link href={item.href} className="text-white/60 hover:text-white transition-colors">
+                    <Link href={item.href} className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
                       {item.text}
                     </Link>
                   </li>
@@ -935,13 +935,13 @@ export function TenantLandingPage({ company }: TenantLandingPageProps) {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-white/50">
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-5">
+            <p className="text-sm text-primary-foreground/50">
               &copy; {new Date().getFullYear()} {company.name}. Alle Rechte vorbehalten.
             </p>
-            <p className="text-sm text-white/30">
+            <p className="text-sm text-primary-foreground/30">
               Powered by{" "}
-              <Link href="/" className="hover:text-white/50 transition-colors">
+              <Link href="/" className="hover:text-primary-foreground/50 transition-colors">
                 MyDispatch
               </Link>
             </p>

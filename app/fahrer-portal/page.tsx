@@ -577,7 +577,7 @@ export default function FahrerPortalPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge variant="default" className="bg-green-600 hover:bg-green-700">Abgeschlossen</Badge>
+        return <Badge variant="default" className="bg-success hover:bg-success">Abgeschlossen</Badge>
       case "in_progress":
         return <Badge variant="default" className="bg-primary hover:bg-primary/90">In Fahrt</Badge>
       case "assigned":
@@ -635,7 +635,7 @@ export default function FahrerPortalPage() {
                 />
               ) : (
                 <div
-                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold bg-primary"
+                  className="h-10 w-10 rounded-xl flex items-center justify-center text-primary-foreground font-bold bg-primary"
                 >
                   {driver.company?.name?.charAt(0) || "F"}
                 </div>
@@ -659,9 +659,9 @@ export default function FahrerPortalPage() {
                 }
                 className={
                   currentShift?.status === "active"
-                    ? "bg-green-600"
+                    ? "bg-success"
                     : currentShift?.status === "break"
-                      ? "bg-amber-600"
+                      ? "bg-warning"
                       : ""
                 }
               >
@@ -697,7 +697,7 @@ export default function FahrerPortalPage() {
                     <Separator />
                     <Button
                       variant="outline"
-                      className="w-full justify-start text-red-600 bg-transparent"
+                      className="w-full justify-start text-destructive bg-transparent"
                       onClick={handleLogout}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
@@ -731,7 +731,7 @@ export default function FahrerPortalPage() {
               <>
                 <Button
                   onClick={() => setShowStartShiftDialog(true)}
-                  className="w-full h-14 text-lg text-white bg-primary hover:bg-primary/90"
+                  className="w-full h-14 text-lg text-primary-foreground bg-primary hover:bg-primary/90"
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Schicht starten
@@ -756,7 +756,7 @@ export default function FahrerPortalPage() {
             ) : (
               <div className="space-y-4">
                 {/* Timer Display */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div className="bg-muted rounded-xl p-4 text-center">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">Schichtzeit</p>
                     <p className="text-3xl font-mono font-bold text-foreground">{shiftTime}</p>
@@ -842,12 +842,12 @@ export default function FahrerPortalPage() {
         </Card>
 
         {/* Statistik-Karten - wie Kundenportal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
           <Card>
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <div
-                  className="h-12 w-12 rounded-full flex items-center justify-center text-white bg-primary"
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground bg-primary"
                 >
                   <Car className="h-6 w-6" />
                 </div>
@@ -861,9 +861,9 @@ export default function FahrerPortalPage() {
 
           <Card>
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <div
-                  className="h-12 w-12 rounded-full flex items-center justify-center text-white bg-primary"
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground bg-primary"
                 >
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
@@ -877,9 +877,9 @@ export default function FahrerPortalPage() {
 
           <Card>
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <div
-                  className="h-12 w-12 rounded-full flex items-center justify-center text-white bg-primary"
+                  className="h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground bg-primary"
                 >
                   <Euro className="h-6 w-6" />
                 </div>
@@ -907,7 +907,7 @@ export default function FahrerPortalPage() {
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 rounded-full bg-green-500 mt-1.5"></div>
+                  <div className="w-3 h-3 rounded-full bg-success mt-1.5"></div>
                   <div>
                     <p className="text-xs text-muted-foreground">Abholung</p>
                     <p className="font-medium">{activeBooking.pickup_address}</p>
@@ -925,7 +925,7 @@ export default function FahrerPortalPage() {
               <Separator />
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">
@@ -941,7 +941,7 @@ export default function FahrerPortalPage() {
                     </a>
                   )}
                 </div>
-                <Button onClick={() => completeBooking(activeBooking.id)} className="bg-green-500 hover:bg-green-600">
+                <Button onClick={() => completeBooking(activeBooking.id)} className="bg-success hover:bg-success">
                   <CheckCircle2 className="h-4 w-4 mr-2" />
                   Fahrt abschliessen
                 </Button>
@@ -976,7 +976,7 @@ export default function FahrerPortalPage() {
                     {pendingBookings
                       .filter((b) => b.status !== "in_progress")
                       .map((booking) => (
-                        <div key={booking.id} className="border rounded-lg p-4 hover:bg-muted transition-colors">
+                        <div key={booking.id} className="border rounded-xl p-4 hover:bg-muted transition-colors">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -991,17 +991,17 @@ export default function FahrerPortalPage() {
 
                           <div className="space-y-2 mb-4">
                             <div className="flex items-start gap-2">
-                              <MapPin className="h-4 w-4 text-green-500 mt-0.5" />
+                              <MapPin className="h-4 w-4 text-success mt-0.5" />
                               <span className="text-sm">{booking.pickup_address}</span>
                             </div>
                             <div className="flex items-start gap-2">
-                              <MapPin className="h-4 w-4 text-red-500 mt-0.5" />
+                              <MapPin className="h-4 w-4 text-destructive mt-0.5" />
                               <span className="text-sm">{booking.dropoff_address}</span>
                             </div>
                           </div>
 
                           <div className="flex items-center justify-between pt-3 border-t">
-                            <div className="flex items-center gap-4 text-sm text-slate-500">
+                            <div className="flex items-center gap-5 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <User className="h-4 w-4" />
                                 <span>
@@ -1014,7 +1014,7 @@ export default function FahrerPortalPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-red-600 border-red-200 hover:bg-red-50 bg-transparent"
+                                className="text-destructive border-destructive hover:bg-destructive/10 bg-transparent"
                                 onClick={() => declineBooking(booking.id)}
                               >
                                 <XCircle className="h-4 w-4 mr-1" />
@@ -1022,7 +1022,7 @@ export default function FahrerPortalPage() {
                               </Button>
                               <Button
                                 size="sm"
-                                className="text-white bg-primary hover:bg-primary/90"
+                                className="text-primary-foreground bg-primary hover:bg-primary/90"
                                 onClick={() => acceptBooking(booking.id)}
                               >
                                 <CheckCircle2 className="h-4 w-4 mr-1" />
@@ -1049,9 +1049,9 @@ export default function FahrerPortalPage() {
                 <CardDescription>Kommunikation mit der Disposition</CardDescription>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[300px] mb-4 border rounded-lg p-4">
+                <ScrollArea className="h-[300px] mb-4 border rounded-xl p-4">
                   {messages.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500">
+                    <div className="text-center py-8 text-muted-foreground">
                       <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-30" />
                       <p>Keine Nachrichten</p>
                     </div>
@@ -1063,10 +1063,10 @@ export default function FahrerPortalPage() {
                           className={`flex ${message.sender_type === "driver" ? "justify-end" : "justify-start"}`}
                         >
                           <div
-                            className={`max-w-[80%] rounded-lg p-3 ${
+                            className={`max-w-[80%] rounded-xl p-3 ${
                               message.sender_type === "driver"
-                                ? "bg-slate-900 text-white"
-                                : "bg-slate-100 text-slate-900"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-foreground"
                             }`}
                           >
                             <p className="text-sm">{message.content}</p>
@@ -1092,7 +1092,7 @@ export default function FahrerPortalPage() {
                       }
                     }}
                   />
-                  <Button onClick={sendMessage} className="text-white bg-primary hover:bg-primary/90">
+                  <Button onClick={sendMessage} className="text-primary-foreground bg-primary hover:bg-primary/90">
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -1136,7 +1136,7 @@ export default function FahrerPortalPage() {
                 ) : (
                   <div className="space-y-4">
                     {completedBookings.map((booking) => (
-                      <div key={booking.id} className="border rounded-lg p-4 bg-muted/30">
+                      <div key={booking.id} className="border rounded-xl p-4 bg-muted/30">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -1146,22 +1146,22 @@ export default function FahrerPortalPage() {
                             <Clock className="h-4 w-4 text-muted-foreground ml-2" />
                             <span>{format(new Date(booking.pickup_time), "HH:mm", { locale: de })} Uhr</span>
                           </div>
-                          <Badge className="bg-green-600 hover:bg-green-700">Abgeschlossen</Badge>
+                          <Badge className="bg-success hover:bg-success">Abgeschlossen</Badge>
                         </div>
 
                         <div className="space-y-2 mb-4">
                           <div className="flex items-start gap-2">
-                            <MapPin className="h-4 w-4 text-green-500 mt-0.5" />
+                            <MapPin className="h-4 w-4 text-success mt-0.5" />
                             <span className="text-sm">{booking.pickup_address}</span>
                           </div>
                           <div className="flex items-start gap-2">
-                            <MapPin className="h-4 w-4 text-red-500 mt-0.5" />
+                            <MapPin className="h-4 w-4 text-destructive mt-0.5" />
                             <span className="text-sm">{booking.dropoff_address}</span>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-3 border-t">
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-5 text-sm text-muted-foreground">
                             {booking.customer && (
                               <div className="flex items-center gap-1">
                                 <User className="h-4 w-4" />
@@ -1204,12 +1204,12 @@ export default function FahrerPortalPage() {
         {/* Hilfe-Bereich - wie Kundenportal */}
         <Card className="mt-6">
           <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-5">
               <div>
                 <h3 className="font-semibold">Hilfe benoetigt?</h3>
-                <p className="text-sm text-slate-500">Kontaktieren Sie die Zentrale bei Fragen</p>
+                <p className="text-sm text-muted-foreground">Kontaktieren Sie die Zentrale bei Fragen</p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <Button variant="outline" onClick={() => setActiveTab("zentrale")}>
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Nachricht senden
@@ -1226,7 +1226,7 @@ export default function FahrerPortalPage() {
           <p>
             &copy; {new Date().getFullYear()} {driver.company?.name}. Alle Rechte vorbehalten.
           </p>
-          <div className="flex items-center justify-center gap-4 mt-2">
+          <div className="flex items-center justify-center gap-5 mt-2">
             <Link href="/impressum" className="hover:text-primary-foreground transition-colors">
               Impressum
             </Link>

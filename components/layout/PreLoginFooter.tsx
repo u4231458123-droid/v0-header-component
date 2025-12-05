@@ -104,11 +104,11 @@ export function PreLoginFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-5">
           <p className="text-sm text-muted-foreground">
             © {currentYear} my-dispatch.de by RideHub Solutions. Alle Rechte vorbehalten.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <Link
               href="/ki-vorschriften"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"

@@ -166,7 +166,7 @@ export function StandardPageLayout({
       <div className={`space-y-6 font-sans ${className || ""}`} style={style}>
         {/* HERO-BEREICH - Optional, Tailwind CSS Design */}
         {heroIcon && (
-          <div className="relative w-full h-[200px] sm:h-[250px] lg:h-[300px] mb-6 rounded-lg overflow-hidden bg-linear-to-br from-primary via-primary/80 to-secondary/30 shadow-lg">
+          <div className="relative w-full h-[200px] sm:h-[250px] lg:h-[300px] mb-6 rounded-xl overflow-hidden bg-linear-to-br from-primary via-primary/80 to-secondary/30 shadow-lg">
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
               <div className="mb-4 p-6 rounded-full bg-foreground/10 backdrop-blur-sm">{heroIcon}</div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">{heroTitle || title}</h2>
@@ -178,7 +178,7 @@ export function StandardPageLayout({
         )}
 
         {/* HEADER - Desktop: Info-Bereich, Mobile: Button */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{title}</h1>
             {subtitle && <p className="text-sm sm:text-base text-muted-foreground mt-1">{subtitle}</p>}
@@ -200,7 +200,7 @@ export function StandardPageLayout({
           </div>
 
           {/* DESKTOP: Info-Bereich (Datum, Zeit, Status) */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-5">
             {/* Datum & Zeit */}
             <div className="flex flex-col items-end">
               <span className="text-xl font-bold tabular-nums text-foreground">{format(new Date(), "HH:mm:ss")}</span>
@@ -210,7 +210,7 @@ export function StandardPageLayout({
             </div>
 
             {/* System-Status Badge */}
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="bg-success/10 text-green-700 border-success">
               <ActivityIcon className="h-3 w-3 mr-1.5" />
               System Online
             </Badge>
@@ -222,7 +222,7 @@ export function StandardPageLayout({
 
         {/* STATS - Optional */}
         {stats && stats.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {stats.map((stat, index) => (
               <Card key={index}>
                 <CardContent className="pt-6">
@@ -282,7 +282,7 @@ export function StandardPageLayout({
 
         {/* FOOTER - Optional */}
         {footerContent && (
-          <div className="bg-muted/50 p-4 rounded-lg text-xs sm:text-sm text-muted-foreground">{footerContent}</div>
+          <div className="bg-muted/50 p-4 rounded-xl text-xs sm:text-sm text-muted-foreground">{footerContent}</div>
         )}
       </div>
     </>

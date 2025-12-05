@@ -140,11 +140,11 @@ export function TenantCustomerSettings({ company, customer, userEmail }: TenantC
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <Link href={`/c/${company.company_slug}/kunde/portal`}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="h-5 w-5" />
@@ -161,15 +161,15 @@ export function TenantCustomerSettings({ company, customer, userEmail }: TenantC
                 />
               ) : (
                 <div
-                  className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                  className="h-8 w-8 rounded-xl flex items-center justify-center text-primary-foreground font-bold text-sm"
                   style={{ backgroundColor: primaryColor }}
                 >
                   {company.name.charAt(0)}
                 </div>
               )}
               <div>
-                <p className="font-semibold text-slate-900">{company.name}</p>
-                <p className="text-xs text-slate-500">Einstellungen</p>
+                <p className="font-semibold text-foreground">{company.name}</p>
+                <p className="text-xs text-muted-foreground">Einstellungen</p>
               </div>
             </div>
           </div>
@@ -179,9 +179,9 @@ export function TenantCustomerSettings({ company, customer, userEmail }: TenantC
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Erfolg/Fehler Meldung */}
         {success && (
-          <Alert className="bg-green-50 border-green-200">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">{success}</AlertDescription>
+          <Alert className="bg-success/10 border-success">
+            <CheckCircle className="h-4 w-4 text-success" />
+            <AlertDescription className="text-success">{success}</AlertDescription>
           </Alert>
         )}
         {error && (
@@ -202,7 +202,7 @@ export function TenantCustomerSettings({ company, customer, userEmail }: TenantC
           </CardHeader>
           <CardContent>
             <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Vorname</Label>
                   <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
@@ -216,15 +216,15 @@ export function TenantCustomerSettings({ company, customer, userEmail }: TenantC
               <div className="space-y-2">
                 <Label htmlFor="email">E-Mail (nicht aenderbar)</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input id="email" value={userEmail} disabled className="pl-10 bg-slate-50" />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input id="email" value={userEmail} disabled className="pl-10 bg-muted" />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefon</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="phone"
                     type="tel"
@@ -248,7 +248,7 @@ export function TenantCustomerSettings({ company, customer, userEmail }: TenantC
 
               <Button
                 type="submit"
-                className="w-full text-white"
+                className="w-full text-primary-foreground"
                 style={{ backgroundColor: primaryColor }}
                 disabled={isLoading}
               >

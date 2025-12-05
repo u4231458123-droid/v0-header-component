@@ -42,7 +42,7 @@ export default function KundenPortalBenachrichtigungenPage() {
           <Link href="/kunden-portal" className="text-xl font-bold text-primary">
             MyDispatch Kundenportal
           </Link>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-5">
             <Link href="/kunden-portal" className="text-sm text-muted-foreground hover:text-foreground">
               Übersicht
             </Link>
@@ -70,7 +70,7 @@ export default function KundenPortalBenachrichtigungenPage() {
             {notifications.map((notification) => (
               <Card key={notification.id} className={notification.read ? "opacity-60" : ""}>
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-5">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                       {notification.type === "booking" && <Car className="h-5 w-5 text-primary" />}
                       {notification.type === "driver" && <Bell className="h-5 w-5 text-primary" />}

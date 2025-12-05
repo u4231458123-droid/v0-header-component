@@ -174,7 +174,7 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
                     isActive
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent",
@@ -191,7 +191,7 @@ export function Header() {
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className={cn(
-              "relative w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200",
+              "relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200",
               menuOpen ? "bg-primary text-primary-foreground" : "hover:bg-accent",
             )}
             aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
@@ -245,7 +245,7 @@ export function Header() {
           {/* User Info Section */}
           {user && (
             <div className="p-5 border-b border-border bg-muted/30">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0">
                   <span className="text-lg font-semibold text-primary-foreground">
                     {(profile?.full_name || user.email || "U").charAt(0).toUpperCase()}
@@ -272,7 +272,7 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                       isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent",
                     )}
                     onClick={() => setMenuOpen(false)}
@@ -291,7 +291,7 @@ export function Header() {
             <div className="p-3 border-t border-border">
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-200"
+                className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-200"
               >
                 <LogoutIcon className="w-5 h-5" />
                 <span>Abmelden</span>

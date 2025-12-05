@@ -554,7 +554,7 @@ export default async function DashboardPage() {
             href="/fleet"
             className="group bg-card rounded-2xl border border-border p-4 hover:border-primary/50 hover:shadow-lg transition-all duration-300"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Car className="w-6 h-6 text-primary" />
               </div>
@@ -569,7 +569,7 @@ export default async function DashboardPage() {
             href="/finanzen"
             className="group bg-card rounded-2xl border border-border p-4 hover:border-primary/50 hover:shadow-lg transition-all duration-300"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <FileText className="w-6 h-6 text-primary" />
               </div>
@@ -581,7 +581,7 @@ export default async function DashboardPage() {
           </Link>
 
           <div className="bg-card rounded-2xl border border-border p-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-primary" />
               </div>
@@ -630,7 +630,7 @@ export default async function DashboardPage() {
               {recentBookings.length > 0 ? (
                 recentBookings.map((booking) => (
                   <div key={booking.id} className="px-6 py-4 hover:bg-accent/30 transition-colors">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-5">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">
                           {booking.customer
@@ -683,7 +683,7 @@ export default async function DashboardPage() {
               {upcomingBookings.length > 0 ? (
                 upcomingBookings.map((booking) => (
                   <div key={booking.id} className="px-6 py-4 hover:bg-accent/30 transition-colors">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-5">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">
                           {booking.customer

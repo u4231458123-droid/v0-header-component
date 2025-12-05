@@ -11,7 +11,7 @@ export function Footer() {
   return (
     <footer className="bg-background border-t border-border py-4">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
           {/* Left: Copyright */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>© 2025 my-dispatch.de by RideHub Solutions</span>
@@ -20,7 +20,7 @@ export function Footer() {
           </div>
 
           {/* Right: Links */}
-          <nav className="flex items-center gap-4 text-sm">
+          <nav className="flex items-center gap-5 text-sm">
             <Link href="/impressum" className="text-muted-foreground hover:text-foreground transition-colors">
               Impressum
             </Link>

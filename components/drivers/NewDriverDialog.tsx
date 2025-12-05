@@ -492,7 +492,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
             </TabsList>
 
             <TabsContent value="personal" className="space-y-4">
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="salutation">Anrede *</Label>
                   <Select value={formData.salutation} onValueChange={(value) => updateField("salutation", value)}>
@@ -541,7 +541,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="email">E-Mail Adresse</Label>
                   <Input
@@ -567,7 +567,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="mobile">Mobil Nummer</Label>
                   <Input
@@ -625,7 +625,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-5">
                 <div className="grid gap-2 col-span-1">
                   <Label htmlFor="postal_code">PLZ</Label>
                   <Input
@@ -651,7 +651,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
             </TabsContent>
 
             <TabsContent value="license" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="license_number">Fuehrerscheinnummer</Label>
                   <Input
@@ -673,7 +673,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="license_issued_date">Ausgestellt am</Label>
                   <Input
@@ -719,7 +719,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="pbef_issued_date">P-Schein Erteilt (Datum)</Label>
                   <Input
@@ -776,7 +776,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
               )}
 
               {createCredentials && (
-                <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                <div className="space-y-4 p-4 border rounded-xl bg-muted/30">
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
@@ -815,7 +815,7 @@ export function NewDriverDialog({ companyId, onSuccess }: NewDriverDialogProps) 
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-5">
                     <div className="grid gap-2">
                       <Label htmlFor="password">Initiales Passwort *</Label>
                       <div className="relative">

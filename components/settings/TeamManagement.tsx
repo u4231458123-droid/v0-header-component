@@ -147,9 +147,9 @@ const ACTION_ICONS: Record<string, any> = {
 }
 
 const ACTION_COLORS: Record<string, string> = {
-  create: "text-green-500",
-  update: "text-blue-500",
-  delete: "text-red-500",
+  create: "text-success",
+  update: "text-info",
+  delete: "text-destructive",
 }
 
 const EMPLOYEE_DOCUMENT_TYPES = [
@@ -627,7 +627,7 @@ export function TeamManagement({
                 key={member.id}
                 className="flex items-center justify-between p-4 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={member.avatar_url || undefined} />
                     <AvatarFallback className="bg-primary/10 text-primary">
@@ -711,9 +711,9 @@ export function TeamManagement({
             {invitations.length > 0 ? (
               invitations.map((invitation) => (
                 <div key={invitation.id} className="flex items-center justify-between p-4 rounded-xl bg-muted">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <Mail className="w-5 h-5 text-amber-500" />
+                  <div className="flex items-center gap-5">
+                    <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center">
+                      <Mail className="w-5 h-5 text-warning" />
                     </div>
                     <div>
                       <p className="font-medium">{invitation.email}</p>
@@ -726,7 +726,7 @@ export function TeamManagement({
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="outline">{getRoleLabel(invitation.role)}</Badge>
-                    <Badge variant="secondary" className="text-amber-600 border-amber-600">
+                    <Badge variant="secondary" className="text-warning border-amber-600">
                       Ausstehend
                     </Badge>
                     {isAdmin && (

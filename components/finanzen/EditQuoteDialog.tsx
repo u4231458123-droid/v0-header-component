@@ -170,7 +170,7 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Kunde (nur Anzeige) */}
           {quote.customer && (
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-xl">
               <Label className="text-xs text-muted-foreground">Kunde</Label>
               <p className="font-medium">
                 {quote.customer.first_name} {quote.customer.last_name}
@@ -199,7 +199,7 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
           </div>
 
           {/* Gültigkeit und Fahrtermin */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="grid gap-2">
               <Label htmlFor="validUntil">Gültig bis</Label>
               <Input
@@ -221,7 +221,7 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
           </div>
 
           {/* Adressen */}
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             <div className="grid gap-2">
               <Label htmlFor="pickupAddress">Abholadresse</Label>
               <Input
@@ -243,7 +243,7 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
           </div>
 
           {/* Fahrzeug und Passagiere */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="grid gap-2">
               <Label htmlFor="vehicleCategory">Fahrzeugkategorie</Label>
               <Select value={vehicleCategory} onValueChange={setVehicleCategory}>
@@ -271,7 +271,7 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
           </div>
 
           {/* Beträge */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="grid gap-2">
               <Label htmlFor="netAmount">Nettobetrag (€)</Label>
               <Input
@@ -301,7 +301,7 @@ export function EditQuoteDialog({ quote, open, onOpenChange, onSuccess }: EditQu
           </div>
 
           {/* Summen-Anzeige */}
-          <div className="rounded-md border p-4 bg-muted">
+          <div className="rounded-xl border p-4 bg-muted">
             <div className="flex justify-between mb-2">
               <span className="text-sm">Nettobetrag:</span>
               <span className="text-sm font-medium">{safeNumber(netAmount).toFixed(2)} €</span>

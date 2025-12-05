@@ -333,7 +333,7 @@ export function FirstStepsWizard({ onComplete, companyId }: FirstStepsWizardProp
                   >
                     <button
                       onClick={() => handleStepClick(step)}
-                      className={`w-full flex items-start gap-3 p-3 rounded-lg border-2 transition-all ${
+                      className={`w-full flex items-start gap-3 p-3 rounded-xl border-2 transition-all ${
                         step.completed
                           ? "border-success/20 bg-success/5"
                           : "border-border hover:border-primary/30 hover:bg-muted/50"
@@ -341,7 +341,7 @@ export function FirstStepsWizard({ onComplete, companyId }: FirstStepsWizardProp
                     >
                       <div className="flex-shrink-0 mt-0.5">
                         {step.completed ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          <CheckCircle2 className="h-5 w-5 text-success" />
                         ) : (
                           <Circle className="h-5 w-5 text-muted-foreground" />
                         )}

@@ -133,14 +133,14 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <CheckCircle className="h-16 w-16 text-success mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2">Buchung erfolgreich!</h2>
-            <p className="text-slate-500 mb-4">Ihre Fahrt wurde angefragt. Wir werden Sie in Kuerze kontaktieren.</p>
+            <p className="text-muted-foreground mb-4">Ihre Fahrt wurde angefragt. Wir werden Sie in Kuerze kontaktieren.</p>
             <Link href={`/c/${company.company_slug}/kunde/portal`}>
-              <Button style={{ backgroundColor: primaryColor }} className="text-white">
+              <Button style={{ backgroundColor: primaryColor }} className="text-primary-foreground">
                 Zum Kundenportal
               </Button>
             </Link>
@@ -151,11 +151,11 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <Link href={`/c/${company.company_slug}/kunde/portal`}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="h-5 w-5" />
@@ -172,15 +172,15 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
                 />
               ) : (
                 <div
-                  className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                  className="h-8 w-8 rounded-xl flex items-center justify-center text-primary-foreground font-bold text-sm"
                   style={{ backgroundColor: primaryColor }}
                 >
                   {company.name.charAt(0)}
                 </div>
               )}
               <div>
-                <p className="font-semibold text-slate-900">{company.name}</p>
-                <p className="text-xs text-slate-500">Neue Fahrt buchen</p>
+                <p className="font-semibold text-foreground">{company.name}</p>
+                <p className="text-xs text-muted-foreground">Neue Fahrt buchen</p>
               </div>
             </div>
           </div>
@@ -205,7 +205,7 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
               {/* Abholadresse */}
               <div className="space-y-2">
                 <Label htmlFor="pickupAddress">
-                  Abholadresse <span className="text-red-500">*</span>
+                  Abholadresse <span className="text-destructive">*</span>
                 </Label>
                 <AddressAutocomplete
                   id="pickupAddress"
@@ -219,7 +219,7 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
               {/* Zieladresse */}
               <div className="space-y-2">
                 <Label htmlFor="dropoffAddress">
-                  Zieladresse <span className="text-red-500">*</span>
+                  Zieladresse <span className="text-destructive">*</span>
                 </Label>
                 <AddressAutocomplete
                   id="dropoffAddress"
@@ -231,10 +231,10 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
               </div>
 
               {/* Datum und Uhrzeit */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label>
-                    Datum <span className="text-red-500">*</span>
+                    Datum <span className="text-destructive">*</span>
                   </Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -263,10 +263,10 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
 
                 <div className="space-y-2">
                   <Label htmlFor="pickupTime">
-                    Uhrzeit <span className="text-red-500">*</span>
+                    Uhrzeit <span className="text-destructive">*</span>
                   </Label>
                   <div className="relative">
-                    <Clock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="pickupTime"
                       type="time"
@@ -280,11 +280,11 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
               </div>
 
               {/* Passagiere und Fahrzeugkategorie */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="passengers">Anzahl Passagiere</Label>
                   <div className="relative">
-                    <Users className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Select value={passengers} onValueChange={setPassengers}>
                       <SelectTrigger className="pl-10">
                         <SelectValue />
@@ -304,7 +304,7 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
                   <div className="space-y-2">
                     <Label htmlFor="vehicleCategory">Fahrzeugkategorie</Label>
                     <div className="relative">
-                      <Car className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Car className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Select value={vehicleCategory} onValueChange={setVehicleCategory}>
                         <SelectTrigger className="pl-10">
                           <SelectValue placeholder="Kategorie waehlen" />
@@ -323,7 +323,7 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
               </div>
 
               {/* Passagier-Details */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="passengerName">Passagiername</Label>
                   <Input
@@ -361,7 +361,7 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
               {/* Submit */}
               <Button
                 type="submit"
-                className="w-full text-white"
+                className="w-full text-primary-foreground"
                 style={{ backgroundColor: primaryColor }}
                 disabled={isLoading}
               >
@@ -375,7 +375,7 @@ export function TenantBookingForm({ company, customer, vehicleCategories }: Tena
                 )}
               </Button>
 
-              <p className="text-xs text-center text-slate-500">
+              <p className="text-xs text-center text-muted-foreground">
                 Nach Ihrer Anfrage erhalten Sie eine Bestaetigung per E-Mail.
               </p>
             </form>

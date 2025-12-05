@@ -8,10 +8,10 @@ interface V28BillingToggleProps {
 
 export function V28BillingToggle({ billingPeriod, onToggle, discountText }: V28BillingToggleProps) {
   return (
-    <div className="flex items-center gap-4 p-1 bg-muted rounded-xl">
+    <div className="flex items-center gap-5 p-1 bg-muted rounded-xl">
       <button
         onClick={() => onToggle("monthly")}
-        className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+        className={`px-6 py-2 rounded-xl text-sm font-medium transition-all ${
           billingPeriod === "monthly"
             ? "bg-card text-foreground shadow-sm"
             : "text-muted-foreground hover:text-foreground"
@@ -21,7 +21,7 @@ export function V28BillingToggle({ billingPeriod, onToggle, discountText }: V28B
       </button>
       <button
         onClick={() => onToggle("yearly")}
-        className={`px-6 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+        className={`px-6 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
           billingPeriod === "yearly"
             ? "bg-card text-foreground shadow-sm"
             : "text-muted-foreground hover:text-foreground"

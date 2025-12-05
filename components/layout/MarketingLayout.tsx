@@ -143,7 +143,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
         >
           <div className="h-16 flex items-center justify-center m-0 p-0">
             {!sidebarExpanded && (
-              <button className="p-2 rounded-md hover:bg-muted transition-colors">
+              <button className="p-2 rounded-xl hover:bg-muted transition-colors">
                 <Icons.ChevronRight />
               </button>
             )}
@@ -164,7 +164,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                   key={item.title}
                   href={item.url}
                   className={cn(
-                    "flex items-center rounded-lg text-sm font-medium mb-1 transition-all",
+                    "flex items-center rounded-xl text-sm font-medium mb-1 transition-all",
                     !sidebarExpanded && "justify-center p-2",
                     sidebarExpanded && "px-3 py-2",
                     isActive ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-muted",
@@ -242,7 +242,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
               {isMobile && (
                 <button
                   onClick={() => setMobileMenuOpen(true)}
-                  className="h-9 w-9 p-0 shrink-0 text-foreground flex items-center justify-center rounded-md hover:bg-muted"
+                  className="h-9 w-9 p-0 shrink-0 text-foreground flex items-center justify-center rounded-xl hover:bg-muted"
                   aria-label="Menü öffnen"
                 >
                   <Icons.Menu />
@@ -261,11 +261,11 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                 }}
               />
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-5">
                 {!isMobile && (
                   <button
                     onClick={() => router.push("/auth/sign-up")}
-                    className="h-10 px-4 font-medium text-sm hover:bg-muted transition-all rounded-lg"
+                    className="h-10 px-4 font-medium text-sm hover:bg-muted transition-all rounded-xl"
                   >
                     Starten
                   </button>
@@ -329,7 +329,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                 >
                   © 2025 my-dispatch.de by RideHub Solutions
                 </p>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <Link
                     href="/impressum"
                     className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
@@ -354,7 +354,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-5">
                   <p
                     className="font-medium"
                     style={{
@@ -367,7 +367,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                   <span style={{ fontSize: "12px", color: DESIGN_TOKENS.colors.border.DEFAULT }}>•</span>
                   <span style={{ fontSize: "12px", color: DESIGN_TOKENS.colors.text.tertiary }}>Made in Germany</span>
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-5">
                   {["Impressum", "Datenschutz", "AGB", "Kontakt"].map((label) => (
                     <Link
                       key={label}
@@ -406,7 +406,7 @@ export function MarketingLayout({ children, currentPage = "", background = "whit
                     href={item.url}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 mb-1 rounded-lg text-sm font-medium transition-all",
+                      "flex items-center gap-3 px-3 py-2 mb-1 rounded-xl text-sm font-medium transition-all",
                       isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
                     )}
                   >

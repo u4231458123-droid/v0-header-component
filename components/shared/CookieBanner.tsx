@@ -58,7 +58,7 @@ export function CookieBanner() {
     >
       <div className="max-w-7xl mx-auto">
         {!showDetails ? (
-          <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-5 items-start md:items-center justify-between">
             <div className="space-y-2 flex-1">
               <h3 className="font-semibold text-foreground">Wir respektieren Ihre Privatsphäre</h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
@@ -102,13 +102,13 @@ export function CookieBanner() {
               </p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              {/* Essential Cookies - bg-slate-50 -> bg-muted/50, bg-slate-400 -> bg-muted-foreground */}
+            <div className="grid gap-5 md:grid-cols-3">
+              {/* Essential Cookies - bg-background -> bg-muted/50, bg-slate-400 -> bg-muted-foreground */}
               <div className="p-4 border rounded-xl bg-muted/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-sm">Technisch notwendig</span>
                   <div className="w-10 h-6 bg-muted-foreground rounded-full relative cursor-not-allowed">
-                    <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow" />
+                    <div className="absolute right-1 top-1 w-4 h-4 bg-card rounded-full shadow" />
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -127,7 +127,7 @@ export function CookieBanner() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                      className={`absolute top-1 w-4 h-4 bg-card rounded-full shadow transition-all ${
                         settings.analytics ? "right-1" : "left-1"
                       }`}
                     />
@@ -147,7 +147,7 @@ export function CookieBanner() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                      className={`absolute top-1 w-4 h-4 bg-card rounded-full shadow transition-all ${
                         settings.marketing ? "right-1" : "left-1"
                       }`}
                     />

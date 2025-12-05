@@ -622,10 +622,10 @@ export function SettingsPageClient({
 
       {/* Kein Unternehmen - Registrierung nötig */}
       {!company && (
-        <Card className="mb-6 border-amber-500/50 bg-amber-500/10">
+        <Card className="mb-6 border-warning/50 bg-warning/10">
           <CardContent className="pt-6">
-            <div className="flex items-start gap-4">
-              <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+            <div className="flex items-start gap-5">
+              <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
               <div>
                 <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -657,10 +657,10 @@ export function SettingsPageClient({
         {/* Company Tab */}
         <TabsContent value="company" className="space-y-6">
           {!company ? (
-            <Card className="border-amber-500/50 bg-amber-500/10">
+            <Card className="border-warning/50 bg-warning/10">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div className="flex items-start gap-5">
+                  <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
                     <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -694,7 +694,7 @@ export function SettingsPageClient({
               {/* Inhaber */}
               <div className="border-t border-border pt-6">
                 <h3 className="font-semibold mb-4">Inhaber / Ansprechpartner</h3>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-5 md:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="owner_salutation">Anrede</Label>
                     <select
@@ -737,7 +737,7 @@ export function SettingsPageClient({
                   <MapPin className="w-4 h-4" />
                   Adresse
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="address">Straße und Hausnummer</Label>
                     <Input
@@ -747,7 +747,7 @@ export function SettingsPageClient({
                       placeholder="Musterstraße 1"
                     />
                   </div>
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-5 md:grid-cols-3">
                     <div className="space-y-2">
                       <Label htmlFor="zip">PLZ</Label>
                       <Input
@@ -779,7 +779,7 @@ export function SettingsPageClient({
                   <Phone className="w-4 h-4" />
                   Kontakt
                 </h3>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefon</Label>
                     <Input
@@ -819,7 +819,7 @@ export function SettingsPageClient({
                   <FileText className="w-4 h-4" />
                   Rechtliche Angaben
                 </h3>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="vat_id">USt-IdNr.</Label>
                     <Input
@@ -873,7 +873,7 @@ export function SettingsPageClient({
               {/* Bankverbindung */}
               <div className="border-t border-border pt-6">
                 <h3 className="font-semibold mb-4">Bankverbindung</h3>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-5 md:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="bank_name">Bank Name</Label>
                     <Input
@@ -914,7 +914,7 @@ export function SettingsPageClient({
                   <CreditCard className="w-4 h-4" />
                   Buchungseinstellungen
                 </h3>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="minimum_lead_time">Mindestvorlaufzeit (Minuten)</Label>
                     <Input
@@ -972,10 +972,10 @@ export function SettingsPageClient({
         {/* Landingpage Tab - ERWEITERTER EDITOR */}
         <TabsContent value="landingpage" className="space-y-6">
           {!company ? (
-            <Card className="border-amber-500/50 bg-amber-500/10">
+            <Card className="border-warning/50 bg-warning/10">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div className="flex items-start gap-5">
+                  <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
                     <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -1030,7 +1030,7 @@ export function SettingsPageClient({
               {formData.landingpage_enabled && (
                 <>
                   {/* URL-Slug */}
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="company_slug">URL-Slug *</Label>
                       <div className="flex items-center gap-2">
@@ -1105,7 +1105,7 @@ export function SettingsPageClient({
                           Kunden können direkt über Ihre Landingpage Fahrten buchen
                         </p>
                         {tier === "starter" && (
-                          <Badge variant="outline" className="text-amber-600 border-amber-600 mt-1">
+                          <Badge variant="outline" className="text-warning border-amber-600 mt-1">
                             Upgrade auf Business für diese Funktion
                           </Badge>
                         )}
@@ -1191,7 +1191,7 @@ export function SettingsPageClient({
                           {/* Vorschau */}
                           <div className="mt-4 p-4 bg-muted rounded-xl">
                             <Label className="mb-2 block">Vorschau</Label>
-                            <div className="border-2 border-dashed border-border rounded-lg p-4 bg-background">
+                            <div className="border-2 border-dashed border-border rounded-xl p-4 bg-background">
                               <div className="text-center text-muted-foreground text-sm">
                                 Widget-Vorschau ({formData.widget_size || "medium"})
                                 <br />
@@ -1235,7 +1235,7 @@ export function SettingsPageClient({
                   {/* Kontakt auf Landingpage */}
                   <div className="border-t border-border pt-6">
                     <h3 className="font-semibold mb-4">Kontaktinformationen (Landingpage)</h3>
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-5 md:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="support_email">Support E-Mail</Label>
                         <Input
@@ -1276,10 +1276,10 @@ export function SettingsPageClient({
         {/* Branding Tab */}
         <TabsContent value="branding" className="space-y-6">
           {!company ? (
-            <Card className="border-amber-500/50 bg-amber-500/10">
+            <Card className="border-warning/50 bg-warning/10">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div className="flex items-start gap-5">
+                  <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
                     <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -1305,7 +1305,7 @@ export function SettingsPageClient({
                   <ImageIcon className="w-4 h-4" />
                   Unternehmenslogo
                 </Label>
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-5">
                   <div className="w-40 h-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted overflow-hidden">
                     {company?.logo_url ? (
                       <Image
@@ -1369,7 +1369,7 @@ export function SettingsPageClient({
               {/* Colors */}
               <div className="border-t border-border pt-6">
                 <h3 className="font-semibold mb-4">Farben</h3>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-5 md:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="primary_color">Primärfarbe</Label>
                     <div className="flex items-center gap-2">
@@ -1430,7 +1430,7 @@ export function SettingsPageClient({
               {/* Dokumente */}
               <div className="border-t border-border pt-6">
                 <h3 className="font-semibold mb-4">Dokumente</h3>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   {/* Gewerbeanmeldung */}
                   <div className="space-y-2">
                     <Label>Gewerbeanmeldung</Label>
@@ -1478,10 +1478,10 @@ export function SettingsPageClient({
         {/* Subscription Tab */}
         <TabsContent value="billing" className="space-y-6">
           {!company ? (
-            <Card className="border-amber-500/50 bg-amber-500/10">
+            <Card className="border-warning/50 bg-warning/10">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div className="flex items-start gap-5">
+                  <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
                     <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -1535,7 +1535,7 @@ export function SettingsPageClient({
               {/* Usage */}
               <div className="space-y-4">
                 <h4 className="font-medium">Aktuelle Nutzung</h4>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-5 md:grid-cols-3">
                   <div className="p-4 rounded-xl bg-muted">
                     <p className="text-sm text-muted-foreground">Fahrer</p>
                     <p className="text-2xl font-bold">{usage.drivers}</p>
@@ -1585,7 +1585,7 @@ export function SettingsPageClient({
               </div>
 
               {/* Manage Subscription */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border">
+              <div className="flex flex-col sm:flex-row gap-5 pt-4 border-t border-border">
                 <Button onClick={handleManageSubscription} variant="outline" className="rounded-xl bg-transparent">
                   <CreditCard className="h-4 w-4 mr-2" />
                   Zahlungen verwalten
@@ -1604,10 +1604,10 @@ export function SettingsPageClient({
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
           {!company ? (
-            <Card className="border-amber-500/50 bg-amber-500/10">
+            <Card className="border-warning/50 bg-warning/10">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div className="flex items-start gap-5">
+                  <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
                     <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -1658,10 +1658,10 @@ export function SettingsPageClient({
         {/* Team Tab */}
         <TabsContent value="team" className="space-y-6">
           {!company || !company.id ? (
-            <Card className="border-amber-500/50 bg-amber-500/10">
+            <Card className="border-warning/50 bg-warning/10">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div className="flex items-start gap-5">
+                  <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
                     <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -1711,7 +1711,7 @@ export function SettingsPageClient({
               <CardDescription>Ihre persönlichen Einstellungen</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Name</Label>
                   <Input value={profile?.full_name || ""} disabled />
@@ -1741,7 +1741,7 @@ export function SettingsPageClient({
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <h4 className="font-medium">Passwort ändern</h4>
-                <div className="grid gap-4 max-w-md">
+                <div className="grid gap-5 max-w-md">
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">Neues Passwort</Label>
                     <Input

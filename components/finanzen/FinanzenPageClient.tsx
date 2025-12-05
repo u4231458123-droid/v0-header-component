@@ -674,8 +674,8 @@ export function FinanzenPageClient({
   return (
     <div className="space-y-5 min-h-[calc(100vh-200px)]">
       {/* Header mit Tab-Switcher */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-5">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Finanzen</h1>
             <p className="text-sm text-muted-foreground mt-1">Rechnungen, Angebote und Kassenbuch verwalten</p>
@@ -690,7 +690,7 @@ export function FinanzenPageClient({
                 setActiveTab("invoices")
                 setStatusFilter("all")
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === "invoices"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -698,7 +698,7 @@ export function FinanzenPageClient({
             >
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Rechnungen</span>
-              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-xl ${
                 activeTab === "invoices"
                   ? "bg-primary-foreground/20 text-primary-foreground"
                   : "bg-primary/10 text-primary"
@@ -711,7 +711,7 @@ export function FinanzenPageClient({
                 setActiveTab("quotes")
                 setStatusFilter("all")
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === "quotes"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -719,7 +719,7 @@ export function FinanzenPageClient({
             >
               <Send className="w-4 h-4" />
               <span className="hidden sm:inline">Angebote</span>
-              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-md ${
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-xl ${
                 activeTab === "quotes"
                   ? "bg-primary-foreground/20 text-primary-foreground"
                   : "bg-primary/10 text-primary"
@@ -732,7 +732,7 @@ export function FinanzenPageClient({
                 setActiveTab("cashbook")
                 setStatusFilter("all")
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === "cashbook"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -754,7 +754,7 @@ export function FinanzenPageClient({
       {/* Overdue Warning for Invoices - Using design system colors */}
       {activeTab === "invoices" && invoiceStats.overdueCount > 0 && (
         <Card className="rounded-2xl border-destructive/30 bg-destructive/5">
-          <CardContent className="flex items-center gap-4 py-4">
+          <CardContent className="flex items-center gap-5 py-4">
             <div className="p-2 bg-destructive/10 rounded-xl">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>

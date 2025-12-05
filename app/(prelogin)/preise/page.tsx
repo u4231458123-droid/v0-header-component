@@ -408,12 +408,12 @@ export default function PreisePage() {
                 >
                   Jährlich
                 </Button>
-                <Badge className="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded-md">-20%</Badge>
+                <Badge className="bg-success text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-xl">-20%</Badge>
               </div>
             </div>
 
             {/* Pricing Cards */}
-            <div className="grid md:grid-cols-3 gap-8 md:gap-6 max-w-6xl mx-auto mb-20 px-2">
+            <div className="grid md:grid-cols-3 gap-8 md:gap-5 max-w-6xl mx-auto mb-20 px-2">
               {plans.map((plan) => (
                 <Card
                   key={plan.id}
@@ -653,7 +653,7 @@ export default function PreisePage() {
                   </span>
                   Tarife & Abrechnung
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <Card className="rounded-2xl border-border">
                     <CardContent className="py-5">
                       <h4 className="font-semibold text-foreground mb-2">Kann ich meinen Tarif jederzeit wechseln?</h4>
@@ -703,7 +703,7 @@ export default function PreisePage() {
                   </span>
                   Funktionen & Limits
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <Card className="rounded-2xl border-border">
                     <CardContent className="py-5">
                       <h4 className="font-semibold text-foreground mb-2">
@@ -759,7 +759,7 @@ export default function PreisePage() {
                   </span>
                   Datenschutz & Sicherheit
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <Card className="rounded-2xl border-border">
                     <CardContent className="py-5">
                       <h4 className="font-semibold text-foreground mb-2">Wo werden meine Daten gespeichert?</h4>
@@ -801,7 +801,7 @@ export default function PreisePage() {
                   </span>
                   Support & Onboarding
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-5">
                   <Card className="rounded-2xl border-border">
                     <CardContent className="py-5">
                       <h4 className="font-semibold text-foreground mb-2">Wie schnell erhalte ich Support?</h4>

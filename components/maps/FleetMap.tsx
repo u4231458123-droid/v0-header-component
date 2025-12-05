@@ -49,7 +49,7 @@ function MapFallback({
               <div
                 key={vehicle.id}
                 onClick={() => onVehicleClick?.(vehicle)}
-                className="flex items-center justify-between p-3 bg-card rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-3 bg-card rounded-xl border border-border hover:bg-accent/50 cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -96,7 +96,7 @@ function MapFallback({
 
       {/* Legend */}
       <div className="p-3 border-t border-border bg-muted/20">
-        <div className="flex items-center justify-center gap-4 text-xs">
+        <div className="flex items-center justify-center gap-5 text-xs">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-success" />
             <span>Frei</span>
@@ -287,7 +287,7 @@ export function FleetMap({
 
       {/* Legend */}
       {isLoaded && (
-        <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur-sm rounded-lg p-3 text-sm">
+        <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur-sm rounded-xl p-3 text-sm">
           <div className="font-medium mb-2">Fahrzeugstatus</div>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -312,7 +312,7 @@ export function FleetMap({
 
       {/* Selected vehicle info */}
       {selectedVehicle && (
-        <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm rounded-lg p-4 max-w-xs">
+        <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm rounded-xl p-4 max-w-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="font-bold">{selectedVehicle.licensePlate}</span>
             <button onClick={() => setSelectedVehicle(null)} className="p-1 hover:bg-accent rounded">

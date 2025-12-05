@@ -258,7 +258,7 @@ export function ContactRequestsManager({ contactRequests: initialRequests }: Con
           filteredRequests.map((request) => (
             <Card key={request.id} className="border-border hover:border-primary/50 transition-colors">
               <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-5">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3">
                       <h3 className="font-semibold text-foreground">{request.subject}</h3>
@@ -267,7 +267,7 @@ export function ContactRequestsManager({ contactRequests: initialRequests }: Con
                         {getTypeLabel(request.type)}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-5 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Mail className="h-4 w-4" />
                         {request.email}
@@ -291,7 +291,7 @@ export function ContactRequestsManager({ contactRequests: initialRequests }: Con
                     </div>
                     <p className="text-sm text-foreground line-clamp-2">{request.message}</p>
                     {request.response && (
-                      <div className="mt-2 p-3 rounded-lg bg-muted border border-border">
+                      <div className="mt-2 p-3 rounded-xl bg-muted border border-border">
                         <p className="text-xs font-medium text-muted-foreground mb-1">Antwort:</p>
                         <p className="text-sm text-foreground">{request.response}</p>
                         {request.responded_at && (
@@ -354,7 +354,7 @@ export function ContactRequestsManager({ contactRequests: initialRequests }: Con
           {selectedRequest && (
             <div className="space-y-4">
               {/* Original Message */}
-              <div className="p-4 rounded-lg bg-muted border border-border">
+              <div className="p-4 rounded-xl bg-muted border border-border">
                 <Label className="text-xs font-medium text-muted-foreground mb-2 block">Original-Nachricht:</Label>
                 <p className="text-sm text-foreground whitespace-pre-wrap">{selectedRequest.message}</p>
                 <p className="text-xs text-muted-foreground mt-2">

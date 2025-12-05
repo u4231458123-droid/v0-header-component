@@ -204,8 +204,8 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
 
   if (mustChangePassword) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
-        <header className="py-6 px-4 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted flex flex-col">
+        <header className="py-6 px-4 border-b border-border bg-card/80 backdrop-blur-sm">
           <div className="container mx-auto flex items-center justify-between">
             <Link href={`/c/${company.company_slug}`} className="flex items-center gap-3">
               {company.logo_url ? (
@@ -218,13 +218,13 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
                 />
               ) : (
                 <div
-                  className="h-12 w-12 rounded-xl flex items-center justify-center text-white font-bold text-xl"
+                  className="h-12 w-12 rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl"
                   style={{ backgroundColor: primaryColor }}
                 >
                   {company.name.charAt(0)}
                 </div>
               )}
-              <span className="font-semibold text-xl text-slate-900">{company.name}</span>
+              <span className="font-semibold text-xl text-foreground">{company.name}</span>
             </Link>
           </div>
         </header>
@@ -255,7 +255,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">Neues Passwort</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="newPassword"
                       type={showPassword ? "text" : "password"}
@@ -269,7 +269,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -279,7 +279,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
                 <div className="space-y-2">
                   <Label htmlFor="newPasswordConfirm">Passwort bestaetigen</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="newPasswordConfirm"
                       type={showPassword ? "text" : "password"}
@@ -295,7 +295,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
 
                 <Button
                   type="submit"
-                  className="w-full text-white"
+                  className="w-full text-primary-foreground"
                   style={{ backgroundColor: primaryColor }}
                   disabled={isLoading}
                 >
@@ -313,7 +313,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
           </Card>
         </main>
 
-        <footer className="py-4 px-4 text-center text-sm text-slate-500 border-t border-slate-200">
+        <footer className="py-4 px-4 text-center text-sm text-muted-foreground border-t border-border">
           <p>
             &copy; {new Date().getFullYear()} {company.name}. Alle Rechte vorbehalten.
           </p>
@@ -324,9 +324,9 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
 
   // ... existing login form return ...
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex flex-col">
       {/* Header mit Unternehmensbranding */}
-      <header className="py-6 px-4 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+      <header className="py-6 px-4 border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between">
           <Link href={`/c/${company.company_slug}`} className="flex items-center gap-3">
             {company.logo_url ? (
@@ -339,13 +339,13 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
               />
             ) : (
               <div
-                className="h-12 w-12 rounded-xl flex items-center justify-center text-white font-bold text-xl"
+                className="h-12 w-12 rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl"
                 style={{ backgroundColor: primaryColor }}
               >
                 {company.name.charAt(0)}
               </div>
             )}
-            <span className="font-semibold text-xl text-slate-900">{company.name}</span>
+            <span className="font-semibold text-xl text-foreground">{company.name}</span>
           </Link>
         </div>
       </header>
@@ -360,17 +360,17 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
           <CardContent className="pt-4">
             {/* Nutzertyp-Info */}
             <div className="grid grid-cols-3 gap-2 mb-6">
-              <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 text-center">
+              <div className="flex flex-col items-center p-3 rounded-xl bg-muted text-center">
                 <Building2 className="h-5 w-5 mb-1" style={{ color: primaryColor }} />
-                <span className="text-xs text-slate-500">Unternehmer</span>
+                <span className="text-xs text-muted-foreground">Unternehmer</span>
               </div>
-              <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 text-center">
+              <div className="flex flex-col items-center p-3 rounded-xl bg-muted text-center">
                 <Car className="h-5 w-5 mb-1" style={{ color: primaryColor }} />
-                <span className="text-xs text-slate-500">Fahrer</span>
+                <span className="text-xs text-muted-foreground">Fahrer</span>
               </div>
-              <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 text-center">
+              <div className="flex flex-col items-center p-3 rounded-xl bg-muted text-center">
                 <Users className="h-5 w-5 mb-1" style={{ color: primaryColor }} />
-                <span className="text-xs text-slate-500">Kunden</span>
+                <span className="text-xs text-muted-foreground">Kunden</span>
               </div>
             </div>
 
@@ -385,7 +385,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
               <div className="space-y-2">
                 <Label htmlFor="email">E-Mail-Adresse</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
@@ -407,7 +407,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type="password"
@@ -423,7 +423,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
 
               <Button
                 type="submit"
-                className="w-full text-white"
+                className="w-full text-primary-foreground"
                 style={{ backgroundColor: primaryColor }}
                 disabled={isLoading}
               >
@@ -438,7 +438,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm text-slate-500">
+            <div className="mt-6 text-center text-sm text-muted-foreground">
               <p>
                 Noch kein Konto?{" "}
                 <Link
@@ -455,7 +455,7 @@ export function TenantLoginPage({ company }: TenantLoginPageProps) {
       </main>
 
       {/* Footer */}
-      <footer className="py-4 px-4 text-center text-sm text-slate-500 border-t border-slate-200">
+      <footer className="py-4 px-4 text-center text-sm text-muted-foreground border-t border-border">
         <p>
           &copy; {new Date().getFullYear()} {company.name}. Alle Rechte vorbehalten.
         </p>

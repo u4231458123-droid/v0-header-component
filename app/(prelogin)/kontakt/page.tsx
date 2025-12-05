@@ -136,7 +136,7 @@ export default function KontaktPage() {
           </div>
 
           <div className="max-w-5xl mx-auto mb-12">
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-5">
               {contactOptions.map((option) => (
                 <Card
                   key={option.title}
@@ -207,7 +207,7 @@ export default function KontaktPage() {
                       </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-5">
                       <div className="space-y-2">
                         <Label htmlFor="name">Name *</Label>
                         <Input
@@ -217,7 +217,7 @@ export default function KontaktPage() {
                           className={`rounded-xl ${errors.name ? "border-red-500" : ""}`}
                           placeholder="Ihr vollständiger Name"
                         />
-                        {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                        {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
                       </div>
 
                       <div className="space-y-2">
@@ -230,11 +230,11 @@ export default function KontaktPage() {
                           className={`rounded-xl ${errors.email ? "border-red-500" : ""}`}
                           placeholder="ihre@email.de"
                         />
-                        {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+                        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                       </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-5">
                       <div className="space-y-2">
                         <Label htmlFor="company">Unternehmen</Label>
                         <Input
@@ -257,7 +257,7 @@ export default function KontaktPage() {
                           placeholder="+49 123 456789"
                           required
                         />
-                        {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+                        {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
                       </div>
                     </div>
 
@@ -270,7 +270,7 @@ export default function KontaktPage() {
                         className={`rounded-xl ${errors.subject ? "border-red-500" : ""}`}
                         placeholder="Wie können wir helfen?"
                       />
-                      {errors.subject && <p className="text-sm text-red-600">{errors.subject}</p>}
+                      {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -283,12 +283,12 @@ export default function KontaktPage() {
                         className={`rounded-xl ${errors.message ? "border-red-500" : ""}`}
                         placeholder="Ihre Nachricht... (mindestens 10 Zeichen)"
                       />
-                      {errors.message && <p className="text-sm text-red-600">{errors.message}</p>}
+                      {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
                     </div>
 
                     {formStatus === "error" && (
-                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                        <p className="text-sm text-red-800 dark:text-red-200">
+                      <div className="bg-destructive/10 dark:bg-destructive/20 border border-destructive dark:border-destructive rounded-xl p-4">
+                        <p className="text-sm text-destructive dark:text-destructive">
                           Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.
                         </p>
                       </div>
@@ -299,7 +299,7 @@ export default function KontaktPage() {
                     </Button>
 
                     <p className="text-xs text-muted-foreground text-center">
-                      <span className="text-red-500">*</span> Pflichtfelder. Mit dem Absenden stimmen Sie unserer{" "}
+                      <span className="text-destructive">*</span> Pflichtfelder. Mit dem Absenden stimmen Sie unserer{" "}
                       <a href="/datenschutz" className="underline hover:text-foreground">
                         Datenschutzerklärung
                       </a>{" "}
@@ -314,7 +314,7 @@ export default function KontaktPage() {
             <div className="space-y-4">
               {contactInfo.map((info) => (
                 <Card key={info.title} className="rounded-2xl border-border hover:border-primary/50 transition-colors">
-                  <CardContent className="flex items-start gap-4 p-5">
+                  <CardContent className="flex items-start gap-5 p-5">
                     <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                       <info.icon className="w-5 h-5 text-primary" />
                     </div>

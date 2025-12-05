@@ -95,7 +95,7 @@ function SelectTrigger({ className, children, ...props }: React.ButtonHTMLAttrib
     <button
       type="button"
       className={cn(
-        "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
+        "flex h-10 w-full items-center justify-between rounded-xl border border-input bg-background px-3 py-2 text-sm",
         "ring-offset-background placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
@@ -141,7 +141,7 @@ function SelectContent({
     <div
       ref={ref}
       className={cn(
-        "absolute z-50 mt-1 max-h-96 w-full min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+        "absolute z-50 mt-1 max-h-96 w-full min-w-32 overflow-hidden rounded-xl border bg-popover p-1 text-popover-foreground shadow-md",
         "animate-in fade-in-0 zoom-in-95",
         className,
       )}

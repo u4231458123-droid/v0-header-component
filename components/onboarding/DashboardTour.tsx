@@ -219,7 +219,7 @@ export function DashboardTour({ onComplete, onSkip }: DashboardTourProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="fixed z-[101] border-4 border-primary rounded-lg pointer-events-none"
+              className="fixed z-[101] border-4 border-primary rounded-xl pointer-events-none"
               style={{
                 top: spotlightPosition.top - 8,
                 left: spotlightPosition.left - 8,
@@ -241,7 +241,7 @@ export function DashboardTour({ onComplete, onSkip }: DashboardTourProps) {
           >
             <Card className="w-[400px] shadow-2xl border-2 border-primary/20">
               <CardHeader className="pb-3 relative">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-5">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                       <Sparkles className="h-4 w-4 text-primary" />

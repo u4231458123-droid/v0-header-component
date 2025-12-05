@@ -64,7 +64,7 @@ export function TenantHeroSection({ company, onBookingClick }: TenantHeroSection
     <section className="relative overflow-hidden bg-linear-to-b from-primary/5 to-background py-20 lg:py-32">
       <div className="container mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5">
             {company.logo_url && (
               <div className="mb-4">
                 <Image
@@ -85,7 +85,7 @@ export function TenantHeroSection({ company, onBookingClick }: TenantHeroSection
               {company.landingpage_hero_text || "Ihr zuverlässiger Partner für Taxifahrten in der Region"}
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-5">
               {company.phone && (
                 <V28Button variant="primary" size="lg" onClick={handleCallClick}>
                   <PhoneIcon className="mr-2 h-5 w-5" />
@@ -107,7 +107,7 @@ export function TenantHeroSection({ company, onBookingClick }: TenantHeroSection
               src="/modern-taxi-car-on-city-street.jpg"
               alt="Taxi Service"
               fill
-              className="rounded-lg object-cover shadow-2xl"
+              className="rounded-xl object-cover shadow-2xl"
             />
           </div>
         </div>

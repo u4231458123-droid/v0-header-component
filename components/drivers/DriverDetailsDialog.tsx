@@ -150,7 +150,7 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                 <UserIcon className="h-4 w-4" />
                 Persoenliche Daten
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Name</p>
                   <p className="text-sm font-medium">
@@ -225,7 +225,7 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                 <CreditCardIcon className="h-4 w-4" />
                 Fuehrerschein
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Nummer</p>
                   <p className="text-sm font-medium font-mono">
@@ -283,7 +283,7 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                 <FileTextIcon className="h-4 w-4" />
                 Personenbefoerderungsschein (P-Schein)
               </h4>
-              <div className="grid grid-cols-2 gap-4 pl-6">
+              <div className="grid grid-cols-2 gap-5 pl-6">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Nummer</p>
                   <p className="text-sm font-medium font-mono">{pbefData.number || "-"}</p>
@@ -330,7 +330,7 @@ export function DriverDetailsDialog({ driver, open, onOpenChange, onDriverUpdate
                     <FileTextIcon className="h-4 w-4" />
                     Beschaeftigung
                   </h4>
-                  <div className="grid grid-cols-2 gap-4 pl-6">
+                  <div className="grid grid-cols-2 gap-5 pl-6">
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Art</p>
                       <p className="text-sm font-medium">

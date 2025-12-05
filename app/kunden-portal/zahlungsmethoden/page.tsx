@@ -34,7 +34,7 @@ export default function KundenPortalZahlungsmethodenPage() {
           <Link href="/kunden-portal" className="text-xl font-bold text-primary">
             MyDispatch Kundenportal
           </Link>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-5">
             <Link href="/kunden-portal" className="text-sm text-muted-foreground hover:text-foreground">
               Übersicht
             </Link>
@@ -63,7 +63,7 @@ export default function KundenPortalZahlungsmethodenPage() {
               <Card key={method.id}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-5">
                       <div className="w-12 h-8 rounded bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                         <CreditCard className="h-5 w-5 text-primary" />
                       </div>

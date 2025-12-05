@@ -33,7 +33,7 @@ export default function Error({
         </div>
 
         {error.digest && (
-          <p className="text-xs text-muted-foreground font-mono bg-muted px-3 py-2 rounded-lg inline-block">
+          <p className="text-xs text-muted-foreground font-mono bg-muted px-3 py-2 rounded-xl inline-block">
             Fehler-ID: {error.digest}
           </p>
         )}
@@ -41,14 +41,14 @@ export default function Error({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Erneut versuchen
           </button>
           <button
             onClick={() => window.history.back()}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-xl hover:bg-muted transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Zurück

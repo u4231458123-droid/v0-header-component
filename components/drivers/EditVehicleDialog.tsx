@@ -122,7 +122,7 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
               required
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label htmlFor="make">Marke</Label>
               <Input id="make" value={make} onChange={(e) => setMake(e.target.value)} required />
@@ -132,7 +132,7 @@ export function EditVehicleDialog({ vehicle, open, onOpenChange, onSuccess }: Ed
               <Input id="model" value={model} onChange={(e) => setModel(e.target.value)} required />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-5">
             <div className="space-y-2">
               <Label htmlFor="year">Baujahr</Label>
               <Input

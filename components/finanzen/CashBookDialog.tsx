@@ -284,7 +284,7 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
           }}
           className="space-y-4"
         >
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             {/* Entry Type Toggle */}
             <div className="grid grid-cols-2 gap-3">
               <Button
@@ -310,13 +310,13 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
             </div>
 
             {/* Current Balance Info */}
-            <div className="flex justify-between items-center text-sm p-3 bg-muted rounded-md">
+            <div className="flex justify-between items-center text-sm p-3 bg-muted rounded-xl">
               <span className="text-muted-foreground">Aktueller Saldo:</span>
               <span className="font-semibold">{safeNumber(currentBalance).toFixed(2)} €</span>
             </div>
 
             {/* Date & Category */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="entryDate">Datum</Label>
                 <Input
@@ -360,7 +360,7 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
             </div>
 
             {/* Amount & Document Number */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="amount">Betrag (€)</Label>
                 <Input
@@ -405,7 +405,7 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
                   Beleg hochladen (JPG, PNG, PDF)
                 </Button>
               ) : (
-                <div className="flex items-center gap-2 p-2 border rounded-md">
+                <div className="flex items-center gap-2 p-2 border rounded-xl">
                   {receiptPreview ? (
                     <img
                       src={receiptPreview || "/placeholder.svg"}
@@ -437,7 +437,7 @@ export function CashBookDialog({ companyId, currentBalance, onSuccess }: CashBoo
 
             {/* Preview */}
             {parsedAmount > 0 && (
-              <div className="flex justify-between items-center text-sm p-3 bg-muted rounded-md">
+              <div className="flex justify-between items-center text-sm p-3 bg-muted rounded-xl">
                 <span className="text-muted-foreground">
                   {entryType === "income" ? "+" : "-"}
                   {safeNumber(parsedAmount).toFixed(2)} €
