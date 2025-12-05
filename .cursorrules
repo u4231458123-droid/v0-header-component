@@ -1,0 +1,35 @@
+# Cursor IDE Rules für MyDispatch
+# =================================
+# Diese Datei konfiguriert das Verhalten von Cursor IDE für dieses Projekt
+
+## Git & Commits
+
+- Verwende strukturierte Commit-Messages gemäß `.gitmessage` Template
+- Committe nur, wenn alle Tests erfolgreich sind
+- Respektiere Branch Protection Rules
+- Erstelle Pull Requests für alle Änderungen auf main
+
+## Code Quality
+
+- Prüfe Design-Token-Konsistenz vor Commits
+- Keine verbotenen Begriffe (kostenlos, gratis, testen, etc.)
+- TypeScript strict mode einhalten
+- Keine `any`-Types ohne Kommentar
+
+## Workflows
+
+- Alle kritischen Workflow-Steps müssen blockierend sein
+- Keine `|| true` in kritischen Validierungen
+- Deployment-Fehler müssen Workflow blockieren
+
+## Agent Review
+
+- Agent Review vergleicht mit main Branch
+- Ignoriere Agent Review Warnungen, wenn Änderungen bereits committed sind
+- Prüfe immer die tatsächlichen Dateien, nicht nur Agent Review
+
+## Performance
+
+- Parallele Tool-Aufrufe bevorzugen
+- Dateien nur einmal pro Session laden
+- Caching nutzen wo möglich
