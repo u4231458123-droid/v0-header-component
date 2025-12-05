@@ -119,14 +119,20 @@ export default function DriverDocumentsPage() {
     try {
       const supabase = getSupabase()
       if (!supabase) {
-        toastError("Fehler: Supabase-Client nicht verfügbar")
+        toastError("Fehler: Supabase-Client nicht verfügbar", {
+          description: "Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
+          duration: 5000,
+        })
         setUploading(null)
         return
       }
 
       // Dateigröße prüfen (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        toastError("Datei ist zu groß. Maximale Größe: 10MB")
+        toastError("Datei ist zu groß. Maximale Größe: 10MB", {
+          description: "Bitte wählen Sie eine kleinere Datei oder komprimieren Sie das Bild.",
+          duration: 5000,
+        })
         setUploading(null)
         return
       }
@@ -139,7 +145,10 @@ export default function DriverDocumentsPage() {
 
       if (uploadError) {
         console.error("Upload error:", uploadError)
-        toastError(`Fehler beim Hochladen: ${uploadError.message}`)
+        toastError(`Fehler beim Hochladen: ${uploadError.message}`, {
+          description: "Bitte überprüfen Sie die Datei und versuchen Sie es erneut.",
+          duration: 5000,
+        })
         setUploading(null)
         return
       }
@@ -160,7 +169,10 @@ export default function DriverDocumentsPage() {
 
       if (insertError) {
         console.error("Insert error:", insertError)
-        toastError(`Fehler beim Speichern: ${insertError.message}`)
+        toastError(`Fehler beim Speichern: ${insertError.message}`, {
+          description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+          duration: 5000,
+        })
         // Lösche hochgeladene Datei bei Fehler
         if (supabase) {
         await supabase.storage.from("documents").remove([fileName])
@@ -170,12 +182,16 @@ export default function DriverDocumentsPage() {
       }
 
       toastSuccess("Dokument erfolgreich hochgeladen", {
-        description: "Das Dokument wird nun von Ihrem Arbeitgeber geprüft.",
+        description: "Das Dokument wurde hochgeladen und wartet auf Freigabe.",
+        duration: 4000,
       })
       loadDocuments()
     } catch (error: any) {
       console.error("Error uploading document:", error)
-      toastError(`Fehler: ${error?.message || "Unbekannter Fehler"}`)
+      toastError(`Fehler: ${error?.message || "Unbekannter Fehler"}`, {
+        description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+        duration: 5000,
+      })
     } finally {
       setUploading(null)
     }
@@ -402,7 +418,10 @@ export default function DriverDocumentsPage() {
                               }
                             } catch (error: any) {
                               console.error("Error downloading document:", error)
-                              toastError("Fehler beim Öffnen des Dokuments")
+                              toastError("Fehler beim Öffnen des Dokuments", {
+                                description: "Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+                                duration: 5000,
+                              })
                             }
                           }}
                         >

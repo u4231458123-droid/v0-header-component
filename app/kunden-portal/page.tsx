@@ -1,19 +1,19 @@
 "use client"
 
-import { CustomerHelpBot } from "@/components/ai/CustomerHelpBot"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { safeNumber } from "@/lib/utils/safe-number"
-import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { CustomerHelpBot } from "@/components/ai/CustomerHelpBot"
+import { safeNumber } from "@/lib/utils/safe-number"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
 
 export const dynamic = "force-dynamic"
 
@@ -293,14 +293,14 @@ export default function CustomerPortalPage() {
 
       // Lade Kundenaccount - prüfe zuerst customers Tabelle, dann customer_accounts
       let customerData = null
-
+      
       // 1. Prüfe customers Tabelle (für direkt verknüpfte Kunden)
       const { data: customerFromTable } = await supabase
         .from("customers")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle()
-
+      
       if (customerFromTable) {
         // Konvertiere customer zu customer_account Format
         customerData = {
@@ -323,7 +323,7 @@ export default function CustomerPortalPage() {
           .select("*")
           .eq("user_id", user.id)
           .maybeSingle()
-
+        
         if (customerAccountData) {
           customerData = customerAccountData
         }
@@ -343,7 +343,7 @@ export default function CustomerPortalPage() {
           .eq("customer_id", customerData.id)
           .order("pickup_time", { ascending: false })
           .limit(50)
-
+        
         if (bookingsData) {
           setBookings(bookingsData)
         }
@@ -398,8 +398,9 @@ export default function CustomerPortalPage() {
     try {
       toastSuccess("Beleg wird erstellt...", {
         description: "Das Dokument öffnet sich in einem neuen Fenster.",
+        duration: 3000,
       })
-
+      
       // Erzeuge ein einfaches HTML-Dokument für den Beleg
       const receiptHTML = `
         <!DOCTYPE html>
@@ -430,12 +431,12 @@ export default function CustomerPortalPage() {
             <h1>Fahrbeleg</h1>
             <div class="company">${booking.company?.name || "MyDispatch"}</div>
           </div>
-
+          
           <div class="section">
             <div class="label">Datum & Uhrzeit</div>
             <div class="value">${format(new Date(booking.pickup_time), "EEEE, dd. MMMM yyyy 'um' HH:mm 'Uhr'", { locale: de })}</div>
           </div>
-
+          
           <div class="route">
             <div class="route-point">
               <div class="dot start"></div>
@@ -452,23 +453,23 @@ export default function CustomerPortalPage() {
               </div>
             </div>
           </div>
-
+          
           <div class="section">
             <div class="label">Passagiere</div>
             <div class="value">${booking.passengers} Person(en)</div>
           </div>
-
+          
           ${booking.driver ? `
           <div class="section">
             <div class="label">Fahrer</div>
             <div class="value">${booking.driver.first_name} ${booking.driver.last_name || ""}</div>
           </div>
           ` : ""}
-
+          
           <div class="total">
             Gesamtbetrag: ${safeNumber(booking.price).toFixed(2)} €
           </div>
-
+          
           <div class="footer">
             <p>Vielen Dank für Ihre Buchung!</p>
             <p>Erstellt am ${format(new Date(), "dd.MM.yyyy 'um' HH:mm 'Uhr'", { locale: de })}</p>
@@ -476,7 +477,7 @@ export default function CustomerPortalPage() {
         </body>
         </html>
       `
-
+      
       // Öffne ein neues Fenster mit dem Beleg und starte den Druck
       const printWindow = window.open("", "_blank")
       if (printWindow) {
@@ -488,12 +489,14 @@ export default function CustomerPortalPage() {
       } else {
         toastError("Popup-Blocker aktiv", {
           description: "Bitte erlauben Sie Popups für diese Seite.",
+          duration: 5000,
         })
       }
     } catch (error) {
       console.error("Error generating receipt:", error)
       toastError("Fehler beim Erstellen des Belegs", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     }
   }
@@ -503,8 +506,9 @@ export default function CustomerPortalPage() {
     try {
       toastSuccess("Rechnung wird geladen...", {
         description: "Das Dokument öffnet sich in einem neuen Fenster.",
+        duration: 3000,
       })
-
+      
       // Erzeuge ein einfaches HTML-Dokument für die Rechnung
       const invoiceHTML = `
         <!DOCTYPE html>
@@ -535,7 +539,7 @@ export default function CustomerPortalPage() {
             <h1>Rechnung</h1>
             <div class="invoice-number">${invoice.invoice_number}</div>
           </div>
-
+          
           <div class="info-grid">
             <div class="section">
               <div class="label">Rechnungsdatum</div>
@@ -546,19 +550,19 @@ export default function CustomerPortalPage() {
               <div class="value">${format(new Date(invoice.due_date), "dd. MMMM yyyy", { locale: de })}</div>
             </div>
           </div>
-
+          
           <div class="section">
             <div class="label">Status</div>
             <span class="status ${invoice.status === "paid" ? "paid" : "open"}">
               ${invoice.status === "paid" ? "Bezahlt" : "Offen"}
             </span>
           </div>
-
+          
           <div class="amount-box">
             <div class="label" style="color: rgba(255,255,255,0.8);">Rechnungsbetrag</div>
             <div class="amount">${safeNumber(invoice.amount).toFixed(2)} €</div>
           </div>
-
+          
           <div class="footer">
             <p>Bei Fragen zu dieser Rechnung wenden Sie sich bitte an unseren Kundenservice.</p>
             <p>Erstellt am ${format(new Date(), "dd.MM.yyyy 'um' HH:mm 'Uhr'", { locale: de })}</p>
@@ -566,7 +570,7 @@ export default function CustomerPortalPage() {
         </body>
         </html>
       `
-
+      
       // Öffne ein neues Fenster mit der Rechnung und starte den Druck
       const printWindow = window.open("", "_blank")
       if (printWindow) {
@@ -578,12 +582,14 @@ export default function CustomerPortalPage() {
       } else {
         toastError("Popup-Blocker aktiv", {
           description: "Bitte erlauben Sie Popups für diese Seite.",
+          duration: 5000,
         })
       }
     } catch (error) {
       console.error("Error generating invoice PDF:", error)
       toastError("Fehler beim Laden der Rechnung", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     }
   }
@@ -762,9 +768,9 @@ export default function CustomerPortalPage() {
                             <MessageSquareIcon className="h-4 w-4 mr-1" />
                             Feedback geben
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
                             className="text-muted-foreground"
                             onClick={() => handleDownloadReceipt(booking)}
                           >
@@ -812,8 +818,8 @@ export default function CustomerPortalPage() {
                         </div>
                       </div>
                       <div className="mt-3 flex justify-end">
-                        <Button
-                          variant="outline"
+                        <Button 
+                          variant="outline" 
                           size="sm"
                           onClick={() => handleDownloadInvoice(invoice)}
                         >

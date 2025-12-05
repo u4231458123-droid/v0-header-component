@@ -26,9 +26,10 @@ import { SALUTATION_OPTIONS, VALIDATION_RULES } from "@/lib/form-constants"
 import { Users, UserCheck, UserPlus, Euro, Plus, Eye } from "lucide-react"
 import { safeNumber } from "@/lib/utils/safe-number"
 import { toast } from "react-toastify"
+import type { Customer } from "@/types/customer"
 
 interface CustomersPageClientProps {
-  initialCustomers?: any[]
+  initialCustomers?: Customer[]
   bookings?: any[]
   invoices?: any[]
   companyId?: string | null
@@ -54,7 +55,7 @@ export function CustomersPageClient({
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [newDialogOpen, setNewDialogOpen] = useState(false)
-  const [detailCustomer, setDetailCustomer] = useState<any>(null)
+  const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null)
   const [newCustomer, setNewCustomer] = useState({
     salutation: "",
     first_name: "",

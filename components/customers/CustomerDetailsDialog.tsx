@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { downloadPDF } from "@/lib/pdf/pdf-generator"
 import { createClient } from "@/lib/supabase/client"
@@ -14,9 +14,10 @@ import { UserIcon, MailIcon, PhoneIcon, MapPinIcon, BuildingIcon, CalendarIcon, 
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
 import { EditCustomerDialog } from "./EditCustomerDialog"
+import type { Customer } from "@/types/customer"
 
 interface CustomerDetailsDialogProps {
-  customer: any
+  customer: Customer
   open: boolean
   onOpenChange: (open: boolean) => void
   onCustomerUpdated?: () => void
@@ -24,14 +25,16 @@ interface CustomerDetailsDialogProps {
 
 export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomerUpdated }: CustomerDetailsDialogProps) {
   const [showEditDialog, setShowEditDialog] = useState(false)
-  const [localCustomer, setLocalCustomer] = useState(customer)
+  const [localCustomer, setLocalCustomer] = useState<Customer>(customer)
   const [printing, setPrinting] = useState(false)
   const supabase = createClient()
 
-  // Update local customer when prop changes
-  if (customer?.id !== localCustomer?.id) {
-    setLocalCustomer(customer)
-  }
+  // Synchronisiere Form-State mit Backend-Types wenn Customer-Prop sich ändert
+  useEffect(() => {
+    if (customer?.id !== localCustomer?.id) {
+      setLocalCustomer(customer)
+    }
+  }, [customer, localCustomer?.id])
 
   if (!localCustomer) return null
 
@@ -97,7 +100,7 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCustomer
     return <Badge variant={config.variant}>{config.label}</Badge>
   }
 
-  const handleEditSuccess = (updatedCustomer: any) => {
+  const handleEditSuccess = (updatedCustomer: Customer) => {
     setLocalCustomer(updatedCustomer)
     setShowEditDialog(false)
     onCustomerUpdated?.()

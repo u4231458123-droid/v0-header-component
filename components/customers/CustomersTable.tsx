@@ -27,19 +27,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
-
-interface Customer {
-  id: string
-  first_name: string
-  last_name: string
-  email?: string
-  phone: string
-  address?: string
-  city?: string
-  postal_code?: string
-  status: string
-  created_at: string
-}
+import type { Customer } from "@/types/customer"
 
 interface CustomersTableProps {
   customers: Customer[]

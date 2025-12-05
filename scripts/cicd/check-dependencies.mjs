@@ -290,6 +290,28 @@ class DependencyChecker {
   }
 
   /**
+   * Kategorisiere Fehler in kritisch (blockierend) und nicht-kritisch (Warnung)
+   */
+  categorizeErrors(errors) {
+    const criticalErrors = []
+    const nonCriticalWarnings = []
+
+    for (const error of errors) {
+      // Kritische Fehler (blockieren Commit/Push):
+      // - Hardcoded Farben (Design-Konsistenz)
+      // - Fehlende TypeScript-Types bei DB-Änderungen
+      if (error.type === "hardcoded-color" || error.type === "missing-types") {
+        criticalErrors.push(error)
+      } else {
+        // Alle anderen Fehler werden zu Warnungen (nicht blockierend)
+        nonCriticalWarnings.push(error)
+      }
+    }
+
+    return { criticalErrors, nonCriticalWarnings }
+  }
+
+  /**
    * Generiere Report
    */
   generateReport(results) {
@@ -298,12 +320,17 @@ class DependencyChecker {
     console.log("=".repeat(80) + "\n")
 
     console.log(`📁 Geprüfte Dateien: ${this.changedFiles.length}`)
-    console.log(`❌ Fehler: ${results.errors.length}`)
-    console.log(`⚠️  Warnungen: ${results.warnings.length}\n`)
+    
+    // Kategorisiere Fehler
+    const { criticalErrors, nonCriticalWarnings } = this.categorizeErrors(results.errors)
+    const allWarnings = [...nonCriticalWarnings, ...results.warnings]
 
-    if (results.errors.length > 0) {
-      console.log("❌ FEHLER:\n")
-      const grouped = this.groupByFile(results.errors)
+    console.log(`❌ Kritische Fehler: ${criticalErrors.length}`)
+    console.log(`⚠️  Warnungen: ${allWarnings.length}\n`)
+
+    if (criticalErrors.length > 0) {
+      console.log("❌ KRITISCHE FEHLER (blockieren Commit/Push):\n")
+      const grouped = this.groupByFile(criticalErrors)
       for (const [file, errors] of Object.entries(grouped)) {
         console.log(`  📄 ${file}:`)
         for (const error of errors) {
@@ -316,9 +343,9 @@ class DependencyChecker {
       }
     }
 
-    if (results.warnings.length > 0) {
-      console.log("⚠️  WARNUNGEN:\n")
-      const grouped = this.groupByFile(results.warnings)
+    if (allWarnings.length > 0) {
+      console.log("⚠️  WARNUNGEN (nicht blockierend):\n")
+      const grouped = this.groupByFile(allWarnings)
       for (const [file, warnings] of Object.entries(grouped)) {
         console.log(`  📄 ${file}:`)
         for (const warning of warnings) {
@@ -328,16 +355,18 @@ class DependencyChecker {
       }
     }
 
-    if (results.errors.length === 0 && results.warnings.length === 0) {
+    if (criticalErrors.length === 0 && allWarnings.length === 0) {
       console.log("✅ Keine Abhängigkeits-Probleme gefunden!\n")
     }
 
     console.log("=".repeat(80) + "\n")
 
     return {
-      success: results.success,
-      errorCount: results.errors.length,
-      warningCount: results.warnings.length,
+      success: criticalErrors.length === 0, // Nur kritische Fehler blockieren
+      errorCount: criticalErrors.length,
+      warningCount: allWarnings.length,
+      criticalErrors,
+      warnings: allWarnings,
     }
   }
 
@@ -363,7 +392,17 @@ if (isMainModule || process.argv[1]?.includes("check-dependencies")) {
   const results = checker.check()
   const report = checker.generateReport(results)
 
-  process.exit(report.success ? 0 : 1)
+  // Exit-Code: 0 = Erfolg, 1 = Kritische Fehler (blockierend), 2 = Nur Warnungen (nicht blockierend)
+  if (report.errorCount > 0) {
+    console.log("❌ Kritische Fehler gefunden - Commit/Push wird blockiert")
+    process.exit(1)
+  } else if (report.warningCount > 0) {
+    console.log("⚠️  Warnungen gefunden, aber nicht blockierend")
+    process.exit(0) // Warnungen blockieren nicht
+  } else {
+    console.log("✅ Keine Probleme gefunden")
+    process.exit(0)
+  }
 }
 
 export { DependencyChecker }

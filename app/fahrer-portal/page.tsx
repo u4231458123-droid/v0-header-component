@@ -1,51 +1,51 @@
 "use client"
 
-import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
-import { createClient } from "@/lib/supabase/client"
-import { safeNumber } from "@/lib/utils/safe-number"
-import { toastError, toastSuccess } from "@/lib/utils/toast"
-import { differenceInMinutes, format } from "date-fns"
-import { de } from "date-fns/locale"
-import {
-    Calendar,
-    Car,
-    CheckCircle2,
-    Clock,
-    Coffee,
-    Euro,
-    FileText,
-    LogOut,
-    MapPin,
-    MessageSquare,
-    Navigation,
-    Phone,
-    Play,
-    Send,
-    Settings,
-    Square,
-    User,
-    XCircle,
-} from "lucide-react"
-import Link from "next/link"
 import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { format, differenceInMinutes } from "date-fns"
+import { de } from "date-fns/locale"
+import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
+import { safeNumber } from "@/lib/utils/safe-number"
+import Link from "next/link"
+import {
+  Play,
+  Square,
+  Clock,
+  MapPin,
+  Phone,
+  MessageSquare,
+  Car,
+  User,
+  Calendar,
+  Euro,
+  Settings,
+  FileText,
+  Coffee,
+  Navigation,
+  CheckCircle2,
+  XCircle,
+  LogOut,
+  Send,
+} from "lucide-react"
 
 interface DriverShift {
   id: string
@@ -278,12 +278,14 @@ export default function FahrerPortalPage() {
         setCurrentShift(data)
         toastSuccess("Schicht erfolgreich gestartet", {
           description: "Sie können jetzt Fahrten annehmen.",
+          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error starting shift:", error)
       toastError("Fehler beim Starten der Schicht", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     } finally {
       setShowStartShiftDialog(false)
@@ -312,12 +314,14 @@ export default function FahrerPortalPage() {
         setCurrentShift(data)
         toastSuccess("Pause gestartet", {
           description: "Vergessen Sie nicht, die Pause zu beenden.",
+          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error starting break:", error)
       toastError("Fehler beim Starten der Pause", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     } finally {
       setShowStartBreakDialog(false)
@@ -357,12 +361,14 @@ export default function FahrerPortalPage() {
         setCurrentShift(data)
         toastSuccess("Pause beendet", {
           description: "Willkommen zurück! Sie können wieder Fahrten annehmen.",
+          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error ending break:", error)
       toastError("Fehler beim Beenden der Pause", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     } finally {
       setShowEndBreakDialog(false)
@@ -407,12 +413,14 @@ export default function FahrerPortalPage() {
         setCurrentShift(null)
         toastSuccess("Schicht erfolgreich beendet", {
           description: "Ihre Arbeitszeit wurde protokolliert. Gute Erholung!",
+          duration: 4000,
         })
       }
     } catch (error: any) {
       console.error("Error ending shift:", error)
       toastError("Fehler beim Beenden der Schicht", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     } finally {
       setShowEndShiftDialog(false)
@@ -427,6 +435,7 @@ export default function FahrerPortalPage() {
       setActiveBooking({ ...bookingToAccept, status: "in_progress" })
       toastSuccess("Fahrt angenommen", {
         description: "Navigation wird geladen...",
+        duration: 3000,
       })
     }
 
@@ -440,6 +449,7 @@ export default function FahrerPortalPage() {
       }
       toastError("Fehler beim Annehmen der Fahrt", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     }
   }
@@ -450,6 +460,7 @@ export default function FahrerPortalPage() {
     setPendingBookings((prev) => prev.filter((b) => b.id !== bookingId))
     toastSuccess("Fahrt abgelehnt", {
       description: "Die Fahrt wird einem anderen Fahrer zugewiesen.",
+      duration: 3000,
     })
 
     const { error } = await supabase
@@ -464,6 +475,7 @@ export default function FahrerPortalPage() {
       }
       toastError("Fehler beim Ablehnen der Fahrt", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     }
   }
@@ -474,6 +486,7 @@ export default function FahrerPortalPage() {
     setActiveBooking(null)
     toastSuccess("Fahrt abgeschlossen", {
       description: "Vielen Dank! Die Fahrt wurde erfolgreich beendet.",
+      duration: 4000,
     })
 
     const { error } = await supabase
@@ -489,6 +502,7 @@ export default function FahrerPortalPage() {
       setActiveBooking(previousActiveBooking)
       toastError("Fehler beim Abschließen der Fahrt", {
         description: "Bitte versuchen Sie es erneut.",
+        duration: 5000,
       })
     } else {
       // Daten neu laden für Fahrtenverlauf
@@ -1094,9 +1108,9 @@ export default function FahrerPortalPage() {
                   <CardTitle>Fahrtenverlauf</CardTitle>
                   <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <Button 
+                  variant="outline" 
+                  size="sm" 
                   onClick={loadCompletedBookings}
                   disabled={loadingHistory}
                   className="bg-transparent"
