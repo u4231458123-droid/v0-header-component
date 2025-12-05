@@ -8,7 +8,7 @@
 # =============================================================================
 
 echo "🔍 Pre-Push Validierung..."
-echo "==========================\n"
+echo -e "==========================\n"
 
 # =============================================================================
 # PHASE 1: BUILD TEST
@@ -16,7 +16,7 @@ echo "==========================\n"
 
 echo "🏗️ Phase 1: Build Test..."
 npm run build || {
-  echo "\n❌ Build fehlgeschlagen - Push abgebrochen"
+  echo -e "\n❌ Build fehlgeschlagen - Push abgebrochen"
   exit 1
 }
 
@@ -24,13 +24,13 @@ npm run build || {
 # PHASE 2: ABHÄNGIGKEITS-PRÜFUNG
 # =============================================================================
 
-echo "\n🔗 Phase 2: Abhängigkeits-Prüfung..."
+echo -e "\n🔗 Phase 2: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
   node scripts/cicd/check-dependencies.mjs || {
-    echo "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
+    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
   }
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
 fi
 
-echo "\n✅ Pre-Push Validierung erfolgreich!"
+echo -e "\n✅ Pre-Push Validierung erfolgreich!"
