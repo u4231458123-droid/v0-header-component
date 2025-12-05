@@ -713,8 +713,9 @@ export abstract class BaseBot {
             if (!gitResult.success) {
               result.warnings = [...(result.warnings || []), `Git-Protokoll fehlgeschlagen: ${gitResult.errors?.join(", ")}`]
             }
-          } catch (gitError: any) {
-            result.warnings = [...(result.warnings || []), `Git-Protokoll Fehler: ${gitError.message}`]
+          } catch (gitError: unknown) {
+            const gitErrorMessage = gitError instanceof Error ? gitError.message : String(gitError)
+            result.warnings = [...(result.warnings || []), `Git-Protokoll Fehler: ${gitErrorMessage}`]
           }
         }
         
