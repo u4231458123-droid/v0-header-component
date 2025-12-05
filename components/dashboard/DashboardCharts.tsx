@@ -1,8 +1,8 @@
 "use client"
 
-import { TrendingUp, Euro } from "lucide-react"
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
+import { Euro, TrendingUp } from "lucide-react"
 import { useEffect, useState } from "react"
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 interface RevenueDataPoint {
   date: string
@@ -167,3 +167,6 @@ export function DashboardCharts({ revenueData = [], totalRevenue = 0 }: Dashboar
     </div>
   )
 }
+
+// Default export für dynamische Imports
+export default DashboardCharts

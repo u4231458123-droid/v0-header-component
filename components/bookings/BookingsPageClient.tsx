@@ -1,32 +1,32 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { format } from "date-fns"
-import { de } from "date-fns/locale"
-import { PageHeader } from "@/components/design-system/PageHeader"
-import { StatsCard } from "@/components/design-system/StatsCard"
-import { FilterBar } from "@/components/design-system/FilterBar"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { BookingDetailsDialog } from "@/components/bookings/BookingDetailsDialog"
 import { CreateBookingDialog } from "@/components/bookings/CreateBookingDialog"
 import { EditBookingDialog } from "@/components/bookings/EditBookingDialog"
-import { BookingDetailsDialog } from "@/components/bookings/BookingDetailsDialog"
-import { ClipboardList, Clock, CheckCircle, Truck, Euro, Plus, Eye } from "lucide-react"
+import { FilterBar } from "@/components/design-system/FilterBar"
+import { PageHeader } from "@/components/design-system/PageHeader"
+import { StatsCard } from "@/components/design-system/StatsCard"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { createClient } from "@/lib/supabase/client"
 import { safeNumber } from "@/lib/utils/safe-number"
+import { format } from "date-fns"
+import { de } from "date-fns/locale"
+import { CheckCircle, ClipboardList, Clock, Euro, Eye, Plus, Truck } from "lucide-react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 interface BookingsPageClientProps {
   bookings?: any[]
@@ -419,3 +419,6 @@ export function BookingsPageClient({
     </div>
   )
 }
+
+// Default export für dynamische Imports
+export default BookingsPageClient

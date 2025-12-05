@@ -1,10 +1,10 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { MainLayout } from "@/components/layout/MainLayout"
+import { createClient } from "@/lib/supabase/server"
 import dynamicImport from "next/dynamic"
+import { redirect } from "next/navigation"
 
 // Lazy Loading für große Komponente
-const BookingsPageClient = dynamicImport(() => import("@/components/bookings/BookingsPageClient").then((mod) => ({ default: mod.BookingsPageClient })), {
+const BookingsPageClient = dynamicImport(() => import("@/components/bookings/BookingsPageClient"), {
   loading: () => <div className="h-screen bg-background flex items-center justify-center"><div className="animate-pulse text-muted-foreground">Lade Buchungen...</div></div>,
   ssr: false,
 })

@@ -20,12 +20,12 @@ import {
 import dynamicImport from "next/dynamic"
 
 // Lazy Loading für große Komponenten
-const DashboardMapWidget = dynamicImport(() => import("@/components/dashboard/DashboardMapWidget").then((mod) => ({ default: mod.DashboardMapWidget })), {
+const DashboardMapWidget = dynamicImport(() => import("@/components/dashboard/DashboardMapWidget"), {
   loading: () => <div className="h-96 bg-muted rounded-xl animate-pulse" />,
   ssr: false,
 })
 
-const DashboardCharts = dynamicImport(() => import("@/components/dashboard/DashboardCharts").then((mod) => ({ default: mod.DashboardCharts })), {
+const DashboardCharts = dynamicImport(() => import("@/components/dashboard/DashboardCharts"), {
   loading: () => <div className="h-96 bg-muted rounded-xl animate-pulse" />,
   ssr: false,
 })
@@ -232,7 +232,7 @@ export default async function DashboardPage() {
     // Fallback auf einzelne Queries wenn RPC nicht verfügbar
     // WICHTIG: Nur wenn companyId vorhanden ist (nicht null)
     let safeStats: Record<string, number> = {};
-    
+
     if (companyId) {
       try {
         const { data: rpcStats, error: rpcError } = await supabase.rpc('get_comprehensive_dashboard_stats', {
@@ -253,7 +253,7 @@ export default async function DashboardPage() {
         // Fallback auf einzelne Queries
         safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo)
       }
-      
+
       // Sicherstellen dass alle Stats-Werte vorhanden sind
       if (!safeStats || typeof safeStats !== "object") {
         safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo)
@@ -306,7 +306,7 @@ export default async function DashboardPage() {
       stats.driversTotal = safeStats.drivers_total || 0;
       stats.customersTotal = safeStats.customers_total || 0;
       stats.pendingInvoices = safeStats.pending_invoices || 0;
-      
+
       recentBookings = (recentBookingsRes.data as Array<Booking & { customer?: Customer }>) || []
       upcomingBookings = (upcomingBookingsRes.data as Array<Booking & { customer?: Customer }>) || []
       customers = (customersRes.data as Customer[]) || []
