@@ -87,8 +87,9 @@ async function selfHealDependencies() {
       console.log("📦 Versuch 2: pnpm install --no-frozen-lockfile...")
       execSync("pnpm install --no-frozen-lockfile", { stdio: "inherit", shell: true })
     }
-
     // Package.json updaten (nur für npm)
+    const method2 = packageManager === "npm" ? "legacy-peer-deps" : "no-frozen-lockfile"
+    logEntry.attempts.push({ attempt: 2, method: method2, status: "started" })
     if (packageManager === "npm") {
       const pkgPath = path.join(process.cwd(), "package.json")
       const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
@@ -100,14 +101,20 @@ async function selfHealDependencies() {
     } else {
       console.log("✅ Installed successfully\n")
     }
+    logEntry.attempts[logEntry.attempts.length - 1].status = "success"
+    logEntry.result = "success"
+    saveLogEntry(logEntry)
     return
   } catch (error) {
     console.log("❌ Install failed, trying clean install...\n")
+    const method2 = packageManager === "npm" ? "legacy-peer-deps" : "no-frozen-lockfile"
+    logEntry.attempts.push({ attempt: 2, method: method2, status: "failed", error: error.message })
   }
 
   try {
     // Versuch 3: Clean Install
     console.log("📦 Versuch 3: Clean install...")
+    logEntry.attempts.push({ attempt: 3, method: "clean-install", status: "started" })
     // Cross-platform file removal
     const nodeModulesPath = path.join(process.cwd(), "node_modules")
     const packageLockPath = path.join(process.cwd(), "package-lock.json")
@@ -131,16 +138,31 @@ async function selfHealDependencies() {
     }
     execSync(installCommand, { stdio: "inherit", shell: true })
     console.log("✅ Clean install successful\n")
+    logEntry.attempts[2].status = "success"
+    logEntry.result = "success"
+    saveLogEntry(logEntry)
     return
   } catch (error) {
     console.log("❌ Clean install failed\n")
     console.error("❌ All dependency resolution attempts failed")
     console.error("Please check the error messages above and resolve manually")
+    logEntry.attempts[2] = { attempt: 3, method: "clean-install", status: "failed", error: error.message }
+    logEntry.result = "failed"
+    logEntry.error = error.message
+    saveLogEntry(logEntry)
     process.exit(1)
   }
 }
 
 selfHealDependencies().catch((error) => {
   console.error("❌ Self-healing failed:", error.message)
+  const logEntry = {
+    action: "self-heal-dependencies",
+    attempts: [],
+    result: "error",
+    error: error.message,
+    timestamp: new Date().toISOString(),
+  }
+  saveLogEntry(logEntry)
   process.exit(1)
 })
