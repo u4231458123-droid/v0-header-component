@@ -1,6 +1,6 @@
 # Agent Review Erklärung
 
-**Datum:** $(date)  
+**Datum:** $(date)
 **Status:** ✅ **Erklärt und dokumentiert**
 
 ---
@@ -102,5 +102,5 @@ npm run lint -- --fix || {
 
 ---
 
-**Erstellt:** $(date)  
+**Erstellt:** $(date)
 **Status:** ✅ Erklärt und dokumentiert
