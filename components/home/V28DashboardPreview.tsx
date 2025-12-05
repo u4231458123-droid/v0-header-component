@@ -132,8 +132,8 @@ export function V28DashboardPreview({
                 <p className="font-sans text-xs text-muted-foreground">Echtzeit-Übersicht</p>
               </div>
             </div>
-            <div className="px-2 py-1 rounded-xl bg-green-100 ring-1 ring-green-200">
-              <span className="font-sans text-xs font-bold text-green-700">Live</span>
+            <div className="px-2 py-1 rounded-xl bg-success/10 ring-1 ring-success/20">
+              <span className="font-sans text-xs font-bold text-success">Live</span>
             </div>
           </div>
         </div>

@@ -59,8 +59,6 @@
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "2.0.50",
-    "@ai-sdk/openai": "^2.0.74",
     "@ai-sdk/react": "latest",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "latest",

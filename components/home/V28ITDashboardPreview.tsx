@@ -245,7 +245,7 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
             <h4 className="font-sans text-sm font-semibold mb-3 text-foreground">Recent Activities</h4>
             <div className="space-y-2">
               {/* Activity 1 - Completed */}
-              <div className="p-3 rounded-xl bg-card border border-slate-200 shadow-md hover:shadow-lg transition-all duration-200">
+              <div className="p-3 rounded-xl bg-card border border-border shadow-md hover:shadow-lg transition-all duration-200">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-start gap-3">
                     <div className="p-1.5 rounded-xl bg-success/10 mt-0.5">
@@ -272,7 +272,7 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
               </div>
 
               {/* Activity 2 - In Progress */}
-              <div className="p-3 rounded-xl bg-card border border-slate-200 shadow-md hover:shadow-lg transition-all duration-200">
+              <div className="p-3 rounded-xl bg-card border border-border shadow-md hover:shadow-lg transition-all duration-200">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-start gap-3">
                     <div className="p-1.5 rounded-xl bg-info/10 mt-0.5">
@@ -299,7 +299,7 @@ export function V28ITDashboardPreview({ animationDelay = "0.6s" }: V28ITDashboar
               </div>
 
               {/* Activity 3 - Scheduled */}
-              <div className="p-3 rounded-xl bg-card border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="p-3 rounded-xl bg-card border border-border shadow-sm hover:shadow-md transition-all duration-200">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-start gap-3">
                     <div className="p-1.5 rounded-xl bg-muted mt-0.5">
