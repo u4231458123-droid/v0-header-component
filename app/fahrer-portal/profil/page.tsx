@@ -1,33 +1,33 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { toastError, toastSuccess } from "@/lib/utils/toast"
-import { format, differenceInDays } from "date-fns"
-import { de } from "date-fns/locale"
-import Link from "next/link"
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  CreditCard,
-  Calendar,
-  Shield,
-  AlertTriangle,
-  Home,
-  FileText,
-  LogOut,
-  Car,
-  Clock,
-  Star,
-} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
 import { safeNumber } from "@/lib/utils/safe-number"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { differenceInDays, format } from "date-fns"
+import { de } from "date-fns/locale"
+import {
+    AlertTriangle,
+    ArrowLeft,
+    Calendar,
+    Car,
+    Clock,
+    CreditCard,
+    FileText,
+    Home,
+    LogOut,
+    Mail,
+    MapPin,
+    Phone,
+    Shield,
+    Star,
+} from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 interface Driver {
   id: string
@@ -66,6 +66,7 @@ interface Driver {
   license_classes?: string[]
   companies?: {
     name: string
+    company_slug?: string
   }
 }
 
@@ -105,7 +106,7 @@ export default function FahrerProfilPage() {
 
       const { data: driverData, error: driverError } = await supabase
         .from("drivers")
-        .select("*, companies(name)")
+        .select("*, companies(name, company_slug)")
         .eq("user_id", user.id)
         .single()
 
@@ -175,18 +176,16 @@ export default function FahrerProfilPage() {
   }
 
   const handleLogout = async () => {
+    // Company-Slug VOR dem Logout aus dem driver-State ermitteln
+    const companySlug = driver?.companies?.company_slug
+
     const supabase = createClient()
     await supabase.auth.signOut()
+
     // Redirect zur Landingpage des Unternehmens, falls verfügbar
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (user) {
-      const { data: driver } = await supabase.from("drivers").select("company_id, companies(company_slug)").eq("user_id", user.id).single()
-      if (driver?.companies?.company_slug) {
-        window.location.href = `/c/${driver.companies.company_slug}`
-        return
-      }
+    if (companySlug) {
+      window.location.href = `/c/${companySlug}`
+      return
     }
     // Fallback: Zur MyDispatch Landingpage
     window.location.href = "/"

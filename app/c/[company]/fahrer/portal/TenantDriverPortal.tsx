@@ -1,33 +1,32 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { ErrorHandler } from "@/lib/utils/error-handler"
-import { createBrowserClient } from "@supabase/ssr"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Car,
-  Clock,
-  Calendar,
-  User,
-  Phone,
-  Mail,
-  LogOut,
-  Navigation,
-  CheckCircle,
-  XCircle,
-  Play,
-  Pause,
-  Settings,
-  Bell,
-  ChevronRight,
-} from "lucide-react"
+import { createBrowserClient } from "@supabase/ssr"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
+import {
+    Bell,
+    Calendar,
+    Car,
+    CheckCircle,
+    ChevronRight,
+    Clock,
+    LogOut,
+    Mail,
+    Navigation,
+    Pause,
+    Phone,
+    Play,
+    Settings,
+    User,
+    XCircle,
+} from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useState } from "react"
 
 interface Company {
   id: string
@@ -102,9 +101,18 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   const completedBookings = bookings.filter((b) => b.status === "completed")
 
   const handleStatusChange = async (newStatus: string) => {
-    const supabase = getSupabaseClient()
-    await supabase.from("drivers").update({ status: newStatus }).eq("id", driver.id)
+    const previousStatus = driverStatus
+    // Optimistic update
     setDriverStatus(newStatus)
+
+    const supabase = getSupabaseClient()
+    const { error } = await supabase.from("drivers").update({ status: newStatus }).eq("id", driver.id)
+
+    if (error) {
+      // Revert on failure
+      setDriverStatus(previousStatus)
+      console.error("Failed to update driver status:", error)
+    }
   }
 
   const handleLogout = async () => {
