@@ -1,15 +1,5 @@
 "use client"
 
-import { useEffect, useState, useMemo, useCallback } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,38 +10,48 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { createClient } from "@/lib/supabase/client"
 import { ErrorHandler } from "@/lib/utils/error-handler"
-import { format, differenceInMinutes } from "date-fns"
+import { safeNumber } from "@/lib/utils/safe-number"
+import { differenceInMinutes, format } from "date-fns"
 import { de } from "date-fns/locale"
+import {
+  Calendar,
+  Car,
+  CheckCircle2,
+  Clock,
+  Coffee,
+  Euro,
+  FileText,
+  LogOut,
+  MapPin,
+  MessageSquare,
+  Navigation,
+  Phone,
+  Play,
+  Send,
+  Settings,
+  Square,
+  User,
+  XCircle,
+} from "lucide-react"
 import dynamic from "next/dynamic"
+import Link from "next/link"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 
 // Lazy Loading für AI-Komponente
 const DriverHelpBot = dynamic(() => import("@/components/ai/DriverHelpBot").then((mod) => ({ default: mod.DriverHelpBot })), {
   ssr: false,
 })
-import { safeNumber } from "@/lib/utils/safe-number"
-import Link from "next/link"
-import {
-  Play,
-  Square,
-  Clock,
-  MapPin,
-  Phone,
-  MessageSquare,
-  Car,
-  User,
-  Calendar,
-  Euro,
-  Settings,
-  FileText,
-  Coffee,
-  Navigation,
-  CheckCircle2,
-  XCircle,
-  LogOut,
-  Send,
-} from "lucide-react"
 
 interface DriverShift {
   id: string
@@ -138,6 +138,13 @@ export default function FahrerPortalPage() {
 
   // Design-Tokens werden über Tailwind CSS-Klassen verwendet (bg-primary, text-primary)
 
+  const formatTime = useCallback((totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+  }, [])
+
   useEffect(() => {
     loadDriverData()
   }, [])
@@ -169,13 +176,6 @@ export default function FahrerPortalPage() {
 
     return () => clearInterval(interval)
   }, [currentShift, formatTime])
-
-  const formatTime = useCallback((totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-  }, [])
 
   const loadDriverData = async () => {
     try {
@@ -1115,9 +1115,9 @@ export default function FahrerPortalPage() {
                   <CardTitle>Fahrtenverlauf</CardTitle>
                   <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={loadCompletedBookings}
                   disabled={loadingHistory}
                   className="bg-transparent"

@@ -8,21 +8,21 @@ import { createBrowserClient } from "@supabase/ssr"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
 import {
-    Bell,
-    Calendar,
-    Car,
-    CheckCircle,
-    ChevronRight,
-    Clock,
-    LogOut,
-    Mail,
-    Navigation,
-    Pause,
-    Phone,
-    Play,
-    Settings,
-    User,
-    XCircle,
+  Bell,
+  Calendar,
+  Car,
+  CheckCircle,
+  ChevronRight,
+  Clock,
+  LogOut,
+  Mail,
+  Navigation,
+  Pause,
+  Phone,
+  Play,
+  Settings,
+  User,
+  XCircle,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -82,6 +82,7 @@ function getSupabaseClient() {
 export function TenantDriverPortal({ company, driver, bookings, shifts }: TenantDriverPortalProps) {
   const [activeTab, setActiveTab] = useState("auftraege")
   const [driverStatus, setDriverStatus] = useState(driver.status || "offline")
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
 
   const branding = company.branding || {}
   const primaryColor = branding.primary_color || branding.primaryColor || "#343f60"
@@ -101,17 +102,24 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   const completedBookings = bookings.filter((b) => b.status === "completed")
 
   const handleStatusChange = async (newStatus: string) => {
+    if (isUpdatingStatus) return // Verhindert Race Condition
+
+    setIsUpdatingStatus(true)
     const previousStatus = driverStatus
     // Optimistic update
     setDriverStatus(newStatus)
 
-    const supabase = getSupabaseClient()
-    const { error } = await supabase.from("drivers").update({ status: newStatus }).eq("id", driver.id)
+    try {
+      const supabase = getSupabaseClient()
+      const { error } = await supabase.from("drivers").update({ status: newStatus }).eq("id", driver.id)
 
-    if (error) {
-      // Revert on failure
-      setDriverStatus(previousStatus)
-      console.error("Failed to update driver status:", error)
+      if (error) {
+        // Revert on failure
+        setDriverStatus(previousStatus)
+        console.error("Failed to update driver status:", error)
+      }
+    } finally {
+      setIsUpdatingStatus(false)
     }
   }
 
@@ -235,6 +243,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                   size="sm"
                   variant={driverStatus === "available" ? "default" : "outline"}
                   onClick={() => handleStatusChange("available")}
+                  disabled={isUpdatingStatus}
                   style={driverStatus === "available" ? { backgroundColor: primaryColor } : {}}
                 >
                   <Play className="h-4 w-4 mr-1" />
@@ -244,6 +253,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                   size="sm"
                   variant={driverStatus === "offline" ? "secondary" : "outline"}
                   onClick={() => handleStatusChange("offline")}
+                  disabled={isUpdatingStatus}
                 >
                   <Pause className="h-4 w-4 mr-1" />
                   Offline
