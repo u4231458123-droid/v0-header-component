@@ -140,9 +140,8 @@ export default function KundenPortalEinstellungenPage() {
         // Sollte eigentlich nicht passieren, da Kunde beim Login erstellt wird, aber sicherheitshalber:
         // Hier müsste man company_id wissen, was schwierig ist im globalen Kontext ohne Zuordnung.
         // Wir nehmen an, der Kunde existiert bereits.
-        toast.error("Kundenprofil nicht gefunden. Bitte kontaktieren Sie den Support.", {
+        toastError("Kundenprofil nicht gefunden. Bitte kontaktieren Sie den Support.", {
           description: "Ihr Kundenprofil konnte nicht gefunden werden. Bitte wenden Sie sich an den Support.",
-          duration: 5000,
         })
         setSaving(false)
         return

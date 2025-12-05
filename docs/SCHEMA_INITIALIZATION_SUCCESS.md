@@ -1,7 +1,7 @@
 # ✅ Schema-Initialisierung erfolgreich abgeschlossen
 
-**Datum:** $(date)  
-**Migration:** `000_initialize_complete_schema`  
+**Datum:** 26.12.2024
+**Migration:** `000_initialize_complete_schema`
 **Status:** ✅ Erfolgreich
 
 ## Erstellte Tabellen
