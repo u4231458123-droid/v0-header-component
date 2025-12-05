@@ -1,5 +1,5 @@
 {
-  "snapshot": "snapshot-20251205-467309ea-d830-4936-a914-a949279f2a0e",
+  "snapshot": "snapshot-20251205-63e75cb4-ac82-4ab4-927c-17046f8a6858",
   "install": "pnpm install",
   "start": "npm run dev",
   "terminals": []
