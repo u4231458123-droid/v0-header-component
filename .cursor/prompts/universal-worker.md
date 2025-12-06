@@ -15,10 +15,10 @@ Task: [TASK BESCHREIBUNG]
 
 **Protokoll:**
 
-1. **Context Fetch (MCP Filesystem/Memory):**
-   - Analysiere via MCP-Server, welche Dateien betroffen sind
+1. **Context Fetch (Nexus Bridge):**
+   - Lade Projekt-Kontext: `loadProjectContext()`
+   - UI-Tokens, DB-Schema, App-Routen, Aktive Docs
    - Prüfe Abhängigkeiten und bestehende Patterns
-   - Identifiziere potenzielle Konflikte
 
 2. **Planung (Eraser.io):**
    - Falls sich das Datenmodell ändert, aktualisiere erst Diagramme in `docs/diagrams/`
@@ -33,14 +33,24 @@ Task: [TASK BESCHREIBUNG]
    - Wenn der Task länger als 10s dauert, erstelle einen Trigger.dev Job dafür
    - Nutze `trigger/jobs/` für neue Background-Jobs
 
-5. **Self-Correction:**
+5. **Self-Correction + Self-Healing:**
    - Führe `npm run test` lokal aus
    - Prüfe TypeScript-Errors: `npm run type-check`
    - Validiere Design-Tokens: `npm run validate:design`
+   - Bei Fehlern: Aktiviere Self-Healing via `selfHealing.heal(errorType, details)`
 
-6. **Documentation (Swimm):**
+6. **Quality Gates:**
+   - Pre-Commit: `Gates.preCommit()`
+   - Pre-Push: `Gates.prePush()`
+   - Alle Gates müssen bestehen vor Commit
+
+7. **Documentation (Swimm):**
    - Erstelle/Update das Swimm-Doc für diesen Code
    - Verknüpfe kritische Code-Snippets
+
+8. **Monitoring:**
+   - Registriere Aktivität: `monitoring.recordBotActivity(botId, status)`
+   - Bei Fehlern: `monitoring.createAlert(severity, type, message)`
 
 Start.
 ```
@@ -93,9 +103,49 @@ Start.
 
 ## Wichtige Hinweise
 
-- **Immer** MCP-Server für Context-Fetch nutzen
+- **Immer** Nexus Bridge für Context-Fetch nutzen (`loadProjectContext()`)
 - **Immer** Architektur-Planung vor Code
-- **Immer** Self-Healing bei Fehlern
+- **Immer** Self-Healing bei Fehlern (`selfHealing.heal()`)
+- **Immer** Quality Gates vor Commit (`Gates.preCommit()`)
 - **Immer** Swimm-Doku parallel zur Implementierung
 - **Nie** Commits ohne Tests und Validierung
+
+---
+
+## Code-Imports
+
+```typescript
+// Nexus Bridge
+import { nexusBridge, loadProjectContext, validateBotOutput } from "@/lib/ai/bots/nexus-bridge-integration"
+
+// Workflow-Orchestrierung
+import { workflowOrchestrator, QuickWorkflows } from "@/lib/ai/workflow-orchestrator"
+
+// Self-Healing
+import { selfHealing } from "@/lib/ai/self-healing"
+
+// Quality Gates
+import { qualityGates, Gates } from "@/lib/ai/quality-gates"
+
+// Monitoring
+import { monitoring } from "@/lib/ai/monitoring"
+```
+
+---
+
+## Quick-Start Workflows
+
+```typescript
+// QA-Workflow starten
+await QuickWorkflows.qa()
+
+// Feature implementieren
+await QuickWorkflows.feature("Rechnungs-Export", "PDF-Export für Rechnungen")
+
+// Bug beheben
+await QuickWorkflows.bugfix("Login-Fehler bei Multi-Tenant")
+
+// Optimierung
+await QuickWorkflows.optimize()
+```
 

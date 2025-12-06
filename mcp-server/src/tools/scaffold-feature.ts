@@ -1,6 +1,6 @@
 /**
  * Scaffold Feature Tool
- * 
+ *
  * Creates standardized folder structures for new features
  * following the MVC pattern to prevent wildwuchs.
  */
@@ -148,18 +148,18 @@ import { createClient } from "@/lib/supabase/server"
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
-  
+
   // Implement GET logic
-  
+
   return NextResponse.json({ message: "Success" })
 }
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const body = await request.json()
-  
+
   // Implement POST logic
-  
+
   return NextResponse.json({ message: "Created" }, { status: 201 })
 }
 `;
@@ -177,7 +177,7 @@ interface Use${pascalName}Return {
 
 export function use${pascalName}(options?: Use${pascalName}Options): Use${pascalName}Return {
   // Hook implementation
-  
+
   return {
     // Return values
   }

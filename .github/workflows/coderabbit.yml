@@ -32,15 +32,15 @@ jobs:
         run: |
           # Get changed files
           git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
-          
+
           # Get full diff
           git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
-          
+
           # Count changes
           ADDED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
           DELETED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
           FILES=$(wc -l < changed_files.txt)
-          
+
           echo "files_changed=$FILES" >> $GITHUB_OUTPUT
           echo "lines_added=$ADDED" >> $GITHUB_OUTPUT
           echo "lines_deleted=$DELETED" >> $GITHUB_OUTPUT
@@ -55,14 +55,14 @@ jobs:
           # Create analysis script
           cat > analyze.mjs << 'EOF'
           import fs from 'fs';
-          
+
           const diff = fs.readFileSync('pr_diff.txt', 'utf8');
           const changedFiles = fs.readFileSync('changed_files.txt', 'utf8').split('\n').filter(Boolean);
-          
+
           // Analysis rules based on project_specs.md
           const issues = [];
           const suggestions = [];
-          
+
           // Check for forbidden terms
           const forbiddenTerms = ['kostenlos', 'gratis', 'free', 'testen', 'trial'];
           for (const term of forbiddenTerms) {
@@ -74,7 +74,7 @@ jobs:
               });
             }
           }
-          
+
           // Check for hardcoded colors
           const hexColorPattern = /#[0-9a-fA-F]{3,8}/g;
           const hexMatches = diff.match(hexColorPattern) || [];
@@ -85,7 +85,7 @@ jobs:
               rule: 'design-tokens'
             });
           }
-          
+
           // Check for any types
           if (diff.includes(': any') && !diff.includes('// eslint-disable')) {
             suggestions.push({
@@ -94,7 +94,7 @@ jobs:
               rule: 'typescript-strict'
             });
           }
-          
+
           // Check for console.log in non-test files
           const hasConsoleLog = diff.includes('console.log') || diff.includes('console.debug');
           const isTestFile = changedFiles.some(f => f.includes('test') || f.includes('spec'));
@@ -105,7 +105,7 @@ jobs:
               rule: 'no-console'
             });
           }
-          
+
           // Check for German variable names
           const germanPatterns = [
             /const\s+(benutzer|nutzer|kunde|fahrer|fahrzeug)/gi,
@@ -122,7 +122,7 @@ jobs:
               break;
             }
           }
-          
+
           // Check for missing error handling in async functions
           if (diff.includes('async') && !diff.includes('try') && !diff.includes('catch')) {
             suggestions.push({
@@ -131,7 +131,7 @@ jobs:
               rule: 'error-handling'
             });
           }
-          
+
           // Output results
           const result = {
             passed: issues.length === 0,
@@ -144,16 +144,16 @@ jobs:
               filesChanged: changedFiles.length
             }
           };
-          
+
           fs.writeFileSync('coderabbit-result.json', JSON.stringify(result, null, 2));
           console.log(JSON.stringify(result, null, 2));
-          
+
           // Exit with error if issues found
           if (!result.passed) {
             process.exit(1);
           }
           EOF
-          
+
           node analyze.mjs
 
       - name: Comment PR with Results
@@ -164,24 +164,24 @@ jobs:
           script: |
             const fs = require('fs');
             let result;
-            
+
             try {
               result = JSON.parse(fs.readFileSync('coderabbit-result.json', 'utf8'));
             } catch (e) {
               result = { passed: false, issues: [], suggestions: [], summary: { errors: 0, warnings: 0, info: 0 } };
             }
-            
+
             const filesChanged = '${{ steps.diff.outputs.files_changed }}';
             const linesAdded = '${{ steps.diff.outputs.lines_added }}';
             const linesDeleted = '${{ steps.diff.outputs.lines_deleted }}';
-            
+
             let comment = `## 🐰 CodeRabbit AI Review\n\n`;
             comment += `**Status:** ${result.passed ? '✅ PASS' : '❌ FAIL'}\n\n`;
             comment += `### 📊 Änderungen\n`;
             comment += `- **Dateien:** ${filesChanged}\n`;
             comment += `- **Hinzugefügt:** +${linesAdded} Zeilen\n`;
             comment += `- **Entfernt:** -${linesDeleted} Zeilen\n\n`;
-            
+
             if (result.issues.length > 0) {
               comment += `### ❌ Fehler (${result.issues.length})\n`;
               for (const issue of result.issues) {
@@ -189,7 +189,7 @@ jobs:
               }
               comment += '\n';
             }
-            
+
             if (result.suggestions.length > 0) {
               comment += `### ⚠️ Vorschläge (${result.suggestions.length})\n`;
               for (const suggestion of result.suggestions) {
@@ -198,27 +198,27 @@ jobs:
               }
               comment += '\n';
             }
-            
+
             if (result.passed && result.suggestions.length === 0) {
               comment += `### ✨ Alles in Ordnung!\n`;
               comment += `Der Code entspricht den Projektrichtlinien.\n`;
             }
-            
+
             comment += `\n---\n`;
             comment += `*Automatisch generiert von CodeRabbit AI • [Projekt-Spezifikationen](../blob/main/project_specs.md)*`;
-            
+
             // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
-            const existingComment = comments.find(c => 
-              c.user.login === 'github-actions[bot]' && 
+
+            const existingComment = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
               c.body.includes('CodeRabbit AI Review')
             );
-            
+
             if (existingComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,

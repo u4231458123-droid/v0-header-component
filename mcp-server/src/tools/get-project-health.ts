@@ -1,6 +1,6 @@
 /**
  * Get Project Health Tool
- * 
+ *
  * Returns results of npm run lint and npm run type-check
  * to provide a quick overview of project health.
  */

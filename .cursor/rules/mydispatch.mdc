@@ -165,12 +165,55 @@ Vor jeder Code-Änderung:
 
 ### Self-Healing-Protokoll
 
-Automatische Fehlerbehebung:
+Automatische Fehlerbehebung via `lib/ai/self-healing.ts`:
 
 - **Terminal-Fehler**: Sofort stoppen, Root-Cause analysieren, Fix implementieren
 - **Build-Fehler**: Blockieren alle weiteren Tasks, Dependency-Resolution versuchen
 - **Test-Failures**: Flaky-Test-Detection, Retry-Mechanismus (max 3), AI-powered Fixing
 - **Code Review Feedback (CodeRabbit)**: Kommentare automatisch lesen, kritische Issues sofort fixen
+
+**Verfügbare Self-Healing-Protokolle:**
+- `dependency` - NPM/PNPM Dependency-Probleme
+- `test-failure` - Fehlgeschlagene Tests
+- `build-error` - Build-Fehler
+- `lint-error` - Lint-Fehler (mit AutoFix)
+- `type-error` - TypeScript-Fehler
+
+### Workflow-Orchestrierung
+
+Zentrale Steuerung via `lib/ai/workflow-orchestrator.ts`:
+
+**Quick-Start Workflows:**
+- `QuickWorkflows.qa()` - Vollständige QA-Prüfung
+- `QuickWorkflows.feature(name, description)` - Feature implementieren
+- `QuickWorkflows.bugfix(description)` - Bug beheben
+- `QuickWorkflows.optimize()` - Performance-Optimierung
+
+**Parallele Tracks:**
+- Track 1: QA & Bugfixing (quality, bug, fix, test)
+- Track 2: Feature-Completion (feature, implement, add)
+- Track 3: Workflow-Optimization (optimize, refactor, improve)
+
+### Quality Gates
+
+Qualitätsprüfungen via `lib/ai/quality-gates.ts`:
+
+| Gate | Checks | Blocking |
+|------|--------|----------|
+| pre-commit | lint, type-check, forbidden-terms, design-tokens | Ja |
+| pre-push | + unit-tests, compliance | Ja |
+| pre-deploy | + e2e-tests, build, security | Ja |
+| post-deploy | health-check, smoke-tests | Nein |
+
+### Monitoring
+
+Echtzeit-Überwachung via `lib/ai/monitoring.ts`:
+
+- **Bot-Status-Tracking**: Aktivität, Fehler, Durchschnittsdauer
+- **Workflow-Metriken**: Gesamt, Aktiv, Erfolgreich, Fehlgeschlagen
+- **Quality-Gate-Metriken**: Pass-Rate pro Gate
+- **Self-Healing-Metriken**: Erfolgsrate pro Protokoll
+- **Alerts**: Kritische Ereignisse werden automatisch geloggt
 
 ### MCP-Server Nutzung
 
@@ -223,5 +266,32 @@ Konfiguration in IDE-Einstellungen (siehe config/mcp-nexus-bridge.json):
 3. **IMMER** Self-Healing bei Fehlern aktivieren
 4. **IMMER** Swimm-Doku parallel zur Implementierung
 5. **NIEMALS** Commits ohne Tests und Validierung
+
+### Cursor-Kommandos
+
+Verfügbare Kommandos in `.cursor/commands/`:
+
+- `/mydispatch` - Zentrale Steuerung (workflow, gate, heal, context, status)
+- `/orchestrate` - Workflow-Orchestrierung (start, status, cancel, history)
+- `/heal` - Self-Healing-Protokolle (dependency, test-failure, build-error, etc.)
+
+### Code-Import-Pfade
+
+```typescript
+// Nexus Bridge Integration
+import { nexusBridge, loadProjectContext, validateBotOutput } from "@/lib/ai/bots/nexus-bridge-integration"
+
+// Workflow-Orchestrierung
+import { workflowOrchestrator, QuickWorkflows } from "@/lib/ai/workflow-orchestrator"
+
+// Self-Healing
+import { selfHealing, autoHeal } from "@/lib/ai/self-healing"
+
+// Quality Gates
+import { qualityGates, Gates } from "@/lib/ai/quality-gates"
+
+// Monitoring
+import { monitoring } from "@/lib/ai/monitoring"
+```
 
 Siehe auch: `.roo/rules/neo-genesis.md` für vollständige NEO-GENESIS Dokumentation

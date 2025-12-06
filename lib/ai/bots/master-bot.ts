@@ -9,14 +9,14 @@
  * - DAUERHAFTE ÜBERWACHUNG ALLER AGENTEN
  */
 
-import { loadKnowledgeForTask, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { logError } from "@/lib/cicd/error-logger"
+import { loadKnowledgeForTask, type KnowledgeCategory } from "@/lib/knowledge-base/structure"
 import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
-import { validateSupabaseProject, validateSchemaTables, checkSecurityAdvisors } from "./mcp-integration"
 import { promises as fs } from "fs"
 import path from "path"
-import { AGENT_SPECIALIZATIONS, determineAgentRole, PARALLEL_TRACKS } from "./agent-directives"
-import type { BotTask, BotResponse } from "./base-bot"
+import { AGENT_SPECIALIZATIONS, determineAgentRole } from "./agent-directives"
+import type { BotTask } from "./base-bot"
+import { loadProjectContext, validateBotOutput, type ActiveDocs, type AppRoutes, type DBSchema, type UITokens } from "./nexus-bridge-integration"
 
 export interface ChangeRequest {
   id: string
@@ -88,13 +88,23 @@ export class MasterBot {
   private botSpecializations: Map<string, string[]> = new Map()
   private botName: string = "Master-Bot"
 
+  // Nexus Bridge Context
+  private projectContext: {
+    uiTokens: UITokens | null
+    dbSchema: DBSchema | null
+    appRoutes: AppRoutes | null
+    activeDocs: ActiveDocs | null
+    timestamp: string
+  } | null = null
+
   constructor() {
     this.loadKnowledgeBase()
+    this.loadProjectContext() // Lade Nexus Bridge Context
     this.changeRequestsPath = path.join(process.cwd(), ".cicd", "change-requests.json")
     this.decisionsPath = path.join(process.cwd(), ".cicd", "master-decisions.json")
     this.changeManager = new SystemwideChangeManager()
     this.workTracker = new WorkTracker()
-    
+
     // Definiere Bot-Spezialisierungen (erweitert mit Agent-Rollen)
     this.botSpecializations.set("system-bot", [
       "code-analysis",
@@ -122,7 +132,7 @@ export class MasterBot {
       "changelog",
       "error-documentation",
     ])
-    
+
     // Erweiterte Agent-Rollen aus AGENT_SPECIALIZATIONS
     this.botSpecializations.set("backend-agent", [
       "api",
@@ -179,16 +189,76 @@ export class MasterBot {
       "quality-thinking-detailed",
       "agent-responsibility",
     ]
-    
+
     // Lade zusätzlich detaillierte UI-Konsistenz-Regeln
     const detailedConsistency = loadKnowledgeForTask("master-review", ["ui-consistency"])
-    this.knowledgeBase = [...loadKnowledgeForTask("master-review", categories), ...detailedConsistency.filter((e: any) => 
-      e.id === "ui-consistency-detailed-001" || 
-      e.id === "visual-logical-validation-001" || 
+    this.knowledgeBase = [...loadKnowledgeForTask("master-review", categories), ...detailedConsistency.filter((e: any) =>
+      e.id === "ui-consistency-detailed-001" ||
+      e.id === "visual-logical-validation-001" ||
       e.id === "quality-thinking-detailed-001" ||
       e.id === "agent-responsibility-001" ||
       e.id === "master-bot-oversight-001"
     )]
+  }
+
+  /**
+   * Lade Projekt-Kontext von Nexus Bridge
+   * OBLIGATORISCH vor jeder Aufgabe für Context-Awareness
+   */
+  private async loadProjectContext() {
+    try {
+      this.projectContext = await loadProjectContext()
+      console.log(`📊 Nexus Bridge Context geladen: ${this.projectContext.timestamp}`)
+    } catch (error) {
+      console.warn("⚠️ Nexus Bridge Context nicht verfügbar:", error)
+      this.projectContext = null
+    }
+  }
+
+  /**
+   * Hole Design-Tokens für UI-Validierung
+   */
+  getDesignTokens(): UITokens | null {
+    return this.projectContext?.uiTokens || null
+  }
+
+  /**
+   * Hole DB-Schema für Query-Validierung
+   */
+  getDBSchema(): DBSchema | null {
+    return this.projectContext?.dbSchema || null
+  }
+
+  /**
+   * Hole App-Routen für Routing-Validierung
+   */
+  getAppRoutes(): AppRoutes | null {
+    return this.projectContext?.appRoutes || null
+  }
+
+  /**
+   * Hole aktive Dokumentation für Compliance-Prüfung
+   */
+  getActiveDocs(): ActiveDocs | null {
+    return this.projectContext?.activeDocs || null
+  }
+
+  /**
+   * Validiere Code gegen Nexus Bridge Regeln
+   */
+  async validateCodeWithNexusBridge(code: string, filePath?: string): Promise<{
+    valid: boolean
+    errors: string[]
+    suggestions: string[]
+  }> {
+    const result = await validateBotOutput(code, filePath)
+    return {
+      valid: result.valid,
+      errors: result.compliance.violations
+        .filter((v) => v.severity === "error")
+        .map((v) => v.message),
+      suggestions: result.suggestions,
+    }
   }
 
   /**
@@ -224,10 +294,10 @@ export class MasterBot {
       solution: "Wartet auf Master-Bot Prüfung",
       botId: "master-bot",
     })
-    
+
     // Aktualisiere Work-Status
     await this.workTracker.updateWorkStatus(work.id, "completed", "Change-Request erstellt", undefined, undefined, undefined)
-    
+
     return fullRequest
   }
 
@@ -248,7 +318,7 @@ export class MasterBot {
     const decision: ChangeRequest["decision"] = {
       timestamp: new Date().toISOString(),
       decision: request.justification.length > 50 ? "approved" : "rejected",
-      reason: request.justification.length > 50 
+      reason: request.justification.length > 50
         ? "Begründung ausreichend, Vorgabe korrekt"
         : "Begründung unzureichend",
     }
@@ -302,14 +372,14 @@ export class MasterBot {
     for (const agentId of agents) {
       // Lade aktuelle Arbeiten des Agenten
       const agentWork = await this.workTracker.getCurrentWorkForBot(agentId)
-      
+
       // Prüfe Compliance
       const violations: AgentOversightResult["violations"] = []
-      
+
       // Prüfe ob Agent Knowledge-Base lädt
       // Prüfe ob Agent Vorgaben befolgt
       // Prüfe ob Agent vollständig dokumentiert
-      
+
       // Beispiel-Prüfung (sollte durch echte Prüfung ersetzt werden)
       if (agentWork.length === 0) {
         violations.push({
@@ -321,7 +391,7 @@ export class MasterBot {
       }
 
       const compliance: AgentOversightResult["compliance"] = violations.length === 0 ? "compliant" : "violation"
-      
+
       const result: AgentOversightResult = {
         agentId,
         timestamp: new Date().toISOString(),
@@ -370,15 +440,15 @@ export class MasterBot {
    */
   async chat(message: string): Promise<string> {
     await this.loadKnowledgeBase()
-    
+
     // Einfache Chat-Logik (sollte durch echte AI erweitert werden)
     if (message.toLowerCase().includes("überwachung") || message.toLowerCase().includes("oversight")) {
       const results = await this.performAgentOversight()
-      return `Agent-Überwachung durchgeführt. Ergebnisse:\n${results.map((r) => 
+      return `Agent-Überwachung durchgeführt. Ergebnisse:\n${results.map((r) =>
         `- ${r.agentId}: ${r.compliance}${r.violations ? ` (${r.violations.length} Verstöße)` : ""}`
       ).join("\n")}`
     }
-    
+
     return "Ich bin der Master-Bot. Wie kann ich helfen?"
   }
 
@@ -438,7 +508,7 @@ export class MasterBot {
    */
   async answerQuestionAfterUserChat(questionId: string, userAnswer: string): Promise<void> {
     const { botCommunicationManager } = await import("./bot-communication")
-    
+
     // Dokumentiere Antwort
     await this.documentUserAnswer(questionId, userAnswer)
 
@@ -527,22 +597,22 @@ export class MasterBot {
   }> {
     // 1. Finde passenden Bot basierend auf Spezialisierung
     let assignedBot: string | null = null
-    
+
     for (const [botId, specializations] of this.botSpecializations.entries()) {
       if (specializations.includes(taskType)) {
         assignedBot = botId
         break
       }
     }
-    
+
     // Fallback: System-Bot für unbekannte Task-Typen
     if (!assignedBot) {
       assignedBot = "system-bot"
     }
-    
+
     // 2. Erstelle Task-ID
     const taskId = `task-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-    
+
     // 3. Starte Work-Tracking
     const work = await this.workTracker.startWork({
       type: "work",
@@ -551,7 +621,7 @@ export class MasterBot {
       botId: assignedBot,
       filePath,
     })
-    
+
     // 4. Dokumentiere Task-Zuweisung
     await logError({
       type: "task-assignment",
@@ -562,7 +632,7 @@ export class MasterBot {
       solution: "Task wird autonom bearbeitet",
       botId: "master-bot",
     })
-    
+
     return {
       assignedBot,
       taskId,
@@ -586,9 +656,9 @@ export class MasterBot {
   }> {
     const { QualityBot } = await import("./quality-bot")
     const qualityBot = new QualityBot()
-    
+
     const allViolations: Array<{ type: string; message: string; suggestion: string }> = []
-    
+
     // Prüfe Ergebnis gegen Dokumentation - ALLE Änderungen prüfen
     if (result.changes && Array.isArray(result.changes)) {
       for (const change of result.changes) {
@@ -598,7 +668,7 @@ export class MasterBot {
             {},
             change.file || filePath || "unknown"
           )
-          
+
           // Sammle alle Verstöße (nicht sofort zurückgeben)
           if (!check.passed) {
             allViolations.push(
@@ -612,7 +682,7 @@ export class MasterBot {
         }
       }
     }
-    
+
     return {
       valid: allViolations.length === 0,
       violations: allViolations,
@@ -792,12 +862,12 @@ export class MasterBot {
     files: string[]
   ): Promise<{ success: boolean; errors?: string[] }> {
     const errors: string[] = []
-    
+
     try {
       // Git-Operationen (nur wenn in Git-Repository)
       const { spawn } = await import("child_process")
       const { promisify } = await import("util")
-      
+
       // Helper: Führe Git-Befehl sicher aus (mit Argument-Array, nicht String)
       const execGit = async (args: string[], options: { cwd?: string } = {}): Promise<{ success: boolean; error?: string }> => {
         return new Promise((resolve) => {
@@ -805,34 +875,34 @@ export class MasterBot {
             stdio: "ignore",
             cwd: options.cwd || process.cwd(),
           })
-          
+
           gitProcess.on("error", (error) => {
             resolve({ success: false, error: error.message })
           })
-          
+
           gitProcess.on("close", (code) => {
             resolve({ success: code === 0, error: code !== 0 ? `Exit code: ${code}` : undefined })
           })
         })
       }
-      
+
       // 1. Prüfe ob Git-Repository
       const repoCheck = await execGit(["rev-parse", "--git-dir"])
       if (!repoCheck.success) {
         errors.push(`Nicht in Git-Repository: ${repoCheck.error}`)
         return { success: false, errors }
       }
-      
+
       // 2. Validiere Inputs (zusätzliche Sicherheitsschicht)
       const dangerousChars = [";", "|", "&", "`", "$", "(", ")", "<", ">", "\n", "\r"]
       const hasDangerousChars = (str: string) => dangerousChars.some((char) => str.includes(char))
-      
+
       // Validiere Commit-Message
       if (hasDangerousChars(message)) {
         errors.push("Commit-Message enthält ungültige Zeichen")
         return { success: false, errors }
       }
-      
+
       // Validiere Dateipfade
       const safeFiles = files.filter((file) => {
         // Nur relative Pfade, keine absoluten oder gefährlichen Zeichen
@@ -847,11 +917,11 @@ export class MasterBot {
         }
         return true
       })
-      
+
       if (errors.length > 0) {
         return { success: false, errors }
       }
-      
+
       // 3. Add files - SICHER: Argument-Array (keine String-Interpolation)
       if (safeFiles.length > 0) {
         const addResult = await execGit(["add", "--", ...safeFiles])
@@ -864,13 +934,13 @@ export class MasterBot {
           errors.push(`git add -A fehlgeschlagen: ${addAllResult.error}`)
         }
       }
-      
+
       // 4. Commit - SICHER: Argument-Array (keine String-Interpolation)
       const commitResult = await execGit(["commit", "-m", message])
       if (!commitResult.success) {
         errors.push(`git commit fehlgeschlagen: ${commitResult.error}`)
       }
-      
+
       // 5. Push (nur wenn remote konfiguriert)
       if (errors.length === 0) {
         const pushResult = await execGit(["push"])
@@ -882,7 +952,7 @@ export class MasterBot {
     } catch (error: any) {
       errors.push(`Fehler bei Commit/Push: ${error.message}`)
     }
-    
+
     return {
       success: errors.length === 0,
       errors: errors.length > 0 ? errors : undefined,
