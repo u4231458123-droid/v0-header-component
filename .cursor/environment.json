@@ -1,6 +1,9 @@
 {
   "snapshot": "snapshot-20251205-63e75cb4-ac82-4ab4-927c-17046f8a6858",
-  "install": "pnpm install",
+  "install": "pnpm install && cd mcp-server && npm install && npm run build && cd ..",
   "start": "npm run dev",
-  "terminals": []
+  "terminals": [],
+  "mcp": {
+    "servers": ["nexus-bridge", "supabase", "hf-mcp-server"]
+  }
 }

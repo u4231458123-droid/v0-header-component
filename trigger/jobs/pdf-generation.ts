@@ -6,12 +6,12 @@ export const generatePDF = task({
   run: async (payload: { bookingId: string; type: "invoice" | "quote" | "report" }, { ctx }) => {
     // PDF-Generierung für Rechnungen, Angebote oder Reports
     // Diese Task läuft asynchron und vermeidet Serverless-Timeouts
-    
+
     const { bookingId, type } = payload;
-    
+
     // TODO: Implementiere PDF-Generierung mit pdfkit oder puppeteer
     // Beispiel: await generatePDFDocument(bookingId, type);
-    
+
     return {
       success: true,
       bookingId,

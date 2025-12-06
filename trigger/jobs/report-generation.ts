@@ -6,12 +6,12 @@ export const generateReport = task({
   run: async (payload: { companyId: string; reportType: "monthly" | "yearly" | "custom"; dateRange?: { start: string; end: string } }, { ctx }) => {
     // Report-Generierung für Unternehmen
     // Diese Task kann lange dauern und wird daher asynchron ausgeführt
-    
+
     const { companyId, reportType, dateRange } = payload;
-    
+
     // TODO: Implementiere Report-Generierung
     // Beispiel: await generateCompanyReport(companyId, reportType, dateRange);
-    
+
     return {
       success: true,
       companyId,

@@ -6,13 +6,13 @@ export const sendNotification = task({
   run: async (payload: { userId: string; type: "email" | "push" | "sms"; subject: string; body: string }, { ctx }) => {
     // E-Mail/Push/SMS-Benachrichtigungen asynchron versenden
     // Vermeidet Blocking im Haupt-Request-Flow
-    
+
     const { userId, type, subject, body } = payload;
-    
+
     // TODO: Implementiere Notification-Versand
     // Beispiel: await sendEmail(userId, subject, body);
     // oder: await sendPushNotification(userId, subject, body);
-    
+
     return {
       success: true,
       userId,

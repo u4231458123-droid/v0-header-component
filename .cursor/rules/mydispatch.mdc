@@ -174,12 +174,38 @@ Automatische Fehlerbehebung:
 
 ### MCP-Server Nutzung
 
+- **Nexus Bridge MCP** (lokal): Projekt-Kontext-Provider
+  - `project://ui/tokens` - Design-Tokens aus config/design-tokens.ts
+  - `project://db/schema` - Datenbank-Schema aus types/supabase.ts
+  - `project://app/routes` - Alle Next.js Routen und API-Endpunkte
+  - `project://docs/active` - Aktive Dokumentation und Regeln
+  - Tools: `validate_slug`, `validate_compliance`, `scaffold_feature`, `get_project_health`
 - **Supabase MCP**: Schema-Änderungen, Migrationen, RLS-Policies, Edge Functions
 - **GitHub MCP**: PR-Erstellung, Issue-Tracking, Branch-Management
 - **Filesystem MCP**: Codebase-Analyse, Abhängigkeits-Graph, Pattern-Matching
 - **Memory MCP**: Persistenter Kontext, Session-Übergreifende Informationen
 - **Browser MCP**: E2E-Test-Automatisierung, UI-Verifikation
 - **Hugging Face MCP**: AI-Modell-Zugriff, Text-Generierung
+
+### Nexus Bridge Setup
+
+Der Nexus Bridge MCP-Server befindet sich in `/mcp-server`. Setup:
+```bash
+cd mcp-server && npm install && npm run build
+```
+
+Konfiguration in IDE-Einstellungen (siehe config/mcp-nexus-bridge.json):
+```json
+{
+  "mcpServers": {
+    "nexus-bridge": {
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-server/dist/index.js"],
+      "autoApprove": ["read_resource", "validate_compliance"]
+    }
+  }
+}
+```
 
 ### Quality Gates (vor jedem Commit)
 

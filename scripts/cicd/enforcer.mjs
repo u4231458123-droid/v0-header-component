@@ -87,7 +87,7 @@ forbiddenTerms.forEach(term => {
 const result = {
   pass: violations.length === 0,
   violations,
-  reason: violations.length > 0 
+  reason: violations.length > 0
     ? `${violations.length} Verletzung(en) gefunden`
     : "Alle Prüfungen bestanden",
 };

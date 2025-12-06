@@ -1,0 +1,243 @@
+name: CodeRabbit AI Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  coderabbit-review:
+    name: AI Code Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Get PR Diff
+        id: diff
+        run: |
+          # Get changed files
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          
+          # Get full diff
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
+          
+          # Count changes
+          ADDED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+          DELETED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
+          FILES=$(wc -l < changed_files.txt)
+          
+          echo "files_changed=$FILES" >> $GITHUB_OUTPUT
+          echo "lines_added=$ADDED" >> $GITHUB_OUTPUT
+          echo "lines_deleted=$DELETED" >> $GITHUB_OUTPUT
+
+      - name: Run CodeRabbit Analysis
+        id: coderabbit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUGGINGFACE_READ_TOKEN: ${{ secrets.HUGGINGFACE_READ_TOKEN }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          # Create analysis script
+          cat > analyze.mjs << 'EOF'
+          import fs from 'fs';
+          
+          const diff = fs.readFileSync('pr_diff.txt', 'utf8');
+          const changedFiles = fs.readFileSync('changed_files.txt', 'utf8').split('\n').filter(Boolean);
+          
+          // Analysis rules based on project_specs.md
+          const issues = [];
+          const suggestions = [];
+          
+          // Check for forbidden terms
+          const forbiddenTerms = ['kostenlos', 'gratis', 'free', 'testen', 'trial'];
+          for (const term of forbiddenTerms) {
+            if (diff.toLowerCase().includes(term)) {
+              issues.push({
+                severity: 'error',
+                message: `Verbotener Begriff gefunden: "${term}"`,
+                rule: 'forbidden-terms'
+              });
+            }
+          }
+          
+          // Check for hardcoded colors
+          const hexColorPattern = /#[0-9a-fA-F]{3,8}/g;
+          const hexMatches = diff.match(hexColorPattern) || [];
+          if (hexMatches.length > 0) {
+            suggestions.push({
+              severity: 'warning',
+              message: `${hexMatches.length} hardcoded colors gefunden. Bitte Design-Tokens verwenden.`,
+              rule: 'design-tokens'
+            });
+          }
+          
+          // Check for any types
+          if (diff.includes(': any') && !diff.includes('// eslint-disable')) {
+            suggestions.push({
+              severity: 'warning',
+              message: 'Untyped "any" gefunden. Bitte explizite Typen verwenden.',
+              rule: 'typescript-strict'
+            });
+          }
+          
+          // Check for console.log in non-test files
+          const hasConsoleLog = diff.includes('console.log') || diff.includes('console.debug');
+          const isTestFile = changedFiles.some(f => f.includes('test') || f.includes('spec'));
+          if (hasConsoleLog && !isTestFile) {
+            suggestions.push({
+              severity: 'info',
+              message: 'console.log gefunden. Bitte Logger oder entfernen vor Production.',
+              rule: 'no-console'
+            });
+          }
+          
+          // Check for German variable names
+          const germanPatterns = [
+            /const\s+(benutzer|nutzer|kunde|fahrer|fahrzeug)/gi,
+            /let\s+(benutzer|nutzer|kunde|fahrer|fahrzeug)/gi,
+            /function\s+(holen|speichern|loeschen)/gi,
+          ];
+          for (const pattern of germanPatterns) {
+            if (pattern.test(diff)) {
+              issues.push({
+                severity: 'error',
+                message: 'Deutsche Variablen-/Funktionsnamen gefunden. Code muss auf Englisch sein.',
+                rule: 'code-language'
+              });
+              break;
+            }
+          }
+          
+          // Check for missing error handling in async functions
+          if (diff.includes('async') && !diff.includes('try') && !diff.includes('catch')) {
+            suggestions.push({
+              severity: 'info',
+              message: 'Async-Funktion ohne Try-Catch gefunden. Error-Handling prüfen.',
+              rule: 'error-handling'
+            });
+          }
+          
+          // Output results
+          const result = {
+            passed: issues.length === 0,
+            issues,
+            suggestions,
+            summary: {
+              errors: issues.filter(i => i.severity === 'error').length,
+              warnings: suggestions.filter(s => s.severity === 'warning').length,
+              info: suggestions.filter(s => s.severity === 'info').length,
+              filesChanged: changedFiles.length
+            }
+          };
+          
+          fs.writeFileSync('coderabbit-result.json', JSON.stringify(result, null, 2));
+          console.log(JSON.stringify(result, null, 2));
+          
+          // Exit with error if issues found
+          if (!result.passed) {
+            process.exit(1);
+          }
+          EOF
+          
+          node analyze.mjs
+
+      - name: Comment PR with Results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let result;
+            
+            try {
+              result = JSON.parse(fs.readFileSync('coderabbit-result.json', 'utf8'));
+            } catch (e) {
+              result = { passed: false, issues: [], suggestions: [], summary: { errors: 0, warnings: 0, info: 0 } };
+            }
+            
+            const filesChanged = '${{ steps.diff.outputs.files_changed }}';
+            const linesAdded = '${{ steps.diff.outputs.lines_added }}';
+            const linesDeleted = '${{ steps.diff.outputs.lines_deleted }}';
+            
+            let comment = `## 🐰 CodeRabbit AI Review\n\n`;
+            comment += `**Status:** ${result.passed ? '✅ PASS' : '❌ FAIL'}\n\n`;
+            comment += `### 📊 Änderungen\n`;
+            comment += `- **Dateien:** ${filesChanged}\n`;
+            comment += `- **Hinzugefügt:** +${linesAdded} Zeilen\n`;
+            comment += `- **Entfernt:** -${linesDeleted} Zeilen\n\n`;
+            
+            if (result.issues.length > 0) {
+              comment += `### ❌ Fehler (${result.issues.length})\n`;
+              for (const issue of result.issues) {
+                comment += `- **${issue.rule}:** ${issue.message}\n`;
+              }
+              comment += '\n';
+            }
+            
+            if (result.suggestions.length > 0) {
+              comment += `### ⚠️ Vorschläge (${result.suggestions.length})\n`;
+              for (const suggestion of result.suggestions) {
+                const icon = suggestion.severity === 'warning' ? '⚠️' : 'ℹ️';
+                comment += `- ${icon} **${suggestion.rule}:** ${suggestion.message}\n`;
+              }
+              comment += '\n';
+            }
+            
+            if (result.passed && result.suggestions.length === 0) {
+              comment += `### ✨ Alles in Ordnung!\n`;
+              comment += `Der Code entspricht den Projektrichtlinien.\n`;
+            }
+            
+            comment += `\n---\n`;
+            comment += `*Automatisch generiert von CodeRabbit AI • [Projekt-Spezifikationen](../blob/main/project_specs.md)*`;
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(c => 
+              c.user.login === 'github-actions[bot]' && 
+              c.body.includes('CodeRabbit AI Review')
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment,
+              });
+            }
+
+      - name: Fail if Issues Found
+        if: failure()
+        run: |
+          echo "❌ CodeRabbit hat Probleme gefunden. Bitte beheben Sie die Fehler."
+          exit 1
+
