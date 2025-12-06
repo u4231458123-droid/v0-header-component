@@ -1,0 +1,90 @@
+name: The Enforcer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  enforcer:
+    name: Enforcer - Policy Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get PR Diff
+        id: pr-diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > pr-diff.txt
+          echo "diff_file=pr-diff.txt" >> $GITHUB_OUTPUT
+
+      - name: Load Project Specs
+        id: project-specs
+        run: |
+          if [ -f project_specs.md ]; then
+            echo "specs_file=project_specs.md" >> $GITHUB_OUTPUT
+          else
+            echo "❌ project_specs.md nicht gefunden"
+            exit 1
+          fi
+
+      - name: Enforcer Validation
+        id: validation
+        env:
+          HUGGINGFACE_READ_TOKEN: ${{ secrets.HUGGINGFACE_READ_TOKEN }}
+        run: |
+          # Enforcer Script - Prüft Code gegen project_specs.md
+          node scripts/cicd/enforcer.mjs \
+            --specs "${{ steps.project-specs.outputs.specs_file }}" \
+            --diff "${{ steps.pr-diff.outputs.diff_file }}" \
+            --pr-number "${{ github.event.pull_request.number }}"
+
+      - name: Comment PR
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let comment = '## ❌ Enforcer: FAIL\n\n';
+
+            try {
+              const result = fs.readFileSync('enforcer-result.json', 'utf8');
+              const data = JSON.parse(result);
+              comment += `**Grund:** ${data.reason}\n\n`;
+              comment += `**Verletzungen:**\n`;
+              data.violations.forEach(v => {
+                comment += `- ${v}\n`;
+              });
+            } catch (e) {
+              comment += '**Grund:** Validierung fehlgeschlagen\n';
+            }
+
+            comment += '\n**Bitte behebe die Verletzungen und pushe erneut.**';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Block Merge
+        if: failure()
+        run: |
+          echo "❌ Enforcer: Merge blockiert"
+          exit 1
+

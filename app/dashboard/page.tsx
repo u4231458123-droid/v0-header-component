@@ -2,10 +2,9 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { MainLayout } from "@/components/layout/MainLayout"
 import Link from "next/link"
-import { DashboardMapWidget } from "@/components/dashboard/DashboardMapWidget"
-import { DashboardCharts } from "@/components/dashboard/DashboardCharts"
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader"
 import { DashboardTourWrapper } from "@/components/onboarding/DashboardTourWrapper"
+import type { Booking, Customer, Driver, Vehicle, Company } from "@/types/entities"
 import {
   ClipboardList,
   Zap,
@@ -18,18 +17,30 @@ import {
   FileText,
   Calendar,
 } from "lucide-react"
+import dynamicImport from "next/dynamic"
+
+// Lazy Loading für große Komponenten
+const DashboardMapWidget = dynamicImport(() => import("@/components/dashboard/DashboardMapWidget"), {
+  loading: () => <div className="h-96 bg-muted rounded-xl animate-pulse" />,
+  ssr: false,
+})
+
+const DashboardCharts = dynamicImport(() => import("@/components/dashboard/DashboardCharts"), {
+  loading: () => <div className="h-96 bg-muted rounded-xl animate-pulse" />,
+  ssr: false,
+})
 
 // Force dynamic rendering - Version 0.2.0
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic" as const
 
 // Fallback-Funktion für Dashboard-Stats wenn RPC nicht verfügbar
 async function getDashboardStatsFallback(
-  supabase: any,
+  supabaseClient: Awaited<ReturnType<typeof createClient>>,
   companyId: string,
   todayStr: string,
   yesterdayStr: string,
-  thirtyDaysAgo: Date
-) {
+  _thirtyDaysAgo: Date
+): Promise<Record<string, number>> {
   try {
     const [
       { count: bookingsToday },
@@ -40,13 +51,13 @@ async function getDashboardStatsFallback(
       { count: customersTotal },
       { count: pendingInvoices },
     ] = await Promise.all([
-      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).gte("created_at", todayStr).lt("created_at", new Date(new Date(todayStr).getTime() + 86400000).toISOString()),
-      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).gte("created_at", yesterdayStr).lt("created_at", todayStr),
-      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["pending", "confirmed", "assigned", "in_progress"]),
-      supabase.from("drivers").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "available"),
-      supabase.from("drivers").select("id", { count: "exact", head: true }).eq("company_id", companyId),
-      supabase.from("customers").select("id", { count: "exact", head: true }).eq("company_id", companyId),
-      supabase.from("invoices").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "pending"),
+      supabaseClient.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).gte("created_at", todayStr).lt("created_at", new Date(new Date(todayStr).getTime() + 86400000).toISOString()),
+      supabaseClient.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).gte("created_at", yesterdayStr).lt("created_at", todayStr),
+      supabaseClient.from("bookings").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["pending", "confirmed", "assigned", "in_progress"]),
+      supabaseClient.from("drivers").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "available"),
+      supabaseClient.from("drivers").select("id", { count: "exact", head: true }).eq("company_id", companyId),
+      supabaseClient.from("customers").select("id", { count: "exact", head: true }).eq("company_id", companyId),
+      supabaseClient.from("invoices").select("id", { count: "exact", head: true }).eq("company_id", companyId).eq("status", "pending"),
     ])
 
     return {
@@ -59,7 +70,8 @@ async function getDashboardStatsFallback(
       pending_invoices: pendingInvoices || 0,
     }
   } catch (error) {
-    console.error("Fallback stats error:", error)
+    const { ErrorHandler } = await import("@/lib/utils/error-handler")
+    ErrorHandler.handleSilent(error, { component: "Dashboard", action: "getDashboardStatsFallback" })
     return {
       bookings_today: 0,
       bookings_yesterday: 0,
@@ -99,7 +111,8 @@ export default async function DashboardPage() {
       .maybeSingle()
 
     if (customer) {
-      const companySlug = (customer.company as any)?.company_slug
+      const company = customer.company as Company | null
+      const companySlug = company?.company_slug
       if (companySlug) {
         redirect(`/c/${companySlug}/kunde/portal`)
       }
@@ -127,7 +140,8 @@ export default async function DashboardPage() {
       .maybeSingle()
 
     if (customer) {
-      const companySlug = (customer.company as any)?.company_slug
+      const company = customer.company as Company | null
+      const companySlug = company?.company_slug
       if (companySlug) {
         redirect(`/c/${companySlug}/kunde/portal`)
       }
@@ -155,7 +169,8 @@ export default async function DashboardPage() {
       .maybeSingle()
 
     if (customer) {
-      const companySlug = (customer.company as any)?.company_slug
+      const company = customer.company as Company | null
+      const companySlug = company?.company_slug
       if (companySlug) {
         redirect(`/c/${companySlug}/kunde/portal`)
       }
@@ -195,12 +210,12 @@ export default async function DashboardPage() {
     customersLastMonth: 0,
   }
 
-  let recentBookings: any[] = []
-  let upcomingBookings: any[] = []
-  let vehicles: any[] = []
-  let revenueData: any[] = []
-  let customers: any[] = []
-  let drivers: any[] = []
+  let recentBookings: Array<Booking & { customer?: Customer }> = []
+  let upcomingBookings: Array<Booking & { customer?: Customer }> = []
+  let vehicles: Vehicle[] = []
+  let revenueData: Array<{ date: string; amount: number; label: string }> = []
+  let customers: Customer[] = []
+  let drivers: Driver[] = []
 
   // Nur wenn companyId vorhanden
   if (companyId) {
@@ -216,8 +231,8 @@ export default async function DashboardPage() {
     // 1. Statistiken via RPC (ersetzt 8 einzelne Count/Sum Queries)
     // Fallback auf einzelne Queries wenn RPC nicht verfügbar
     // WICHTIG: Nur wenn companyId vorhanden ist (nicht null)
-    let safeStats: any = {};
-    
+    let safeStats: Record<string, number> = {};
+
     if (companyId) {
       try {
         const { data: rpcStats, error: rpcError } = await supabase.rpc('get_comprehensive_dashboard_stats', {
@@ -225,21 +240,23 @@ export default async function DashboardPage() {
         });
 
         if (rpcError) {
-          console.warn('Dashboard Stats RPC Error (using fallback):', rpcError);
+          const { ErrorHandler } = await import("@/lib/utils/error-handler")
+          ErrorHandler.handleSilent(rpcError, { component: "Dashboard", action: "getStatsRPC" })
           // Fallback auf einzelne Queries
-          safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo);
+          safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo)
         } else {
-          safeStats = rpcStats || {};
+          safeStats = (rpcStats as Record<string, number>) || {}
         }
       } catch (error) {
-        console.warn('Dashboard Stats RPC failed (using fallback):', error);
+        const { ErrorHandler } = await import("@/lib/utils/error-handler")
+        ErrorHandler.handleSilent(error, { component: "Dashboard", action: "getStatsRPC" })
         // Fallback auf einzelne Queries
-        safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo);
+        safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo)
       }
-      
+
       // Sicherstellen dass alle Stats-Werte vorhanden sind
-      if (!safeStats || typeof safeStats !== 'object') {
-        safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo);
+      if (!safeStats || typeof safeStats !== "object") {
+        safeStats = await getDashboardStatsFallback(supabase, companyId, todayStr, yesterdayStr, thirtyDaysAgo)
       }
 
       // 2. Listen-Daten und Chart-Daten parallel laden (nur wenn companyId vorhanden)
@@ -289,14 +306,14 @@ export default async function DashboardPage() {
       stats.driversTotal = safeStats.drivers_total || 0;
       stats.customersTotal = safeStats.customers_total || 0;
       stats.pendingInvoices = safeStats.pending_invoices || 0;
-      
-      recentBookings = recentBookingsRes.data || [];
-      upcomingBookings = upcomingBookingsRes.data || [];
-      customers = customersRes.data || [];
-      drivers = driversRes.data || [];
+
+      recentBookings = (recentBookingsRes.data as Array<Booking & { customer?: Customer }>) || []
+      upcomingBookings = (upcomingBookingsRes.data as Array<Booking & { customer?: Customer }>) || []
+      customers = (customersRes.data as Customer[]) || []
+      drivers = (driversRes.data as Driver[]) || []
 
       if (revenue30DaysRes.data) {
-      stats.revenue30Days = revenue30DaysRes.data.reduce((sum: number, b: { price?: number | string | null }) => sum + (Number(b.price) || 0), 0)
+      stats.revenue30Days = (revenue30DaysRes.data as Array<{ price?: number | string | null }>).reduce((sum: number, b: { price?: number | string | null }) => sum + (Number(b.price) || 0), 0)
       const revenueByDay: Record<string, number> = {}
       for (let i = 29; i >= 0; i--) {
         const date = new Date(today)
@@ -304,7 +321,7 @@ export default async function DashboardPage() {
         const dateStr = date.toISOString().split("T")[0]
         revenueByDay[dateStr] = 0
       }
-      revenue30DaysRes.data.forEach((booking: { created_at: string; price?: number | string | null }) => {
+      ;(revenue30DaysRes.data as Array<{ created_at: string; price?: number | string | null }>).forEach((booking: { created_at: string; price?: number | string | null }) => {
         const dateStr = new Date(booking.created_at).toISOString().split("T")[0]
         if (revenueByDay[dateStr] !== undefined) {
           revenueByDay[dateStr] += Number(booking.price) || 0
@@ -319,7 +336,7 @@ export default async function DashboardPage() {
 
       if (!vehiclesRes.error && vehiclesRes.data) {
         stats.vehiclesTotal = vehiclesRes.data.length
-        vehicles = vehiclesRes.data.map((v: any) => ({
+        vehicles = (vehiclesRes.data as Vehicle[]).map((v) => ({
           id: v.id,
           licensePlate: v.license_plate,
           make: v.make,
@@ -628,27 +645,34 @@ export default async function DashboardPage() {
             </div>
             <div className="divide-y divide-border flex-1">
               {recentBookings.length > 0 ? (
-                recentBookings.map((booking) => (
-                  <div key={booking.id} className="px-6 py-4 hover:bg-accent/30 transition-colors">
-                    <div className="flex items-start justify-between gap-5">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {booking.customer
-                            ? `${booking.customer.salutation || ""} ${booking.customer.first_name} ${booking.customer.last_name}`.trim()
-                            : "Unbekannter Kunde"}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {booking.pickup_address} → {booking.dropoff_address}
-                        </p>
+                recentBookings.map((booking) => {
+                  const bookingTyped = booking as Booking & { customer?: Customer }
+                  const customer = bookingTyped.customer
+                  const customerName = customer
+                    ? `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unbekannter Kunde"
+                    : "Unbekannter Kunde"
+                  const pickupAddress = String(bookingTyped.pickup_address || "")
+                  const dropoffAddress = String(bookingTyped.dropoff_address || "")
+                  return (
+                    <div key={String(bookingTyped.id)} className="px-6 py-4 hover:bg-accent/30 transition-colors">
+                      <div className="flex items-start justify-between gap-5">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {customerName}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 truncate">
+                            {pickupAddress} → {dropoffAddress}
+                          </p>
+                        </div>
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getStatusColor(bookingTyped.status || "pending")}`}
+                        >
+                          {getStatusLabel(bookingTyped.status || "pending")}
+                        </span>
                       </div>
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getStatusColor(booking.status)}`}
-                      >
-                        {getStatusLabel(booking.status)}
-                      </span>
                     </div>
-                  </div>
-                ))
+                  )
+                })
               ) : (
                 <div className="px-6 py-12 text-center">
                   <div className="w-12 h-12 rounded-full bg-muted mx-auto mb-3 flex items-center justify-center">
@@ -681,35 +705,43 @@ export default async function DashboardPage() {
             </div>
             <div className="divide-y divide-border flex-1">
               {upcomingBookings.length > 0 ? (
-                upcomingBookings.map((booking) => (
-                  <div key={booking.id} className="px-6 py-4 hover:bg-accent/30 transition-colors">
-                    <div className="flex items-start justify-between gap-5">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {booking.customer
-                            ? `${booking.customer.salutation || ""} ${booking.customer.first_name} ${booking.customer.last_name}`.trim()
-                            : "Unbekannter Kunde"}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {booking.pickup_address} → {booking.dropoff_address}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-xs font-medium text-foreground">
-                          {new Date(booking.pickup_time).toLocaleDateString("de-DE", {
-                            day: "2-digit",
-                            month: "2-digit",
-                          })}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(booking.pickup_time).toLocaleTimeString("de-DE", {
-                            hour: "2-digit",
+                upcomingBookings.map((booking) => {
+                  const bookingTyped = booking as Booking & { customer?: Customer }
+                  const customer = bookingTyped.customer
+                  const customerName = customer
+                    ? `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unbekannter Kunde"
+                    : "Unbekannter Kunde"
+                  const pickupAddress = String(bookingTyped.pickup_address || "")
+                  const dropoffAddress = String(bookingTyped.dropoff_address || "")
+                  const pickupTime = String(bookingTyped.pickup_time || "")
+                  const pickupDate = pickupTime ? new Date(pickupTime) : new Date()
+                  return (
+                    <div key={String(bookingTyped.id)} className="px-6 py-4 hover:bg-accent/30 transition-colors">
+                      <div className="flex items-start justify-between gap-5">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {customerName}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 truncate">
+                            {pickupAddress} → {dropoffAddress}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs font-medium text-foreground">
+                            {pickupDate.toLocaleDateString("de-DE", {
+                              day: "2-digit",
+                              month: "2-digit",
+                            })}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {pickupDate.toLocaleTimeString("de-DE", {
+                              hour: "2-digit",
                             minute: "2-digit",
                           })}
                         </p>
                       </div>
                     </div>
-                  </div>
+                  )
                 ))
               ) : (
                 <div className="px-6 py-12 text-center">
@@ -731,15 +763,9 @@ export default async function DashboardPage() {
       {companyId && <DashboardTourWrapper companyId={companyId} />}
     </MainLayout>
   )
-  } catch (error: any) {
-    console.error("[Dashboard] Error:", error)
-    // Detailliertes Error-Logging
-    if (error?.message) {
-      console.error("[Dashboard] Error message:", error.message)
-    }
-    if (error?.stack) {
-      console.error("[Dashboard] Error stack:", error.stack)
-    }
+  } catch (error) {
+    const { ErrorHandler } = await import("@/lib/utils/error-handler")
+    ErrorHandler.handleSilent(error, { component: "Dashboard", action: "DashboardPage" })
     // Bei Fehler: Loggen und Error-Boundary verwenden (nicht redirect, damit Error.tsx greift)
     // Error-Boundary wird den Fehler abfangen und anzeigen
     throw error

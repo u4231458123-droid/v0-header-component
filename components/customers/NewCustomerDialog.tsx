@@ -19,10 +19,11 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { AddressAutocomplete, type GeocodingResult } from "@/components/maps/AddressAutocomplete"
+import type { Customer, CustomerInsert } from "@/types/customer"
 
 interface NewCustomerDialogProps {
   companyId: string | null
-  onCustomerCreated?: (customer: any) => void
+  onCustomerCreated?: (customer: Customer) => void
 }
 
 const PlusIcon = () => (
@@ -104,34 +105,41 @@ export function NewCustomerDialog({ companyId, onCustomerCreated }: NewCustomerD
     setLoading(true)
 
     try {
+      // Form-State mit Backend-Types synchronisieren
+      const insertData: CustomerInsert = {
+        company_id: companyId,
+        salutation: (salutation as Customer["salutation"]) || null,
+        first_name: firstName.trim(),
+        last_name: lastName.trim().toUpperCase(),
+        phone: phone.trim(),
+        mobile: mobile.trim() || null,
+        email: email.trim() || null,
+        address_type: (addressType as Customer["address_type"]) || "private",
+        company_name: companyName.trim() || null,
+        address: address.trim() || null,
+        postal_code: postalCode.trim() || null,
+        city: city.trim() || null,
+        notes: notes.trim() || null,
+        status: "active",
+      }
+
       const { data, error } = await supabase
         .from("customers")
-        .insert({
-          company_id: companyId,
-          salutation: salutation || null,
-          first_name: firstName.trim(),
-          last_name: lastName.trim().toUpperCase(),
-          phone: phone.trim(),
-          mobile: mobile.trim() || null,
-          email: email.trim() || null,
-          address_type: addressType || "private",
-          company_name: companyName.trim() || null,
-          address: address.trim() || null,
-          postal_code: postalCode.trim() || null,
-          city: city.trim() || null,
-          notes: notes.trim() || null,
-          status: "active",
-        })
+        .insert(insertData)
         .select()
         .single()
 
       if (error) throw error
 
+      if (!data) {
+        throw new Error("Kunde konnte nicht erstellt werden")
+      }
+
       toast.success("Kunde erfolgreich hinzugefügt", {
         description: "Der Kunde wurde in Ihr System aufgenommen und kann nun zugewiesen werden.",
         duration: 4000,
       })
-      onCustomerCreated?.(data)
+      onCustomerCreated?.(data as Customer)
       setOpen(false)
       resetForm()
       router.refresh()

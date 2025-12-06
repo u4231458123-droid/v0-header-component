@@ -1,21 +1,21 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { FilterBar } from "@/components/design-system/FilterBar"
 import { PageHeader } from "@/components/design-system/PageHeader"
 import { StatsCard } from "@/components/design-system/StatsCard"
-import { FilterBar } from "@/components/design-system/FilterBar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { DriverDetailsDialog } from "@/components/drivers/DriverDetailsDialog"
 import { NewDriverDialog } from "@/components/drivers/NewDriverDialog"
 import { NewVehicleDialog } from "@/components/drivers/NewVehicleDialog"
-import { DriverDetailsDialog } from "@/components/drivers/DriverDetailsDialog"
 import { VehicleDetailsDialog } from "@/components/drivers/VehicleDetailsDialog"
-import { Users, Car, CheckCircle, AlertTriangle, Eye } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createClient } from "@/lib/supabase/client"
+import { AlertTriangle, Car, CheckCircle, Eye, Users } from "lucide-react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 interface DriversPageClientProps {
   initialDrivers?: any[]
@@ -282,7 +282,7 @@ export function DriversPageClient({
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-zinc-100 dark:border-zinc-800">
+                  <TableRow className="border-b border-border">
                     <TableHead className="font-medium">Name</TableHead>
                     <TableHead className="font-medium hidden md:table-cell">Telefon</TableHead>
                     <TableHead className="font-medium hidden lg:table-cell">E-Mail</TableHead>
@@ -301,7 +301,7 @@ export function DriversPageClient({
                     filteredDrivers.map((driver) => (
                       <TableRow
                         key={driver.id}
-                        className="border-b border-zinc-50 dark:border-zinc-800/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 cursor-pointer"
+                        className="border-b border-border hover:bg-muted/50 cursor-pointer"
                         onClick={() => setSelectedDriver(driver)}
                       >
                         <TableCell className="font-medium">
@@ -344,7 +344,7 @@ export function DriversPageClient({
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-zinc-100 dark:border-zinc-800">
+                  <TableRow className="border-b border-border">
                     <TableHead className="font-medium">Kennzeichen</TableHead>
                     <TableHead className="font-medium hidden md:table-cell">Marke / Modell</TableHead>
                     <TableHead className="font-medium hidden lg:table-cell">Kategorie</TableHead>
@@ -363,7 +363,7 @@ export function DriversPageClient({
                     filteredVehicles.map((vehicle) => (
                       <TableRow
                         key={vehicle.id}
-                        className="border-b border-zinc-50 dark:border-zinc-800/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 cursor-pointer"
+                        className="border-b border-border hover:bg-muted/50 cursor-pointer"
                         onClick={() => setSelectedVehicle(vehicle)}
                       >
                         <TableCell className="font-medium">{vehicle.license_plate}</TableCell>

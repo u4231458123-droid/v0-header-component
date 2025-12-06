@@ -1,0 +1,166 @@
+# ============================================================================
+# PR Size Check - Verhindert zu grosse Pull Requests
+# ============================================================================
+# Problem: CodeRabbit ueberspringt Reviews bei >100 Dateien
+# Loesung: Warne bei grossen PRs und empfehle Aufteilung
+# ============================================================================
+
+name: PR Size Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  MAX_FILES_WARNING: 50
+  MAX_FILES_ERROR: 80
+  MAX_LINES_WARNING: 1000
+  MAX_LINES_ERROR: 2000
+
+jobs:
+  check-pr-size:
+    name: Check PR Size
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get PR Stats
+        id: pr_stats
+        run: |
+          # Hole Basis-Branch
+          BASE_BRANCH="${{ github.base_ref }}"
+          
+          # Zaehle geaenderte Dateien
+          CHANGED_FILES=$(git diff --name-only origin/$BASE_BRANCH...HEAD | wc -l)
+          
+          # Zaehle hinzugefuegte/entfernte Zeilen
+          STATS=$(git diff --shortstat origin/$BASE_BRANCH...HEAD)
+          INSERTIONS=$(echo "$STATS" | grep -oP '\d+(?= insertion)' || echo "0")
+          DELETIONS=$(echo "$STATS" | grep -oP '\d+(?= deletion)' || echo "0")
+          TOTAL_LINES=$((${INSERTIONS:-0} + ${DELETIONS:-0}))
+          
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "total_lines=$TOTAL_LINES" >> $GITHUB_OUTPUT
+          echo "insertions=${INSERTIONS:-0}" >> $GITHUB_OUTPUT
+          echo "deletions=${DELETIONS:-0}" >> $GITHUB_OUTPUT
+          
+          echo "📊 PR Statistics:"
+          echo "   - Changed files: $CHANGED_FILES"
+          echo "   - Lines changed: $TOTAL_LINES (+${INSERTIONS:-0} / -${DELETIONS:-0})"
+          
+      - name: Evaluate PR Size
+        id: evaluate
+        run: |
+          CHANGED_FILES=${{ steps.pr_stats.outputs.changed_files }}
+          TOTAL_LINES=${{ steps.pr_stats.outputs.total_lines }}
+          
+          # Bestimme Status
+          STATUS="ok"
+          MESSAGE=""
+          
+          if [ "$CHANGED_FILES" -gt "$MAX_FILES_ERROR" ]; then
+            STATUS="error"
+            MESSAGE="❌ **PR zu gross!** $CHANGED_FILES Dateien geaendert (Limit: $MAX_FILES_ERROR)"
+          elif [ "$CHANGED_FILES" -gt "$MAX_FILES_WARNING" ]; then
+            STATUS="warning"
+            MESSAGE="⚠️ **PR ist gross.** $CHANGED_FILES Dateien geaendert (Empfehlung: <$MAX_FILES_WARNING)"
+          fi
+          
+          if [ "$TOTAL_LINES" -gt "$MAX_LINES_ERROR" ]; then
+            STATUS="error"
+            MESSAGE="$MESSAGE\n❌ **Zu viele Zeilen!** $TOTAL_LINES Zeilen geaendert (Limit: $MAX_LINES_ERROR)"
+          elif [ "$TOTAL_LINES" -gt "$MAX_LINES_WARNING" ]; then
+            if [ "$STATUS" != "error" ]; then
+              STATUS="warning"
+            fi
+            MESSAGE="$MESSAGE\n⚠️ **Viele Zeilen.** $TOTAL_LINES Zeilen geaendert (Empfehlung: <$MAX_LINES_WARNING)"
+          fi
+          
+          if [ "$STATUS" = "ok" ]; then
+            MESSAGE="✅ PR-Groesse ist akzeptabel ($CHANGED_FILES Dateien, $TOTAL_LINES Zeilen)"
+          fi
+          
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Comment on PR
+        if: steps.evaluate.outputs.status != 'ok'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.evaluate.outputs.status }}';
+            const message = `${{ steps.evaluate.outputs.message }}`;
+            const changedFiles = ${{ steps.pr_stats.outputs.changed_files }};
+            
+            const body = `## 📏 PR Size Check
+            
+            ${message}
+            
+            ### Empfehlungen bei grossen PRs:
+            
+            1. **Teile den PR auf** in kleinere, fokussierte Aenderungen:
+               - \`feat/*\` - Neue Features (einzeln)
+               - \`fix/*\` - Bug-Fixes (einzeln)
+               - \`docs/*\` - Dokumentation (separat)
+               - \`config/*\` - Konfiguration (separat)
+            
+            2. **CodeRabbit Limit**: PRs mit >100 Dateien werden nicht vollstaendig reviewed
+            
+            3. **Best Practice**: Maximal 50-80 Dateien pro PR fuer optimales Review
+            
+            ---
+            *Dieser Check hilft, qualitativ hochwertige Code-Reviews zu gewaehrleisten.*
+            `;
+            
+            // Finde existierenden Kommentar
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const botComment = comments.find(c => 
+              c.user.type === 'Bot' && 
+              c.body.includes('PR Size Check')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
+            
+      - name: Set Check Status
+        if: steps.evaluate.outputs.status == 'error'
+        run: |
+          echo "::error::PR ist zu gross fuer effektives Code-Review. Bitte in kleinere PRs aufteilen."
+          # Nicht blockierend - nur Warnung
+          # exit 1
+          
+      - name: Summary
+        run: |
+          echo "## PR Size Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Changed Files | ${{ steps.pr_stats.outputs.changed_files }} | $([ ${{ steps.pr_stats.outputs.changed_files }} -le $MAX_FILES_WARNING ] && echo '✅' || echo '⚠️') |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Lines | ${{ steps.pr_stats.outputs.total_lines }} | $([ ${{ steps.pr_stats.outputs.total_lines }} -le $MAX_LINES_WARNING ] && echo '✅' || echo '⚠️') |" >> $GITHUB_STEP_SUMMARY
+          echo "| Insertions | +${{ steps.pr_stats.outputs.insertions }} | |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deletions | -${{ steps.pr_stats.outputs.deletions }} | |" >> $GITHUB_STEP_SUMMARY
+

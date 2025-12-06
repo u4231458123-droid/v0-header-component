@@ -2,43 +2,41 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
+import { PageHeader } from "@/components/design-system/PageHeader"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toast } from "sonner"
-import { Badge } from "@/components/ui/badge"
-import { PageHeader } from "@/components/design-system/PageHeader"
+import { Textarea } from "@/components/ui/textarea"
+import { createClient } from "@/lib/supabase/client"
 import {
-  Building2,
-  Users,
-  CreditCard,
-  Shield,
-  Bell,
-  Palette,
-  Globe,
-  Settings,
-  AlertTriangle,
-  Save,
-  Eye,
-  ExternalLink,
-  Upload,
-  Trash2,
-  Phone,
-  MapPin,
-  FileText,
-  ImageIcon,
-  HelpCircle,
+    AlertTriangle,
+    Bell,
+    Building2,
+    CreditCard,
+    ExternalLink,
+    Eye,
+    FileText,
+    Globe,
+    ImageIcon,
+    MapPin,
+    Palette,
+    Phone,
+    Save,
+    Settings,
+    Shield,
+    Trash2,
+    Upload,
+    Users
 } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useRef, useState } from "react"
+import { toast } from "sonner"
 
 import { TeamManagement } from "./TeamManagement"
 
@@ -627,7 +625,7 @@ export function SettingsPageClient({
             <div className="flex items-start gap-5">
               <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
               <div>
-                <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   Sie haben noch kein Unternehmen registriert. Bitte schließen Sie zuerst die Registrierung ab.
                 </p>
@@ -662,7 +660,7 @@ export function SettingsPageClient({
                 <div className="flex items-start gap-5">
                   <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Sie haben noch kein Unternehmen registriert. Bitte schließen Sie zuerst die Registrierung ab.
                     </p>
@@ -977,7 +975,7 @@ export function SettingsPageClient({
                 <div className="flex items-start gap-5">
                   <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Sie müssen zuerst ein Unternehmen erstellen, um eine Landingpage zu konfigurieren.
                     </p>
@@ -1105,7 +1103,7 @@ export function SettingsPageClient({
                           Kunden können direkt über Ihre Landingpage Fahrten buchen
                         </p>
                         {tier === "starter" && (
-                          <Badge variant="outline" className="text-warning border-amber-600 mt-1">
+                          <Badge variant="outline" className="text-warning border-warning mt-1">
                             Upgrade auf Business für diese Funktion
                           </Badge>
                         )}
@@ -1281,7 +1279,7 @@ export function SettingsPageClient({
                 <div className="flex items-start gap-5">
                   <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Sie müssen zuerst ein Unternehmen erstellen, um Branding-Einstellungen zu konfigurieren.
                     </p>
@@ -1483,7 +1481,7 @@ export function SettingsPageClient({
                 <div className="flex items-start gap-5">
                   <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Sie müssen zuerst ein Unternehmen erstellen, um Abrechnungsinformationen zu verwalten.
                     </p>
@@ -1609,7 +1607,7 @@ export function SettingsPageClient({
                 <div className="flex items-start gap-5">
                   <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Sie müssen zuerst ein Unternehmen erstellen, um Benachrichtigungen zu konfigurieren.
                     </p>
@@ -1663,7 +1661,7 @@ export function SettingsPageClient({
                 <div className="flex items-start gap-5">
                   <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-amber-700 dark:text-amber-400">Kein Unternehmen gefunden</h3>
+                    <h3 className="font-semibold text-warning">Kein Unternehmen gefunden</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Sie müssen zuerst ein Unternehmen erstellen, um Team-Mitglieder zu verwalten.
                     </p>

@@ -13,19 +13,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { AddressAutocomplete, type GeocodingResult } from "@/components/maps/AddressAutocomplete"
-
-interface Customer {
-  id: string
-  first_name: string
-  last_name: string
-  email?: string
-  phone: string
-  address?: string
-  city?: string
-  postal_code?: string
-  notes?: string
-  status: string
-}
+import type { Customer, CustomerUpdate } from "@/types/customer"
 
 interface EditCustomerDialogProps {
   customer: Customer
@@ -36,18 +24,23 @@ interface EditCustomerDialogProps {
 
 export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: EditCustomerDialogProps) {
   const [loading, setLoading] = useState(false)
-  const [status, setStatus] = useState(customer.status)
+  const [status, setStatus] = useState<Customer["status"]>(customer.status || "active")
   const [address, setAddress] = useState(customer.address || "")
   const [city, setCity] = useState(customer.city || "")
   const [postalCode, setPostalCode] = useState(customer.postal_code || "")
+  const [mobile, setMobile] = useState(customer.mobile || "")
+  const [salutation, setSalutation] = useState<Customer["salutation"]>(customer.salutation || null)
   const router = useRouter()
   const supabase = createClient()
 
+  // Synchronisiere Form-State mit Backend-Types wenn Customer-Prop sich ändert
   useEffect(() => {
-    setStatus(customer.status)
+    setStatus(customer.status || "active")
     setAddress(customer.address || "")
     setCity(customer.city || "")
     setPostalCode(customer.postal_code || "")
+    setMobile(customer.mobile || "")
+    setSalutation(customer.salutation || null)
   }, [customer])
 
   const handleAddressSelect = (result: GeocodingResult) => {
@@ -67,19 +60,25 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
     const formData = new FormData(e.currentTarget)
 
     try {
+      // Form-State mit Backend-Types synchronisieren
+      const updateData: CustomerUpdate = {
+        first_name: formData.get("first_name") as string,
+        last_name: formData.get("last_name") as string,
+        email: formData.get("email") as string || null,
+        phone: formData.get("phone") as string,
+        address: address || null,
+        city: city || null,
+        postal_code: postalCode || null,
+        notes: formData.get("notes") as string || null,
+        status: status || "active",
+        mobile: mobile || null,
+        salutation: salutation || null,
+        updated_at: new Date().toISOString(),
+      }
+
       const { error } = await supabase
         .from("customers")
-        .update({
-          first_name: formData.get("first_name") as string,
-          last_name: formData.get("last_name") as string,
-          email: formData.get("email") as string,
-          phone: formData.get("phone") as string,
-          address: address,
-          city: city,
-          postal_code: postalCode,
-          notes: formData.get("notes") as string,
-          status: status,
-        })
+        .update(updateData)
         .eq("id", customer.id)
 
       if (error) {
@@ -87,7 +86,7 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
         throw error
       }
 
-      // Lade aktualisierten Kunden
+      // Lade aktualisierten Kunden mit vollständigen Daten
       const { data: updatedCustomer, error: fetchError } = await supabase
         .from("customers")
         .select("*")
@@ -96,6 +95,11 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
 
       if (fetchError) {
         console.error("[EditCustomerDialog] Fetch error:", fetchError)
+        throw fetchError
+      }
+
+      if (!updatedCustomer) {
+        throw new Error("Aktualisierter Kunde konnte nicht geladen werden")
       }
 
       toast.success("Kunde erfolgreich aktualisiert", {
@@ -103,9 +107,9 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
         duration: 4000,
       })
       
-      // Callback aufrufen wenn vorhanden
-      if (onSuccess && updatedCustomer) {
-        onSuccess(updatedCustomer)
+      // Callback aufrufen mit typisiertem Customer
+      if (onSuccess) {
+        onSuccess(updatedCustomer as Customer)
       }
       
       onOpenChange(false)
@@ -153,6 +157,19 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
                 <Input id="last_name" name="last_name" defaultValue={customer.last_name} required />
               </div>
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="salutation">Anrede</Label>
+              <Select value={salutation || ""} onValueChange={(value) => setSalutation(value as Customer["salutation"])}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Anrede wählen" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Herr">Herr</SelectItem>
+                  <SelectItem value="Frau">Frau</SelectItem>
+                  <SelectItem value="Divers">Divers</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-2 gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="email">E-Mail</Label>
@@ -162,6 +179,17 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
                 <Label htmlFor="phone">Telefon</Label>
                 <Input id="phone" name="phone" type="tel" defaultValue={customer.phone} required />
               </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="mobile">Mobil</Label>
+              <Input 
+                id="mobile" 
+                name="mobile" 
+                type="tel" 
+                value={mobile} 
+                onChange={(e) => setMobile(e.target.value)} 
+                placeholder="Mobiltelefonnummer"
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="address">Adresse</Label>

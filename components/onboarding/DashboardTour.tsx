@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { X, ArrowRight, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react"
-import { toast } from "sonner"
+import { toastSuccess } from "@/lib/utils/toast"
+import { AnimatePresence, motion } from "framer-motion"
+import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface TourStep {
   id: string
@@ -137,9 +137,8 @@ export function DashboardTour({ onComplete, onSkip }: DashboardTourProps) {
 
   const handleComplete = () => {
     // Success celebration! 🎉
-    toast.success("🎉 Tour abgeschlossen!", {
+    toastSuccess("🎉 Tour abgeschlossen!", {
       description: "Sie kennen jetzt die wichtigsten Funktionen von MyDispatch.",
-      duration: 4000,
     })
 
     localStorage.setItem("mydispatch_tour_completed", "true")

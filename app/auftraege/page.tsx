@@ -1,9 +1,15 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { MainLayout } from "@/components/layout/MainLayout"
-import { BookingsPageClient } from "@/components/bookings/BookingsPageClient"
+import { createClient } from "@/lib/supabase/server"
+import dynamicImport from "next/dynamic"
+import { redirect } from "next/navigation"
 
-export const dynamic = "force-dynamic"
+// Lazy Loading für große Komponente
+const BookingsPageClient = dynamicImport(() => import("@/components/bookings/BookingsPageClient"), {
+  loading: () => <div className="h-screen bg-background flex items-center justify-center"><div className="animate-pulse text-muted-foreground">Lade Buchungen...</div></div>,
+  ssr: false,
+})
+
+export const dynamic = "force-dynamic" as const
 
 export default async function BookingsPage() {
   const supabase = await createClient()
@@ -22,10 +28,10 @@ export default async function BookingsPage() {
 
   const { data: profile } = await supabase.from("profiles").select("company_id").eq("id", user.id).single()
 
-  let bookings: any[] = []
-  let drivers: any[] = []
-  let vehicles: any[] = []
-  let customers: any[] = []
+  let bookings: Array<Record<string, unknown>> = []
+  let drivers: Array<Record<string, unknown>> = []
+  let vehicles: Array<Record<string, unknown>> = []
+  let customers: Array<Record<string, unknown>> = []
 
   if (profile?.company_id) {
     const [bookingsRes, driversRes, vehiclesRes, customersRes] = await Promise.all([

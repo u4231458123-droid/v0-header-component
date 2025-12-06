@@ -77,7 +77,7 @@ xl: 1280px
 
 \`\`\`jsx
 // Primary
-<Button className="bg-primary text-white hover:bg-primary/90">
+<Button className="bg-primary text-primary-foreground hover:bg-primary/90">
   Primary
 </Button>
 

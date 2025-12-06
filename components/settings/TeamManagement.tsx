@@ -1,58 +1,57 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { createBrowserClient } from "@supabase/ssr"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Users,
-  UserPlus,
-  Mail,
-  MoreVertical,
-  Shield,
-  Clock,
-  Activity,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  Send,
-  Trash2,
-  Edit,
-  FileText,
-  Car,
-  Calendar,
-  CreditCard,
-  Settings,
-  User,
-  Upload,
-  Download,
-  X,
-} from "lucide-react"
-import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createBrowserClient } from "@supabase/ssr"
 import { formatDistanceToNow } from "date-fns"
 import { de } from "date-fns/locale"
+import {
+    Activity,
+    Calendar,
+    Car,
+    CheckCircle,
+    Clock,
+    CreditCard,
+    Download,
+    Edit,
+    FileText,
+    Loader2,
+    Mail,
+    MoreVertical,
+    Send,
+    Settings,
+    Shield,
+    Trash2,
+    User,
+    UserPlus,
+    Users,
+    X,
+    XCircle
+} from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { EmployeeDetailsDialog } from "./EmployeeDetailsDialog"
 import { NewEmployeeDialog } from "./NewEmployeeDialog"
 
@@ -726,7 +725,7 @@ export function TeamManagement({
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="outline">{getRoleLabel(invitation.role)}</Badge>
-                    <Badge variant="secondary" className="text-warning border-amber-600">
+                    <Badge variant="secondary" className="text-warning border-warning">
                       Ausstehend
                     </Badge>
                     {isAdmin && (

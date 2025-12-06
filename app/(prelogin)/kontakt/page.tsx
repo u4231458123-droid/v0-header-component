@@ -1,15 +1,15 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
-import { PreLoginHeader } from "@/components/layout/PreLoginHeader"
 import { PreLoginFooter } from "@/components/layout/PreLoginFooter"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { PreLoginHeader } from "@/components/layout/PreLoginHeader"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Mail, Phone, MapPin, Clock, CheckCircle, MessageSquare, Users, Headphones, Globe, Send } from "lucide-react"
+import { CheckCircle, Clock, Globe, Headphones, Mail, MapPin, MessageSquare, Phone, Send, Users } from "lucide-react"
+import type React from "react"
+import { useState } from "react"
 
 export default function KontaktPage() {
   const [formData, setFormData] = useState({
@@ -214,7 +214,7 @@ export default function KontaktPage() {
                           id="name"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className={`rounded-xl ${errors.name ? "border-red-500" : ""}`}
+                          className={`rounded-xl ${errors.name ? "border-destructive" : ""}`}
                           placeholder="Ihr vollständiger Name"
                         />
                         {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
@@ -227,7 +227,7 @@ export default function KontaktPage() {
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className={`rounded-xl ${errors.email ? "border-red-500" : ""}`}
+                          className={`rounded-xl ${errors.email ? "border-destructive" : ""}`}
                           placeholder="ihre@email.de"
                         />
                         {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
@@ -267,7 +267,7 @@ export default function KontaktPage() {
                         id="subject"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        className={`rounded-xl ${errors.subject ? "border-red-500" : ""}`}
+                        className={`rounded-xl ${errors.subject ? "border-destructive" : ""}`}
                         placeholder="Wie können wir helfen?"
                       />
                       {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
@@ -280,7 +280,7 @@ export default function KontaktPage() {
                         rows={5}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className={`rounded-xl ${errors.message ? "border-red-500" : ""}`}
+                        className={`rounded-xl ${errors.message ? "border-destructive" : ""}`}
                         placeholder="Ihre Nachricht... (mindestens 10 Zeichen)"
                       />
                       {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}

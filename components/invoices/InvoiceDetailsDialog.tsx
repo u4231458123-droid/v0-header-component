@@ -11,20 +11,22 @@ import { safeNumber } from "@/lib/utils/safe-number"
 import { CalendarIcon, UserIcon, CreditCardIcon, Printer, PencilIcon } from "lucide-react"
 import { downloadPDF } from "@/lib/pdf/pdf-generator"
 import { createClient } from "@/lib/supabase/client"
+import { ErrorHandler } from "@/lib/utils/error-handler"
 import { EditInvoiceDialog } from "./EditInvoiceDialog"
+import type { Invoice, Profile } from "@/types/entities"
 
 interface InvoiceDetailsDialogProps {
-  invoice: any
+  invoice: Invoice
   open: boolean
   onOpenChange: (open: boolean) => void
-  onUpdate?: (updatedInvoice: any) => void
+  onUpdate?: (updatedInvoice: Invoice) => void
 }
 
 export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: InvoiceDetailsDialogProps) {
   const [currentInvoice, setCurrentInvoice] = useState(invoice)
   const [printing, setPrinting] = useState(false)
-  const [createdByProfile, setCreatedByProfile] = useState<any>(null)
-  const [updatedByProfile, setUpdatedByProfile] = useState<any>(null)
+  const [createdByProfile, setCreatedByProfile] = useState<Profile | null>(null)
+  const [updatedByProfile, setUpdatedByProfile] = useState<Profile | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const supabase = createClient()
 
@@ -101,8 +103,8 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
       })
 
       setPrinting(false)
-    } catch (error: any) {
-      console.error("Fehler beim PDF-Druck:", error)
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "InvoiceDetailsDialog", action: "printPDF" }, "Fehler beim PDF-Druck")
       setPrinting(false)
     }
   }
@@ -239,20 +241,21 @@ export function InvoiceDetailsDialog({ invoice, open, onOpenChange, onUpdate }: 
           )}
         </div>
 
-        <DialogFooter className="flex items-center justify-between">
-          <Button variant="outline" onClick={handlePrintPDF} disabled={printing}>
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2">
+          <Button variant="outline" onClick={handlePrintPDF} disabled={printing} className="w-full sm:w-auto">
             <Printer className="h-4 w-4 mr-2" />
             {printing ? "Wird erstellt..." : "PDF drucken"}
           </Button>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => setEditDialogOpen(true)}
+              className="flex-1 sm:flex-initial"
             >
               <PencilIcon className="h-4 w-4 mr-2" />
               Bearbeiten
             </Button>
-            <Button onClick={() => onOpenChange(false)}>Schließen</Button>
+            <Button onClick={() => onOpenChange(false)} className="flex-1 sm:flex-initial">Schließen</Button>
           </div>
         </DialogFooter>
       </DialogContent>

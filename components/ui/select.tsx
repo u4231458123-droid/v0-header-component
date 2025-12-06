@@ -9,6 +9,8 @@ interface SelectContextValue {
   open: boolean
   setOpen: (open: boolean) => void
   disabled?: boolean
+  labelMap?: Map<string, string>
+  registerLabel?: (value: string, label: string) => void
 }
 
 const SelectContext = React.createContext<SelectContextValue | null>(null)
@@ -46,6 +48,7 @@ function Select({
 }: SelectProps) {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
   const [internalOpen, setInternalOpen] = React.useState(false)
+  const labelMapRef = React.useRef<Map<string, string>>(new Map())
 
   const value = controlledValue ?? internalValue
   const open = controlledOpen ?? internalOpen
@@ -60,8 +63,22 @@ function Select({
     onOpenChange?.(newOpen)
   }
 
+  const registerLabel = React.useCallback((value: string, label: string) => {
+    labelMapRef.current.set(value, label)
+  }, [])
+
   return (
-    <SelectContext.Provider value={{ value, onValueChange: handleValueChange, open, setOpen: handleOpenChange, disabled }}>
+    <SelectContext.Provider
+      value={{
+        value,
+        onValueChange: handleValueChange,
+        open,
+        setOpen: handleOpenChange,
+        disabled,
+        labelMap: labelMapRef.current,
+        registerLabel,
+      }}
+    >
       <div className="relative inline-block w-full">
         {name && <input type="hidden" name={name} value={value} required={required} />}
         {children}
@@ -80,10 +97,21 @@ function SelectGroup({ children, ...props }: React.HTMLAttributes<HTMLDivElement
 
 interface SelectValueProps {
   placeholder?: string
+  children?: React.ReactNode
 }
 
-function SelectValue({ placeholder }: SelectValueProps) {
-  const { value } = useSelect()
+function SelectValue({ placeholder, children }: SelectValueProps) {
+  const { value, labelMap } = useSelect()
+  // Wenn children vorhanden sind, verwende diese (für Labels)
+  if (children) {
+    return <span className="block truncate">{children}</span>
+  }
+  // Wenn ein Label für den Wert existiert, zeige das Label
+  if (value && labelMap?.has(value)) {
+    const label = labelMap.get(value)
+    return <span className="block truncate">{label || value || placeholder}</span>
+  }
+  // Sonst zeige Wert oder Placeholder
   return <span className="block truncate">{value || placeholder}</span>
 }
 
@@ -133,6 +161,7 @@ function SelectContent({
       document.addEventListener("mousedown", handleClickOutside)
       return () => document.removeEventListener("mousedown", handleClickOutside)
     }
+    return undefined
   }, [open, setOpen])
 
   if (!open) return null
@@ -163,8 +192,23 @@ function SelectItem({
   disabled,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { value: string; disabled?: boolean }) {
-  const { value: selectedValue, onValueChange, setOpen } = useSelect()
+  const { value: selectedValue, onValueChange, setOpen, registerLabel } = useSelect()
   const isSelected = value === selectedValue
+
+  // Registriere das Label für diesen Wert
+  React.useEffect(() => {
+    if (registerLabel && children && typeof children === "string") {
+      registerLabel(value, children)
+    } else if (registerLabel && children && React.isValidElement(children)) {
+      // Versuche Text aus React-Element zu extrahieren
+      const textContent = React.Children.toArray(children)
+        .map((child) => (typeof child === "string" ? child : ""))
+        .join("")
+      if (textContent) {
+        registerLabel(value, textContent)
+      }
+    }
+  }, [value, children, registerLabel])
 
   return (
     <div

@@ -1,33 +1,33 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { toast } from "sonner"
-import { format, differenceInDays } from "date-fns"
-import { de } from "date-fns/locale"
-import Link from "next/link"
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  CreditCard,
-  Calendar,
-  Shield,
-  AlertTriangle,
-  Home,
-  FileText,
-  LogOut,
-  Car,
-  Clock,
-  Star,
-} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
 import { safeNumber } from "@/lib/utils/safe-number"
+import { toastError, toastSuccess } from "@/lib/utils/toast"
+import { differenceInDays, format } from "date-fns"
+import { de } from "date-fns/locale"
+import {
+    AlertTriangle,
+    ArrowLeft,
+    Calendar,
+    Car,
+    Clock,
+    CreditCard,
+    FileText,
+    Home,
+    LogOut,
+    Mail,
+    MapPin,
+    Phone,
+    Shield,
+    Star,
+} from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 interface Driver {
   id: string
@@ -66,6 +66,7 @@ interface Driver {
   license_classes?: string[]
   companies?: {
     name: string
+    company_slug?: string
   }
 }
 
@@ -105,15 +106,12 @@ export default function FahrerProfilPage() {
 
       const { data: driverData, error: driverError } = await supabase
         .from("drivers")
-        .select("*, companies(name)")
+        .select("*, companies(name, company_slug)")
         .eq("user_id", user.id)
         .single()
 
       if (driverError || !driverData) {
-        toast.error("Fahrerprofil nicht gefunden", {
-          description: "Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.",
-          duration: 5000,
-        })
+        toastError("Fahrerprofil nicht gefunden")
         return
       }
 
@@ -142,10 +140,7 @@ export default function FahrerProfilPage() {
       })
     } catch (error) {
       console.error("Error loading driver profile:", error)
-      toast.error("Fehler beim Laden des Profils", {
-        description: "Bitte versuchen Sie es erneut oder laden Sie die Seite neu.",
-        duration: 5000,
-      })
+      toastError("Fehler beim Laden des Profils")
     } finally {
       setLoading(false)
     }
@@ -169,25 +164,31 @@ export default function FahrerProfilPage() {
 
       setDriver({ ...driver, phone: formData.phone, email: formData.email })
       setEditMode(false)
-      toast.success("Kontaktdaten aktualisiert", {
+      toastSuccess("Kontaktdaten aktualisiert", {
         description: "Ihre Kontaktdaten wurden erfolgreich gespeichert.",
-        duration: 4000,
       })
     } catch (error) {
       console.error("Error updating profile:", error)
-      toast.error("Fehler beim Speichern", {
-        description: "Bitte überprüfen Sie die Eingaben und versuchen Sie es erneut.",
-        duration: 5000,
-      })
+      toastError("Fehler beim Speichern")
     } finally {
       setSaving(false)
     }
   }
 
   const handleLogout = async () => {
+    // Company-Slug VOR dem Logout aus dem driver-State ermitteln
+    const companySlug = driver?.companies?.company_slug
+
     const supabase = createClient()
     await supabase.auth.signOut()
-    window.location.href = "/auth/login"
+
+    // Redirect zur Landingpage des Unternehmens, falls verfügbar
+    if (companySlug) {
+      window.location.href = `/c/${companySlug}`
+      return
+    }
+    // Fallback: Zur MyDispatch Landingpage
+    window.location.href = "/"
   }
 
   const getDaysUntilExpiry = (date: string | null) => {
@@ -328,7 +329,7 @@ export default function FahrerProfilPage() {
                   <Badge
                     className={
                       driver.status === "available" || driver.status === "active"
-                        ? "bg-success text-primary-foreground"
+                        ? "bg-success text-success-foreground"
                         : "bg-muted text-muted-foreground"
                     }
                   >

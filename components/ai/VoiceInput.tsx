@@ -91,7 +91,7 @@ export function VoiceInput({ onTranscript, placeholder = "Tippen oder Sprechen..
         value={text}
         onChange={handleTextChange}
         placeholder={placeholder}
-        className="w-full px-4 py-3 pr-14 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full px-4 py-3 pr-14 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
         disabled={isRecording || isProcessing}
       />
 
@@ -103,7 +103,7 @@ export function VoiceInput({ onTranscript, placeholder = "Tippen oder Sprechen..
           isRecording
             ? "bg-destructive text-destructive-foreground animate-pulse"
             : isProcessing
-              ? "bg-gray-300 text-muted-foreground"
+              ? "bg-muted text-muted-foreground"
               : "bg-muted text-foreground hover:bg-border"
         }`}
       >

@@ -14,7 +14,12 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "next start",
+    "type-check": "tsc --noEmit",
+    "test:unit": "echo 'No unit test framework configured - skipping' && exit 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "validate:layout": "node scripts/validate-layout.js",
     "validate:mobile": "node scripts/validate-mobile.js",
     "validate:api": "node scripts/validate-api.js",
@@ -45,6 +50,8 @@
     "test:bots": "node scripts/cicd/test-all-bots.mjs",
     "monitor:bots": "node scripts/cicd/monitor-bots.mjs",
     "fix:design": "node scripts/cicd/fix-design-violations.mjs",
+    "self-heal:comprehensive": "node scripts/cicd/self-heal-comprehensive.mjs",
+    "self-heal:comprehensive:dry": "node scripts/cicd/self-heal-comprehensive.mjs --dry-run",
     "optimize:performance": "node scripts/cicd/optimize-performance.mjs",
     "optimize:all": "node scripts/cicd/fix-design-violations.mjs && node scripts/cicd/optimize-performance.mjs",
     "test:e2e": "playwright test",
@@ -52,8 +59,6 @@
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "2.0.50",
-    "@ai-sdk/openai": "^2.0.74",
     "@ai-sdk/react": "latest",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "latest",
@@ -87,6 +92,8 @@
     "@stripe/stripe-js": "latest",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@trigger.dev/sdk": "^3.0.0",
+    "@trigger.dev/nextjs": "^3.0.0",
     "@vercel/analytics": "1.5.0",
     "ai": "latest",
     "autoprefixer": "^10.4.22",
@@ -125,10 +132,28 @@
     "@types/node": "^22",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "eslint": "^9.28.0",
+    "eslint-config-next": "^16.0.0",
     "glob": "^13.0.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^16.1.0",
     "postcss": "^8.5",
+    "prettier": "^3.4.2",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.4.0",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   }
 }

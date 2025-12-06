@@ -22,7 +22,7 @@ jobs:
     name: AI Bug Analysis & Auto-Fix
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -43,10 +43,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Pre-Flight Dependency Validation
+        run: pnpm exec node scripts/cicd/validate-dependencies.mjs
+        continue-on-error: true
+
       - name: Prepare Bots & Knowledge Base
         run: |
           echo "Preparing AI-Bots and Knowledge Base..."
-          pnpm exec node scripts/cicd/prepare-bots.js || true
+          pnpm exec node scripts/cicd/prepare-bots.js
         env:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
@@ -55,7 +59,7 @@ jobs:
       - name: Validate Complete System
         run: |
           echo "Validating complete system..."
-          pnpm cicd:validate-system || true
+          pnpm cicd:validate-system
 
       - name: AI Bug Analysis (System-Bot)
         run: |
@@ -70,38 +74,42 @@ jobs:
       - name: Pattern-based Fixes (with Quality-Bot)
         run: |
           echo "Applying pattern-based fixes with Quality-Bot validation..."
-          pnpm exec node scripts/fix-patterns.js || true
+          pnpm exec node scripts/fix-patterns.js
         env:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        continue-on-error: true
 
       - name: Quality-Bot Verification
         run: |
           echo "Running Quality-Bot verification..."
-          pnpm exec node scripts/cicd/run-quality-bot.js || true
+          pnpm exec node scripts/cicd/run-quality-bot.js
         env:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        continue-on-error: true
 
       - name: Prompt Optimization (Continuous)
         run: |
           echo "Running continuous prompt optimization..."
-          pnpm exec node scripts/cicd/run-prompt-optimization-bot.js || true
+          pnpm exec node scripts/cicd/run-prompt-optimization-bot.js
         env:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        continue-on-error: true
 
       - name: Bot Monitoring & Health Checks
         run: |
           echo "Running bot monitoring and health checks..."
-          pnpm monitor:bots || true
+          pnpm monitor:bots
         env:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        continue-on-error: true
 
       - name: TypeScript Error Detection
         run: |
@@ -118,7 +126,7 @@ jobs:
         run: |
           echo "Running AI-powered TypeScript auto-fix..."
           if [ -s ts-errors.log ]; then
-            pnpm exec node scripts/cicd/auto-fix-typescript.js || true
+            pnpm exec node scripts/cicd/auto-fix-typescript.js
           else
             echo "No TypeScript errors to fix"
           fi
@@ -126,11 +134,13 @@ jobs:
           HUGGINGFACE_API_KEY: ${{ env.HUGGINGFACE_API_KEY }}
           GEMINI_API_KEY: ${{ env.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+        continue-on-error: true
 
       - name: ESLint Auto-Fix
         run: |
           echo "Running ESLint auto-fix..."
-          pnpm exec eslint . --fix || true
+          pnpm exec eslint . --fix
+        continue-on-error: true
 
       - name: Commit and Push (if changes)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

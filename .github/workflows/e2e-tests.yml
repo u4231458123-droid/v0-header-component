@@ -16,12 +16,12 @@ jobs:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -52,7 +52,21 @@ jobs:
       - name: Start application
         run: |
           pnpm start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
           sleep 10
+          # Health check
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "✅ Server is ready"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Server failed to start"
+              exit 1
+            fi
+            sleep 1
+          done
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}
@@ -63,6 +77,16 @@ jobs:
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
           E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL || 'test@example.com' }}
           E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD || 'TestPassword123!' }}
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID 2>/dev/null || true
+          fi
+          # Fallback: kill any process on port 3000
+          pkill -f "next start" || true
+          lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 
       - name: Upload test results
         if: always()

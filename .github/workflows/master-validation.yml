@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: github.event_name != 'schedule' || github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -48,6 +48,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Pre-Flight Dependency Validation
+        run: pnpm exec node scripts/cicd/validate-dependencies.mjs
+        continue-on-error: true
+
       - name: TypeScript Check (Strict)
         run: pnpm exec tsc --noEmit --strict --pretty false
         continue-on-error: false
@@ -66,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: code-quality
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -97,14 +101,20 @@ jobs:
       - name: Prepare Bots & Knowledge Base
         run: |
           echo "Preparing AI-Bots and Knowledge Base..."
-          pnpm exec node scripts/cicd/prepare-bots.js || true
+          pnpm exec node scripts/cicd/prepare-bots.js || {
+            echo "❌ Prepare Bots fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
         env:
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
 
       - name: Validate Complete System
         run: |
           echo "Validating complete system..."
-          pnpm cicd:validate-system || true
+          pnpm cicd:validate-system || {
+            echo "❌ System-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
 
       - name: Design System Validation (Strict)
         run: |
@@ -116,14 +126,17 @@ jobs:
         run: |
           echo "Checking mobile responsiveness..."
           # Add mobile validation script here
-          pnpm exec node scripts/validate-mobile.js || true
+          pnpm exec node scripts/validate-mobile.js || {
+            echo "❌ Mobile-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
 
   frontend-validation:
     name: Frontend Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: code-quality
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -157,22 +170,35 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}
 
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: build-artifacts
+          path: .next
+          retention-days: 7
+
       - name: Accessibility Check
         run: |
           echo "Running accessibility checks..."
-          pnpm exec node scripts/validate-accessibility.js || true
+          pnpm exec node scripts/validate-accessibility.js || {
+            echo "❌ Accessibility-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
 
       - name: Performance Check
         run: |
           echo "Running performance checks..."
-          pnpm exec node scripts/validate-performance.js || true
+          pnpm exec node scripts/validate-performance.js || {
+            echo "❌ Performance-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
 
   backend-api-validation:
     name: Backend & API Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: code-quality
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -204,13 +230,19 @@ jobs:
         run: |
           echo "Validating API endpoints..."
           # Add API validation script here
-          pnpm exec node scripts/validate-api.js || true
+          pnpm exec node scripts/validate-api.js || {
+            echo "❌ API-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
 
       - name: API Security Check
         run: |
           echo "Checking API security..."
           # Add security validation script here
-          pnpm exec node scripts/validate-security.js || true
+          pnpm exec node scripts/validate-security.js || {
+            echo "❌ Security-Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
 
   # Phase 3: Integration & Final (optimiert)
   integration-tests:
@@ -218,7 +250,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [layout-design, frontend-validation, backend-api-validation]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -262,7 +294,10 @@ jobs:
       - name: Final Validation (with AI-Bots - NUR Hugging Face)
         run: |
           echo "Running final validation checks with AI-Bots..."
-          pnpm exec node scripts/validate-final.js || true
+          pnpm exec node scripts/validate-final.js || {
+            echo "❌ Finale Validierung fehlgeschlagen - Workflow abgebrochen"
+            exit 1
+          }
         env:
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY || '' }}
 
@@ -280,7 +315,7 @@ jobs:
     timeout-minutes: 15
     needs: integration-tests
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -310,7 +345,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID || '' }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Post-Deployment Health Checks
         run: |

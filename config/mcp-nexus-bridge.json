@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "nexus-bridge": {
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-server/dist/index.js"],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "read_resource",
+        "validate_compliance",
+        "validate_slug",
+        "get_project_health"
+      ]
+    }
+  },
+  "_comment": "Kopiere diesen Inhalt in deine IDE MCP-Einstellungen oder .cursor/mcp.json"
+}
+

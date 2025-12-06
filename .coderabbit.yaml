@@ -1,0 +1,116 @@
+# ============================================================================
+# CodeRabbit Konfiguration - Optimiert für große PRs
+# ============================================================================
+# Problem: Mehr als 100 Dateien werden übersprungen
+# Lösung: Erweiterte path_filters um nicht-kritische Dateien auszuschließen
+# ============================================================================
+
+language: "de"
+
+# Reviews-Einstellungen
+reviews:
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_when_outdated: true
+  request_changes_workflow: true
+  
+  # Review-Fokus-Themen
+  themes:
+    - "security"
+    - "performance"
+    - "accessibility"
+    - "best_practices"
+    - "typescript"
+    - "error_handling"
+  
+  # Aktivierte Tools
+  tools:
+    - name: "typescript"
+      enabled: true
+    - name: "eslint"
+      enabled: true
+    - name: "sonarqube"
+      enabled: false
+
+# Path Filters - Globale Exclusions
+# WICHTIG: Diese Filter gelten für alle Reviews
+path_filters:
+  # Tests ausschließen
+  - "!**/*.test.ts"
+  - "!**/*.spec.ts"
+  - "!**/*.test.tsx"
+  - "!**/*.spec.tsx"
+  
+  # Dependencies und Build-Output
+  - "!**/node_modules/**"
+  - "!**/.next/**"
+  - "!**/dist/**"
+  - "!**/build/**"
+  
+  # Lock files
+  - "!**/pnpm-lock.yaml"
+  - "!**/package-lock.json"
+  - "!**/yarn.lock"
+  
+  # Dokumentation (separates Review empfohlen)
+  - "!**/docs/**"
+  - "!**/wiki/**"
+  - "!**/.swimm/**"
+  
+  # IDE und Konfiguration
+  - "!**/.cursor/**"
+  - "!**/.vscode/**"
+  - "!**/.roo/**"
+  - "!**/.prompts/**"
+  - "!**/.husky/**"
+  
+  # Assets
+  - "!**/assets/**"
+  - "!**/public/**"
+  - "!**/*.png"
+  - "!**/*.jpg"
+  - "!**/*.svg"
+  - "!**/*.ico"
+  
+  # MCP-Server (separates Review)
+  - "!**/mcp-server/**"
+  
+  # Generated Files
+  - "!**/*.min.js"
+  - "!**/*.min.css"
+  - "!**/coverage/**"
+  - "!**/.tsbuildinfo"
+
+# Chat-Konfiguration
+chat:
+  auto_review:
+    enabled: true
+    base_branch: "main"
+  auto_description:
+    enabled: true
+
+# Auto-Review-Einstellungen
+auto_review:
+  enabled: true
+  base_branch: "main"
+  drafts: false
+
+# Label-Zuordnung für kategorisierte Reviews
+labels:
+  - label: "frontend"
+    files:
+      - "app/**/*.tsx"
+      - "components/**/*.tsx"
+  - label: "backend"
+    files:
+      - "app/api/**/*.ts"
+      - "lib/**/*.ts"
+  - label: "config"
+    files:
+      - "*.config.*"
+      - ".github/**/*.yml"
+  - label: "ai-bots"
+    files:
+      - "lib/ai/**/*.ts"
+      - "trigger/**/*.ts"

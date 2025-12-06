@@ -460,7 +460,7 @@ export default function PreisePage() {
                       className="block"
                     >
                       <Button
-                        className={`w-full rounded-xl ${plan.popular ? "" : "variant-outline"}`}
+                        className="w-full rounded-xl"
                         variant={plan.popular ? "default" : "outline"}
                       >
                         {plan.cta}

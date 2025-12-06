@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
 import { FleetMap } from "@/components/maps/FleetMap"
 import { WeatherWidget } from "@/components/maps/WeatherWidget"
 import { createBrowserClient } from "@/lib/supabase/client"
-import { MapPin, Car, RefreshCw, AlertTriangle, Navigation, X } from "lucide-react"
 import { safeNumber } from "@/lib/utils/safe-number"
+import { AlertTriangle, Car, MapPin, Navigation, RefreshCw, X } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface VehicleLocation {
   id: string
@@ -471,3 +471,6 @@ export function DashboardMapWidget({ companyId, initialVehicles = [] }: Dashboar
     </div>
   )
 }
+
+// Default export für dynamische Imports
+export default DashboardMapWidget

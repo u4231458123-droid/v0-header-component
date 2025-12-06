@@ -1,0 +1,97 @@
+# Git Attributes für MyDispatch
+# =============================
+# Optimiert Git-Verhalten für verschiedene Dateitypen
+
+# Text-Dateien (normalisieren Line-Endings)
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.txt text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.sql text eol=lf
+*.sh text eol=lf
+
+# Binär-Dateien
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+
+# Git-Konfiguration
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.gitconfig text eol=lf
+
+# Package Manager
+package-lock.json text eol=lf
+pnpm-lock.yaml text eol=lf
+yarn.lock text eol=lf
+
+# Next.js
+.next/** -text
+out/** -text
+dist/** -text
+build/** -text
+
+# Node
+node_modules/** -text
+
+# IDE
+.vscode/** text eol=lf
+.idea/** -text
+*.swp -text
+*.swo -text
+*~ -text
+
+# OS
+.DS_Store -text
+Thumbs.db -text
+
+# Diff-Verhalten
+*.ts diff=typescript
+*.tsx diff=typescript
+*.js diff=javascript
+*.jsx diff=javascript
+*.json diff=json
+*.md diff=markdown
+*.yml diff=yaml
+*.yaml diff=yaml
+*.css diff=css
+*.sql diff=sql
+
+# Merge-Strategien
+*.ts merge=union
+*.tsx merge=union
+*.js merge=union
+*.jsx merge=union
+*.json merge=union
+*.yml merge=union
+*.yaml merge=union
+
+# Linguist (Sprach-Erkennung)
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.js linguist-language=JavaScript
+*.jsx linguist-language=JavaScript
+
+# GitHub Copilot
+*.ts copilot-language=typescript
+*.tsx copilot-language=typescript
+*.js copilot-language=javascript
+*.jsx copilot-language=javascript

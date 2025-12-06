@@ -1,24 +1,24 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { createClient } from "@/lib/supabase/client"
-import { toast } from "sonner"
+import { toastSuccess } from "@/lib/utils/toast"
+import { AnimatePresence, motion } from "framer-motion"
 import {
-  CheckCircle2,
-  Circle,
-  UserPlus,
-  Car,
-  Calendar,
-  FileText,
-  Sparkles,
-  ArrowRight,
-  RefreshCw,
+    ArrowRight,
+    Calendar,
+    Car,
+    CheckCircle2,
+    Circle,
+    FileText,
+    RefreshCw,
+    Sparkles,
+    UserPlus,
 } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 
 interface Step {
   id: string
@@ -182,7 +182,7 @@ export function FirstStepsWizard({ onComplete, companyId }: FirstStepsWizardProp
       // Prüfe ob alle Schritte jetzt abgeschlossen sind
       const allNowCompleted = updatedSteps.every((s) => s.completed)
       if (allNowCompleted && !allCompleted) {
-        toast.success("Glückwunsch! Alle ersten Schritte abgeschlossen! 🎉", {
+        toastSuccess("Glückwunsch! Alle ersten Schritte abgeschlossen! 🎉", {
           description: "Sie haben die wichtigsten Grundlagen für MyDispatch eingerichtet.",
           duration: 5000,
         })

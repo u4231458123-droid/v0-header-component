@@ -1,0 +1,253 @@
+{
+  "MyDispatch Feature Task": {
+    "prefix": "!feat",
+    "body": [
+      "@project_specs.md @types/supabase.ts",
+      "",
+      "**TASK: Feature Implementierung - ${1:Feature-Name}**",
+      "",
+      "## C - Context",
+      "- MCP: `project://ui/tokens`, `project://db/schema`, `project://app/routes`",
+      "- Betroffene Bereiche: ${2|Frontend,Backend,Database,Tests,Docs|}",
+      "",
+      "## R - Role",
+      "Agiere als autonomer Full-Stack Developer im NEO-GENESIS Hyper-Stack.",
+      "",
+      "## E - Execution",
+      "1. **Context Fetch:** `loadProjectContext()`",
+      "2. **Implementation:** ${3:Beschreibung der Implementierung}",
+      "3. **Self-Correction:** lint, type-check, validate:design",
+      "4. **Quality Gates:** `Gates.preCommit()` muss bestehen",
+      "",
+      "## D - Definition of Done",
+      "- [ ] TypeScript kompiliert ohne Fehler",
+      "- [ ] ESLint zeigt keine Errors",
+      "- [ ] Design-Token-Konsistenz geprüft",
+      "- [ ] Unit-Tests geschrieben",
+      "- [ ] Keine verbotenen Begriffe",
+      "",
+      "## O - Output",
+      "- Commit: `feat(${4:scope}): ${5:beschreibung}`",
+      "",
+      "**EXECUTE.**"
+    ],
+    "description": "Startet einen standardisierten Feature-Task im NEO-GENESIS Stack"
+  },
+
+  "MyDispatch Bug Fix": {
+    "prefix": "!fix",
+    "body": [
+      "@project_specs.md @active_file",
+      "",
+      "**TASK: Bug-Behebung - ${1:Bug-Beschreibung}**",
+      "",
+      "## C - Context",
+      "- MCP: `project://docs/active`",
+      "- Betroffene Datei: ${2:Dateipfad}",
+      "",
+      "## R - Role",
+      "Agiere als QA-Engineer und Bug-Fixer mit TDD-Approach.",
+      "",
+      "## E - Execution",
+      "1. **RED:** Schreibe reproduzierenden Testfall",
+      "2. **GREEN:** Implementiere minimalen Fix",
+      "3. **REFACTOR:** Aufräumen wenn nötig",
+      "4. **Regression Check:** Alle Tests müssen bestehen",
+      "",
+      "## D - Definition of Done",
+      "- [ ] Testfall existiert und besteht",
+      "- [ ] Keine Regression",
+      "- [ ] Root-Cause dokumentiert",
+      "",
+      "## O - Output",
+      "- Commit: `fix(${3:scope}): ${4:beschreibung}`",
+      "",
+      "**EXECUTE.**"
+    ],
+    "description": "Startet einen TDD Bugfix Loop"
+  },
+
+  "MyDispatch QA Workflow": {
+    "prefix": "!qa",
+    "body": [
+      "@project_specs.md @DESIGN_GUIDELINES.md",
+      "",
+      "**TASK: QA-Workflow - Qualitätsprüfung**",
+      "",
+      "## C - Context",
+      "- MCP: Alle Resources laden",
+      "- Prüfbereich: ${1|Gesamtprojekt,Spezifischer Bereich|}",
+      "",
+      "## R - Role",
+      "Agiere als QA-Lead und Code-Reviewer.",
+      "",
+      "## E - Execution",
+      "1. **Code Quality:** lint, type-check",
+      "2. **Design Compliance:** validate:design",
+      "3. **Security:** audit, RLS-Policies",
+      "4. **Test Coverage:** coverage report",
+      "5. **Documentation:** Swimm-Docs aktuell?",
+      "",
+      "## D - Definition of Done",
+      "- [ ] Alle Checks durchgeführt",
+      "- [ ] Report erstellt",
+      "- [ ] Keine Critical/High Issues offen",
+      "",
+      "## O - Output",
+      "- QA-Report mit Findings und Empfehlungen",
+      "",
+      "**EXECUTE.**"
+    ],
+    "description": "Startet einen vollständigen QA-Workflow"
+  },
+
+  "MyDispatch Refactor": {
+    "prefix": "!refactor",
+    "body": [
+      "@project_specs.md",
+      "",
+      "**TASK: Code-Refactoring - ${1:Beschreibung}**",
+      "",
+      "## C - Context",
+      "- Betroffene Datei(en): ${2:Dateien}",
+      "- Art: ${3|extract-function,extract-component,rename,move,simplify,remove-dead-code|}",
+      "",
+      "## R - Role",
+      "Agiere als Senior Software Architect mit Behavior Preservation.",
+      "",
+      "## E - Execution",
+      "1. **Pre-Checks:** Alle Tests müssen bestehen",
+      "2. **Analyse:** Code verstehen, Abhängigkeiten identifizieren",
+      "3. **Refactoring:** Kleine, verifizierbare Schritte",
+      "4. **Post-Checks:** Nach jedem Schritt Tests ausführen",
+      "",
+      "## D - Definition of Done",
+      "- [ ] Alle Tests bestehen",
+      "- [ ] Funktionalität unverändert",
+      "- [ ] Code ist cleaner/besser strukturiert",
+      "",
+      "## O - Output",
+      "- Commit: `refactor(${4:scope}): ${5:beschreibung}`",
+      "",
+      "**EXECUTE.**"
+    ],
+    "description": "Startet sicheres Refactoring ohne Funktionsverlust"
+  },
+
+  "MyDispatch Migration": {
+    "prefix": "!migrate",
+    "body": [
+      "@project_specs.md @types/supabase.ts",
+      "",
+      "**TASK: Datenbank-Migration - ${1:Beschreibung}**",
+      "",
+      "## C - Context",
+      "- MCP: `project://db/schema`",
+      "- Tabelle(n): ${2:Tabellen}",
+      "- Änderungsart: ${3|CREATE TABLE,ALTER TABLE,DROP TABLE|}",
+      "",
+      "## R - Role",
+      "Agiere als Database Administrator mit DSGVO-Compliance-Fokus.",
+      "",
+      "## E - Execution",
+      "1. **Migration-SQL erstellen:** `scripts/[NNN]_${4:name}.sql`",
+      "2. **RLS-Policies:** Company-basierte Policies (KEINE Master-Admin)",
+      "3. **TypeScript-Typen:** `types/supabase.ts` aktualisieren",
+      "4. **Validierung:** Schema-Check durchführen",
+      "",
+      "## D - Definition of Done",
+      "- [ ] Migration-SQL erstellt und validiert",
+      "- [ ] RLS-Policies konfiguriert",
+      "- [ ] TypeScript-Typen aktualisiert",
+      "- [ ] Rollback-Script vorhanden",
+      "",
+      "## O - Output",
+      "- Commit: `feat(db): ${5:beschreibung}`",
+      "",
+      "**EXECUTE.**"
+    ],
+    "description": "Startet sichere Datenbank-Migration"
+  },
+
+  "MyDispatch Context Load": {
+    "prefix": "!context",
+    "body": [
+      "// Lade Projekt-Kontext von Nexus Bridge",
+      "const context = await loadProjectContext()",
+      "",
+      "// Verfügbar:",
+      "// - context.uiTokens (Design-Tokens)",
+      "// - context.dbSchema (Datenbank-Schema)",
+      "// - context.appRoutes (App-Routen)",
+      "// - context.activeDocs (Aktive Dokumentation)"
+    ],
+    "description": "Lädt Nexus Bridge Kontext"
+  },
+
+  "MyDispatch Self-Healing": {
+    "prefix": "!heal",
+    "body": [
+      "// Self-Healing aktivieren",
+      "import { selfHealing } from \"@/lib/ai/self-healing\"",
+      "",
+      "// Verfügbare Protokolle:",
+      "// - dependency: NPM/PNPM Dependency-Probleme",
+      "// - test-failure: Fehlgeschlagene Tests",
+      "// - build-error: Build-Fehler",
+      "// - lint-error: Lint-Fehler (mit AutoFix)",
+      "// - type-error: TypeScript-Fehler",
+      "",
+      "await selfHealing.heal(\"${1|dependency,test-failure,build-error,lint-error,type-error|}\", ${2:errorDetails})"
+    ],
+    "description": "Self-Healing-Protokoll aktivieren"
+  },
+
+  "MyDispatch Quality Gate": {
+    "prefix": "!gate",
+    "body": [
+      "// Quality Gate ausführen",
+      "import { Gates } from \"@/lib/ai/quality-gates\"",
+      "",
+      "// Verfügbare Gates:",
+      "// - preCommit: lint, type-check, forbidden-terms, design-tokens",
+      "// - prePush: + unit-tests, compliance",
+      "// - preDeploy: + e2e-tests, build, security",
+      "// - postDeploy: health-check, smoke-tests",
+      "",
+      "const result = await Gates.${1|preCommit,prePush,preDeploy,postDeploy|}()",
+      "console.log(result.passed ? '✅ Gate bestanden' : '❌ Gate fehlgeschlagen')"
+    ],
+    "description": "Quality Gate ausführen"
+  },
+
+  "MyDispatch Workflow": {
+    "prefix": "!workflow",
+    "body": [
+      "// Quick-Start Workflow",
+      "import { QuickWorkflows } from \"@/lib/ai/workflow-orchestrator\"",
+      "",
+      "// Verfügbare Workflows:",
+      "await QuickWorkflows.${1|qa(),feature(name\\, description),bugfix(description),optimize()|}"
+    ],
+    "description": "Quick-Start Workflow ausführen"
+  },
+
+  "MyDispatch Execute": {
+    "prefix": "!execute",
+    "body": [
+      "// Prompt autonom ausführen via Genesis Prompt Architect",
+      "import { executeFromUserInput } from \"@/lib/ai/prompt-architect\"",
+      "",
+      "const result = await executeFromUserInput(\"${1:User-Eingabe}\")",
+      "",
+      "if (result.success) {",
+      "  console.log('✅ Erfolgreich ausgeführt')",
+      "  console.log('Workflow:', result.workflowId)",
+      "} else {",
+      "  console.error('❌ Fehler:', result.errors)",
+      "}"
+    ],
+    "description": "Führt User-Eingabe autonom aus via Genesis Prompt Architect"
+  }
+}
+

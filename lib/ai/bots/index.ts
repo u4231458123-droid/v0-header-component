@@ -5,25 +5,26 @@
  * VOLLSTÄNDIGE INTEGRATION ALLER BOTS
  */
 
-export { SystemBot } from "./system-bot"
-export { type BotTask, type BotResponse } from "./base-bot"
-export { QualityBot } from "./quality-bot"
-export { PromptOptimizationBot, type PromptOptimization } from "./prompt-optimization-bot"
-export { MasterBot } from "./master-bot"
-export { DocumentationBot } from "./documentation-bot"
-export { CodeAssistant } from "./code-assistant"
-export { ValidationCoordinator } from "./validation-coordinator"
-export { LegalBot } from "./legal-bot"
-export { MarketingTextBot } from "./marketing-text-bot"
-export { MailingTextBot } from "./mailing-text-bot"
-export { TextQualityBot } from "./text-quality-bot"
-export { DocumentationAssistant } from "./documentation-assistant"
-export { QualityAssistant } from "./quality-assistant"
-export { LegalAssistant } from "./legal-assistant"
-export { MarketingTextAssistant } from "./marketing-text-assistant"
-export { MailingTextAssistant } from "./mailing-text-assistant"
-export { TextQualityAssistant } from "./text-quality-assistant"
 export { autonomousWorkflow } from "./autonomous-workflow"
+export { type BotResponse, type BotTask } from "./base-bot"
+export { BufBot } from "./buf-bot"
+export { CodeAssistant } from "./code-assistant"
+export { DocumentationAssistant } from "./documentation-assistant"
+export { DocumentationBot } from "./documentation-bot"
+export { LegalAssistant } from "./legal-assistant"
+export { LegalBot } from "./legal-bot"
+export { MailingTextAssistant } from "./mailing-text-assistant"
+export { MailingTextBot } from "./mailing-text-bot"
+export { MarketingTextAssistant } from "./marketing-text-assistant"
+export { MarketingTextBot } from "./marketing-text-bot"
+export { MasterBot } from "./master-bot"
+export { PromptOptimizationBot, type PromptOptimization } from "./prompt-optimization-bot"
+export { QualityAssistant } from "./quality-assistant"
+export { QualityBot } from "./quality-bot"
+export { SystemBot } from "./system-bot"
+export { TextQualityAssistant } from "./text-quality-assistant"
+export { TextQualityBot } from "./text-quality-bot"
+export { ValidationCoordinator } from "./validation-coordinator"
 
 /**
  * Initialisiere alle Bots (VOLLSTÄNDIG)
@@ -201,6 +202,14 @@ export async function initializeAllBots() {
   try {
     const { TextQualityBot } = await import("./text-quality-bot")
     bots.textQualityBot = new TextQualityBot()
+  } catch (e) {
+    // Optional
+  }
+
+  // Task-Management Bot (Optional)
+  try {
+    const { BufBot } = await import("./buf-bot")
+    bots.bufBot = new BufBot()
   } catch (e) {
     // Optional
   }

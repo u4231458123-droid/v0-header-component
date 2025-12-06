@@ -83,5 +83,15 @@
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
   "git.autofetch": true,
-  "extensions.ignoreRecommendations": false
+  "git.autoRepositoryDetection": true,
+  "git.decorations.enabled": true,
+  "git.enabled": true,
+  "git.path": null,
+  "git.timeout": 20,
+  "git.terminalAuthentication": false,
+  "extensions.ignoreRecommendations": false,
+  "cursor.chat.maxTokens": 4000,
+  "cursor.general.enableAutoSave": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000
 }

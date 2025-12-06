@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
 export interface GeocodingResult {
@@ -272,10 +272,10 @@ export function AddressAutocomplete({
         width: dropdownPosition.width,
         zIndex: 99999,
       }}
-      className="bg-card dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-xl max-h-60 overflow-auto"
+      className="bg-card border border-border rounded-xl shadow-xl max-h-60 overflow-auto"
     >
       {loading ? (
-        <div className="px-3 py-2 text-sm text-zinc-500">Suche...</div>
+        <div className="px-3 py-2 text-sm text-muted-foreground">Suche...</div>
       ) : (
         suggestions.map((suggestion, index) => (
           <button
@@ -290,7 +290,7 @@ export function AddressAutocomplete({
             }`}
           >
             <div className="font-medium">{suggestion.mainText}</div>
-            <div className={`text-xs ${index === selectedIndex ? "text-primary-foreground/80" : "text-zinc-500"}`}>
+            <div className={`text-xs ${index === selectedIndex ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
               {suggestion.secondaryText}
             </div>
           </button>
@@ -317,12 +317,12 @@ export function AddressAutocomplete({
           placeholder={placeholder}
           disabled={disabled}
           required={required}
-          className={`w-full px-3 py-2 pr-10 border border-zinc-200 dark:border-zinc-700 rounded-xl bg-card dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+          className={`w-full px-3 py-2 pr-10 border border-border rounded-xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
           autoComplete="off"
         />
         {loading ? (
           <svg
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 animate-spin"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -335,7 +335,7 @@ export function AddressAutocomplete({
           </svg>
         ) : (
           <svg
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

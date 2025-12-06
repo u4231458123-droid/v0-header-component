@@ -1,0 +1,129 @@
+# Git-Konfiguration für MyDispatch
+# ==================================
+# Diese Datei kann mit `git config --global --add include.path .gitconfig` eingebunden werden
+
+[core]
+	# Line-Endings normalisieren
+	autocrlf = false
+	eol = lf
+	# Große Dateien effizient handhaben
+	precomposeunicode = true
+	# Case-sensitive Dateinamen
+	ignorecase = false
+	# Komprimierung optimieren
+	compression = 9
+	# Whitespace-Behandlung
+	whitespace = trailing-space,space-before-tab
+	# Editor
+	editor = code --wait
+
+[init]
+	# Standard-Branch-Name
+	defaultBranch = main
+
+[push]
+	# Standard-Verhalten
+	default = simple
+	# Auto-Setup Remote-Tracking
+	autoSetupRemote = true
+	# Follow-Tags aktivieren
+	followTags = true
+
+[pull]
+	# Rebase statt Merge
+	rebase = true
+	# Auto-Stash bei Konflikten
+	autostash = true
+
+[merge]
+	# Merge-Strategie
+	strategy = ort
+	# Konflikt-Auflösung
+	conflictstyle = diff3
+	# Auto-Stash
+	autostash = true
+
+[rebase]
+	# Auto-Stash
+	autostash = true
+	# Interaktives Rebase
+	interactiveAutoEdit = true
+
+[commit]
+	# Template verwenden
+	template = .gitmessage
+	# GPG-Signatur (optional)
+	# gpgsign = true
+
+[tag]
+	# GPG-Signatur für Tags
+	# gpgsign = true
+
+[color]
+	# Farben aktivieren
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+
+[alias]
+	# Nützliche Aliase
+	st = status
+	co = checkout
+	br = branch
+	ci = commit
+	cp = cherry-pick
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	visual = !code
+	graph = log --graph --pretty=format:'%C(yellow)%h%Creset -%C(red)%d%Creset %s %C(green)(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+	amend = commit --amend --no-edit
+	uncommit = reset --soft HEAD~1
+	cleanup = !git branch --merged | grep -v '\\*\\|main\\|develop' | xargs -n 1 git branch -d
+
+[diff]
+	# Diff-Optimierungen
+	algorithm = patience
+	compactionHeuristic = true
+	renames = true
+	copy = true
+	# Syntax-Highlighting
+	colorMoved = default
+	colorMovedWS = allow-indentation-change
+
+[status]
+	# Status-Optimierungen
+	submoduleSummary = true
+	branch = true
+	short = false
+
+[log]
+	# Log-Formatierung
+	decorate = short
+	abbrevCommit = true
+	follow = true
+
+[rerere]
+	# Reuse Recorded Resolution
+	enabled = true
+
+[fetch]
+	# Prune entfernte Branches
+	prune = true
+	# Tags mitfetchen
+	tags = true
+
+[credential]
+	# Credential-Helper
+	helper = store
+
+[filter "lfs"]
+	# Git LFS (falls verwendet)
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[include]
+	# Husky Hooks einbinden
+	path = .husky/git-config

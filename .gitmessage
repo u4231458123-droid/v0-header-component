@@ -1,0 +1,57 @@
+# MyDispatch Commit Message Template
+# ===================================
+# Beschreibe deine Änderungen präzise und strukturiert
+
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Types:
+# - feat: Neues Feature
+# - fix: Bugfix
+# - docs: Dokumentation
+# - style: Formatierung (keine Code-Änderungen)
+# - refactor: Code-Umbau (keine Funktions-Änderung)
+# - perf: Performance-Verbesserung
+# - test: Tests hinzufügen/ändern
+# - chore: Maintenance (Dependencies, Build, etc.)
+# - ci: CI/CD Änderungen
+# - build: Build-System Änderungen
+
+# Scope (optional):
+# - component: Komponenten-Änderungen
+# - api: API-Änderungen
+# - config: Konfigurations-Änderungen
+# - workflow: Workflow-Änderungen
+# - docs: Dokumentations-Änderungen
+
+# Subject:
+# - Maximal 50 Zeichen
+# - Imperativ (z.B. "Add" nicht "Added")
+# - Kein Punkt am Ende
+# - Erste Zeile ist die Zusammenfassung
+
+# Body (optional):
+# - Erkläre WAS und WARUM (nicht WIE)
+# - Maximal 72 Zeichen pro Zeile
+# - Leerzeile zwischen Subject und Body
+
+# Footer (optional):
+# - Breaking Changes: "BREAKING CHANGE: <description>"
+# - Issues: "Closes #123", "Fixes #456"
+# - Co-Authored-By: "Co-Authored-By: Name <email>"
+
+# Beispiel:
+# feat(auth): add password reset functionality
+#
+# Implementiert Passwort-Reset-Funktionalität mit E-Mail-Verifizierung.
+# Nutzer können jetzt ihr Passwort über den "Passwort vergessen"-Link zurücksetzen.
+#
+# - E-Mail-Template für Reset-Link
+# - Token-basierte Verifizierung (24h gültig)
+# - Rate-Limiting für Sicherheit
+#
+# Closes #123
+# Co-Authored-By: AI Agent <ai-agent@mydispatch.de>

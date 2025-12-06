@@ -1,15 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,32 +10,48 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
-import { format, differenceInMinutes } from "date-fns"
-import { de } from "date-fns/locale"
-import { DriverHelpBot } from "@/components/ai/DriverHelpBot"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { createClient } from "@/lib/supabase/client"
+import { ErrorHandler } from "@/lib/utils/error-handler"
 import { safeNumber } from "@/lib/utils/safe-number"
-import Link from "next/link"
+import { differenceInMinutes, format } from "date-fns"
+import { de } from "date-fns/locale"
 import {
-  Play,
-  Square,
-  Clock,
-  MapPin,
-  Phone,
-  MessageSquare,
-  Car,
-  User,
   Calendar,
-  Euro,
-  Settings,
-  FileText,
-  Coffee,
-  Navigation,
+  Car,
   CheckCircle2,
-  XCircle,
+  Clock,
+  Coffee,
+  Euro,
+  FileText,
   LogOut,
+  MapPin,
+  MessageSquare,
+  Navigation,
+  Phone,
+  Play,
   Send,
+  Settings,
+  Square,
+  User,
+  XCircle,
 } from "lucide-react"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
+
+// Lazy Loading für AI-Komponente
+const DriverHelpBot = dynamic(() => import("@/components/ai/DriverHelpBot"), {
+  ssr: false,
+})
 
 interface DriverShift {
   id: string
@@ -132,6 +138,13 @@ export default function FahrerPortalPage() {
 
   // Design-Tokens werden über Tailwind CSS-Klassen verwendet (bg-primary, text-primary)
 
+  const formatTime = useCallback((totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+  }, [])
+
   useEffect(() => {
     loadDriverData()
   }, [])
@@ -162,14 +175,7 @@ export default function FahrerPortalPage() {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [currentShift])
-
-  const formatTime = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-  }
+  }, [currentShift, formatTime])
 
   const loadDriverData = async () => {
     try {
@@ -248,7 +254,7 @@ export default function FahrerPortalPage() {
         setMessages(messagesData)
       }
     } catch (error) {
-      console.error("Error loading driver data:", error)
+      ErrorHandler.handleSilent(error, { component: "FahrerPortal", action: "loadDriverData" })
     } finally {
       setLoading(false)
     }
@@ -281,12 +287,8 @@ export default function FahrerPortalPage() {
           duration: 4000,
         })
       }
-    } catch (error: any) {
-      console.error("Error starting shift:", error)
-      toast.error("Fehler beim Starten der Schicht", {
-        description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
-      })
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "FahrerPortal", action: "startShift" }, "Fehler beim Starten der Schicht")
     } finally {
       setShowStartShiftDialog(false)
     }
@@ -317,12 +319,8 @@ export default function FahrerPortalPage() {
           duration: 4000,
         })
       }
-    } catch (error: any) {
-      console.error("Error starting break:", error)
-      toast.error("Fehler beim Starten der Pause", {
-        description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
-      })
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "FahrerPortal", action: "startBreak" }, "Fehler beim Starten der Pause")
     } finally {
       setShowStartBreakDialog(false)
     }
@@ -364,12 +362,8 @@ export default function FahrerPortalPage() {
           duration: 4000,
         })
       }
-    } catch (error: any) {
-      console.error("Error ending break:", error)
-      toast.error("Fehler beim Beenden der Pause", {
-        description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
-      })
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "FahrerPortal", action: "endBreak" }, "Fehler beim Beenden der Pause")
     } finally {
       setShowEndBreakDialog(false)
     }
@@ -416,12 +410,8 @@ export default function FahrerPortalPage() {
           duration: 4000,
         })
       }
-    } catch (error: any) {
-      console.error("Error ending shift:", error)
-      toast.error("Fehler beim Beenden der Schicht", {
-        description: "Bitte versuchen Sie es erneut.",
-        duration: 5000,
-      })
+    } catch (error: unknown) {
+      ErrorHandler.showToast(error, { component: "FahrerPortal", action: "endShift" }, "Fehler beim Beenden der Schicht")
     } finally {
       setShowEndShiftDialog(false)
     }
@@ -556,7 +546,7 @@ export default function FahrerPortalPage() {
         setCompletedBookings(data as CompletedBooking[])
       }
     } catch (error) {
-      console.error("Error loading completed bookings:", error)
+      ErrorHandler.handleSilent(error, { component: "FahrerPortal", action: "loadCompletedBookings" })
     } finally {
       setLoadingHistory(false)
     }
@@ -569,12 +559,21 @@ export default function FahrerPortalPage() {
     }
   }, [activeTab, driver])
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await supabase.auth.signOut()
-    window.location.href = "/auth/login"
-  }
+    // Redirect zur Landingpage des Unternehmens, falls verfügbar
+    if (driver?.company_id) {
+      const { data: company } = await supabase.from("companies").select("company_slug").eq("id", driver.company_id).single()
+      if (company?.company_slug) {
+        window.location.href = `/c/${company.company_slug}`
+        return
+      }
+    }
+    // Fallback: Zur MyDispatch Landingpage
+    window.location.href = "/"
+  }, [supabase, driver?.company_id])
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = useCallback((status: string) => {
     switch (status) {
       case "completed":
         return <Badge variant="default" className="bg-success hover:bg-success">Abgeschlossen</Badge>
@@ -589,7 +588,7 @@ export default function FahrerPortalPage() {
       default:
         return <Badge variant="outline">{status}</Badge>
     }
-  }
+  }, [])
 
   if (loading) {
     return (
@@ -614,11 +613,17 @@ export default function FahrerPortalPage() {
     )
   }
 
-  // Statistiken berechnen
-  const completedToday = pendingBookings.filter((b) => b.status === "completed").length
-  const totalRevenue = pendingBookings
-    .filter((b) => b.status === "completed")
-    .reduce((sum, b) => sum + (b.price || 0), 0)
+  // Performance-Optimierung: Filter-Operationen mit useMemo
+  const availableBookings = useMemo(
+    () => pendingBookings.filter((b) => b.status !== "in_progress"),
+    [pendingBookings]
+  )
+
+  // Für zukünftige Verwendung vorbereitet
+  // const completedBookingsCount = useMemo(
+  //   () => pendingBookings.filter((b) => b.status === "completed").length,
+  //   [pendingBookings]
+  // )
 
   return (
     <div className="min-h-screen bg-background">
@@ -628,10 +633,12 @@ export default function FahrerPortalPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {driver.company?.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={driver.company.logo_url || "/placeholder.svg"}
-                  alt={driver.company.name}
+                  alt={`${driver.company.name} Logo`}
                   className="h-10 w-auto object-contain"
+                  loading="lazy"
                 />
               ) : (
                 <div
@@ -673,8 +680,8 @@ export default function FahrerPortalPage() {
               </Badge>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Settings className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" aria-label="Einstellungen öffnen">
+                    <Settings className="h-5 w-5" aria-hidden="true" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -699,8 +706,9 @@ export default function FahrerPortalPage() {
                       variant="outline"
                       className="w-full justify-start text-destructive bg-transparent"
                       onClick={handleLogout}
+                      aria-label="Abmelden"
                     >
-                      <LogOut className="mr-2 h-4 w-4" />
+                      <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
                       Abmelden
                     </Button>
                   </div>
@@ -966,15 +974,14 @@ export default function FahrerPortalPage() {
                 <CardDescription>Ihre zugewiesenen Auftraege</CardDescription>
               </CardHeader>
               <CardContent>
-                {pendingBookings.filter((b) => b.status !== "in_progress").length === 0 ? (
+                {availableBookings.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Car className="h-12 w-12 mx-auto mb-4 opacity-30" />
                     <p>Keine anstehenden Fahrten</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {pendingBookings
-                      .filter((b) => b.status !== "in_progress")
+                    {availableBookings
                       .map((booking) => (
                         <div key={booking.id} className="border rounded-xl p-4 hover:bg-muted transition-colors">
                           <div className="flex items-start justify-between mb-3">
@@ -1108,9 +1115,9 @@ export default function FahrerPortalPage() {
                   <CardTitle>Fahrtenverlauf</CardTitle>
                   <CardDescription>Ihre abgeschlossenen Fahrten</CardDescription>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={loadCompletedBookings}
                   disabled={loadingHistory}
                   className="bg-transparent"

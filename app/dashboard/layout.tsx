@@ -40,7 +40,7 @@ export default async function DashboardLayout({
         .single()
 
       if (customer) {
-        const companySlug = (customer.company as any)?.company_slug
+        const companySlug = (customer.company as { company_slug?: string })?.company_slug
         if (companySlug) {
           redirect(`/c/${companySlug}/kunde/portal`)
         }
@@ -58,7 +58,8 @@ export default async function DashboardLayout({
 
     return <>{children}</>
   } catch (error) {
-    console.error("[v0] Dashboard layout error:", error)
+    const { ErrorHandler } = await import("@/lib/utils/error-handler")
+    ErrorHandler.handleSilent(error, { component: "DashboardLayout", action: "authCheck" })
     redirect("/auth/login")
   }
 }

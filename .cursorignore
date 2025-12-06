@@ -1,1 +1,81 @@
-# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+# ============================================================================
+# Cursor IDE Ignore Patterns
+# ============================================================================
+# Diese Datei definiert, welche Dateien/Verzeichnisse vom IDE-Indexing
+# ausgeschlossen werden sollen, um Performance zu verbessern.
+# ============================================================================
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+.tsbuildinfo
+
+# Cache
+.cache/
+.turbo/
+*.tsbuildinfo
+
+# Environment files (Sicherheit)
+.env
+.env.local
+.env.*.local
+
+# IDE/Editor spezifisch (andere)
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Lock files (zu gross für Indexing)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Generated files
+*.min.js
+*.min.css
+*.map
+
+# Binaries und Assets (nicht für Indexing relevant)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# Temporäre Dateien
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Dokumentation (kann separat geöffnet werden)
+# wiki/
+
+# AI/Prompt History (Privacy)
+.prompt-history.json
+lib/ai/prompt-history.json

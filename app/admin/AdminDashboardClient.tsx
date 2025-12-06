@@ -1,19 +1,19 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/design-system/PageHeader"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Building2,
-  CreditCard,
-  FileText,
-  Users,
-  Car,
-  Crown,
-  Activity,
-  CheckCircle,
-  Database,
-  Shield,
+    Activity,
+    Building2,
+    Car,
+    CheckCircle,
+    CreditCard,
+    Crown,
+    Database,
+    FileText,
+    Shield,
+    Users,
 } from "lucide-react"
 
 interface Company {
@@ -52,7 +52,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
@@ -100,7 +100,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-500/20">
+        <Card className="bg-gradient-to-br from-warning/10 to-warning/5 border-warning/20">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
@@ -175,7 +175,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
                   <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">Datenbank</span>
                 </div>
-                <Badge variant="outline" className="text-success border-green-600">
+                <Badge variant="outline" className="text-success border-success">
                   Online
                 </Badge>
               </div>
@@ -185,7 +185,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
                   <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">Stripe Zahlungen</span>
                 </div>
-                <Badge variant="outline" className="text-success border-green-600">
+                <Badge variant="outline" className="text-success border-success">
                   Online
                 </Badge>
               </div>
@@ -195,7 +195,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
                   <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">E-Mail-Dienst</span>
                 </div>
-                <Badge variant="outline" className="text-success border-green-600">
+                <Badge variant="outline" className="text-success border-success">
                   Online
                 </Badge>
               </div>
@@ -205,7 +205,7 @@ export function AdminDashboardClient({ stats, recentCompanies }: AdminDashboardC
                   <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
                   <span className="font-medium">Google Maps API</span>
                 </div>
-                <Badge variant="outline" className="text-success border-green-600">
+                <Badge variant="outline" className="text-success border-success">
                   Online
                 </Badge>
               </div>

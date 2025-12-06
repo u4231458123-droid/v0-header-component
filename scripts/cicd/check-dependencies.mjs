@@ -359,11 +359,20 @@ const isMainModule = import.meta.url === `file://${process.argv[1].replace(/\\/g
                      import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"))
 
 if (isMainModule || process.argv[1]?.includes("check-dependencies")) {
-  const checker = new DependencyChecker()
-  const results = checker.check()
-  const report = checker.generateReport(results)
+  try {
+    const checker = new DependencyChecker()
+    const results = checker.check()
+    const report = checker.generateReport(results)
 
-  process.exit(report.success ? 0 : 1)
+    // Stelle sicher, dass nur Exit-Codes 0 oder 1 verwendet werden
+    process.exit(report.success ? 0 : 1)
+  } catch (error) {
+    console.error("\n❌ Unerwarteter Fehler in check-dependencies.mjs:")
+    console.error(error.message || error)
+    console.error(error.stack || "")
+    // Bei unerwarteten Fehlern mit Exit-Code 1 beenden
+    process.exit(1)
+  }
 }
 
 export { DependencyChecker }

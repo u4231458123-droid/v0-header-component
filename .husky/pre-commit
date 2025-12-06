@@ -11,11 +11,21 @@ echo "🔍 Pre-Commit Validierung..."
 echo -e "============================\n"
 
 # =============================================================================
+# PRE-FLIGHT: PNPM VERFÜGBARKEIT
+# =============================================================================
+
+if ! command -v pnpm > /dev/null 2>&1; then
+  echo "❌ pnpm ist nicht installiert oder nicht im PATH"
+  echo "Bitte installiere pnpm: npm install -g pnpm"
+  exit 1
+fi
+
+# =============================================================================
 # PHASE 1: LINTING
 # =============================================================================
 
 echo "🧹 Phase 1: Linting..."
-npm run lint || {
+pnpm run lint || {
   echo -e "\n❌ Linting fehlgeschlagen - Commit abgebrochen"
   exit 1
 }
@@ -25,7 +35,7 @@ npm run lint || {
 # =============================================================================
 
 echo -e "\n📘 Phase 2: Type Checking..."
-npm run type-check || {
+pnpm run type-check || {
   echo -e "\n❌ Type Checking fehlgeschlagen - Commit abgebrochen"
   exit 1
 }
@@ -50,9 +60,15 @@ fi
 
 echo -e "\n🔗 Phase 3.5: Abhängigkeits-Prüfung..."
 if [ -f "scripts/cicd/check-dependencies.mjs" ]; then
-  node scripts/cicd/check-dependencies.mjs || {
-    echo -e "\n⚠️ Abhängigkeits-Prüfung hat Warnungen gefunden (nicht blockierend)"
-  }
+  node scripts/cicd/check-dependencies.mjs
+  EXIT_CODE=$?
+  if [ $EXIT_CODE -eq 0 ]; then
+    echo -e "\n✅ Abhängigkeits-Prüfung erfolgreich"
+  else
+    # Alle Exit-Codes außer 0 werden als Fehler behandelt
+    echo -e "\n❌ Abhängigkeits-Prüfung fehlgeschlagen (Exit-Code: $EXIT_CODE) - Commit abgebrochen"
+    exit 1
+  fi
 else
   echo "⚠️ Abhängigkeits-Prüfungs-Script nicht gefunden - überspringe"
 fi
@@ -79,7 +95,7 @@ echo -e "\n🤖 Phase 3.7: CPO Agent Validierung..."
 if [ -f "lib/ai/cpo-agent-integration.ts" ]; then
   # Hole geänderte Dateien
   CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(tsx?|jsx?)$' || true)
-  
+
   if [ -n "$CHANGED_FILES" ]; then
     echo "📝 Geänderte Dateien gefunden - CPO Agent wird validieren..."
     # CPO Agent Validierung wird in CI/CD Pipeline ausgeführt
@@ -98,7 +114,9 @@ fi
 
 echo -e "\n✨ Phase 4: Auto-Formatierung..."
 npx lint-staged || {
-  echo -e "\n⚠️ Lint-staged hat Warnungen (nicht blockierend)"
+  echo -e "\n❌ Lint-staged fehlgeschlagen - Commit abgebrochen"
+  echo -e "Formatierungsfehler müssen behoben werden bevor der Commit durchgeführt werden kann"
+  exit 1
 }
 
 echo -e "\n✅ Pre-Commit Validierung erfolgreich!"

@@ -1,32 +1,32 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { createBrowserClient } from "@supabase/ssr"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Car,
-  Clock,
-  Calendar,
-  User,
-  Phone,
-  Mail,
-  LogOut,
-  Navigation,
-  CheckCircle,
-  XCircle,
-  Play,
-  Pause,
-  Settings,
-  Bell,
-  ChevronRight,
-} from "lucide-react"
+import { createBrowserClient } from "@supabase/ssr"
 import { format } from "date-fns"
 import { de } from "date-fns/locale"
+import {
+  Bell,
+  Calendar,
+  Car,
+  CheckCircle,
+  ChevronRight,
+  Clock,
+  LogOut,
+  Mail,
+  Navigation,
+  Pause,
+  Phone,
+  Play,
+  Settings,
+  User,
+  XCircle,
+} from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useState } from "react"
 
 interface Company {
   id: string
@@ -82,6 +82,7 @@ function getSupabaseClient() {
 export function TenantDriverPortal({ company, driver, bookings, shifts }: TenantDriverPortalProps) {
   const [activeTab, setActiveTab] = useState("auftraege")
   const [driverStatus, setDriverStatus] = useState(driver.status || "offline")
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
 
   const branding = company.branding || {}
   const primaryColor = branding.primary_color || branding.primaryColor || "#343f60"
@@ -101,16 +102,34 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
   const completedBookings = bookings.filter((b) => b.status === "completed")
 
   const handleStatusChange = async (newStatus: string) => {
-    const supabase = getSupabaseClient()
-    await supabase.from("drivers").update({ status: newStatus }).eq("id", driver.id)
+    if (isUpdatingStatus) return // Verhindert Race Condition
+
+    setIsUpdatingStatus(true)
+    const previousStatus = driverStatus
+    // Optimistic update
     setDriverStatus(newStatus)
+
+    try {
+      const supabase = getSupabaseClient()
+      const { error } = await supabase.from("drivers").update({ status: newStatus }).eq("id", driver.id)
+
+      if (error) {
+        // Revert on failure
+        setDriverStatus(previousStatus)
+        console.error("Failed to update driver status:", error)
+      }
+    } catch (err) {
+      // Netzwerkfehler oder unerwartete Exceptions abfangen
+      setDriverStatus(previousStatus)
+      console.error("Network error updating driver status:", err)
+    } finally {
+      setIsUpdatingStatus(false)
+    }
   }
 
   const handleLogout = async () => {
     const supabase = getSupabaseClient()
     await supabase.auth.signOut()
-    // Redirect zurück zur Unternehmens-Landingpage
-    window.location.href = `/c/${company.company_slug}`
     // Redirect zur Login-Seite des Unternehmens
     window.location.href = `/c/${company.company_slug}/login`
   }
@@ -159,10 +178,12 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
               {company.logo_url ? (
                 <Image
                   src={company.logo_url || "/placeholder.svg"}
-                  alt={company.name}
+                  alt={`${company.name} Logo`}
                   width={40}
                   height={40}
                   className="h-10 w-auto object-contain"
+                  loading="lazy"
+                  sizes="40px"
                 />
               ) : (
                 <div
@@ -179,16 +200,16 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
             </Link>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="relative" aria-label={`Benachrichtigungen${todayBookings.length > 0 ? ` (${todayBookings.length} neue)` : ""}`}>
+                <Bell className="h-5 w-5" aria-hidden="true" />
                 {todayBookings.length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center" aria-label={`${todayBookings.length} neue Benachrichtigungen`}>
                     {todayBookings.length}
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Abmelden">
+                <LogOut className="h-5 w-5" aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -226,6 +247,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                   size="sm"
                   variant={driverStatus === "available" ? "default" : "outline"}
                   onClick={() => handleStatusChange("available")}
+                  disabled={isUpdatingStatus}
                   style={driverStatus === "available" ? { backgroundColor: primaryColor } : {}}
                 >
                   <Play className="h-4 w-4 mr-1" />
@@ -235,6 +257,7 @@ export function TenantDriverPortal({ company, driver, bookings, shifts }: Tenant
                   size="sm"
                   variant={driverStatus === "offline" ? "secondary" : "outline"}
                   onClick={() => handleStatusChange("offline")}
+                  disabled={isUpdatingStatus}
                 >
                   <Pause className="h-4 w-4 mr-1" />
                   Offline
