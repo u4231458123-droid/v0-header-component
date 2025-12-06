@@ -1,78 +1,20 @@
+# ============================================================================
+# CodeRabbit Konfiguration - Optimiert für große PRs
+# ============================================================================
+# Problem: Mehr als 100 Dateien werden übersprungen
+# Lösung: Erweiterte path_filters um nicht-kritische Dateien auszuschließen
+# ============================================================================
+
 language: "de"
 
-# ============================================================================
-# CodeRabbit Konfiguration - Optimiert fur grosse PRs
-# ============================================================================
-# Problem: Mehr als 100 Dateien werden ubersprungen
-# Losung: Erweiterte path_filters um nicht-kritische Dateien auszuschliessen
-# ============================================================================
-
+# Reviews-Einstellungen
 reviews:
   high_level_summary: true
   poem: false
   review_status: true
   collapse_when_outdated: true
   request_changes_workflow: true
-
-  # Haupt-Filter: Schliesse nicht-kritische Dateien aus
-  path_filters:
-    # Immer ausschliessen
-    - "!*.test.ts"
-    - "!*.spec.ts"
-    - "!node_modules/**"
-    - "!.next/**"
-    - "!dist/**"
-    - "!pnpm-lock.yaml"
-    - "!package-lock.json"
-
-    # Dokumentation (separates Review empfohlen)
-    - "!docs/**"
-    - "!wiki/**"
-    - "!*.md"
-    - "!.swimm/**"
-
-    # Konfiguration und IDE
-    - "!.cursor/**"
-    - "!.vscode/**"
-    - "!.roo/**"
-    - "!.prompts/**"
-    - "!.husky/**"
-
-    # Assets und statische Dateien
-    - "!assets/**"
-    - "!public/**"
-    - "!*.png"
-    - "!*.jpg"
-    - "!*.svg"
-    - "!*.ico"
-
-    # MCP-Server (separates Review)
-    - "!mcp-server/**"
-
-    # Generated Files
-    - "!*.min.js"
-    - "!*.min.css"
-    - "!coverage/**"
-    - "!.tsbuildinfo"
-
-  # Label-basierte Kategorisierung fur fokussiertes Review
-  labels:
-    - label: "Frontend"
-      files:
-        - "app/**/*.tsx"
-        - "components/**/*.tsx"
-    - label: "Backend"
-      files:
-        - "app/api/**/*.ts"
-        - "lib/**/*.ts"
-    - label: "Config"
-      files:
-        - "*.config.*"
-        - ".github/**/*.yml"
-    - label: "AI/Bots"
-      files:
-        - "lib/ai/**/*.ts"
-        - "trigger/**/*.ts"
+  
   # Review-Fokus-Themen
   themes:
     - "security"
@@ -81,7 +23,7 @@ reviews:
     - "best_practices"
     - "typescript"
     - "error_handling"
-
+  
   # Aktivierte Tools
   tools:
     - name: "typescript"
@@ -90,6 +32,55 @@ reviews:
       enabled: true
     - name: "sonarqube"
       enabled: false
+
+# Path Filters - Globale Exclusions
+# WICHTIG: Diese Filter gelten für alle Reviews
+path_filters:
+  # Tests ausschließen
+  - "!**/*.test.ts"
+  - "!**/*.spec.ts"
+  - "!**/*.test.tsx"
+  - "!**/*.spec.tsx"
+  
+  # Dependencies und Build-Output
+  - "!**/node_modules/**"
+  - "!**/.next/**"
+  - "!**/dist/**"
+  - "!**/build/**"
+  
+  # Lock files
+  - "!**/pnpm-lock.yaml"
+  - "!**/package-lock.json"
+  - "!**/yarn.lock"
+  
+  # Dokumentation (separates Review empfohlen)
+  - "!**/docs/**"
+  - "!**/wiki/**"
+  - "!**/.swimm/**"
+  
+  # IDE und Konfiguration
+  - "!**/.cursor/**"
+  - "!**/.vscode/**"
+  - "!**/.roo/**"
+  - "!**/.prompts/**"
+  - "!**/.husky/**"
+  
+  # Assets
+  - "!**/assets/**"
+  - "!**/public/**"
+  - "!**/*.png"
+  - "!**/*.jpg"
+  - "!**/*.svg"
+  - "!**/*.ico"
+  
+  # MCP-Server (separates Review)
+  - "!**/mcp-server/**"
+  
+  # Generated Files
+  - "!**/*.min.js"
+  - "!**/*.min.css"
+  - "!**/coverage/**"
+  - "!**/.tsbuildinfo"
 
 # Chat-Konfiguration
 chat:
@@ -105,23 +96,21 @@ auto_review:
   base_branch: "main"
   drafts: false
 
-# PR-Review-Einstellungen (konsolidiert)
-pr_review:
-  request_changes_workflow: true
-  review_simple_changes: false  # Einfache Aenderungen nicht reviewen (spart Limit)
-  review_comment_lgtm: false
-  high_level_summary: true
-  review_status: true
-  collapse_when_outdated: true
-  poem: false
-
-  # Max-Dateien-Strategie: Fokus auf kritische Dateien
-  max_files_to_review: 100
-
-  # Prioritaet: Kritische Dateien zuerst reviewen
-  priority_files:
-    - "app/**/*.tsx"
-    - "app/**/*.ts"
-    - "lib/**/*.ts"
-    - "components/**/*.tsx"
-
+# Label-Zuordnung für kategorisierte Reviews
+labels:
+  - label: "frontend"
+    files:
+      - "app/**/*.tsx"
+      - "components/**/*.tsx"
+  - label: "backend"
+    files:
+      - "app/api/**/*.ts"
+      - "lib/**/*.ts"
+  - label: "config"
+    files:
+      - "*.config.*"
+      - ".github/**/*.yml"
+  - label: "ai-bots"
+    files:
+      - "lib/ai/**/*.ts"
+      - "trigger/**/*.ts"

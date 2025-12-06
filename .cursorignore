@@ -1,235 +1,81 @@
-Baue das gesamte Konzept nach nachfolgendem Blueprint für eine saubere, struckturierte Umsetzung:
+# ============================================================================
+# Cursor IDE Ignore Patterns
+# ============================================================================
+# Diese Datei definiert, welche Dateien/Verzeichnisse vom IDE-Indexing
+# ausgeschlossen werden sollen, um Performance zu verbessern.
+# ============================================================================
 
-# NEO-GENESIS: Autonomous AI-Agent Hyper-Stack Blueprint
-**Version:** 3.0 (Integrated Hyper-Stack)
-**Standard:** DIN/ISO-Compliant & AI-Native
-**Philosophie:** "Architecture as Code, Documentation as Truth, Quality as Default"
+# Dependencies
+node_modules/
+.pnpm-store/
 
----
+# Build outputs
+.next/
+dist/
+build/
+out/
+.tsbuildinfo
 
-## 📜 Präambel: Die autonome Doktrin
+# Cache
+.cache/
+.turbo/
+*.tsbuildinfo
 
-Dieses Dokument definiert das Betriebssystem für die Softwareentwicklung der nächsten Generation. Es ersetzt den klassischen "Developer-Loop" durch eine orchestrierte Kette spezialisierter KI-Agenten und Tools.
+# Environment files (Sicherheit)
+.env
+.env.local
+.env.*.local
 
-**Grundregeln für den ausführenden Agenten (Roo Code / Cursor):**
-1.  **Denk-Primat:** Bevor Code entsteht, muss die Architektur (Eraser.io) und das Schema (Keel) stehen.
-2.  **Holistisches Verständnis:** Nutze Tools (Greptile), um den Kontext des *gesamten* Repos zu verstehen, nicht nur der offenen Datei.
-3.  **Self-Healing:** Warte nicht auf QA. Nutze Octomind und CodeRabbit Feedback, um Fehler sofort zu beheben.
-4.  **Living Documentation:** Code ohne Swimm-Dokumentation ist ungültig.
+# IDE/Editor spezifisch (andere)
+.idea/
 
----
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-## 🏛 1. Der Hyper-Stack (Technologie-Fundament)
+# OS files
+.DS_Store
+Thumbs.db
 
-Wir ersetzen generische Tools durch spezialisierte AI-First-Lösungen.
+# Test coverage
+coverage/
+.nyc_output/
 
-### 1.1 Core Architecture & Backend ("The Backbone")
-* **Frontend / App Logic:** Next.js 14+ (App Router), TypeScript Strict Mode.
-* **AI Integration:** **Vercel AI SDK** (Standardisiert den Zugriff auf LLMs innerhalb der App).
-* **Backend & Database:** **Keel** (Schema-First Backend).
-    * *Warum:* Generiert DB, API und Admin-Panel automatisch aus einer `schema.keel` Datei. Eliminiert Boilerplate.
-* **Background Jobs:** **Trigger.dev**.
-    * *Warum:* Ermöglicht langlaufende AI-Agenten-Tasks (z.B. PDF-Parsing, Data-Enrichment) ohne Serverless-Timeouts.
+# Lock files (zu gross für Indexing)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
 
-### 1.2 Development & Operations ("The Hands")
-* **IDE Agent:** **Roo Code** (in Cursor/VS Code).
-    * *Rolle:* Der primäre "Worker", der Terminal-Befehle ausführt, Dateien editiert und Tests startet.
-* **Context Intelligence:** **Greptile**.
-    * *Rolle:* Indiziert das gesamte Repo. Ermöglicht Fragen wie: "Welche Auswirkungen hat diese Änderung in `User.ts` auf das Modul `Billing`?"
+# Generated files
+*.min.js
+*.min.css
+*.map
 
-### 1.3 Quality Assurance & Security ("The Guardians")
-* **Code Review:** **CodeRabbit**.
-    * *Rolle:* AI-Reviewer bei jedem Pull Request. Prüft auf Best Practices und Security.
-* **End-to-End Testing:** **Octomind**.
-    * *Rolle:* Generiert und führt Playwright-Tests autonom aus. Findet UI-Fehler vor dem Human-Review.
-* **Policy Enforcer:** **Custom GitHub Action ("The Enforcer")**.
-    * *Rolle:* Blockiert Merges, wenn die Spezifikationen (Specs) verletzt werden.
+# Binaries und Assets (nicht für Indexing relevant)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot
 
-### 1.4 Documentation & Planning ("The Brain")
-* **Architecture Visualization:** **Eraser.io**.
-    * *Rolle:* Diagram-as-Code. Hält Diagramme synchron mit dem Code.
-* **Continuous Documentation:** **Swimm**.
-    * *Rolle:* Verknüpft Code-Blöcke mit Dokumentation. Warnt, wenn Code-Änderungen die Doku ungültig machen.
+# Temporäre Dateien
+*.tmp
+*.temp
+.tmp/
+.temp/
 
----
+# Dokumentation (kann separat geöffnet werden)
+# wiki/
 
-## ⚙️ 2. Workflow-Phasen (Der Loop)
-
-Dieser Prozess ist strikt einzuhalten.
-
-### Phase 1: Planung & Visualisierung (Eraser.io)
-Bevor eine Zeile Code geschrieben wird:
-1.  Erstelle/Update das ER-Diagramm oder Flowchart in **Eraser.io**.
-2.  Lasse Eraser.io daraus das `schema.keel` (Datenbank-Schema) oder TypeScript-Interfaces generieren.
-3.  Definiere die Business-Logik in `project_specs.md`.
-
-### Phase 2: Implementierung (Roo Code + Keel)
-Der Agent (Roo Code) übernimmt:
-1.  **Backend:** Pusht das neue `schema.keel`. Keel generiert die API.
-2.  **Frontend:** Nutzt das **Vercel AI SDK**, um intelligente UIs zu bauen.
-3.  **Background:** Lagert komplexe Aufgaben (z.B. "Generiere Report") in **Trigger.dev** Jobs aus.
-4.  **Kontext-Check:** Fragt **Greptile** regelmäßig: "Verletzt mein neuer Code bestehende Patterns?"
-
-### Phase 3: Dokumentation (Swimm)
-Parallel zur Codierung:
-1.  Erstelle "Swimm Docs" für neue Features.
-2.  Verknüpfte kritische Code-Snippets.
-3.  Stelle sicher, dass der CI-Check von Swimm grün ist (Doku ist synchron).
-
-### Phase 4: Validierung (CodeRabbit + Octomind + Enforcer)
-Nach dem `git push`:
-1.  **CodeRabbit** kommentiert den PR innerhalb von Minuten.
-2.  **Octomind** startet eine Test-Suite gegen das Preview-Deployment (Vercel).
-3.  **The Enforcer** prüft gegen die `project_specs.md`: Wurden alle DIN-Normen/Sprachregeln eingehalten?
-4.  Agent (Roo Code) liest das Feedback und fixt Fehler autonom.
-
----
-
-## 🚀 3. Initialisierungs-Prompts (Setup)
-
-Führe diese Prompts nacheinander aus, um das Projekt zu starten.
-
-### Prompt 1: System-Konfiguration
-```text
-Agiere als Lead System Architect.
-Wir setzen ein neues Projekt auf Basis des "NEO-GENESIS" Blueprints auf.
-
-1.  **Struktur:** Initialisiere ein Next.js Projekt.
-2.  **Backend:** Erstelle eine `schema.keel` Datei für das Datenmodell (User, Auth, Core Entities).
-3.  **AI Layer:** Installiere `ai` (Vercel AI SDK) und konfiguriere den Provider (Anthropic/OpenAI).
-4.  **Testing:** Bereite die Config für Octomind (Playwright) vor.
-5.  **Docs:** Initialisiere Swimm im Verzeichnis `.swimm`.
-6.  **Rules:** Erstelle eine `.cursorrules` Datei, die Roo Code anweist, VOR jeder Änderung Greptile zu konsultieren.
-
-Erstelle nun das fundamentale Dateigerüst.
-Prompt 2: Der "Enforcer" (Guardrail Setup)
-Plaintext
-
-Agiere als DevOps Engineer.
-Erstelle eine GitHub Action `.github/workflows/enforcer.yml`.
-
-Funktion:
-1. Trigger bei Pull Request.
-2. Lade die Datei `project_specs.md` und den Diff des PRs.
-3. Sende beides an ein LLM (via API Key).
-4. System Prompt für das LLM: "Du bist der Enforcer. Prüfe, ob der Code den Specs entspricht.
-   - Sind Variablen Englisch?
-   - Ist die UI Sprache Deutsch?
-   - Wurden Tailwind Utility Classes genutzt (kein Custom CSS)?
-   - Gibt es Swimm-Doku Updates?
-   Antworte mit PASS oder FAIL + Grund."
-5. Wenn FAIL -> Blockiere den Merge.
-🛠 4. Der Universal-Worker Prompt (Täglicher Betrieb)
-Diesen Prompt nutzt du in Roo Code, um Aufgaben zu erledigen.
-
-Plaintext
-
-@project_specs.md @schema.keel
-Agiere als autonomer Fullstack Developer im NEO-GENESIS Stack.
-Task: [TASK BESCHREIBUNG]
-
-**Protokoll:**
-1.  **Context Fetch (Greptile):** Analysiere via Greptile (oder @Codebase), welche Dateien betroffen sind.
-2.  **Planung (Eraser):** Falls sich das Datenmodell ändert, aktualisiere erst `schema.keel` und generiere die API neu.
-3.  **Code (AI SDK):** Implementiere die Logik. Nutze Vercel AI SDK für Streaming-Responses im Frontend.
-4.  **Background (Trigger.dev):** Wenn der Task länger als 10s dauert, erstelle einen Trigger.dev Job dafür.
-5.  **Self-Correction:** Führe `npm run test` lokal aus.
-6.  **Documentation (Swimm):** Erstelle/Update das Swimm-Doc für diesen Code.
-
-Start.
-📂 5. Projekt-Spezifikationen (Muster für project_specs.md)
-Diese Datei ist die "Source of Truth" für den Enforcer.
-
-5.1 Tech Constraints (Non-Negotiable)
-Backend: Keel (Schema First). Keine manuellen SQL-Migrationen.
-
-Frontend: Next.js App Router.
-
-Styling: Tailwind CSS + Shadcn/UI. Keine CSS-Modules.
-
-AI: Vercel AI SDK (Core & UI).
-
-Jobs: Trigger.dev für Async Tasks.
-
-5.2 Quality Gates
-CodeRabbit: Muss den PR approven.
-
-Octomind: Darf keine kritischen UI-Fehler finden.
-
-Swimm: Code-Coverage muss > 80% dokumentiert sein.
-
-5.3 Sprach- & Design-Regeln
-Code: Englisch (Variablen, Funktionen).
-
-UI: Deutsch (Sie-Form, DIN 5008).
-
-UX: "Optimistic UI" überall (Nutze useOptimistic aus React/Next.js).
-
-🛡 6. Self-Maintenance & Lücken-Schließung
-Dieses System schließt die Lücken klassischer AI-Entwicklung:
-
-Lücke: Veraltete Doku.
-
-Lösung: Swimm bricht den Build, wenn Doku und Code asynchron sind.
-
-Lücke: UI-Halluzinationen.
-
-Lösung: Octomind klickt die App wirklich durch und beweist Funktion.
-
-Lücke: Fehlender Kontext.
-
-Lösung: Greptile liefert dem Agenten Wissen über Abhängigkeiten, die er nicht sieht.
-
-Lücke: Datenbank-Chaos.
-
-Lösung: Keel erzwingt, dass das Schema die API definiert, nicht umgekehrt.
-
-Lücke: Review-Müdigkeit.
-
-Lösung: CodeRabbit übernimmt 90% der Review-Arbeit.
-
-
-
-Zudem ist die nachfolgende MCP Lösung zu integrieren:
-
-The Nexus Bridge (MCP Architecture Standard)Status: Erweiterungs-Modul (Phase 0 Integration)Ziel: Eliminierung von Kontext-Blindheit und Halluzinationen durch direkte API-Anbindung der Entwicklungsumgebung.1. Konzept & PhilosophieIn klassischen Setups muss der AI-Agent (Cursor, Roo Code, Windsurf) Dateien lesen und "raten", wie Datenbank oder Design-System aussehen.The Nexus Bridge ist ein lokaler MCP-Server (Model Context Protocol), der als API für die KI fungiert. Er läuft parallel zum Dev-Server und übersetzt Projekt-Realitäten (DB-Schema, Tailwind-Config, CI-Status) in strukturierte Daten, die der Agent verlässlich abrufen kann.2. Technische ArchitekturDer MCP-Server ist eine leichte TypeScript-Anwendung, die im Projekt-Root unter /mcp-server lebt.2.1 Live-Ressourcen (Context Provider)Der Agent kann diese URIs jederzeit lesen (read_resource), um sich zu orientieren. Er muss nicht mehr hunderte Dateien scannen.URIInhalt & ZweckQuelleproject://ui/tokensLiefert alle Tailwind-Farben, Spacings und Fonts als JSON. Verhindert, dass der Agent Farben erfindet ("Halluzinationen").tailwind.config.ts, globals.cssproject://db/schemaLiefert das aktuelle Datenbank-Schema (Tabellen, Relationen, Typen). Garantiert korrekte SQL/ORM-Queries.Supabase Introspection / schema.prisma / schema.keelproject://app/routesEine Karte aller existierenden Next.js Routen und API-Endpunkte. Verhindert Duplikate und tote Links.Scan von /app Ordnerstrukturproject://docs/activeKombiniert .cursorrules, project_specs.md und kritische Linter-Regeln zu einem Live-Regelwerk./docs + Linter Config2.2 Tools (Aktive Werkzeuge)Der Agent erhält deterministische Funktionen, um Aufgaben sicher zu erledigen.Tool NameFunktionvalidate_compliancePrüft Code-Snippets gegen interne Regeln (z.B. "Sind Slugs deutsch?", "Sind Zod-Schemas synchron?").scaffold_featureErstellt standardisierte Ordnerstrukturen (MVC-Pattern) für neue Features, um Wildwuchs zu verhindern.query_db_readonlyErlaubt dem Agenten, sichere SELECT-Abfragen gegen die lokale DB zu fahren, um Datenstrukturen zu verifizieren (Sandbox-Mode).check_dependenciesPrüft package.json auf Version-Konflikte oder Sicherheitslücken bevor neuer Code geschrieben wird.3. Implementierungs-Guide (Der "Builder Prompt")Kopiere diesen Prompt in deinen Agenten (Cursor Composer / Roo Code), um die Nexus Bridge für ein neues Projekt zu generieren.Markdown**Agiere als Senior System Architect.**
-Erstelle die Infrastruktur für einen lokalen MCP-Server ("Nexus Bridge") in diesem Projekt.
-
-**Ziel:** Der Server soll dir (dem Agenten) Live-Kontext über das Projekt liefern.
-
-**Schritt 1: Setup**
-1. Erstelle einen Ordner `/mcp-server`.
-2. Initialisiere ein minimales TypeScript-Projekt (Node.js).
-3. Installiere `@modelcontextprotocol/sdk` und `zod`.
-
-**Schritt 2: Implementiere Resources (Read-Only)**
-1. **Design System:** Schreibe einen Parser für `tailwind.config.ts`. Stelle die extrahierten Werte unter `project://ui/tokens` bereit.
-2. **Database:** (Falls Prisma/Keel vorhanden): Lies die Schema-Datei ein und stelle sie unter `project://db/schema` bereit.
-3. **File Map:** Erstelle einen rekursiven Scanner für den `/app` Ordner (ignoriere node_modules), der die Routing-Struktur unter `project://app/routes` bereitstellt.
-
-**Schritt 3: Implementiere Tools (Executable)**
-1. **Slug Validator:** Ein Tool `validate_slug(text: string)`, das prüft, ob ein String URL-freundlich ist (lowercase, no umlauts, hyphens).
-2. **Project Status:** Ein Tool `get_project_health()`, das die Ergebnisse von `npm run lint` und `npm run type-check` zusammenfasst und zurückgibt.
-
-**Schritt 4: Integration**
-Erstelle eine README im `/mcp-server` Ordner mit dem exakten JSON-Schnipsel, den der User in seine Cursor/Windsurf Einstellungen eintragen muss, um diesen Server zu aktivieren.
-
-Führe dies jetzt aus.
-4. Konfiguration der IDE (User Action)Damit die Brücke steht, muss der Server einmalig in der IDE registriert werden.Für Cursor / Windsurf / Roo Code (settings.json oder Extension Config):JSON{
-  "mcpServers": {
-    "nexus-bridge": {
-      "command": "node",
-      "args": ["${workspaceFolder}/mcp-server/dist/index.js"],
-      "env": {
-        "NODE_ENV": "development",
-        "DATABASE_URL": "postgresql://user:password@localhost:5432/db"
-      },
-      "disabled": false,
-      "autoApprove": [
-        "read_resource",
-        "validate_compliance"
-      ]
-    }
-  }
-}
-(Hinweis: autoApprove erlaubt dem Agenten, Lese-Zugriffe ohne nervige Rückfragen durchzuführen.)5. Der perfektionierte Workflow (Example Scenario)Mit dieser MCP-Erweiterung ändert sich der Arbeitsablauf von "Raten" zu "Wissen":User Prompt: "Erstelle eine neue API Route für User-Settings."Agent (Nexus-Powered):Internal Thought: "Ich muss wissen, wie die User-Tabelle aussieht und welche Routen schon belegt sind."Action: Ruft project://db/schema ab. -> Erkennt: Tabelle heißt profiles, nicht users.Action: Ruft project://app/routes ab. -> Erkennt: /api/settings ist frei.Action: Ruft project://ui/tokens ab. -> Weiß: Fehler-Status ist Farbe destructive-500.Resultat: Der generierte Code passt beim ersten Versuch perfekt in die bestehende Architektur. Keine Import-Fehler, keine falschen Spaltennamen, keine Design-Brüche.
+# AI/Prompt History (Privacy)
+.prompt-history.json
+lib/ai/prompt-history.json
