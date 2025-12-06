@@ -92,6 +92,67 @@ jobs:
 - ✅ Conditional Jobs (Deploy nur bei main-Branch)
 - ✅ Artifact-Sharing zwischen Jobs
 
+### 2.3 Workflow-Härtungs-Richtlinien
+
+**WICHTIG**: Kritische Validierungs-Steps dürfen NICHT mit `|| true` abgeschlossen werden!
+
+#### Verboten in kritischen Workflows (ci.yml, master-validation.yml):
+
+```yaml
+# ❌ FALSCH - Fehler werden ignoriert
+- name: Type Check
+  run: pnpm run type-check || true
+
+# ❌ FALSCH - continue-on-error für kritische Schritte
+- name: Lint
+  run: pnpm run lint
+  continue-on-error: true
+```
+
+#### Korrekte Verwendung:
+
+```yaml
+# ✅ RICHTIG - Fehler blockieren den Workflow
+- name: Type Check
+  run: pnpm run type-check
+
+# ✅ RICHTIG - continue-on-error nur mit Validierung
+- name: Lint
+  run: pnpm run lint
+  continue-on-error: ${{ github.event_name == 'schedule' }}
+```
+
+#### Erlaubte Ausnahmen für `|| true`:
+
+1. **Cleanup-Aktionen** (z.B. Server-Stop in E2E-Tests):
+   ```yaml
+   - name: Stop Server
+     if: always()
+     run: kill $SERVER_PID 2>/dev/null || true
+   ```
+
+2. **Informative Prüfungen** (nur bei schedule/workflow_dispatch):
+   ```yaml
+   - name: Check Updates
+     run: pnpm outdated || true
+   ```
+
+3. **Auto-Fix-Fallbacks** (nur wenn Hauptbefehl fehlschlägt):
+   ```yaml
+   - name: ESLint Fix
+     run: pnpm run lint:fix 2>/dev/null || pnpm exec eslint --fix || true
+   ```
+
+#### Workflow-Kategorien:
+
+| Kategorie | `|| true` erlaubt | `continue-on-error` erlaubt |
+|-----------|-------------------|----------------------------|
+| CI/CD Main (ci.yml) | ❌ Nein | ❌ Nein |
+| Validation (master-validation.yml) | ❌ Nein | ❌ Nein |
+| E2E Tests (e2e-tests.yml) | ✅ Nur Cleanup | ✅ Mit Bedingung |
+| Auto-Fix (auto-*.yml) | ✅ Als Fallback | ✅ Ja |
+| Scheduled Jobs | ✅ Ja | ✅ Ja |
+
 ---
 
 ## 3. Self-Healing Workflows

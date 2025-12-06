@@ -3,7 +3,7 @@
  * ======================
  * Selbstlernendes System für kontinuierliche Prompt-Optimierung.
  * Speichert erfolgreiche Prompts und verbessert Templates basierend auf Erfolgsrate.
- * 
+ *
  * Funktionen:
  * - savePromptExecution() - Speichere Ausführungsergebnis
  * - getSuccessfulTemplates() - Hole erfolgreiche Vorlagen
@@ -159,13 +159,13 @@ export class PromptLearningEngine {
    */
   async getBestPatterns(taskType: TaskType): Promise<string[]> {
     const successfulExecutions = await this.getSuccessfulTemplates(taskType)
-    
+
     // Extrahiere gemeinsame Phrasen/Muster
     const patterns: Map<string, number> = new Map()
 
     for (const exec of successfulExecutions) {
       const words = exec.optimizedPrompt.toLowerCase().split(/\s+/)
-      
+
       // Bi-gramme und Tri-gramme extrahieren
       for (let i = 0; i < words.length - 1; i++) {
         const bigram = `${words[i]} ${words[i + 1]}`
@@ -230,7 +230,7 @@ export class PromptLearningEngine {
     const failedExecutions = this.history.filter(
       exec => exec.taskType === taskType && !exec.success
     )
-    
+
     if (failedExecutions.length > 0) {
       const commonErrors = this.findCommonErrors(failedExecutions)
       for (const error of commonErrors.slice(0, 2)) {
@@ -275,7 +275,7 @@ export class PromptLearningEngine {
       "komponente", "funktion", "api", "button", "dialog", "page", "route",
       "component", "function", "table", "column", "migration", "test"
     ]
-    const specificCount = specificTerms.filter(t => 
+    const specificCount = specificTerms.filter(t =>
       prompt.toLowerCase().includes(t)
     ).length
     const specificity = Math.min(100, specificCount * 20)
@@ -431,13 +431,13 @@ export class PromptLearningEngine {
     this.templateStats.clear()
 
     const taskTypes: TaskType[] = [
-      "feature", "bugfix", "qa", "refactor", "migration", 
+      "feature", "bugfix", "qa", "refactor", "migration",
       "documentation", "optimization", "unknown"
     ]
 
     for (const taskType of taskTypes) {
       const executions = this.history.filter(e => e.taskType === taskType)
-      
+
       if (executions.length === 0) continue
 
       const successCount = executions.filter(e => e.success).length

@@ -3,7 +3,7 @@
  * ================
  * Validiert und verbessert User-Prompts automatisch.
  * Implementiert das Input Security Protocol.
- * 
+ *
  * Funktionen:
  * - isPromptSufficient() - Prüft ob Prompt ausreichend ist
  * - suggestImprovements() - Schlägt Verbesserungen vor

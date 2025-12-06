@@ -57,7 +57,7 @@ Deine Prinzipien:
    - Characterization Tests falls nötig
 
 4. **Refactoring (Schritt für Schritt):**
-   
+
    **Mögliche Refactorings:**
    - Extract Function/Method
    - Extract Component

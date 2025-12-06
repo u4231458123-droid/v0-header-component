@@ -707,3 +707,184 @@ export async function validateBotOutput(
  */
 export const nexusBridge = NexusBridgeClient.getInstance()
 
+// ============================================================================
+// SHARED CONTEXT CACHE
+// ============================================================================
+
+/**
+ * Gemeinsamer Kontext-Cache zwischen allen Agenten
+ * Implementiert das Lazy-Loading und Cache-Invalidierung Pattern
+ */
+export class SharedContextCache {
+  private static instance: SharedContextCache
+  
+  // Cache-Speicher
+  private projectContext: {
+    uiTokens: UITokens | null
+    dbSchema: DBSchema | null
+    appRoutes: AppRoutes | null
+    activeDocs: ActiveDocs | null
+    timestamp: string
+  } | null = null
+  
+  // Cache-Konfiguration
+  private cacheLifetime = 5 * 60 * 1000 // 5 Minuten
+  private lastUpdate = 0
+  private isLoading = false
+  private loadingPromise: Promise<void> | null = null
+  
+  // Subscriber für Cache-Invalidierung
+  private subscribers: Map<string, (context: typeof this.projectContext) => void> = new Map()
+
+  private constructor() {}
+
+  static getInstance(): SharedContextCache {
+    if (!SharedContextCache.instance) {
+      SharedContextCache.instance = new SharedContextCache()
+    }
+    return SharedContextCache.instance
+  }
+
+  /**
+   * Hole Projekt-Kontext (mit Lazy-Loading und Caching)
+   */
+  async getContext(): Promise<{
+    uiTokens: UITokens | null
+    dbSchema: DBSchema | null
+    appRoutes: AppRoutes | null
+    activeDocs: ActiveDocs | null
+    timestamp: string
+  }> {
+    // Prüfe ob Cache gültig ist
+    if (this.projectContext && Date.now() - this.lastUpdate < this.cacheLifetime) {
+      return this.projectContext
+    }
+
+    // Wenn bereits am Laden, warte auf das Promise
+    if (this.isLoading && this.loadingPromise) {
+      await this.loadingPromise
+      return this.projectContext!
+    }
+
+    // Lade neuen Kontext
+    await this.refreshContext()
+    return this.projectContext!
+  }
+
+  /**
+   * Erzwinge Aktualisierung des Kontexts
+   */
+  async refreshContext(): Promise<void> {
+    this.isLoading = true
+    
+    this.loadingPromise = (async () => {
+      try {
+        this.projectContext = await loadProjectContext()
+        this.lastUpdate = Date.now()
+        
+        // Benachrichtige Subscriber
+        this.notifySubscribers()
+        
+        console.log(`🔄 Shared Context Cache aktualisiert: ${this.projectContext.timestamp}`)
+      } catch (error) {
+        console.error("❌ Fehler beim Laden des Shared Context:", error)
+        // Bei Fehler: Alten Cache behalten wenn vorhanden
+      } finally {
+        this.isLoading = false
+        this.loadingPromise = null
+      }
+    })()
+
+    await this.loadingPromise
+  }
+
+  /**
+   * Invalidiere Cache (z.B. nach Dateiänderungen)
+   */
+  invalidate(): void {
+    this.lastUpdate = 0
+    console.log("⚠️ Shared Context Cache invalidiert")
+  }
+
+  /**
+   * Setze Cache-Lifetime
+   */
+  setCacheLifetime(ms: number): void {
+    this.cacheLifetime = ms
+  }
+
+  /**
+   * Hole einzelne Resource aus dem Cache
+   */
+  async getUITokens(): Promise<UITokens | null> {
+    const context = await this.getContext()
+    return context.uiTokens
+  }
+
+  async getDBSchema(): Promise<DBSchema | null> {
+    const context = await this.getContext()
+    return context.dbSchema
+  }
+
+  async getAppRoutes(): Promise<AppRoutes | null> {
+    const context = await this.getContext()
+    return context.appRoutes
+  }
+
+  async getActiveDocs(): Promise<ActiveDocs | null> {
+    const context = await this.getContext()
+    return context.activeDocs
+  }
+
+  /**
+   * Subscribiere auf Cache-Änderungen
+   */
+  subscribe(agentId: string, callback: (context: typeof this.projectContext) => void): void {
+    this.subscribers.set(agentId, callback)
+    console.log(`📡 Agent ${agentId} subscribed zu Context-Updates`)
+  }
+
+  /**
+   * Unsubscribe von Cache-Änderungen
+   */
+  unsubscribe(agentId: string): void {
+    this.subscribers.delete(agentId)
+    console.log(`📡 Agent ${agentId} unsubscribed von Context-Updates`)
+  }
+
+  /**
+   * Benachrichtige alle Subscriber
+   */
+  private notifySubscribers(): void {
+    for (const [agentId, callback] of this.subscribers) {
+      try {
+        callback(this.projectContext)
+      } catch (error) {
+        console.error(`Fehler beim Benachrichtigen von Agent ${agentId}:`, error)
+      }
+    }
+  }
+
+  /**
+   * Hole Cache-Statistiken
+   */
+  getStats(): {
+    cacheAge: number
+    isValid: boolean
+    subscriberCount: number
+    lastUpdate: string
+  } {
+    return {
+      cacheAge: Date.now() - this.lastUpdate,
+      isValid: this.projectContext !== null && Date.now() - this.lastUpdate < this.cacheLifetime,
+      subscriberCount: this.subscribers.size,
+      lastUpdate: this.lastUpdate ? new Date(this.lastUpdate).toISOString() : "never",
+    }
+  }
+}
+
+/**
+ * Singleton-Export für Shared Context Cache
+ */
+export const sharedContextCache = SharedContextCache.getInstance()
+

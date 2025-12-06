@@ -11,7 +11,7 @@
  * 4. Validation (Quality Gates)
  * 5. Documentation (Swimm)
  * 6. Commit/Push (Git Workflow)
- * 
+ *
  * Chat-Automatik:
  * - User gibt kurze Anweisung ein
  * - Genesis Prompt Architect transformiert zu perfektem Prompt
@@ -24,8 +24,8 @@ import type { BotTask } from "./bots/base-bot"
 import { MasterBot } from "./bots/master-bot"
 import { loadProjectContext, nexusBridge } from "./bots/nexus-bridge-integration"
 import { GenesisPromptArchitect } from "./prompt-architect"
-import { inputSecurity, validatePrompt } from "./prompt-validator"
 import { promptLearning, saveExecution } from "./prompt-learning"
+import { inputSecurity, validatePrompt } from "./prompt-validator"
 
 // Workflow-Phasen
 export type WorkflowPhase =
@@ -436,7 +436,7 @@ export class WorkflowOrchestrator {
 
   /**
    * Chat-Automatik: Führe User-Eingabe autonom aus
-   * 
+   *
    * Workflow:
    * 1. Input Security Protocol prüft Eingabe
    * 2. Genesis Prompt Architect transformiert zu perfektem Prompt

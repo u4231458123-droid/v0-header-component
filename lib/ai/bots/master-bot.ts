@@ -97,9 +97,13 @@ export class MasterBot {
     timestamp: string
   } | null = null
 
+  // Lazy-Loading Flags
+  private contextLoaded = false
+  private contextLoadingPromise: Promise<void> | null = null
+
   constructor() {
-    this.loadKnowledgeBase()
-    this.loadProjectContext() // Lade Nexus Bridge Context
+    // WICHTIG: Keine async-Aufrufe im Konstruktor!
+    // Kontext wird via ensureContextLoaded() lazy geladen
     this.changeRequestsPath = path.join(process.cwd(), ".cicd", "change-requests.json")
     this.decisionsPath = path.join(process.cwd(), ".cicd", "master-decisions.json")
     this.changeManager = new SystemwideChangeManager()
@@ -167,10 +171,42 @@ export class MasterBot {
   }
 
   /**
+   * Stelle sicher, dass der Kontext geladen ist (Lazy-Loading)
+   * Diese Methode muss vor allen Operationen aufgerufen werden, die Kontext benötigen
+   */
+  async ensureContextLoaded(): Promise<void> {
+    // Bereits geladen? Sofort zurück
+    if (this.contextLoaded) return
+
+    // Bereits am Laden? Warte auf das Promise
+    if (this.contextLoadingPromise) {
+      await this.contextLoadingPromise
+      return
+    }
+
+    // Starte das Laden
+    this.contextLoadingPromise = (async () => {
+      try {
+        await this.loadKnowledgeBase()
+        await this.loadProjectContextInternal()
+        this.contextLoaded = true
+        console.log("✅ Master-Bot Kontext vollständig geladen")
+      } catch (error) {
+        console.error("❌ Fehler beim Laden des Kontexts:", error)
+        // Setze Flag nicht, damit es beim nächsten Aufruf erneut versucht wird
+      } finally {
+        this.contextLoadingPromise = null
+      }
+    })()
+
+    await this.contextLoadingPromise
+  }
+
+  /**
    * Lade alle Vorgaben, Regeln, Verbote und Docs
    * OBLIGATORISCH vor jeder Aufgabe
    */
-  private async loadKnowledgeBase() {
+  private async loadKnowledgeBase(): Promise<void> {
     const categories: KnowledgeCategory[] = [
       "design-guidelines",
       "coding-rules",
@@ -202,10 +238,10 @@ export class MasterBot {
   }
 
   /**
-   * Lade Projekt-Kontext von Nexus Bridge
-   * OBLIGATORISCH vor jeder Aufgabe für Context-Awareness
+   * Lade Projekt-Kontext von Nexus Bridge (intern)
+   * Wird von ensureContextLoaded() aufgerufen
    */
-  private async loadProjectContext() {
+  private async loadProjectContextInternal(): Promise<void> {
     try {
       this.projectContext = await loadProjectContext()
       console.log(`📊 Nexus Bridge Context geladen: ${this.projectContext.timestamp}`)
@@ -216,30 +252,43 @@ export class MasterBot {
   }
 
   /**
+   * Erzwinge Neuladen des Kontexts
+   */
+  async reloadContext(): Promise<void> {
+    this.contextLoaded = false
+    this.contextLoadingPromise = null
+    await this.ensureContextLoaded()
+  }
+
+  /**
    * Hole Design-Tokens für UI-Validierung
    */
-  getDesignTokens(): UITokens | null {
+  async getDesignTokens(): Promise<UITokens | null> {
+    await this.ensureContextLoaded()
     return this.projectContext?.uiTokens || null
   }
 
   /**
    * Hole DB-Schema für Query-Validierung
    */
-  getDBSchema(): DBSchema | null {
+  async getDBSchema(): Promise<DBSchema | null> {
+    await this.ensureContextLoaded()
     return this.projectContext?.dbSchema || null
   }
 
   /**
    * Hole App-Routen für Routing-Validierung
    */
-  getAppRoutes(): AppRoutes | null {
+  async getAppRoutes(): Promise<AppRoutes | null> {
+    await this.ensureContextLoaded()
     return this.projectContext?.appRoutes || null
   }
 
   /**
    * Hole aktive Dokumentation für Compliance-Prüfung
    */
-  getActiveDocs(): ActiveDocs | null {
+  async getActiveDocs(): Promise<ActiveDocs | null> {
+    await this.ensureContextLoaded()
     return this.projectContext?.activeDocs || null
   }
 
@@ -251,6 +300,7 @@ export class MasterBot {
     errors: string[]
     suggestions: string[]
   }> {
+    await this.ensureContextLoaded()
     const result = await validateBotOutput(code, filePath)
     return {
       valid: result.valid,
@@ -265,6 +315,8 @@ export class MasterBot {
    * Erstelle Antrag für Vorgaben-Änderung
    */
   async createChangeRequest(request: Omit<ChangeRequest, "id" | "timestamp" | "status">): Promise<ChangeRequest> {
+    await this.ensureContextLoaded()
+
     // Starte Work-Tracking
     const work = await this.workTracker.startWork({
       type: "work",
@@ -305,10 +357,10 @@ export class MasterBot {
    * Prüfe und entscheide über Change-Request
    */
   async reviewChangeRequest(requestId: string): Promise<ChangeRequest | null> {
+    await this.ensureContextLoaded()
+
     const request = await this.loadChangeRequest(requestId)
     if (!request) return null
-
-    await this.loadKnowledgeBase()
 
     // Prüfe Request gegen Knowledge-Base
     const agentResponsibility = this.knowledgeBase.find((e: any) => e.id === "agent-responsibility-001")
@@ -350,6 +402,8 @@ export class MasterBot {
    * Prüft ob alle Agenten ihre Verantwortlichkeiten erfüllen
    */
   async performAgentOversight(): Promise<AgentOversightResult[]> {
+    await this.ensureContextLoaded()
+
     const work = await this.workTracker.startWork({
       type: "work",
       title: "Agent-Überwachung: Vollständige Compliance-Prüfung",
@@ -439,7 +493,7 @@ export class MasterBot {
    * Chat-Interface für Master-Bot
    */
   async chat(message: string): Promise<string> {
-    await this.loadKnowledgeBase()
+    await this.ensureContextLoaded()
 
     // Einfache Chat-Logik (sollte durch echte AI erweitert werden)
     if (message.toLowerCase().includes("überwachung") || message.toLowerCase().includes("oversight")) {
@@ -595,6 +649,8 @@ export class MasterBot {
     success: boolean
     errors?: string[]
   }> {
+    await this.ensureContextLoaded()
+
     // 1. Finde passenden Bot basierend auf Spezialisierung
     let assignedBot: string | null = null
 
@@ -654,6 +710,8 @@ export class MasterBot {
     valid: boolean
     violations: Array<{ type: string; message: string; suggestion: string }>
   }> {
+    await this.ensureContextLoaded()
+    
     const { QualityBot } = await import("./quality-bot")
     const qualityBot = new QualityBot()
 
@@ -701,6 +759,7 @@ export class MasterBot {
     success: boolean
     error?: string
   }> {
+    await this.ensureContextLoaded()
     // Bestimme Agent-Rolle basierend auf Task-Typ
     const role = determineAgentRole(task.type)
     const agentConfig = AGENT_SPECIALIZATIONS.ROLES[role as keyof typeof AGENT_SPECIALIZATIONS.ROLES]
@@ -751,6 +810,8 @@ export class MasterBot {
     track2: { tasks: BotTask[]; status: string }
     track3: { tasks: BotTask[]; status: string }
   }> {
+    await this.ensureContextLoaded()
+    
     const track1: BotTask[] = [] // QA & Bugfixing
     const track2: BotTask[] = [] // Feature-Completion
     const track3: BotTask[] = [] // Workflow-Optimization
@@ -798,6 +859,8 @@ export class MasterBot {
     compliant: boolean
     violations: Array<{ type: string; message: string; severity: string }>
   }> {
+    await this.ensureContextLoaded()
+    
     const violations: Array<{ type: string; message: string; severity: string }> = []
 
     // Prüfe ob Agent Knowledge-Base lädt
@@ -827,6 +890,8 @@ export class MasterBot {
     autonomous: boolean
     blockers: string[]
   }> {
+    await this.ensureContextLoaded()
+    
     const blockers: string[] = []
 
     // Prüfe ob Task vollständig definiert ist
