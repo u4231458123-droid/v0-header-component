@@ -42,12 +42,12 @@ provider "vercel" {
 resource "vercel_project" "mydispatch" {
   name      = "mydispatch"
   framework = "nextjs"
-  
+
   git_repository {
     type = "github"
     repo = "mydispatch/v0-header-component"
   }
-  
+
   environment {
     key    = "NEXT_PUBLIC_SUPABASE_URL"
     value  = var.supabase_url

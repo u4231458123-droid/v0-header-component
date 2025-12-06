@@ -711,7 +711,7 @@ export class MasterBot {
     violations: Array<{ type: string; message: string; suggestion: string }>
   }> {
     await this.ensureContextLoaded()
-    
+
     const { QualityBot } = await import("./quality-bot")
     const qualityBot = new QualityBot()
 
@@ -811,7 +811,7 @@ export class MasterBot {
     track3: { tasks: BotTask[]; status: string }
   }> {
     await this.ensureContextLoaded()
-    
+
     const track1: BotTask[] = [] // QA & Bugfixing
     const track2: BotTask[] = [] // Feature-Completion
     const track3: BotTask[] = [] // Workflow-Optimization
@@ -860,7 +860,7 @@ export class MasterBot {
     violations: Array<{ type: string; message: string; severity: string }>
   }> {
     await this.ensureContextLoaded()
-    
+
     const violations: Array<{ type: string; message: string; severity: string }> = []
 
     // Prüfe ob Agent Knowledge-Base lädt
@@ -891,7 +891,7 @@ export class MasterBot {
     blockers: string[]
   }> {
     await this.ensureContextLoaded()
-    
+
     const blockers: string[] = []
 
     // Prüfe ob Task vollständig definiert ist

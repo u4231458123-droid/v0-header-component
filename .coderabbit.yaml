@@ -1,10 +1,62 @@
 language: "de"
+
+# ============================================================================
+# CodeRabbit Konfiguration - Optimiert fur grosse PRs
+# ============================================================================
+# Problem: Mehr als 100 Dateien werden ubersprungen
+# Losung: Erweiterte path_filters um nicht-kritische Dateien auszuschliessen
+# ============================================================================
+
 reviews:
   high_level_summary: true
   poem: false
   review_status: true
   collapse_when_outdated: true
+  request_changes_workflow: true
+
+  # Haupt-Filter: Schliesse nicht-kritische Dateien aus
   path_filters:
+    # Immer ausschliessen
+    - "!*.test.ts"
+    - "!*.spec.ts"
+    - "!node_modules/**"
+    - "!.next/**"
+    - "!dist/**"
+    - "!pnpm-lock.yaml"
+    - "!package-lock.json"
+
+    # Dokumentation (separates Review empfohlen)
+    - "!docs/**"
+    - "!wiki/**"
+    - "!*.md"
+    - "!.swimm/**"
+
+    # Konfiguration und IDE
+    - "!.cursor/**"
+    - "!.vscode/**"
+    - "!.roo/**"
+    - "!.prompts/**"
+    - "!.husky/**"
+
+    # Assets und statische Dateien
+    - "!assets/**"
+    - "!public/**"
+    - "!*.png"
+    - "!*.jpg"
+    - "!*.svg"
+    - "!*.ico"
+
+    # MCP-Server (separates Review)
+    - "!mcp-server/**"
+
+    # Generated Files
+    - "!*.min.js"
+    - "!*.min.css"
+    - "!coverage/**"
+    - "!.tsbuildinfo"
+
+  # Label-basierte Kategorisierung fur fokussiertes Review
+  labels:
     - label: "Frontend"
       files:
         - "app/**/*.tsx"
@@ -17,18 +69,20 @@ reviews:
       files:
         - "*.config.*"
         - ".github/**/*.yml"
-  request_changes_workflow: true
-  path_filters:
-    - "!*.test.ts"
-    - "!*.spec.ts"
-    - "!node_modules/**"
-    - "!.next/**"
-    - "!dist/**"
+    - label: "AI/Bots"
+      files:
+        - "lib/ai/**/*.ts"
+        - "trigger/**/*.ts"
+  # Review-Fokus-Themen
   themes:
     - "security"
     - "performance"
     - "accessibility"
     - "best_practices"
+    - "typescript"
+    - "error_handling"
+
+  # Aktivierte Tools
   tools:
     - name: "typescript"
       enabled: true
@@ -36,52 +90,38 @@ reviews:
       enabled: true
     - name: "sonarqube"
       enabled: false
+
+# Chat-Konfiguration
 chat:
   auto_review:
     enabled: true
     base_branch: "main"
   auto_description:
     enabled: true
+
+# Auto-Review-Einstellungen
+auto_review:
+  enabled: true
+  base_branch: "main"
+  drafts: false
+
+# PR-Review-Einstellungen (konsolidiert)
 pr_review:
   request_changes_workflow: true
-  review_simple_changes: true
+  review_simple_changes: false  # Einfache Aenderungen nicht reviewen (spart Limit)
   review_comment_lgtm: false
-  path_filters:
-    - "!*.test.ts"
-    - "!*.spec.ts"
-    - "!node_modules/**"
-    - "!.next/**"
-    - "!dist/**"
   high_level_summary: true
   review_status: true
   collapse_when_outdated: true
-  themes:
-    - "security"
-    - "performance"
-    - "accessibility"
-    - "best_practices"
-  tools:
-    - name: "typescript"
-      enabled: true
-    - name: "eslint"
-      enabled: true
-  auto_review:
-    enabled: true
-    base_branch: "main"
-  auto_description:
-    enabled: true
   poem: false
-  path_filters:
-    - label: "Frontend"
-      files:
-        - "app/**/*.tsx"
-        - "components/**/*.tsx"
-    - label: "Backend"
-      files:
-        - "app/api/**/*.ts"
-        - "lib/**/*.ts"
-    - label: "Config"
-      files:
-        - "*.config.*"
-        - ".github/**/*.yml"
+
+  # Max-Dateien-Strategie: Fokus auf kritische Dateien
+  max_files_to_review: 100
+
+  # Prioritaet: Kritische Dateien zuerst reviewen
+  priority_files:
+    - "app/**/*.tsx"
+    - "app/**/*.ts"
+    - "lib/**/*.ts"
+    - "components/**/*.tsx"
 

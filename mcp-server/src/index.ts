@@ -35,6 +35,8 @@ import { getProjectHealth } from "./tools/get-project-health.js";
 import { scaffoldFeature } from "./tools/scaffold-feature.js";
 import { validateCompliance } from "./tools/validate-compliance.js";
 import { validateSlug } from "./tools/validate-slug.js";
+import { queryKnowledgeBase } from "./tools/query-knowledge-base.js";
+import { checkDependencies } from "./tools/check-dependencies.js";
 
 const server = new Server(
   {
@@ -199,6 +201,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: [],
         },
       },
+      {
+        name: "query_knowledge_base",
+        description: "Queries the RAG knowledge base for relevant documents using vector similarity search",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: {
+              type: "string",
+              description: "Natural language search query",
+            },
+            category: {
+              type: "string",
+              description: "Optional category filter (compliance, architecture, api, etc.)",
+            },
+            matchThreshold: {
+              type: "number",
+              description: "Minimum similarity threshold (0-1, default: 0.78)",
+            },
+            maxResults: {
+              type: "number",
+              description: "Maximum number of results (default: 10)",
+            },
+          },
+          required: ["query"],
+        },
+      },
+      {
+        name: "check_dependencies",
+        description: "Validates package.json for conflicts, vulnerabilities, and duplicates",
+        inputSchema: {
+          type: "object",
+          properties: {
+            projectRoot: {
+              type: "string",
+              description: "Optional path to project root",
+            },
+          },
+          required: [],
+        },
+      },
     ],
   };
 });
@@ -251,6 +293,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           {
             type: "text",
             text: JSON.stringify(await getProjectHealth()),
+          },
+        ],
+      };
+
+    case "query_knowledge_base":
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              await queryKnowledgeBase({
+                query: args?.query as string,
+                category: args?.category as string | undefined,
+                matchThreshold: args?.matchThreshold as number | undefined,
+                maxResults: args?.maxResults as number | undefined,
+              })
+            ),
+          },
+        ],
+      };
+
+    case "check_dependencies":
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(await checkDependencies(args?.projectRoot as string | undefined)),
           },
         ],
       };

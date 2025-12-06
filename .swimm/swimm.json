@@ -1,0 +1,30 @@
+{
+  "$schema": "https://swimm.io/schemas/swimm.schema.json",
+  "version": 1,
+  "repo_id": "mydispatch",
+  "repo_name": "MyDispatch",
+  "name": "MyDispatch Documentation",
+  "description": "Living documentation for the MyDispatch platform",
+  "settings": {
+    "auto_sync": true,
+    "strict_mode": true,
+    "languages": ["typescript", "tsx", "javascript"],
+    "ignore_patterns": [
+      "node_modules/**",
+      ".next/**",
+      "dist/**",
+      "*.test.ts",
+      "*.spec.ts"
+    ]
+  },
+  "docs": {
+    "required_coverage": 80,
+    "auto_update": true,
+    "link_validation": true
+  },
+  "ci": {
+    "block_on_drift": true,
+    "notify_on_changes": true
+  }
+}
+

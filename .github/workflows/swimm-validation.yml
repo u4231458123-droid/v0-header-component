@@ -1,0 +1,104 @@
+# ============================================================================
+# Swimm Documentation Validation
+# ============================================================================
+# Prüft ob Code und Dokumentation synchron sind.
+# Blockiert Merge wenn Dokumentation veraltet ist.
+# ============================================================================
+
+name: Swimm Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  swimm-verify:
+    name: Verify Documentation Sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          
+      - name: Install Swimm CLI
+        run: npm install -g @swimm/cli
+        
+      - name: Verify Documentation
+        id: verify
+        run: |
+          echo "🔍 Prüfe Dokumentations-Synchronisation..."
+          
+          # Prüfe ob .swimm Ordner existiert
+          if [ ! -d ".swimm" ]; then
+            echo "⚠️ Kein .swimm Ordner gefunden - überspringe Validierung"
+            echo "has_swimm=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "has_swimm=true" >> $GITHUB_OUTPUT
+          
+          # Versuche Swimm-Validierung (wenn konfiguriert)
+          if command -v swimm &> /dev/null; then
+            swimm verify --ci || {
+              echo "❌ Dokumentation ist nicht synchron mit Code"
+              echo "   Bitte aktualisiere die Swimm-Docs vor dem Merge"
+              echo "sync_status=outdated" >> $GITHUB_OUTPUT
+              exit 1
+            }
+            echo "sync_status=synced" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Swimm CLI nicht verfügbar"
+            echo "sync_status=unknown" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Check Changed Files
+        if: steps.verify.outputs.has_swimm == 'true'
+        run: |
+          # Prüfe ob Code-Dateien ohne Doku-Updates geändert wurden
+          CHANGED_CODE=$(git diff --name-only origin/main...HEAD | grep -E '\.(ts|tsx)$' | grep -v '\.test\.' | grep -v '\.spec\.' | wc -l)
+          CHANGED_DOCS=$(git diff --name-only origin/main...HEAD | grep -E '\.swimm/|\.md$' | wc -l)
+          
+          echo "📊 Änderungs-Statistik:"
+          echo "   - Code-Dateien: $CHANGED_CODE"
+          echo "   - Doku-Dateien: $CHANGED_DOCS"
+          
+          # Warnung wenn viel Code aber wenig Doku geändert
+          if [ "$CHANGED_CODE" -gt 10 ] && [ "$CHANGED_DOCS" -lt 2 ]; then
+            echo "⚠️ Viele Code-Änderungen ($CHANGED_CODE) aber wenige Doku-Updates ($CHANGED_DOCS)"
+            echo "   Bitte Dokumentation prüfen und aktualisieren"
+          fi
+          
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Swimm Documentation Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.verify.outputs.has_swimm }}" == "true" ]; then
+            echo "✅ Swimm-Konfiguration gefunden" >> $GITHUB_STEP_SUMMARY
+            
+            case "${{ steps.verify.outputs.sync_status }}" in
+              "synced")
+                echo "✅ Dokumentation ist synchron mit Code" >> $GITHUB_STEP_SUMMARY
+                ;;
+              "outdated")
+                echo "❌ Dokumentation ist veraltet" >> $GITHUB_STEP_SUMMARY
+                ;;
+              *)
+                echo "⚠️ Sync-Status unbekannt" >> $GITHUB_STEP_SUMMARY
+                ;;
+            esac
+          else
+            echo "⚠️ Keine Swimm-Konfiguration gefunden" >> $GITHUB_STEP_SUMMARY
+          fi
+

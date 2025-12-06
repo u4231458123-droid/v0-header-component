@@ -89,12 +89,12 @@ export class BotCommunicationManager {
   private async handleDocumentationQuestion(question: BotQuestion): Promise<BotAnswer> {
     try {
       const { internetResearchService } = await import("./internet-research")
-      
+
       console.log(`🔍 Documentation-Bot recherchiert: ${question.question}`)
 
       // Führe echte Internet-Recherche durch
       const researchResult = await internetResearchService.research(question.question, question.context)
-      
+
       // Formatiere Antwort
       const answer = `
 Recherche-Ergebnis für: ${question.question}
@@ -121,7 +121,7 @@ ${researchResult.sources.map((s) => `- ${s}`).join("\n")}
       }
     } catch (error: any) {
       console.error("Fehler bei Documentation-Recherche:", error)
-      
+
       // Bei Fehler: Weiterleitung an Master-Bot
       return await this.handleMasterBotQuestion(question)
     }
@@ -134,7 +134,7 @@ ${researchResult.sources.map((s) => `- ${s}`).join("\n")}
     // Verwende Internet-Research-Service
     const { internetResearchService } = await import("./internet-research")
     const researchResult = await internetResearchService.research(question)
-    
+
     // Formatiere Antwort
     return `
 Recherche-Ergebnis für: ${question}
@@ -339,8 +339,8 @@ export class AgentCommunicationProtocol {
 
     // Validiere Sender/Empfänger
     const senderSpec = AGENT_SPECIALIZATION_MATRIX[message.sender]
-    const receiverSpec = message.receiver !== "broadcast" 
-      ? AGENT_SPECIALIZATION_MATRIX[message.receiver] 
+    const receiverSpec = message.receiver !== "broadcast"
+      ? AGENT_SPECIALIZATION_MATRIX[message.receiver]
       : null
 
     if (senderSpec && !senderSpec.canSend.includes(message.type)) {
@@ -376,7 +376,7 @@ export class AgentCommunicationProtocol {
     const messages = this.messageQueue.filter(
       (m) => m.receiver === agentId || m.receiver === "broadcast"
     )
-    
+
     // Entferne empfangene Nachrichten aus Queue
     this.messageQueue = this.messageQueue.filter(
       (m) => m.receiver !== agentId && m.receiver !== "broadcast"

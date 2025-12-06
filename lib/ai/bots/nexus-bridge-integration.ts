@@ -717,7 +717,7 @@ export const nexusBridge = NexusBridgeClient.getInstance()
  */
 export class SharedContextCache {
   private static instance: SharedContextCache
-  
+
   // Cache-Speicher
   private projectContext: {
     uiTokens: UITokens | null
@@ -726,13 +726,13 @@ export class SharedContextCache {
     activeDocs: ActiveDocs | null
     timestamp: string
   } | null = null
-  
+
   // Cache-Konfiguration
   private cacheLifetime = 5 * 60 * 1000 // 5 Minuten
   private lastUpdate = 0
   private isLoading = false
   private loadingPromise: Promise<void> | null = null
-  
+
   // Subscriber für Cache-Invalidierung
   private subscribers: Map<string, (context: typeof this.projectContext) => void> = new Map()
 
@@ -776,15 +776,15 @@ export class SharedContextCache {
    */
   async refreshContext(): Promise<void> {
     this.isLoading = true
-    
+
     this.loadingPromise = (async () => {
       try {
         this.projectContext = await loadProjectContext()
         this.lastUpdate = Date.now()
-        
+
         // Benachrichtige Subscriber
         this.notifySubscribers()
-        
+
         console.log(`🔄 Shared Context Cache aktualisiert: ${this.projectContext.timestamp}`)
       } catch (error) {
         console.error("❌ Fehler beim Laden des Shared Context:", error)
