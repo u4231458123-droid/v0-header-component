@@ -1,0 +1,87 @@
+language: "de"
+reviews:
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_when_outdated: true
+  path_filters:
+    - label: "Frontend"
+      files:
+        - "app/**/*.tsx"
+        - "components/**/*.tsx"
+    - label: "Backend"
+      files:
+        - "app/api/**/*.ts"
+        - "lib/**/*.ts"
+    - label: "Config"
+      files:
+        - "*.config.*"
+        - ".github/**/*.yml"
+  request_changes_workflow: true
+  path_filters:
+    - "!*.test.ts"
+    - "!*.spec.ts"
+    - "!node_modules/**"
+    - "!.next/**"
+    - "!dist/**"
+  themes:
+    - "security"
+    - "performance"
+    - "accessibility"
+    - "best_practices"
+  tools:
+    - name: "typescript"
+      enabled: true
+    - name: "eslint"
+      enabled: true
+    - name: "sonarqube"
+      enabled: false
+chat:
+  auto_review:
+    enabled: true
+    base_branch: "main"
+  auto_description:
+    enabled: true
+pr_review:
+  request_changes_workflow: true
+  review_simple_changes: true
+  review_comment_lgtm: false
+  path_filters:
+    - "!*.test.ts"
+    - "!*.spec.ts"
+    - "!node_modules/**"
+    - "!.next/**"
+    - "!dist/**"
+  high_level_summary: true
+  review_status: true
+  collapse_when_outdated: true
+  themes:
+    - "security"
+    - "performance"
+    - "accessibility"
+    - "best_practices"
+  tools:
+    - name: "typescript"
+      enabled: true
+    - name: "eslint"
+      enabled: true
+  auto_review:
+    enabled: true
+    base_branch: "main"
+  auto_description:
+    enabled: true
+  poem: false
+  path_filters:
+    - label: "Frontend"
+      files:
+        - "app/**/*.tsx"
+        - "components/**/*.tsx"
+    - label: "Backend"
+      files:
+        - "app/api/**/*.ts"
+        - "lib/**/*.ts"
+    - label: "Config"
+      files:
+        - "*.config.*"
+        - ".github/**/*.yml"
+

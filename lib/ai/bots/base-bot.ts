@@ -134,7 +134,7 @@ export abstract class BaseBot {
       "mydispatch-core",
     ]
     const cacheKey = `${this.area}-${(categories || defaultCategories).join("-")}`
-    
+
     this.knowledgeBase = await getCached(cacheKey, async () => {
       return loadKnowledgeForTask(
         this.area,
@@ -155,13 +155,13 @@ export abstract class BaseBot {
         "feature-documentation",
         "architecture-decision",
       ]
-      
+
       const cacheKey = `docs-${this.area}-${(categories || defaultCategories).join("-")}`
-      
+
       this.documentation = await getCached(cacheKey, async () => {
         return await loadDocumentationForBot(categories || defaultCategories)
       })
-      
+
       perfLogger.log(`[${this.botName}] Dokumentationen geladen: ${this.documentation.length}`)
     } catch (error) {
       console.warn(`[${this.botName}] Fehler beim Laden der Dokumentation:`, error)
@@ -299,7 +299,7 @@ export abstract class BaseBot {
     priority: "low" | "medium" | "high" | "critical" = "medium"
   ): Promise<BotAnswer> {
     // Workflow: Dokumentation → Master-Bot → User-Chat
-    
+
     // 1. Erste Anlaufstelle: Dokumentationsabteilung
     let answer = await botCommunicationManager.askQuestion(
       this.botName,
@@ -663,7 +663,7 @@ export abstract class BaseBot {
       // OBLIGATORISCH: Validiere Datenladung
       perfLogger.log(`[${this.botName}] Validiere obligatorische Datenladung...`)
       const dataValidation = await this.validateDataLoading()
-      
+
       if (!dataValidation.valid) {
         perfLogger.warn(`[${this.botName}] Datenladung unvollständig. Fehlende: ${dataValidation.missing.join(", ")}`)
         // Versuche erneut zu laden
@@ -681,7 +681,7 @@ export abstract class BaseBot {
       // OBLIGATORISCH: IST-Analyse vor Aufgabe
       perfLogger.log(`[${this.botName}] Führe obligatorische IST-Analyse durch...`)
       const istAnalysis = await this.performMandatoryISTAnalysis(task)
-      
+
       if (!istAnalysis.valid) {
         perfLogger.warn(`[${this.botName}] IST-Analyse unvollständig. Fehlende Schritte: ${istAnalysis.missing.join(", ")}`)
         // Weiterführen, aber warnen
@@ -701,11 +701,11 @@ export abstract class BaseBot {
     while (retryCount <= maxRetries) {
       try {
         timer.checkpoint("start")
-        
+
         // Führe Aufgabe aus
         const result = await this.execute(task)
         timer.checkpoint("end")
-        
+
         // OBLIGATORISCH: Git-Protokoll nach erfolgreicher Aufgabe
         if (result.success) {
           try {
@@ -718,7 +718,7 @@ export abstract class BaseBot {
             result.warnings = [...(result.warnings || []), `Git-Protokoll Fehler: ${gitErrorMessage}`]
           }
         }
-        
+
         // Erfasse Metriken (asynchron, blockiert nicht)
         const responseTime = timer.getElapsed()
         botMonitor.recordMetrics(this.botName, {

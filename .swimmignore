@@ -1,0 +1,8 @@
+node_modules/
+.next/
+dist/
+*.test.ts
+*.spec.ts
+.env*
+*.log
+

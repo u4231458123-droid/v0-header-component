@@ -107,3 +107,95 @@ Identifiziere und schließe Lücken in:
 - Agent Review vergleicht mit main Branch
 - Ignoriere Agent Review Warnungen, wenn Änderungen bereits committed sind
 - Prüfe immer die tatsächlichen Dateien, nicht nur Agent Review
+
+## NEO-GENESIS Hyper-Stack Integration
+
+### Workflow-Phasen (Der Loop)
+
+Dieser Prozess ist strikt einzuhalten:
+
+1. **Phase 1: Planung & Visualisierung (Eraser.io)**
+   - Bevor Code geschrieben wird: Erstelle/Update Diagramme in `docs/diagrams/`
+   - Definiere Business-Logik in `project_specs.md`
+   - Prüfe bestehende Architektur-Dokumentation
+
+2. **Phase 2: Implementierung (Roo Code + Supabase)**
+   - Backend: Nutze Supabase MCP für Schema-Änderungen
+   - Frontend: Nutze Vercel AI SDK für intelligente UIs
+   - Background: Lagere komplexe Aufgaben (>10s) in Trigger.dev Jobs aus
+   - Kontext-Check: Nutze MCP-Server (Filesystem/Memory) für Pattern-Prüfung
+
+3. **Phase 3: Dokumentation (Swimm)**
+   - Erstelle Swimm-Docs für neue Features parallel zur Codierung
+   - Verknüpfe kritische Code-Snippets
+   - Stelle sicher, dass CI-Check von Swimm grün ist
+
+4. **Phase 4: Validierung (CodeRabbit + Octomind + Enforcer)**
+   - CodeRabbit kommentiert PR automatisch
+   - Octomind startet Test-Suite gegen Preview-Deployment
+   - Enforcer prüft gegen `project_specs.md`
+   - Agent liest Feedback und fixt Fehler autonom
+
+### Tool-Konsultations-Reihenfolge
+
+Vor jeder Code-Änderung:
+
+1. **Context Fetch (MCP Filesystem/Memory)**
+   - Analysiere welche Dateien betroffen sind
+   - Prüfe Abhängigkeiten und bestehende Patterns
+   - Identifiziere potenzielle Konflikte
+
+2. **Architecture Check (Eraser.io)**
+   - Falls Datenmodell ändert: Aktualisiere Diagramme zuerst
+   - Prüfe Konsistenz mit bestehender Architektur
+
+3. **Implementation (Roo Code)**
+   - Implementiere Logik
+   - Nutze Vercel AI SDK für Streaming-Responses
+   - Nutze Trigger.dev für langlaufende Tasks
+
+4. **Self-Correction**
+   - Führe `npm run test` lokal aus
+   - Prüfe TypeScript-Errors
+   - Validiere Design-Tokens
+
+5. **Documentation (Swimm)**
+   - Erstelle/Update Swimm-Doc
+   - Verknüpfe kritische Code-Snippets
+
+### Self-Healing-Protokoll
+
+Automatische Fehlerbehebung:
+
+- **Terminal-Fehler**: Sofort stoppen, Root-Cause analysieren, Fix implementieren
+- **Build-Fehler**: Blockieren alle weiteren Tasks, Dependency-Resolution versuchen
+- **Test-Failures**: Flaky-Test-Detection, Retry-Mechanismus (max 3), AI-powered Fixing
+- **Code Review Feedback (CodeRabbit)**: Kommentare automatisch lesen, kritische Issues sofort fixen
+
+### MCP-Server Nutzung
+
+- **Supabase MCP**: Schema-Änderungen, Migrationen, RLS-Policies, Edge Functions
+- **GitHub MCP**: PR-Erstellung, Issue-Tracking, Branch-Management
+- **Filesystem MCP**: Codebase-Analyse, Abhängigkeits-Graph, Pattern-Matching
+- **Memory MCP**: Persistenter Kontext, Session-Übergreifende Informationen
+- **Browser MCP**: E2E-Test-Automatisierung, UI-Verifikation
+- **Hugging Face MCP**: AI-Modell-Zugriff, Text-Generierung
+
+### Quality Gates (vor jedem Commit)
+
+- [ ] TypeScript strict mode: Keine Errors
+- [ ] ESLint: Keine Errors
+- [ ] Design-Token-Konsistenz geprüft
+- [ ] Tests: Alle grün
+- [ ] Swimm-Doku: Aktualisiert
+- [ ] Keine verbotenen Begriffe
+
+### Wichtige Regeln
+
+1. **NIEMALS** Code ohne vorherige Architektur-Planung schreiben
+2. **IMMER** MCP-Server für Context-Fetch nutzen
+3. **IMMER** Self-Healing bei Fehlern aktivieren
+4. **IMMER** Swimm-Doku parallel zur Implementierung
+5. **NIEMALS** Commits ohne Tests und Validierung
+
+Siehe auch: `.roo/rules/neo-genesis.md` für vollständige NEO-GENESIS Dokumentation
