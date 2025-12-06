@@ -4,12 +4,30 @@
 
 ---
 
+## C.R.E.D.O. Framework
+
+Jeder Prompt folgt dem C.R.E.D.O. Framework:
+- **C**ontext: MCP-Resources, relevante Dateien
+- **R**ole: Spezialisierte Rolle (Architekt, Developer, QA, etc.)
+- **E**xecution: Schritt-für-Schritt Protokoll
+- **D**efinition of Done: Akzeptanzkriterien
+- **O**utput: Erwartetes Ergebnis
+
+---
+
 ## Prompt-Template
 
 ```
-@project_specs.md @schema.keel (oder Supabase Schema)
+@project_specs.md @types/supabase.ts
 
-Agiere als autonomer Fullstack Developer im NEO-GENESIS Stack.
+## C - Context
+- MCP: `project://ui/tokens`, `project://db/schema`, `project://app/routes`
+- Betroffene Bereiche: [Frontend/Backend/Database/Tests]
+
+## R - Role
+Agiere als autonomer Full-Stack Developer im NEO-GENESIS Stack.
+
+## E - Execution
 
 Task: [TASK BESCHREIBUNG]
 
@@ -20,39 +38,40 @@ Task: [TASK BESCHREIBUNG]
    - UI-Tokens, DB-Schema, App-Routen, Aktive Docs
    - Prüfe Abhängigkeiten und bestehende Patterns
 
-2. **Planung (Eraser.io):**
+2. **Planung:**
    - Falls sich das Datenmodell ändert, aktualisiere erst Diagramme in `docs/diagrams/`
    - Definiere Business-Logik in `project_specs.md` falls nötig
 
-3. **Code (AI SDK):**
+3. **Implementation:**
    - Implementiere die Logik
-   - Nutze Vercel AI SDK für Streaming-Responses im Frontend
-   - Nutze Trigger.dev für langlaufende Tasks (>10s)
+   - Nutze Design-Tokens (KEINE hardcoded Farben)
+   - Nutze Server Components als Default
 
 4. **Background (Trigger.dev):**
-   - Wenn der Task länger als 10s dauert, erstelle einen Trigger.dev Job dafür
-   - Nutze `trigger/jobs/` für neue Background-Jobs
+   - Tasks >10s → Trigger.dev Job in `trigger/jobs/`
 
 5. **Self-Correction + Self-Healing:**
-   - Führe `npm run test` lokal aus
-   - Prüfe TypeScript-Errors: `npm run type-check`
-   - Validiere Design-Tokens: `npm run validate:design`
-   - Bei Fehlern: Aktiviere Self-Healing via `selfHealing.heal(errorType, details)`
+   - `pnpm run lint` + `pnpm run type-check`
+   - `pnpm run validate:design`
+   - Bei Fehlern: `selfHealing.heal(errorType, details)`
 
 6. **Quality Gates:**
-   - Pre-Commit: `Gates.preCommit()`
-   - Pre-Push: `Gates.prePush()`
-   - Alle Gates müssen bestehen vor Commit
+   - `Gates.preCommit()` muss bestehen vor Commit
 
 7. **Documentation (Swimm):**
-   - Erstelle/Update das Swimm-Doc für diesen Code
-   - Verknüpfe kritische Code-Snippets
+   - Erstelle/Update Swimm-Doc
 
-8. **Monitoring:**
-   - Registriere Aktivität: `monitoring.recordBotActivity(botId, status)`
-   - Bei Fehlern: `monitoring.createAlert(severity, type, message)`
+## D - Definition of Done
+- [ ] TypeScript kompiliert ohne Fehler
+- [ ] ESLint zeigt keine Errors
+- [ ] Design-Token-Konsistenz geprüft
+- [ ] Keine verbotenen Begriffe
+- [ ] Pre-Commit Gate bestanden
 
-Start.
+## O - Output
+- Commit: `[type]([scope]): [beschreibung]`
+
+**EXECUTE.**
 ```
 
 ---

@@ -267,6 +267,56 @@ Konfiguration in IDE-Einstellungen (siehe config/mcp-nexus-bridge.json):
 4. **IMMER** Swimm-Doku parallel zur Implementierung
 5. **NIEMALS** Commits ohne Tests und Validierung
 
+## Input Security Protocol
+
+Bei vagen oder unklaren User-Eingaben:
+
+```
+Wenn Prompt < 5 Wörter ODER unklar:
+1. Führe den Befehl NICHT aus
+2. Antworten: "⚠️ **Prompt zu vage.** Ich schlage folgenden präzisen Plan vor: [...]"
+3. Optimiere automatisch ODER warte auf Bestätigung
+```
+
+### Automatische Prompt-Optimierung
+
+User-Eingaben werden automatisch transformiert via:
+- `lib/ai/prompt-architect.ts` - Genesis Prompt Architect
+- `lib/ai/prompt-validator.ts` - Input Validierung
+- `lib/ai/prompt-learning.ts` - Selbstlernendes System
+
+**C.R.E.D.O. Framework für perfekte Prompts:**
+- **C**ontext: Welche Dateien/MCP-Resources sind relevant?
+- **R**ole: Welche Rolle nimmt der Agent ein?
+- **E**xecution: Schritt-für-Schritt Plan
+- **D**efinition of Done: Wann ist der Task fertig?
+- **O**utput: Wie soll das Ergebnis aussehen?
+
+### Prompt-Templates
+
+Verwende `.prompts/` Library für Standard-Tasks:
+- `.prompts/feature.md` - Neue Features
+- `.prompts/bugfix.md` - Bug-Behebung
+- `.prompts/qa.md` - Qualitätsprüfung
+- `.prompts/refactor.md` - Refactoring
+- `.prompts/migration.md` - DB-Migrationen
+
+### Chat-Automatik
+
+Jede User-Eingabe wird automatisch:
+1. Validiert (Input Security Protocol)
+2. Analysiert (Task-Typ, Komplexität, Bereiche)
+3. Mit Live-Kontext angereichert (Nexus Bridge)
+4. In C.R.E.D.O.-Prompt transformiert
+5. Autonom ausgeführt
+6. In Prompt-Learning gespeichert
+
+```typescript
+// Verwende Chat-Automatik
+import { executeFromChat } from "@/lib/ai/workflow-orchestrator"
+const result = await executeFromChat("Deine Anweisung hier")
+```
+
 ### Cursor-Kommandos
 
 Verfügbare Kommandos in `.cursor/commands/`:

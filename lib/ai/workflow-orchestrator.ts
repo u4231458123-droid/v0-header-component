@@ -11,6 +11,11 @@
  * 4. Validation (Quality Gates)
  * 5. Documentation (Swimm)
  * 6. Commit/Push (Git Workflow)
+ * 
+ * Chat-Automatik:
+ * - User gibt kurze Anweisung ein
+ * - Genesis Prompt Architect transformiert zu perfektem Prompt
+ * - Workflow wird autonom ausgeführt
  */
 
 import { logError } from "@/lib/cicd/error-logger"
@@ -18,6 +23,9 @@ import { WorkTracker } from "@/lib/knowledge-base/work-tracking"
 import type { BotTask } from "./bots/base-bot"
 import { MasterBot } from "./bots/master-bot"
 import { loadProjectContext, nexusBridge } from "./bots/nexus-bridge-integration"
+import { GenesisPromptArchitect } from "./prompt-architect"
+import { inputSecurity, validatePrompt } from "./prompt-validator"
+import { promptLearning, saveExecution } from "./prompt-learning"
 
 // Workflow-Phasen
 export type WorkflowPhase =
@@ -66,6 +74,18 @@ export interface ParallelTracks {
   track1: { name: string; tasks: WorkflowTask[]; status: string } // QA & Bugfixing
   track2: { name: string; tasks: WorkflowTask[]; status: string } // Feature-Completion
   track3: { name: string; tasks: WorkflowTask[]; status: string } // Workflow-Optimization
+}
+
+// Chat-Execution-Result
+export interface ChatExecutionResult {
+  success: boolean
+  wasOptimized: boolean
+  originalInput: string
+  finalPrompt: string
+  workflowId?: string
+  duration: number
+  errors: string[]
+  dialog?: string
 }
 
 /**
@@ -351,7 +371,7 @@ export class WorkflowOrchestrator {
    */
   private async executeTask(task: WorkflowTask): Promise<void> {
     // Lade Projekt-Kontext
-    const _context = await loadProjectContext()
+    await loadProjectContext()
 
     // Validiere vor Ausführung
     const preValidation = await this.masterBot.enforceZeroUserIntervention({
@@ -412,6 +432,114 @@ export class WorkflowOrchestrator {
       errors,
       warnings,
     }
+  }
+
+  /**
+   * Chat-Automatik: Führe User-Eingabe autonom aus
+   * 
+   * Workflow:
+   * 1. Input Security Protocol prüft Eingabe
+   * 2. Genesis Prompt Architect transformiert zu perfektem Prompt
+   * 3. Workflow wird ausgeführt
+   * 4. Self-Healing bei Fehlern
+   * 5. Prompt-Learning speichert Ergebnis
+   */
+  async executeFromChatInput(userInput: string): Promise<ChatExecutionResult> {
+    const startTime = Date.now()
+
+    try {
+      // 1. Input Security Protocol
+      const securityCheck = await inputSecurity.checkInput(userInput)
+
+      if (!securityCheck.proceed) {
+        // Input zu vage - Dialog zurückgeben
+        return {
+          success: false,
+          wasOptimized: false,
+          originalInput: userInput,
+          finalPrompt: "",
+          duration: Date.now() - startTime,
+          errors: ["Prompt zu vage für autonome Ausführung"],
+          dialog: securityCheck.dialog
+        }
+      }
+
+      // 2. Genesis Prompt Architect
+      const promptArchitect = GenesisPromptArchitect.getInstance()
+      const result = await promptArchitect.transformAndExecute(
+        securityCheck.wasOptimized ? securityCheck.finalInput : userInput
+      )
+
+      // 3. Prompt-Learning speichern
+      await saveExecution(result.prompt, result)
+
+      // 4. Emit Event
+      this.emit("chat:executed", {
+        originalInput: userInput,
+        wasOptimized: securityCheck.wasOptimized,
+        result
+      })
+
+      return {
+        success: result.success,
+        wasOptimized: securityCheck.wasOptimized,
+        originalInput: userInput,
+        finalPrompt: result.prompt.optimized,
+        workflowId: result.workflowId,
+        duration: Date.now() - startTime,
+        errors: result.errors
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+
+      await logError({
+        type: "error",
+        severity: "high",
+        category: "chat-automation",
+        message: `Chat-Automatik fehlgeschlagen: ${errorMessage}`,
+        context: { userInput, error: errorMessage },
+        botId: "workflow-orchestrator"
+      })
+
+      return {
+        success: false,
+        wasOptimized: false,
+        originalInput: userInput,
+        finalPrompt: "",
+        duration: Date.now() - startTime,
+        errors: [errorMessage]
+      }
+    }
+  }
+
+  /**
+   * Validiere Input ohne Ausführung
+   */
+  validateInput(userInput: string): {
+    valid: boolean
+    score: number
+    suggestions: string[]
+  } {
+    const validation = validatePrompt(userInput)
+    return {
+      valid: validation.sufficient,
+      score: validation.score,
+      suggestions: validation.suggestions
+    }
+  }
+
+  /**
+   * Hole Prompt-Learning Statistiken
+   */
+  async getPromptStatistics() {
+    return promptLearning.getStatistics()
+  }
+
+  /**
+   * Hole Lern-Empfehlungen
+   */
+  async getLearningRecommendations() {
+    return promptLearning.generateRecommendations()
   }
 
   /**
@@ -529,6 +657,14 @@ export const QuickWorkflows = {
       { type: "quality-check", description: "Performance-Validierung" },
     ])
   },
+
+  /**
+   * Chat-Automatik: Direkt aus User-Eingabe
+   */
+  fromChat: async (userInput: string) => {
+    const orchestrator = WorkflowOrchestrator.getInstance()
+    return orchestrator.executeFromChatInput(userInput)
+  }
 }
 
 /**
@@ -536,3 +672,9 @@ export const QuickWorkflows = {
  */
 export const workflowOrchestrator = WorkflowOrchestrator.getInstance()
 
+/**
+ * Convenience-Export für Chat-Automatik
+ */
+export async function executeFromChat(userInput: string): Promise<ChatExecutionResult> {
+  return workflowOrchestrator.executeFromChatInput(userInput)
+}
